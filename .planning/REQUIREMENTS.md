@@ -19,10 +19,10 @@
 
 ### 内容分类
 
-- [ ] **CONT-01**: 技术文章分类目录创建
-- [ ] **CONT-02**: 短篇小说独立分类目录创建
-- [ ] **CONT-03**: 文章列表页支持双分类展示
-- [ ] **CONT-04**: 分类页面独立路由
+- [x] **CONT-01**: 技术文章分类目录创建
+- [x] **CONT-02**: 短篇小说独立分类目录创建
+- [x] **CONT-03**: 文章列表页支持双分类展示
+- [x] **CONT-04**: 分类页面独立路由
 
 ### SEO 配置
 
@@ -68,10 +68,10 @@
 | THEM-01 | Phase 1 | Completed |
 | THEM-02 | Phase 1 | Completed |
 | THEM-03 | Phase 1 | Completed |
-| CONT-01 | Phase 2 | Pending |
-| CONT-02 | Phase 2 | Pending |
-| CONT-03 | Phase 2 | Pending |
-| CONT-04 | Phase 2 | Pending |
+| CONT-01 | Phase 2 | Completed |
+| CONT-02 | Phase 2 | Completed |
+| CONT-03 | Phase 2 | Completed |
+| CONT-04 | Phase 2 | Completed |
 | SEO-01 | Phase 3 | Pending |
 | SEO-02 | Phase 3 | Pending |
 | SEO-03 | Phase 3 | Pending |
