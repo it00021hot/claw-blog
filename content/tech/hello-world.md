@@ -7,6 +7,14 @@ tags:
   - Hugo
   - PaperMod
 description: "这是我的第一篇技术文章，介绍如何使用 Hugo 和 PaperMod 主题搭建博客。"
+keywords:
+  - Hugo
+  - PaperMod
+  - 博客
+  - 静态网站
+cover:
+  image: "https://picsum.photos/800/400"
+  alt: "Hugo PaperMod 博客封面图"
 ---
 
 # Hello World
