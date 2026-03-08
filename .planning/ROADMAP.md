@@ -6,7 +6,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: 项目初始化与主题集成** - Hugo 项目搭建，PaperMod 主题配置，暗色/亮色主题支持
+- [x] **Phase 1: 项目初始化与主题集成** - Hugo 项目搭建，PaperMod 主题配置，暗色/亮色主题支持 (completed 2026-03-08)
 - [ ] **Phase 2: 内容分类与列表页** - 技术文章和短篇小说双分类目录
 - [ ] **Phase 3: SEO 配置** - Meta 标签、Open Graph、Twitter Card、sitemap、robots.txt
 - [ ] **Phase 4: 广告变现接入** - Google AdSense 脚本注入与广告位布局
@@ -99,7 +99,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. 项目初始化与主题集成 | 1/1 | Completed | 2026-03-08 |
+| 1. 项目初始化与主题集成 | 1/1 | Complete    | 2026-03-08 |
 | 2. 内容分类与列表页 | 0/0 | Not started | - |
 | 3. SEO 配置 | 0/0 | Not started | - |
 | 4. 广告变现接入 | 0/0 | Not started | - |
