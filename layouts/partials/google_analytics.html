@@ -1,0 +1,6 @@
+{{- /* Google Analytics / Google AdSense */}}
+{{- if hugo.IsProduction | or (eq site.Params.env "production") }}
+{{- with site.Params.google.analytics }}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{.}}" crossorigin="anonymous"></script>
+{{- end }}
+{{- end }}

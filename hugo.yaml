@@ -41,6 +41,9 @@ taxonomies:
   series: series
 
 params:
+  env: production
+  google:
+    analytics: "ca-pub-8708502478021488"
   author:
     name: "it00021hot"
     email: "liu15077731547@gmail.com"
