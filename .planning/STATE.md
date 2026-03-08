@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 5 plan 1 completed
-last_updated: "2026-03-08T14:10:30.000Z"
-last_activity: 2026-03-08 — Phase 5 plan 1 completed
+status: in_progress
+stopped_at: Phase 6 context discussed
+last_updated: "2026-03-08T18:00:00.000Z"
+last_activity: 2026-03-08 — Phase 6 context discussed
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 5
   total_plans: 5
   completed_plans: 5
-  percent: 100
+  percent: 83
 ---
 
 # Project State
@@ -22,16 +22,15 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 
 **Core value:** 一个简洁、高性能的个人博客，能够优雅地展示技术文章和短篇小说，并通过广告实现有限变现。
 
-**Current focus:** Phase 5 - 部署流水线
+**Current focus:** Phase 6 - 内容抓取工具
 
 ## Current Position
 
-Phase: 5 of 5 (部署流水线)
-Plan: 1 of 1 in current phase
-Status: Completed
-Last activity: 2026-03-08 — Phase 5 plan 1 completed
+Phase: 6 of 6 (内容抓取工具)
+Status: Context gathered, ready for planning
+Last activity: 2026-03-08 — Phase 6 context discussed
 
-Progress: [████████████████████] 100%
+Progress: [████████████████░░] 83%
 
 ## Performance Metrics
 
@@ -57,6 +56,10 @@ Progress: [████████████████████] 100%
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 6 added: 内容抓取工具 - 抓取网上优质文章并分类
+
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
@@ -75,6 +78,9 @@ Recent decisions affecting current work:
 - GitHub Actions 自动部署工作流 (peaceiris/actions-hugo + actions-gh-pages)
 - 使用 git submodule 管理 PaperMod 主题
 - baseURL 配置为 HTTPS (https://gen-code.top)
+- 内容抓取工具：GitHub Actions 定时每天 8:00 UTC + 手动运行
+- 输出到 content/tech/ 和 content/fiction/，AI 决定 Front Matter
+- URL 去重，JSON 存储已抓取 URL
 
 ### Pending Todos
 
