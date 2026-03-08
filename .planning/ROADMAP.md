@@ -10,7 +10,7 @@
 - [x] **Phase 2: 内容分类与列表页** - 技术文章和短篇小说双分类目录 (completed 2026-03-08)
 - [x] **Phase 3: SEO 配置** - Meta 标签、Open Graph、Twitter Card、sitemap、robots.txt (completed 2026-03-08)
 - [x] **Phase 4: 广告变现接入** - Google AdSense 脚本注入与广告位布局 (completed 2026-03-08)
-- [ ] **Phase 5: 部署流水线** - GitHub Actions 工作流与自动部署
+- [x] **Phase 5: 部署流水线** - GitHub Actions 工作流与自动部署 (completed 2026-03-08)
 
 ## Phase Details
 
@@ -105,7 +105,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — 创建 .gitmodules、GitHub Actions 工作流、更新 hugo.yaml baseURL
+- [x] 05-01-PLAN.md — 创建 .gitmodules、GitHub Actions 工作流、更新 hugo.yaml baseURL
 - [ ] 05-02-PLAN.md — 配置 GitHub Pages 自定义域名、Cloudflare DNS 记录、验证部署
 
 ## Progress
@@ -116,4 +116,4 @@ Plans:
 | 2. 内容分类与列表页 | 1/1 | Complete    | 2026-03-08 |
 | 3. SEO 配置 | 1/1 | Complete    | 2026-03-08 |
 | 4. 广告变现接入 | 1/1 | Complete    | 2026-03-08 |
-| 5. 部署流水线 | 0/2 | Not started | - |
+| 5. 部署流水线 | 1/2 | In Progress | 2026-03-08 |
