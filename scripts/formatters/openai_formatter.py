@@ -74,12 +74,25 @@ class OpenAIFormatter:
             )
 
             content = response.choices[0].message.content
-            # Parse JSON from response
+            if not content:
+                logger.warning("Empty response from OpenAI, using default front matter")
+                return self._default_front_matter(article)
+
+            # Try to parse JSON, handling potential markdown code blocks
+            content = content.strip()
+            if content.startswith("```json"):
+                content = content[7:]
+            if content.startswith("```"):
+                content = content[3:]
+            if content.endswith("```"):
+                content = content[:-3]
+            content = content.strip()
+
             front_matter = json.loads(content)
             return front_matter
 
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON from OpenAI: {e}")
+            logger.error(f"Failed to parse JSON from OpenAI: {e}, response: {content if 'content' in locals() else 'N/A'}")
             return self._default_front_matter(article)
         except Exception as e:
             logger.error(f"Error calling OpenAI API: {e}")

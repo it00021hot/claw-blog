@@ -32,10 +32,10 @@ class Config:
     # Specific blog article URLs to fetch
     # 真实的技术博客文章 URL
     blog_urls: List[str] = field(default_factory=lambda: [
-        # Dev.to 热门文章
-        "https://dev.to/mostafaedipour/building-a-rest-api-with-go-gin-and-postgresql-4bpb",
-        "https://dev.to/clarke3326/understanding-react-server-components-1j0b",
-        "https://dev.to/rajarshc-de/advanced-typescript-patterns-4-34m",
+        # 热门技术博客
+        "https://dev.to/ben/how-to-build-a-cli-with-go-4lc",
+        "https://dev.to/taikedz/docker-vs-kubernetes-when-to-use-which-5e1",
+        "https://dev.to/k4m4/how-to-secure-your-web-app-with-http-headers-43f",
     ])
 
     # Blog URLs whitelist
