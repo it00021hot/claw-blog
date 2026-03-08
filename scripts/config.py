@@ -21,8 +21,21 @@ class Config:
     output_fiction: str = field(default_factory=lambda: os.getenv("OUTPUT_FICTION", "content/fiction/"))
 
     # GitHub repositories to fetch
+    # 使用真实存在且有技术内容的仓库
     github_repos: List[dict] = field(default_factory=lambda: [
-        {"owner": "example", "repo": "tech-blog"},
+        {"owner": "kamranahmedse", "repo": "developer-roadmap"},  # 开发者路线图
+        {"owner": "public-apis", "repo": "public-apis"},  # 免费 API 列表
+        {"owner": "awesome-selfhosted", "repo": "awesome-selfhosted"},  # 自托管软件列表
+        {"owner": "trimstray", "repo": "the-book-of-secret-knowledge"},  # 秘密知识手册
+    ])
+
+    # Specific blog article URLs to fetch
+    # 真实的技术博客文章 URL
+    blog_urls: List[str] = field(default_factory=lambda: [
+        # Dev.to 热门文章
+        "https://dev.to/mostafaedipour/building-a-rest-api-with-go-gin-and-postgresql-4bpb",
+        "https://dev.to/clarke3326/understanding-react-server-components-1j0b",
+        "https://dev.to/rajarshc-de/advanced-typescript-patterns-4-34m",
     ])
 
     # Blog URLs whitelist

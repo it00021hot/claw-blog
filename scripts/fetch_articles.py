@@ -129,8 +129,8 @@ async def fetch_blog_articles(
 
     fetcher = BlogFetcher()
 
-    # Use configured blog whitelist as sources
-    sources = [f"https://{domain}" for domain in config.blog_whitelist]
+    # Use configured specific blog URLs
+    sources = config.blog_urls
 
     for url in sources:
         try:
