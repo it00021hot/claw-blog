@@ -121,7 +121,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — 核心功能实现：基础架构、GitHub 抓取、博客抓取、AI 格式化、URL 去重
-- [ ] 06-02-PLAN.md — CLI 入口和 GitHub Actions 集成
+- [x] 06-02-PLAN.md — CLI 入口和 GitHub Actions 集成
 
 ## Progress
 
@@ -132,4 +132,4 @@ Plans:
 | 3. SEO 配置 | 1/1 | Complete    | 2026-03-08 |
 | 4. 广告变现接入 | 1/1 | Complete    | 2026-03-08 |
 | 5. 部署流水线 | 1/1 | Complete    | 2026-03-08 |
-| 6. 内容抓取工具 | 1/2 | In Progress | 2026-03-09 |
+| 6. 内容抓取工具 | 2/2 | Complete    | 2026-03-09 |
