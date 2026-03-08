@@ -3,6 +3,18 @@ languageCode: "zh-cn"
 title: "技术博客"
 theme: ["PaperMod"]
 
+menu:
+  main:
+    - name: 首页
+      url: /
+      weight: 1
+    - name: 技术文章
+      url: /tech/
+      weight: 2
+    - name: 短篇小说
+      url: /fiction/
+      weight: 3
+
 outputs:
   home:
     - HTML
