@@ -117,7 +117,7 @@ Plans:
 
 **Depends on:** Phase 5
 
-**Plans:** 2 plans
+**Plans:** 0/2 plans complete
 
 Plans:
 - [x] 06-01-PLAN.md — 核心功能实现：基础架构、GitHub 抓取、博客抓取、AI 格式化、URL 去重
@@ -132,4 +132,4 @@ Plans:
 | 3. SEO 配置 | 1/1 | Complete    | 2026-03-08 |
 | 4. 广告变现接入 | 1/1 | Complete    | 2026-03-08 |
 | 5. 部署流水线 | 1/1 | Complete    | 2026-03-08 |
-| 6. 内容抓取工具 | 2/2 | Complete    | 2026-03-09 |
+| 6. 内容抓取工具 | 2/2 | Complete    | 2026-03-08 |
