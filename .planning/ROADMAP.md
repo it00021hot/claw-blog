@@ -70,7 +70,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 03-01-PLAN.md — 配置 hugo.yaml SEO 参数、更新文章 front matter、创建自定义 robots.txt
+- [x] 03-01-PLAN.md — 配置 hugo.yaml SEO 参数、更新文章 front matter、创建自定义 robots.txt
 
 ### Phase 4: 广告变现接入
 
@@ -107,6 +107,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. 项目初始化与主题集成 | 1/1 | Complete    | 2026-03-08 |
 | 2. 内容分类与列表页 | 1/1 | Complete    | 2026-03-08 |
-| 3. SEO 配置 | 0/1 | In progress | - |
+| 3. SEO 配置 | 1/1 | Complete    | 2026-03-08 |
 | 4. 广告变现接入 | 0/0 | Not started | - |
 | 5. 部署流水线 | 0/0 | Not started | - |
