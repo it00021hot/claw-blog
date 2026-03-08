@@ -108,6 +108,20 @@ Plans:
 - [x] 05-01-PLAN.md — 创建 .gitmodules、GitHub Actions 工作流、更新 hugo.yaml baseURL
 - [ ] 05-02-PLAN.md — 配置 GitHub Pages 自定义域名、Cloudflare DNS 记录、验证部署
 
+### Phase 6: 内容抓取工具 - 抓取网上优质文章并分类
+
+**Goal:** 创建一个文章抓取工具，从 GitHub 仓库和技术博客抓取优质内容，使用 OpenAI API 格式化后转换为 Hugo Markdown 文件，并通过 AI 自动分类
+
+**Requirements**: FETCH-01, FETCH-02, FETCH-03, FETCH-04, FETCH-05, FETCH-06, FETCH-07
+
+**Depends on:** Phase 5
+
+**Plans:** 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — 核心功能实现：基础架构、GitHub 抓取、博客抓取、AI 格式化、URL 去重
+- [ ] 06-02-PLAN.md — CLI 入口和 GitHub Actions 集成
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -117,3 +131,4 @@ Plans:
 | 3. SEO 配置 | 1/1 | Complete    | 2026-03-08 |
 | 4. 广告变现接入 | 1/1 | Complete    | 2026-03-08 |
 | 5. 部署流水线 | 1/2 | In Progress | 2026-03-08 |
+| 6. 内容抓取工具 | 0/2 | In Progress | — |
