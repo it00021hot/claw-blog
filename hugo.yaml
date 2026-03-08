@@ -1,7 +1,9 @@
-baseURL: "https://example.org/"
+baseURL: "https://gen-code.top"
 languageCode: "zh-cn"
 title: "CLAW博客"
 theme: ["PaperMod"]
+
+copyright: "© 2024-2026 CLAW博客 · 粤ICP备2023073211号"
 
 enableRobotsTXT: true
 
@@ -40,8 +42,8 @@ taxonomies:
 
 params:
   author:
-    name: "博客作者"
-    email: "example@example.com"
+    name: "it00021hot"
+    email: "liu15077731547@gmail.com"
   description: "一个简洁、高性能的个人技术博客"
   keywords:
     - 技术博客
