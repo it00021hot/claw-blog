@@ -1,0 +1,33 @@
+baseURL: "https://example.org/"
+languageCode: "zh-cn"
+title: "技术博客"
+theme: ["PaperMod"]
+
+outputs:
+  home:
+    - HTML
+    - RSS
+
+taxonomies:
+  category: categories
+  tag: tags
+  series: series
+
+params:
+  author:
+    name: "博客作者"
+    email: "example@example.com"
+  defaultTheme: auto
+  ShowReadingTime: true
+  ShowCodeCopyButtons: true
+  disableScrollToTop: false
+  hideMeta: false
+  hideSummary: false
+  showtoc: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+
+markup:
+  highlight:
+    noClasses: false
+    style: monokai
