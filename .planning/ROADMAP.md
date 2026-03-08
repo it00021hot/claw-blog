@@ -47,7 +47,10 @@ Plans:
   3. 首页文章列表同时展示两个分类的文章
   4. 点击分类标签可以跳转到对应的分类页面
 
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 02-01-PLAN.md — 创建 tech/fiction sections、示例文章、导航菜单、首页合并模板
 
 ### Phase 3: SEO 配置
 
@@ -100,7 +103,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. 项目初始化与主题集成 | 1/1 | Complete    | 2026-03-08 |
-| 2. 内容分类与列表页 | 0/0 | Not started | - |
+| 2. 内容分类与列表页 | 0/1 | In progress | - |
 | 3. SEO 配置 | 0/0 | Not started | - |
 | 4. 广告变现接入 | 0/0 | Not started | - |
 | 5. 部署流水线 | 0/0 | Not started | - |
