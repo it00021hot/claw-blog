@@ -14,10 +14,11 @@ class Config:
     """Configuration for content fetcher."""
 
     openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
+    openai_api_base: str = field(default_factory=lambda: os.getenv("OPENAI_API_BASE", ""))
+    openai_model: str = field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
     github_token: str = field(default_factory=lambda: os.getenv("GITHUB_TOKEN", ""))
     output_tech: str = field(default_factory=lambda: os.getenv("OUTPUT_TECH", "content/tech/"))
     output_fiction: str = field(default_factory=lambda: os.getenv("OUTPUT_FICTION", "content/fiction/"))
-    openai_model: str = field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
 
     # GitHub repositories to fetch
     github_repos: List[dict] = field(default_factory=lambda: [

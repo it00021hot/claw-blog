@@ -22,12 +22,16 @@ VALID_CATEGORIES = ["安装", "进阶", "常见问题", "教程", "源码解析"
 class OpenAIFormatter:
     """Format articles using OpenAI API."""
 
-    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None, api_base: Optional[str] = None):
         self.api_key = api_key or config.openai_api_key
         self.model = model or config.openai_model
+        self.api_base = api_base or config.openai_api_base
         self.client = None
         if self.api_key:
-            self.client = OpenAI(api_key=self.api_key)
+            client_kwargs = {"api_key": self.api_key}
+            if self.api_base:
+                client_kwargs["base_url"] = self.api_base
+            self.client = OpenAI(**client_kwargs)
 
     def format_article(self, article) -> Dict[str, any]:
         """Generate front matter using OpenAI."""
