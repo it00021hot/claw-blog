@@ -84,7 +84,10 @@ Plans:
   1. Google AdSense 脚本正确注入到页面 `<head>` 中
   2. 广告位在文章内容区域合理展示，不影响阅读体验
 
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 04-PLAN.md — 创建 AdSense 脚本注入 partial、创建 ads.txt 授权文件、验证构建输出
 
 ### Phase 5: 部署流水线
 
@@ -108,5 +111,5 @@ Plans:
 | 1. 项目初始化与主题集成 | 1/1 | Complete    | 2026-03-08 |
 | 2. 内容分类与列表页 | 1/1 | Complete    | 2026-03-08 |
 | 3. SEO 配置 | 1/1 | Complete    | 2026-03-08 |
-| 4. 广告变现接入 | 0/0 | Not started | - |
+| 4. 广告变现接入 | 0/1 | Not started | - |
 | 5. 部署流水线 | 0/0 | Not started | - |
