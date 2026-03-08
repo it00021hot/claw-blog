@@ -102,7 +102,11 @@ Plans:
   2. 推送代码到 main 分支触发自动构建部署
   3. 部署完成后访问 GitHub Pages URL 可以正常浏览网站
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — 创建 .gitmodules、GitHub Actions 工作流、更新 hugo.yaml baseURL
+- [ ] 05-02-PLAN.md — 配置 GitHub Pages 自定义域名、Cloudflare DNS 记录、验证部署
 
 ## Progress
 
@@ -112,4 +116,4 @@ Plans:
 | 2. 内容分类与列表页 | 1/1 | Complete    | 2026-03-08 |
 | 3. SEO 配置 | 1/1 | Complete    | 2026-03-08 |
 | 4. 广告变现接入 | 1/1 | Complete    | 2026-03-08 |
-| 5. 部署流水线 | 0/0 | Not started | - |
+| 5. 部署流水线 | 0/2 | Not started | - |
