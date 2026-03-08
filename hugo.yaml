@@ -1,7 +1,20 @@
 baseURL: "https://example.org/"
 languageCode: "zh-cn"
-title: "技术博客"
+title: "CLAW博客"
 theme: ["PaperMod"]
+
+enableRobotsTXT: true
+
+sitemap:
+  changefreq: "weekly"
+  priority: 0.5
+  filename: "sitemap.xml"
+
+disableKinds:
+  - taxonomy
+  - term
+  - RSS
+  - sitemap
 
 menu:
   main:
@@ -29,6 +42,14 @@ params:
   author:
     name: "博客作者"
     email: "example@example.com"
+  description: "一个简洁、高性能的个人技术博客"
+  keywords:
+    - 技术博客
+    - Hugo
+    - PaperMod
+    - 短篇小说
+  social:
+    twitter: ""
   defaultTheme: auto
   ShowReadingTime: true
   ShowCodeCopyButtons: true
