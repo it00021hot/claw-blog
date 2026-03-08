@@ -8,7 +8,7 @@
 
 - [x] **Phase 1: 项目初始化与主题集成** - Hugo 项目搭建，PaperMod 主题配置，暗色/亮色主题支持 (completed 2026-03-08)
 - [x] **Phase 2: 内容分类与列表页** - 技术文章和短篇小说双分类目录 (completed 2026-03-08)
-- [ ] **Phase 3: SEO 配置** - Meta 标签、Open Graph、Twitter Card、sitemap、robots.txt
+- [x] **Phase 3: SEO 配置** - Meta 标签、Open Graph、Twitter Card、sitemap、robots.txt (completed 2026-03-08)
 - [ ] **Phase 4: 广告变现接入** - Google AdSense 脚本注入与广告位布局
 - [ ] **Phase 5: 部署流水线** - GitHub Actions 工作流与自动部署
 
