@@ -28,7 +28,10 @@
   3. 响应式布局在移动端（375px）正常显示，无横向滚动
   4. 代码块有正确的语法高亮显示
 
-**Plans**: TBD
+**Plans**: 1 plan (COMPLETED)
+
+Plans:
+- [x] 01-01-PLAN.md — 创建 Hugo 项目结构、安装 PaperMod 主题、配置 hugo.yaml
 
 ### Phase 2: 内容分类与列表页
 
@@ -96,7 +99,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. 项目初始化与主题集成 | 0/0 | Not started | - |
+| 1. 项目初始化与主题集成 | 1/1 | Completed | 2026-03-08 |
 | 2. 内容分类与列表页 | 0/0 | Not started | - |
 | 3. SEO 配置 | 0/0 | Not started | - |
 | 4. 广告变现接入 | 0/0 | Not started | - |

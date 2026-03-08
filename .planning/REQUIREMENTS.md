@@ -7,15 +7,15 @@
 
 ### 基础搭建
 
-- [ ] **BASE-01**: Hugo 项目初始化，生成基础目录结构
-- [ ] **BASE-02**: PaperMod 主题正确集成
-- [ ] **BASE-03**: hugo.yaml 配置文件创建并基础配置
+- [x] **BASE-01**: Hugo 项目初始化，生成基础目录结构
+- [x] **BASE-02**: PaperMod 主题正确集成
+- [x] **BASE-03**: hugo.yaml 配置文件创建并基础配置
 
 ### 主题与样式
 
-- [ ] **THEM-01**: 暗色/亮色主题切换功能
-- [ ] **THEM-02**: 响应式布局适配
-- [ ] **THEM-03**: 代码高亮样式
+- [x] **THEM-01**: 暗色/亮色主题切换功能
+- [x] **THEM-02**: 响应式布局适配
+- [x] **THEM-03**: 代码高亮样式
 
 ### 内容分类
 
@@ -62,12 +62,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BASE-01 | Phase 1 | Pending |
-| BASE-02 | Phase 1 | Pending |
-| BASE-03 | Phase 1 | Pending |
-| THEM-01 | Phase 1 | Pending |
-| THEM-02 | Phase 1 | Pending |
-| THEM-03 | Phase 1 | Pending |
+| BASE-01 | Phase 1 | Completed |
+| BASE-02 | Phase 1 | Completed |
+| BASE-03 | Phase 1 | Completed |
+| THEM-01 | Phase 1 | Completed |
+| THEM-02 | Phase 1 | Completed |
+| THEM-03 | Phase 1 | Completed |
 | CONT-01 | Phase 2 | Pending |
 | CONT-02 | Phase 2 | Pending |
 | CONT-03 | Phase 2 | Pending |
