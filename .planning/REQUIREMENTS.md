@@ -34,8 +34,8 @@
 
 ### 广告接入
 
-- [ ] **AD-01**: Google AdSense 脚本注入
-- [ ] **AD-02**: 广告位布局适配
+- [x] **AD-01**: Google AdSense 脚本注入
+- [x] **AD-02**: 广告位布局适配
 
 ### 部署
 
@@ -77,8 +77,8 @@
 | SEO-03 | Phase 3 | Pending |
 | SEO-04 | Phase 3 | Pending |
 | SEO-05 | Phase 3 | Pending |
-| AD-01 | Phase 4 | Pending |
-| AD-02 | Phase 4 | Pending |
+| AD-01 | Phase 4 | Completed |
+| AD-02 | Phase 4 | Completed |
 | DEPL-01 | Phase 5 | Pending |
 | DEPL-02 | Phase 5 | Pending |
 | DEPL-03 | Phase 5 | Pending |
