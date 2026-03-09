@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-08)
 
 Phase: 7 of 7 (帮我抓取https://github.com/mengjian-github/openclaw101这个网站的数据，并调整成当前项目的文章)
 Status: Not planned yet
-Last activity: 2026-03-09 - Completed quick task 1: 补充一些openclaw的文章，如安装教程，必备skill，如何配置多agent
+Last activity: 2026-03-09 - Completed quick task 2: 提交技术博客的所有文章
 
 Progress: [████████████████████] 100%
 
@@ -105,6 +105,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | 补充一些openclaw的文章，如安装教程，必备skill，如何配置多agent | 2026-03-09 | f2c7b53 | [1-openclaw-skill-agent](./quick/1-openclaw-skill-agent/) |
+| 2 | 提交技术博客的所有文章 | 2026-03-09 | 6d05c41 | [2-commit-tech-blog-articles](./quick/2-commit-tech-blog-articles/) |
 
 ## Session Continuity
 
