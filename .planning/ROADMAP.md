@@ -123,6 +123,19 @@ Plans:
 - [x] 06-01-PLAN.md — 核心功能实现：基础架构、GitHub 抓取、博客抓取、AI 格式化、URL 去重
 - [x] 06-02-PLAN.md — CLI 入口和 GitHub Actions 集成
 
+### Phase 7: 抓取 openclaw101 仓库内容
+
+**Goal:** 抓取 openclaw101 仓库内容（README、Issues、357 个资源）并转换为 Hugo Markdown 博客文章
+
+**Requirements**: OCLAW-01, OCLAW-02, OCLAW-03, OCLAW-04, OCLAW-05, OCLAW-06
+
+**Depends on:** Phase 6
+
+**Plans:** 1/1 plan
+
+Plans:
+- [x] 07-01-PLAN.md — 核心功能实现：OpenClaw101Fetcher、TypeScript 解析器、资源格式化器、主脚本
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -133,3 +146,4 @@ Plans:
 | 4. 广告变现接入 | 1/1 | Complete    | 2026-03-08 |
 | 5. 部署流水线 | 1/1 | Complete    | 2026-03-08 |
 | 6. 内容抓取工具 | 2/2 | Complete    | 2026-03-08 |
+| 7. 抓取 openclaw101 | 1/1 | Ready to execute    | 2026-03-09 |
