@@ -1,4 +1,4 @@
 ---
-title: "技术文章"
-description: "技术相关文章与教程"
+title: "随笔小记"
+description: "日常随笔与技术心得"
 ---

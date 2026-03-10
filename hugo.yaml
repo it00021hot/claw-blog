@@ -1,4 +1,4 @@
-baseURL: "https://gen-code.top"
+baseURL: "/"
 languageCode: "zh-cn"
 title: "CLAW博客"
 theme: ["PaperMod"]
@@ -23,12 +23,15 @@ menu:
     - name: 首页
       url: /
       weight: 1
-    - name: 技术文章
-      url: /tech/
+    - name: OpenClaw
+      url: /openclaw/
       weight: 2
-    - name: 短篇小说
-      url: /fiction/
+    - name: Skills
+      url: /skills/
       weight: 3
+    - name: 随笔小记
+      url: /tech/
+      weight: 4
 
 outputs:
   home:
@@ -41,6 +44,9 @@ taxonomies:
   series: series
 
 params:
+  mainSections:
+    - posts
+    - openclaw
   env: production
   google:
     analytics: "ca-pub-8708502478021488"
@@ -69,3 +75,6 @@ markup:
   highlight:
     noClasses: false
     style: monokai
+  goldmark:
+    renderer:
+      unsafe: true

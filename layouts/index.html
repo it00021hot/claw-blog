@@ -1,8 +1,8 @@
 {{- define "main" -}}
 <main class="post-list">
   {{ $tech := where site.RegularPages "Section" "tech" }}
-  {{ $fiction := where site.RegularPages "Section" "fiction" }}
-  {{ $all := union $tech $fiction }}
+  {{ $openclaw := where site.RegularPages "Section" "openclaw" }}
+  {{ $all := union $tech $openclaw }}
   {{ $sorted := $all.ByDate.Reverse }}
   {{ $paginator := .Paginate $sorted }}
 
