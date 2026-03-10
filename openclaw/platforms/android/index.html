@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Android 应用（节点） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="支持概览
+
+角色：配套节点应用（Android 不托管 Gateway 网关）。
+需要 Gateway 网关：是（在 macOS、Linux 或通过 WSL2 的 Windows 上运行）。
+安装：入门指南 &#43; 配对。
+Gateway 网关：操作手册 &#43; 配置。
+
+协议：Gateway 网关协议（节点 &#43; 控制平面）。
+
+
+
+系统控制
+系统控制（launchd/systemd）位于 Gateway 网关主机上。参见 Gateway 网关。
+连接操作手册
+Android 节点应用 ⇄（mDNS/NSD &#43; WebSocket）⇄ Gateway 网关
+Android 直接连接到 Gateway 网关 WebSocket（默认 ws://&lt;host&gt;:18789）并使用 Gateway 网关拥有的配对。
+前置条件
+
+你可以在&quot;主&quot;机器上运行 Gateway 网关。
+Android 设备/模拟器可以访问 Gateway 网关 WebSocket：
+
+使用 mDNS/NSD 的同一局域网，或
+使用 Wide-Area Bonjour / unicast DNS-SD 的同一 Tailscale tailnet（见下文），或
+手动 Gateway 网关主机/端口（回退方案）
+
+
+你可以在 Gateway 网关机器上运行 CLI（openclaw）（或通过 SSH）。
+
+1）启动 Gateway 网关
+openclaw gateway --port 18789 --verbose
+在日志中确认你看到类似内容：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/platforms/android/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/platforms/android/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/platforms/android/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Android 应用（节点）">
+  <meta property="og:description" content="支持概览 角色：配套节点应用（Android 不托管 Gateway 网关）。 需要 Gateway 网关：是（在 macOS、Linux 或通过 WSL2 的 Windows 上运行）。 安装：入门指南 &#43; 配对。 Gateway 网关：操作手册 &#43; 配置。 协议：Gateway 网关协议（节点 &#43; 控制平面）。 系统控制 系统控制（launchd/systemd）位于 Gateway 网关主机上。参见 Gateway 网关。
+连接操作手册 Android 节点应用 ⇄（mDNS/NSD &#43; WebSocket）⇄ Gateway 网关
+Android 直接连接到 Gateway 网关 WebSocket（默认 ws://&lt;host&gt;:18789）并使用 Gateway 网关拥有的配对。
+前置条件 你可以在&#34;主&#34;机器上运行 Gateway 网关。 Android 设备/模拟器可以访问 Gateway 网关 WebSocket： 使用 mDNS/NSD 的同一局域网，或 使用 Wide-Area Bonjour / unicast DNS-SD 的同一 Tailscale tailnet（见下文），或 手动 Gateway 网关主机/端口（回退方案） 你可以在 Gateway 网关机器上运行 CLI（openclaw）（或通过 SSH）。 1）启动 Gateway 网关 openclaw gateway --port 18789 --verbose 在日志中确认你看到类似内容：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 应用（节点）">
+<meta name="twitter:description" content="支持概览
+
+角色：配套节点应用（Android 不托管 Gateway 网关）。
+需要 Gateway 网关：是（在 macOS、Linux 或通过 WSL2 的 Windows 上运行）。
+安装：入门指南 &#43; 配对。
+Gateway 网关：操作手册 &#43; 配置。
+
+协议：Gateway 网关协议（节点 &#43; 控制平面）。
+
+
+
+系统控制
+系统控制（launchd/systemd）位于 Gateway 网关主机上。参见 Gateway 网关。
+连接操作手册
+Android 节点应用 ⇄（mDNS/NSD &#43; WebSocket）⇄ Gateway 网关
+Android 直接连接到 Gateway 网关 WebSocket（默认 ws://&lt;host&gt;:18789）并使用 Gateway 网关拥有的配对。
+前置条件
+
+你可以在&quot;主&quot;机器上运行 Gateway 网关。
+Android 设备/模拟器可以访问 Gateway 网关 WebSocket：
+
+使用 mDNS/NSD 的同一局域网，或
+使用 Wide-Area Bonjour / unicast DNS-SD 的同一 Tailscale tailnet（见下文），或
+手动 Gateway 网关主机/端口（回退方案）
+
+
+你可以在 Gateway 网关机器上运行 CLI（openclaw）（或通过 SSH）。
+
+1）启动 Gateway 网关
+openclaw gateway --port 18789 --verbose
+在日志中确认你看到类似内容：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Android 应用（节点）",
+      "item": "/openclaw/platforms/android/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Android 应用（节点）",
+  "name": "Android 应用（节点）",
+  "description": "支持概览 角色：配套节点应用（Android 不托管 Gateway 网关）。 需要 Gateway 网关：是（在 macOS、Linux 或通过 WSL2 的 Windows 上运行）。 安装：入门指南 + 配对。 Gateway 网关：操作手册 + 配置。 协议：Gateway 网关协议（节点 + 控制平面）。 系统控制 系统控制（launchd/systemd）位于 Gateway 网关主机上。参见 Gateway 网关。\n连接操作手册 Android 节点应用 ⇄（mDNS/NSD + WebSocket）⇄ Gateway 网关\nAndroid 直接连接到 Gateway 网关 WebSocket（默认 ws://\u0026lt;host\u0026gt;:18789）并使用 Gateway 网关拥有的配对。\n前置条件 你可以在\u0026quot;主\u0026quot;机器上运行 Gateway 网关。 Android 设备/模拟器可以访问 Gateway 网关 WebSocket： 使用 mDNS/NSD 的同一局域网，或 使用 Wide-Area Bonjour / unicast DNS-SD 的同一 Tailscale tailnet（见下文），或 手动 Gateway 网关主机/端口（回退方案） 你可以在 Gateway 网关机器上运行 CLI（openclaw）（或通过 SSH）。 1）启动 Gateway 网关 openclaw gateway --port 18789 --verbose 在日志中确认你看到类似内容：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "支持概览 角色：配套节点应用（Android 不托管 Gateway 网关）。 需要 Gateway 网关：是（在 macOS、Linux 或通过 WSL2 的 Windows 上运行）。 安装：入门指南 + 配对。 Gateway 网关：操作手册 + 配置。 协议：Gateway 网关协议（节点 + 控制平面）。 系统控制 系统控制（launchd/systemd）位于 Gateway 网关主机上。参见 Gateway 网关。\n连接操作手册 Android 节点应用 ⇄（mDNS/NSD + WebSocket）⇄ Gateway 网关\nAndroid 直接连接到 Gateway 网关 WebSocket（默认 ws://:18789）并使用 Gateway 网关拥有的配对。\n前置条件 你可以在\"主\"机器上运行 Gateway 网关。 Android 设备/模拟器可以访问 Gateway 网关 WebSocket： 使用 mDNS/NSD 的同一局域网，或 使用 Wide-Area Bonjour / unicast DNS-SD 的同一 Tailscale tailnet（见下文），或 手动 Gateway 网关主机/端口（回退方案） 你可以在 Gateway 网关机器上运行 CLI（openclaw）（或通过 SSH）。 1）启动 Gateway 网关 openclaw gateway --port 18789 --verbose 在日志中确认你看到类似内容：\nlistening on ws://0.0.0.0:18789 对于仅 tailnet 设置（推荐用于维也纳 ⇄ 伦敦），将 Gateway 网关绑定到 tailnet IP：\n在 Gateway 网关主机的 ~/.openclaw/openclaw.json 中设置 gateway.bind: \"tailnet\"。 重启 Gateway 网关 / macOS 菜单栏应用。 2）验证发现（可选） 从 Gateway 网关机器：\ndns-sd -B _openclaw-gw._tcp local. 更多调试说明：Bonjour。\n通过 unicast DNS-SD 的 Tailnet（维也纳 ⇄ 伦敦）发现 Android NSD/mDNS 发现无法跨网络。如果你的 Android 节点和 Gateway 网关在不同网络但通过 Tailscale 连接，请改用 Wide-Area Bonjour / unicast DNS-SD：\n在 Gateway 网关主机上设置 DNS-SD 区域（示例 openclaw.internal.）并发布 _openclaw-gw._tcp 记录。 配置 Tailscale split DNS，将你选择的域指向该 DNS 服务器。 详情和示例 CoreDNS 配置：Bonjour。\n3）从 Android 连接 在 Android 应用中：\n应用通过前台服务（持久通知）保持 Gateway 网关连接活动。 打开设置。 在发现的 Gateway 网关下，选择你的 Gateway 网关并点击连接。 如果 mDNS 被阻止，使用高级 → 手动 Gateway 网关（主机 + 端口）并连接（手动）。 首次成功配对后，Android 在启动时自动重连：\n手动端点（如果启用），否则 上次发现的 Gateway 网关（尽力而为）。 4）批准配对（CLI） 在 Gateway 网关机器上：\nopenclaw nodes pending openclaw nodes approve 配对详情：Gateway 网关配对。\n5）验证节点已连接 通过节点状态： openclaw nodes status 通过 Gateway 网关： openclaw gateway call node.list --params \"{}\" 6）聊天 + 历史 Android 节点的 Chat 面板使用 Gateway 网关的主会话键（main），因此历史和回复与 WebChat 和其他客户端共享：\n历史：chat.history 发送：chat.send 推送更新（尽力而为）：chat.subscribe → event:\"chat\" 7）Canvas + 摄像头 Gateway 网关 Canvas 主机（推荐用于 web 内容） 如果你想让节点显示智能体可以在磁盘上编辑的真实 HTML/CSS/JS，请将节点指向 Gateway 网关 canvas 主机。\n注意：节点使用 canvasHost.port（默认 18793）上的独立 canvas 主机。\n在 Gateway 网关主机上创建 ~/.openclaw/workspace/canvas/index.html。\n将节点导航到它（局域网）：\nopenclaw nodes invoke --node \"\" --command canvas.navigate --params '{\"url\":\"http://.local:18793/__openclaw__/canvas/\"}' Tailnet（可选）：如果两个设备都在 Tailscale 上，使用 MagicDNS 名称或 tailnet IP 而不是 .local，例如 http://:18793/__openclaw__/canvas/。\n此服务器将实时重载客户端注入 HTML 并在文件更改时重新加载。 A2UI 主机位于 http://:18793/__openclaw__/a2ui/。\nCanvas 命令（仅前台）：\ncanvas.eval、canvas.snapshot、canvas.navigate（使用 {\"url\":\"\"} 或 {\"url\":\"/\"} 返回默认脚手架）。canvas.snapshot 返回 { format, base64 }（默认 format=\"jpeg\"）。 A2UI：canvas.a2ui.push、canvas.a2ui.reset（canvas.a2ui.pushJSONL 遗留别名） 摄像头命令（仅前台；权限限制）：\ncamera.snap（jpg） camera.clip（mp4） 参见 Camera 节点 了解参数和 CLI 助手。\n",
+  "wordCount" : "305",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/platforms/android/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Android 应用（节点）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%94%af%e6%8c%81%e6%a6%82%e8%a7%88" aria-label="支持概览">支持概览</a></li>
+                <li>
+                    <a href="#%e7%b3%bb%e7%bb%9f%e6%8e%a7%e5%88%b6" aria-label="系统控制">系统控制</a></li>
+                <li>
+                    <a href="#%e8%bf%9e%e6%8e%a5%e6%93%8d%e4%bd%9c%e6%89%8b%e5%86%8c" aria-label="连接操作手册">连接操作手册</a><ul>
+                        
+                <li>
+                    <a href="#%e5%89%8d%e7%bd%ae%e6%9d%a1%e4%bb%b6" aria-label="前置条件">前置条件</a></li>
+                <li>
+                    <a href="#1%e5%90%af%e5%8a%a8-gateway-%e7%bd%91%e5%85%b3" aria-label="1）启动 Gateway 网关">1）启动 Gateway 网关</a></li>
+                <li>
+                    <a href="#2%e9%aa%8c%e8%af%81%e5%8f%91%e7%8e%b0%e5%8f%af%e9%80%89" aria-label="2）验证发现（可选）">2）验证发现（可选）</a><ul>
+                        
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87-unicast-dns-sd-%e7%9a%84-tailnet%e7%bb%b4%e4%b9%9f%e7%ba%b3--%e4%bc%a6%e6%95%a6%e5%8f%91%e7%8e%b0" aria-label="通过 unicast DNS-SD 的 Tailnet（维也纳 ⇄ 伦敦）发现">通过 unicast DNS-SD 的 Tailnet（维也纳 ⇄ 伦敦）发现</a></li></ul>
+                </li>
+                <li>
+                    <a href="#3%e4%bb%8e-android-%e8%bf%9e%e6%8e%a5" aria-label="3）从 Android 连接">3）从 Android 连接</a></li>
+                <li>
+                    <a href="#4%e6%89%b9%e5%87%86%e9%85%8d%e5%af%b9cli" aria-label="4）批准配对（CLI）">4）批准配对（CLI）</a></li>
+                <li>
+                    <a href="#5%e9%aa%8c%e8%af%81%e8%8a%82%e7%82%b9%e5%b7%b2%e8%bf%9e%e6%8e%a5" aria-label="5）验证节点已连接">5）验证节点已连接</a></li>
+                <li>
+                    <a href="#6%e8%81%8a%e5%a4%a9--%e5%8e%86%e5%8f%b2" aria-label="6）聊天 &#43; 历史">6）聊天 + 历史</a></li>
+                <li>
+                    <a href="#7canvas--%e6%91%84%e5%83%8f%e5%a4%b4" aria-label="7）Canvas &#43; 摄像头">7）Canvas + 摄像头</a><ul>
+                        
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3-canvas-%e4%b8%bb%e6%9c%ba%e6%8e%a8%e8%8d%90%e7%94%a8%e4%ba%8e-web-%e5%86%85%e5%ae%b9" aria-label="Gateway 网关 Canvas 主机（推荐用于 web 内容）">Gateway 网关 Canvas 主机（推荐用于 web 内容）</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="支持概览">支持概览<a hidden class="anchor" aria-hidden="true" href="#支持概览">#</a></h2>
+<ul>
+<li>角色：配套节点应用（Android 不托管 Gateway 网关）。</li>
+<li>需要 Gateway 网关：是（在 macOS、Linux 或通过 WSL2 的 Windows 上运行）。</li>
+<li>安装：<a href="/start/getting-started">入门指南</a> + <a href="/gateway/pairing">配对</a>。</li>
+<li>Gateway 网关：<a href="/gateway">操作手册</a> + <a href="/gateway/configuration">配置</a>。
+<ul>
+<li>协议：<a href="/gateway/protocol">Gateway 网关协议</a>（节点 + 控制平面）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="系统控制">系统控制<a hidden class="anchor" aria-hidden="true" href="#系统控制">#</a></h2>
+<p>系统控制（launchd/systemd）位于 Gateway 网关主机上。参见 <a href="/gateway">Gateway 网关</a>。</p>
+<h2 id="连接操作手册">连接操作手册<a hidden class="anchor" aria-hidden="true" href="#连接操作手册">#</a></h2>
+<p>Android 节点应用 ⇄（mDNS/NSD + WebSocket）⇄ <strong>Gateway 网关</strong></p>
+<p>Android 直接连接到 Gateway 网关 WebSocket（默认 <code>ws://&lt;host&gt;:18789</code>）并使用 Gateway 网关拥有的配对。</p>
+<h3 id="前置条件">前置条件<a hidden class="anchor" aria-hidden="true" href="#前置条件">#</a></h3>
+<ul>
+<li>你可以在&quot;主&quot;机器上运行 Gateway 网关。</li>
+<li>Android 设备/模拟器可以访问 Gateway 网关 WebSocket：
+<ul>
+<li>使用 mDNS/NSD 的同一局域网，<strong>或</strong></li>
+<li>使用 Wide-Area Bonjour / unicast DNS-SD 的同一 Tailscale tailnet（见下文），<strong>或</strong></li>
+<li>手动 Gateway 网关主机/端口（回退方案）</li>
+</ul>
+</li>
+<li>你可以在 Gateway 网关机器上运行 CLI（<code>openclaw</code>）（或通过 SSH）。</li>
+</ul>
+<h3 id="1启动-gateway-网关">1）启动 Gateway 网关<a hidden class="anchor" aria-hidden="true" href="#1启动-gateway-网关">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway --port <span class="m">18789</span> --verbose
+</span></span></code></pre></div><p>在日志中确认你看到类似内容：</p>
+<ul>
+<li><code>listening on ws://0.0.0.0:18789</code></li>
+</ul>
+<p>对于仅 tailnet 设置（推荐用于维也纳 ⇄ 伦敦），将 Gateway 网关绑定到 tailnet IP：</p>
+<ul>
+<li>在 Gateway 网关主机的 <code>~/.openclaw/openclaw.json</code> 中设置 <code>gateway.bind: &quot;tailnet&quot;</code>。</li>
+<li>重启 Gateway 网关 / macOS 菜单栏应用。</li>
+</ul>
+<h3 id="2验证发现可选">2）验证发现（可选）<a hidden class="anchor" aria-hidden="true" href="#2验证发现可选">#</a></h3>
+<p>从 Gateway 网关机器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dns-sd -B _openclaw-gw._tcp local.
+</span></span></code></pre></div><p>更多调试说明：<a href="/gateway/bonjour">Bonjour</a>。</p>
+<h4 id="通过-unicast-dns-sd-的-tailnet维也纳--伦敦发现">通过 unicast DNS-SD 的 Tailnet（维也纳 ⇄ 伦敦）发现<a hidden class="anchor" aria-hidden="true" href="#通过-unicast-dns-sd-的-tailnet维也纳--伦敦发现">#</a></h4>
+<p>Android NSD/mDNS 发现无法跨网络。如果你的 Android 节点和 Gateway 网关在不同网络但通过 Tailscale 连接，请改用 Wide-Area Bonjour / unicast DNS-SD：</p>
+<ol>
+<li>在 Gateway 网关主机上设置 DNS-SD 区域（示例 <code>openclaw.internal.</code>）并发布 <code>_openclaw-gw._tcp</code> 记录。</li>
+<li>配置 Tailscale split DNS，将你选择的域指向该 DNS 服务器。</li>
+</ol>
+<p>详情和示例 CoreDNS 配置：<a href="/gateway/bonjour">Bonjour</a>。</p>
+<h3 id="3从-android-连接">3）从 Android 连接<a hidden class="anchor" aria-hidden="true" href="#3从-android-连接">#</a></h3>
+<p>在 Android 应用中：</p>
+<ul>
+<li>应用通过<strong>前台服务</strong>（持久通知）保持 Gateway 网关连接活动。</li>
+<li>打开<strong>设置</strong>。</li>
+<li>在<strong>发现的 Gateway 网关</strong>下，选择你的 Gateway 网关并点击<strong>连接</strong>。</li>
+<li>如果 mDNS 被阻止，使用<strong>高级 → 手动 Gateway 网关</strong>（主机 + 端口）并<strong>连接（手动）</strong>。</li>
+</ul>
+<p>首次成功配对后，Android 在启动时自动重连：</p>
+<ul>
+<li>手动端点（如果启用），否则</li>
+<li>上次发现的 Gateway 网关（尽力而为）。</li>
+</ul>
+<h3 id="4批准配对cli">4）批准配对（CLI）<a hidden class="anchor" aria-hidden="true" href="#4批准配对cli">#</a></h3>
+<p>在 Gateway 网关机器上：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw nodes pending
+</span></span><span class="line"><span class="cl">openclaw nodes approve &lt;requestId&gt;
+</span></span></code></pre></div><p>配对详情：<a href="/gateway/pairing">Gateway 网关配对</a>。</p>
+<h3 id="5验证节点已连接">5）验证节点已连接<a hidden class="anchor" aria-hidden="true" href="#5验证节点已连接">#</a></h3>
+<ul>
+<li>通过节点状态：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw nodes status
+</span></span></code></pre></div></li>
+<li>通过 Gateway 网关：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway call node.list --params <span class="s2">&#34;{}&#34;</span>
+</span></span></code></pre></div></li>
+</ul>
+<h3 id="6聊天--历史">6）聊天 + 历史<a hidden class="anchor" aria-hidden="true" href="#6聊天--历史">#</a></h3>
+<p>Android 节点的 Chat 面板使用 Gateway 网关的<strong>主会话键</strong>（<code>main</code>），因此历史和回复与 WebChat 和其他客户端共享：</p>
+<ul>
+<li>历史：<code>chat.history</code></li>
+<li>发送：<code>chat.send</code></li>
+<li>推送更新（尽力而为）：<code>chat.subscribe</code> → <code>event:&quot;chat&quot;</code></li>
+</ul>
+<h3 id="7canvas--摄像头">7）Canvas + 摄像头<a hidden class="anchor" aria-hidden="true" href="#7canvas--摄像头">#</a></h3>
+<h4 id="gateway-网关-canvas-主机推荐用于-web-内容">Gateway 网关 Canvas 主机（推荐用于 web 内容）<a hidden class="anchor" aria-hidden="true" href="#gateway-网关-canvas-主机推荐用于-web-内容">#</a></h4>
+<p>如果你想让节点显示智能体可以在磁盘上编辑的真实 HTML/CSS/JS，请将节点指向 Gateway 网关 canvas 主机。</p>
+<p>注意：节点使用 <code>canvasHost.port</code>（默认 <code>18793</code>）上的独立 canvas 主机。</p>
+<ol>
+<li>
+<p>在 Gateway 网关主机上创建 <code>~/.openclaw/workspace/canvas/index.html</code>。</p>
+</li>
+<li>
+<p>将节点导航到它（局域网）：</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw nodes invoke --node <span class="s2">&#34;&lt;Android Node&gt;&#34;</span> --command canvas.navigate --params <span class="s1">&#39;{&#34;url&#34;:&#34;http://&lt;gateway-hostname&gt;.local:18793/__openclaw__/canvas/&#34;}&#39;</span>
+</span></span></code></pre></div><p>Tailnet（可选）：如果两个设备都在 Tailscale 上，使用 MagicDNS 名称或 tailnet IP 而不是 <code>.local</code>，例如 <code>http://&lt;gateway-magicdns&gt;:18793/__openclaw__/canvas/</code>。</p>
+<p>此服务器将实时重载客户端注入 HTML 并在文件更改时重新加载。
+A2UI 主机位于 <code>http://&lt;gateway-host&gt;:18793/__openclaw__/a2ui/</code>。</p>
+<p>Canvas 命令（仅前台）：</p>
+<ul>
+<li><code>canvas.eval</code>、<code>canvas.snapshot</code>、<code>canvas.navigate</code>（使用 <code>{&quot;url&quot;:&quot;&quot;}</code> 或 <code>{&quot;url&quot;:&quot;/&quot;}</code> 返回默认脚手架）。<code>canvas.snapshot</code> 返回 <code>{ format, base64 }</code>（默认 <code>format=&quot;jpeg&quot;</code>）。</li>
+<li>A2UI：<code>canvas.a2ui.push</code>、<code>canvas.a2ui.reset</code>（<code>canvas.a2ui.pushJSONL</code> 遗留别名）</li>
+</ul>
+<p>摄像头命令（仅前台；权限限制）：</p>
+<ul>
+<li><code>camera.snap</code>（jpg）</li>
+<li><code>camera.clip</code>（mp4）</li>
+</ul>
+<p>参见 <a href="/nodes/camera">Camera 节点</a> 了解参数和 CLI 助手。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/providers/bedrock/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Amazon Bedrock</span>
+  </a>
+  <a class="next" href="/openclaw/install/ansible/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Ansible 安装</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>群组消息（WhatsApp 网页渠道） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标：让 Clawd 留在 WhatsApp 群组中，仅在被提及时唤醒，并将该对话线程与个人私信会话分开。
+注意：agents.list[].groupChat.mentionPatterns 现在也被 Telegram/Discord/Slack/iMessage 使用；本文档重点介绍 WhatsApp 特定的行为。对于多智能体设置，为每个智能体设置 agents.list[].groupChat.mentionPatterns（或使用 messages.groupChat.mentionPatterns 作为全局回退）。
+已实现的功能（2025-12-03）
+
+激活模式：mention（默认）或 always。mention 需要被提及（通过 mentionedJids 的真实 WhatsApp @提及、正则表达式模式，或文本中任意位置的机器人 E.164 号码）。always 会在每条消息时唤醒智能体，但它应该只在能提供有意义价值时才回复；否则返回静默令牌 NO_REPLY。默认值可在配置中设置（channels.whatsapp.groups），并可通过 /activation 为每个群组单独覆盖。当设置了 channels.whatsapp.groups 时，它同时充当群组允许列表（包含 &quot;*&quot; 以允许所有群组）。
+群组策略：channels.whatsapp.groupPolicy 控制是否接受群组消息（open|disabled|allowlist）。allowlist 使用 channels.whatsapp.groupAllowFrom（回退：显式的 channels.whatsapp.allowFrom）。默认为 allowlist（在你添加发送者之前被阻止）。
+独立群组会话：会话键格式为 agent:&lt;agentId&gt;:whatsapp:group:&lt;jid&gt;，因此 /verbose on 或 /think high（作为独立消息发送）等命令仅作用于该群组；个人私信状态不受影响。群组线程会跳过心跳。
+上下文注入：仅待处理的群组消息（默认 50 条），即未触发运行的消息，会以 [Chat messages since your last reply - for context] 为前缀注入，触发行在 [Current message - respond to this] 下。已在会话中的消息不会重复注入。
+发送者显示：每个群组批次现在以 [from: Sender Name (&#43;E164)] 结尾，让 Pi 知道是谁在说话。
+阅后即焚/一次性查看：我们在提取文本/提及之前会先解包这些消息，因此其中的提及仍会触发。
+群组系统提示：在群组会话的第一轮（以及每当 /activation 更改模式时），我们会向系统提示注入一段简短说明，如 You are replying inside the WhatsApp group &quot;&lt;subject&gt;&quot;. Group members: Alice (&#43;44...), Bob (&#43;43...), … Activation: trigger-only … Address the specific sender noted in the message context. 如果元数据不可用，我们仍会告知智能体这是一个群聊。
+
+配置示例（WhatsApp）
+在 ~/.openclaw/openclaw.json 中添加 groupChat 块，以便在 WhatsApp 剥离文本正文中的可视 @ 时，显示名称提及仍能正常工作：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/group-messages/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/group-messages/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/group-messages/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="群组消息（WhatsApp 网页渠道）">
+  <meta property="og:description" content="目标：让 Clawd 留在 WhatsApp 群组中，仅在被提及时唤醒，并将该对话线程与个人私信会话分开。
+注意：agents.list[].groupChat.mentionPatterns 现在也被 Telegram/Discord/Slack/iMessage 使用；本文档重点介绍 WhatsApp 特定的行为。对于多智能体设置，为每个智能体设置 agents.list[].groupChat.mentionPatterns（或使用 messages.groupChat.mentionPatterns 作为全局回退）。
+已实现的功能（2025-12-03） 激活模式：mention（默认）或 always。mention 需要被提及（通过 mentionedJids 的真实 WhatsApp @提及、正则表达式模式，或文本中任意位置的机器人 E.164 号码）。always 会在每条消息时唤醒智能体，但它应该只在能提供有意义价值时才回复；否则返回静默令牌 NO_REPLY。默认值可在配置中设置（channels.whatsapp.groups），并可通过 /activation 为每个群组单独覆盖。当设置了 channels.whatsapp.groups 时，它同时充当群组允许列表（包含 &#34;*&#34; 以允许所有群组）。 群组策略：channels.whatsapp.groupPolicy 控制是否接受群组消息（open|disabled|allowlist）。allowlist 使用 channels.whatsapp.groupAllowFrom（回退：显式的 channels.whatsapp.allowFrom）。默认为 allowlist（在你添加发送者之前被阻止）。 独立群组会话：会话键格式为 agent:&lt;agentId&gt;:whatsapp:group:&lt;jid&gt;，因此 /verbose on 或 /think high（作为独立消息发送）等命令仅作用于该群组；个人私信状态不受影响。群组线程会跳过心跳。 上下文注入：仅待处理的群组消息（默认 50 条），即未触发运行的消息，会以 [Chat messages since your last reply - for context] 为前缀注入，触发行在 [Current message - respond to this] 下。已在会话中的消息不会重复注入。 发送者显示：每个群组批次现在以 [from: Sender Name (&#43;E164)] 结尾，让 Pi 知道是谁在说话。 阅后即焚/一次性查看：我们在提取文本/提及之前会先解包这些消息，因此其中的提及仍会触发。 群组系统提示：在群组会话的第一轮（以及每当 /activation 更改模式时），我们会向系统提示注入一段简短说明，如 You are replying inside the WhatsApp group &#34;&lt;subject&gt;&#34;. Group members: Alice (&#43;44...), Bob (&#43;43...), … Activation: trigger-only … Address the specific sender noted in the message context. 如果元数据不可用，我们仍会告知智能体这是一个群聊。 配置示例（WhatsApp） 在 ~/.openclaw/openclaw.json 中添加 groupChat 块，以便在 WhatsApp 剥离文本正文中的可视 @ 时，显示名称提及仍能正常工作：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="群组消息（WhatsApp 网页渠道）">
+<meta name="twitter:description" content="目标：让 Clawd 留在 WhatsApp 群组中，仅在被提及时唤醒，并将该对话线程与个人私信会话分开。
+注意：agents.list[].groupChat.mentionPatterns 现在也被 Telegram/Discord/Slack/iMessage 使用；本文档重点介绍 WhatsApp 特定的行为。对于多智能体设置，为每个智能体设置 agents.list[].groupChat.mentionPatterns（或使用 messages.groupChat.mentionPatterns 作为全局回退）。
+已实现的功能（2025-12-03）
+
+激活模式：mention（默认）或 always。mention 需要被提及（通过 mentionedJids 的真实 WhatsApp @提及、正则表达式模式，或文本中任意位置的机器人 E.164 号码）。always 会在每条消息时唤醒智能体，但它应该只在能提供有意义价值时才回复；否则返回静默令牌 NO_REPLY。默认值可在配置中设置（channels.whatsapp.groups），并可通过 /activation 为每个群组单独覆盖。当设置了 channels.whatsapp.groups 时，它同时充当群组允许列表（包含 &quot;*&quot; 以允许所有群组）。
+群组策略：channels.whatsapp.groupPolicy 控制是否接受群组消息（open|disabled|allowlist）。allowlist 使用 channels.whatsapp.groupAllowFrom（回退：显式的 channels.whatsapp.allowFrom）。默认为 allowlist（在你添加发送者之前被阻止）。
+独立群组会话：会话键格式为 agent:&lt;agentId&gt;:whatsapp:group:&lt;jid&gt;，因此 /verbose on 或 /think high（作为独立消息发送）等命令仅作用于该群组；个人私信状态不受影响。群组线程会跳过心跳。
+上下文注入：仅待处理的群组消息（默认 50 条），即未触发运行的消息，会以 [Chat messages since your last reply - for context] 为前缀注入，触发行在 [Current message - respond to this] 下。已在会话中的消息不会重复注入。
+发送者显示：每个群组批次现在以 [from: Sender Name (&#43;E164)] 结尾，让 Pi 知道是谁在说话。
+阅后即焚/一次性查看：我们在提取文本/提及之前会先解包这些消息，因此其中的提及仍会触发。
+群组系统提示：在群组会话的第一轮（以及每当 /activation 更改模式时），我们会向系统提示注入一段简短说明，如 You are replying inside the WhatsApp group &quot;&lt;subject&gt;&quot;. Group members: Alice (&#43;44...), Bob (&#43;43...), … Activation: trigger-only … Address the specific sender noted in the message context. 如果元数据不可用，我们仍会告知智能体这是一个群聊。
+
+配置示例（WhatsApp）
+在 ~/.openclaw/openclaw.json 中添加 groupChat 块，以便在 WhatsApp 剥离文本正文中的可视 @ 时，显示名称提及仍能正常工作：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "群组消息（WhatsApp 网页渠道）",
+      "item": "/openclaw/channels/group-messages/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "群组消息（WhatsApp 网页渠道）",
+  "name": "群组消息（WhatsApp 网页渠道）",
+  "description": "目标：让 Clawd 留在 WhatsApp 群组中，仅在被提及时唤醒，并将该对话线程与个人私信会话分开。\n注意：agents.list[].groupChat.mentionPatterns 现在也被 Telegram/Discord/Slack/iMessage 使用；本文档重点介绍 WhatsApp 特定的行为。对于多智能体设置，为每个智能体设置 agents.list[].groupChat.mentionPatterns（或使用 messages.groupChat.mentionPatterns 作为全局回退）。\n已实现的功能（2025-12-03） 激活模式：mention（默认）或 always。mention 需要被提及（通过 mentionedJids 的真实 WhatsApp @提及、正则表达式模式，或文本中任意位置的机器人 E.164 号码）。always 会在每条消息时唤醒智能体，但它应该只在能提供有意义价值时才回复；否则返回静默令牌 NO_REPLY。默认值可在配置中设置（channels.whatsapp.groups），并可通过 /activation 为每个群组单独覆盖。当设置了 channels.whatsapp.groups 时，它同时充当群组允许列表（包含 \u0026quot;*\u0026quot; 以允许所有群组）。 群组策略：channels.whatsapp.groupPolicy 控制是否接受群组消息（open|disabled|allowlist）。allowlist 使用 channels.whatsapp.groupAllowFrom（回退：显式的 channels.whatsapp.allowFrom）。默认为 allowlist（在你添加发送者之前被阻止）。 独立群组会话：会话键格式为 agent:\u0026lt;agentId\u0026gt;:whatsapp:group:\u0026lt;jid\u0026gt;，因此 /verbose on 或 /think high（作为独立消息发送）等命令仅作用于该群组；个人私信状态不受影响。群组线程会跳过心跳。 上下文注入：仅待处理的群组消息（默认 50 条），即未触发运行的消息，会以 [Chat messages since your last reply - for context] 为前缀注入，触发行在 [Current message - respond to this] 下。已在会话中的消息不会重复注入。 发送者显示：每个群组批次现在以 [from: Sender Name (+E164)] 结尾，让 Pi 知道是谁在说话。 阅后即焚/一次性查看：我们在提取文本/提及之前会先解包这些消息，因此其中的提及仍会触发。 群组系统提示：在群组会话的第一轮（以及每当 /activation 更改模式时），我们会向系统提示注入一段简短说明，如 You are replying inside the WhatsApp group \u0026quot;\u0026lt;subject\u0026gt;\u0026quot;. Group members: Alice (+44...), Bob (+43...), … Activation: trigger-only … Address the specific sender noted in the message context. 如果元数据不可用，我们仍会告知智能体这是一个群聊。 配置示例（WhatsApp） 在 ~/.openclaw/openclaw.json 中添加 groupChat 块，以便在 WhatsApp 剥离文本正文中的可视 @ 时，显示名称提及仍能正常工作：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标：让 Clawd 留在 WhatsApp 群组中，仅在被提及时唤醒，并将该对话线程与个人私信会话分开。\n注意：agents.list[].groupChat.mentionPatterns 现在也被 Telegram/Discord/Slack/iMessage 使用；本文档重点介绍 WhatsApp 特定的行为。对于多智能体设置，为每个智能体设置 agents.list[].groupChat.mentionPatterns（或使用 messages.groupChat.mentionPatterns 作为全局回退）。\n已实现的功能（2025-12-03） 激活模式：mention（默认）或 always。mention 需要被提及（通过 mentionedJids 的真实 WhatsApp @提及、正则表达式模式，或文本中任意位置的机器人 E.164 号码）。always 会在每条消息时唤醒智能体，但它应该只在能提供有意义价值时才回复；否则返回静默令牌 NO_REPLY。默认值可在配置中设置（channels.whatsapp.groups），并可通过 /activation 为每个群组单独覆盖。当设置了 channels.whatsapp.groups 时，它同时充当群组允许列表（包含 \"*\" 以允许所有群组）。 群组策略：channels.whatsapp.groupPolicy 控制是否接受群组消息（open|disabled|allowlist）。allowlist 使用 channels.whatsapp.groupAllowFrom（回退：显式的 channels.whatsapp.allowFrom）。默认为 allowlist（在你添加发送者之前被阻止）。 独立群组会话：会话键格式为 agent::whatsapp:group:，因此 /verbose on 或 /think high（作为独立消息发送）等命令仅作用于该群组；个人私信状态不受影响。群组线程会跳过心跳。 上下文注入：仅待处理的群组消息（默认 50 条），即未触发运行的消息，会以 [Chat messages since your last reply - for context] 为前缀注入，触发行在 [Current message - respond to this] 下。已在会话中的消息不会重复注入。 发送者显示：每个群组批次现在以 [from: Sender Name (+E164)] 结尾，让 Pi 知道是谁在说话。 阅后即焚/一次性查看：我们在提取文本/提及之前会先解包这些消息，因此其中的提及仍会触发。 群组系统提示：在群组会话的第一轮（以及每当 /activation 更改模式时），我们会向系统提示注入一段简短说明，如 You are replying inside the WhatsApp group \"\". Group members: Alice (+44...), Bob (+43...), … Activation: trigger-only … Address the specific sender noted in the message context. 如果元数据不可用，我们仍会告知智能体这是一个群聊。 配置示例（WhatsApp） 在 ~/.openclaw/openclaw.json 中添加 groupChat 块，以便在 WhatsApp 剥离文本正文中的可视 @ 时，显示名称提及仍能正常工作：\n{ channels: { whatsapp: { groups: { \"*\": { requireMention: true }, }, }, }, agents: { list: [ { id: \"main\", groupChat: { historyLimit: 50, mentionPatterns: [\"@?openclaw\", \"\\\\+?15555550123\"], }, }, ], }, } 注意：\n正则表达式不区分大小写；它们涵盖了像 @openclaw 这样的显示名称提及，以及带或不带 +/空格的原始号码。 当有人点击联系人时，WhatsApp 仍会通过 mentionedJids 发送规范的提及，因此号码回退很少需要，但作为安全网很有用。 激活命令（仅所有者） 使用群聊命令：\n/activation mention /activation always 只有所有者号码（来自 channels.whatsapp.allowFrom，或未设置时使用机器人自己的 E.164）可以更改此设置。在群组中发送 /status 作为独立消息以查看当前激活模式。\n使用方法 将你的 WhatsApp 账号（运行 OpenClaw 的账号）添加到群组。 说 @openclaw …（或包含号码）。只有允许列表中的发送者才能触发，除非你设置 groupPolicy: \"open\"。 智能体提示将包含最近的群组上下文以及尾部的 [from: …] 标记，以便它能够回应正确的人。 会话级指令（/verbose on、/think high、/new 或 /reset、/compact）仅适用于该群组的会话；将它们作为独立消息发送以使其生效。你的个人私信会话保持独立。 测试/验证 手动冒烟测试： 在群组中发送 @openclaw 提及，确认收到引用发送者名称的回复。 发送第二次提及，验证历史记录块被包含，然后在下一轮清除。 检查 Gateway 网关日志（使用 --verbose 运行）以查看 inbound web message 条目，显示 from: 和 [from: …] 后缀。 已知注意事项 群组有意跳过心跳以避免嘈杂的广播。 回声抑制使用组合的批次字符串；如果你发送两次相同的文本但没有提及，只有第一次会得到响应。 会话存储条目将在会话存储中显示为 agent::whatsapp:group:（默认为 ~/.openclaw/agents//sessions/sessions.json）；缺失条目只是意味着该群组尚未触发运行。 群组中的输入指示器遵循 agents.defaults.typingMode（默认：未被提及时为 message）。 ",
+  "wordCount" : "219",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/group-messages/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      群组消息（WhatsApp 网页渠道）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%b7%b2%e5%ae%9e%e7%8e%b0%e7%9a%84%e5%8a%9f%e8%83%bd2025-12-03" aria-label="已实现的功能（2025-12-03）">已实现的功能（2025-12-03）</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e7%a4%ba%e4%be%8bwhatsapp" aria-label="配置示例（WhatsApp）">配置示例（WhatsApp）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%bf%80%e6%b4%bb%e5%91%bd%e4%bb%a4%e4%bb%85%e6%89%80%e6%9c%89%e8%80%85" aria-label="激活命令（仅所有者）">激活命令（仅所有者）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95" aria-label="使用方法">使用方法</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e9%aa%8c%e8%af%81" aria-label="测试/验证">测试/验证</a></li>
+                <li>
+                    <a href="#%e5%b7%b2%e7%9f%a5%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="已知注意事项">已知注意事项</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>目标：让 Clawd 留在 WhatsApp 群组中，仅在被提及时唤醒，并将该对话线程与个人私信会话分开。</p>
+<p>注意：<code>agents.list[].groupChat.mentionPatterns</code> 现在也被 Telegram/Discord/Slack/iMessage 使用；本文档重点介绍 WhatsApp 特定的行为。对于多智能体设置，为每个智能体设置 <code>agents.list[].groupChat.mentionPatterns</code>（或使用 <code>messages.groupChat.mentionPatterns</code> 作为全局回退）。</p>
+<h2 id="已实现的功能2025-12-03">已实现的功能（2025-12-03）<a hidden class="anchor" aria-hidden="true" href="#已实现的功能2025-12-03">#</a></h2>
+<ul>
+<li>激活模式：<code>mention</code>（默认）或 <code>always</code>。<code>mention</code> 需要被提及（通过 <code>mentionedJids</code> 的真实 WhatsApp @提及、正则表达式模式，或文本中任意位置的机器人 E.164 号码）。<code>always</code> 会在每条消息时唤醒智能体，但它应该只在能提供有意义价值时才回复；否则返回静默令牌 <code>NO_REPLY</code>。默认值可在配置中设置（<code>channels.whatsapp.groups</code>），并可通过 <code>/activation</code> 为每个群组单独覆盖。当设置了 <code>channels.whatsapp.groups</code> 时，它同时充当群组允许列表（包含 <code>&quot;*&quot;</code> 以允许所有群组）。</li>
+<li>群组策略：<code>channels.whatsapp.groupPolicy</code> 控制是否接受群组消息（<code>open|disabled|allowlist</code>）。<code>allowlist</code> 使用 <code>channels.whatsapp.groupAllowFrom</code>（回退：显式的 <code>channels.whatsapp.allowFrom</code>）。默认为 <code>allowlist</code>（在你添加发送者之前被阻止）。</li>
+<li>独立群组会话：会话键格式为 <code>agent:&lt;agentId&gt;:whatsapp:group:&lt;jid&gt;</code>，因此 <code>/verbose on</code> 或 <code>/think high</code>（作为独立消息发送）等命令仅作用于该群组；个人私信状态不受影响。群组线程会跳过心跳。</li>
+<li>上下文注入：<strong>仅待处理</strong>的群组消息（默认 50 条），即<em>未</em>触发运行的消息，会以 <code>[Chat messages since your last reply - for context]</code> 为前缀注入，触发行在 <code>[Current message - respond to this]</code> 下。已在会话中的消息不会重复注入。</li>
+<li>发送者显示：每个群组批次现在以 <code>[from: Sender Name (+E164)]</code> 结尾，让 Pi 知道是谁在说话。</li>
+<li>阅后即焚/一次性查看：我们在提取文本/提及之前会先解包这些消息，因此其中的提及仍会触发。</li>
+<li>群组系统提示：在群组会话的第一轮（以及每当 <code>/activation</code> 更改模式时），我们会向系统提示注入一段简短说明，如 <code>You are replying inside the WhatsApp group &quot;&lt;subject&gt;&quot;. Group members: Alice (+44...), Bob (+43...), … Activation: trigger-only … Address the specific sender noted in the message context.</code> 如果元数据不可用，我们仍会告知智能体这是一个群聊。</li>
+</ul>
+<h2 id="配置示例whatsapp">配置示例（WhatsApp）<a hidden class="anchor" aria-hidden="true" href="#配置示例whatsapp">#</a></h2>
+<p>在 <code>~/.openclaw/openclaw.json</code> 中添加 <code>groupChat</code> 块，以便在 WhatsApp 剥离文本正文中的可视 <code>@</code> 时，显示名称提及仍能正常工作：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    whatsapp: {
+      groups: {
+        &#34;*&#34;: { requireMention: true },
+      },
+    },
+  },
+  agents: {
+    list: [
+      {
+        id: &#34;main&#34;,
+        groupChat: {
+          historyLimit: 50,
+          mentionPatterns: [&#34;@?openclaw&#34;, &#34;\\+?15555550123&#34;],
+        },
+      },
+    ],
+  },
+}
+</code></pre><p>注意：</p>
+<ul>
+<li>正则表达式不区分大小写；它们涵盖了像 <code>@openclaw</code> 这样的显示名称提及，以及带或不带 <code>+</code>/空格的原始号码。</li>
+<li>当有人点击联系人时，WhatsApp 仍会通过 <code>mentionedJids</code> 发送规范的提及，因此号码回退很少需要，但作为安全网很有用。</li>
+</ul>
+<h3 id="激活命令仅所有者">激活命令（仅所有者）<a hidden class="anchor" aria-hidden="true" href="#激活命令仅所有者">#</a></h3>
+<p>使用群聊命令：</p>
+<ul>
+<li><code>/activation mention</code></li>
+<li><code>/activation always</code></li>
+</ul>
+<p>只有所有者号码（来自 <code>channels.whatsapp.allowFrom</code>，或未设置时使用机器人自己的 E.164）可以更改此设置。在群组中发送 <code>/status</code> 作为独立消息以查看当前激活模式。</p>
+<h2 id="使用方法">使用方法<a hidden class="anchor" aria-hidden="true" href="#使用方法">#</a></h2>
+<ol>
+<li>将你的 WhatsApp 账号（运行 OpenClaw 的账号）添加到群组。</li>
+<li>说 <code>@openclaw …</code>（或包含号码）。只有允许列表中的发送者才能触发，除非你设置 <code>groupPolicy: &quot;open&quot;</code>。</li>
+<li>智能体提示将包含最近的群组上下文以及尾部的 <code>[from: …]</code> 标记，以便它能够回应正确的人。</li>
+<li>会话级指令（<code>/verbose on</code>、<code>/think high</code>、<code>/new</code> 或 <code>/reset</code>、<code>/compact</code>）仅适用于该群组的会话；将它们作为独立消息发送以使其生效。你的个人私信会话保持独立。</li>
+</ol>
+<h2 id="测试验证">测试/验证<a hidden class="anchor" aria-hidden="true" href="#测试验证">#</a></h2>
+<ul>
+<li>手动冒烟测试：
+<ul>
+<li>在群组中发送 <code>@openclaw</code> 提及，确认收到引用发送者名称的回复。</li>
+<li>发送第二次提及，验证历史记录块被包含，然后在下一轮清除。</li>
+</ul>
+</li>
+<li>检查 Gateway 网关日志（使用 <code>--verbose</code> 运行）以查看 <code>inbound web message</code> 条目，显示 <code>from: &lt;groupJid&gt;</code> 和 <code>[from: …]</code> 后缀。</li>
+</ul>
+<h2 id="已知注意事项">已知注意事项<a hidden class="anchor" aria-hidden="true" href="#已知注意事项">#</a></h2>
+<ul>
+<li>群组有意跳过心跳以避免嘈杂的广播。</li>
+<li>回声抑制使用组合的批次字符串；如果你发送两次相同的文本但没有提及，只有第一次会得到响应。</li>
+<li>会话存储条目将在会话存储中显示为 <code>agent:&lt;agentId&gt;:whatsapp:group:&lt;jid&gt;</code>（默认为 <code>~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json</code>）；缺失条目只是意味着该群组尚未触发运行。</li>
+<li>群组中的输入指示器遵循 <code>agents.defaults.typingMode</code>（默认：未被提及时为 <code>message</code>）。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/channels/groups/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>群组</span>
+  </a>
+  <a class="next" href="/openclaw/help/scripts/">
+    <span class="title">Next »</span>
+    <br>
+    <span>脚本</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

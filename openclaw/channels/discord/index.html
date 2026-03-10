@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Discord（Bot API） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态：已支持通过官方 Discord 机器人网关进行私信和服务器文字频道通信。
+快速设置（新手）
+
+创建 Discord 机器人并复制机器人令牌。
+在 Discord 应用设置中启用 Message Content Intent（如果你计划使用允许列表或名称查找，还需启用 Server Members Intent）。
+为 OpenClaw 设置令牌：
+
+环境变量：DISCORD_BOT_TOKEN=...
+或配置：channels.discord.token: &quot;...&quot;。
+如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。
+
+
+使用消息权限邀请机器人到你的服务器（如果你只想使用私信，可以创建一个私人服务器）。
+启动 Gateway 网关。
+私信访问默认采用配对模式；首次联系时需批准配对码。
+
+最小配置：
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_BOT_TOKEN&#34;,
+    },
+  },
+}
+目标
+
+通过 Discord 私信或服务器频道与 OpenClaw 对话。
+直接聊天会合并到智能体的主会话（默认 agent:main:main）；服务器频道保持隔离为 agent:&lt;agentId&gt;:discord:channel:&lt;channelId&gt;（显示名称使用 discord:&lt;guildSlug&gt;#&lt;channelSlug&gt;）。
+群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。
+保持路由确定性：回复始终返回到消息来源的渠道。
+
+工作原理
+
+创建 Discord 应用程序 → Bot，启用你需要的意图（私信 &#43; 服务器消息 &#43; 消息内容），并获取机器人令牌。
+使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。
+使用 channels.discord.token 配置 OpenClaw（或使用 DISCORD_BOT_TOKEN 作为回退）。
+运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 channels.discord.enabled 不为 false 时，它会自动启动 Discord 渠道。
+
+如果你更喜欢使用环境变量，设置 DISCORD_BOT_TOKEN（配置块是可选的）。
+
+
+直接聊天：发送时使用 user:&lt;id&gt;（或 &lt;@id&gt; 提及）；所有对话都进入共享的 main 会话。纯数字 ID 是模糊的，会被拒绝。
+服务器频道：发送时使用 channel:&lt;channelId&gt;。默认需要提及，可以按服务器或按频道设置。
+直接聊天：默认通过 channels.discord.dm.policy 进行安全保护（默认：&quot;pairing&quot;）。未知发送者会收到配对码（1 小时后过期）；通过 openclaw pairing approve discord &lt;code&gt; 批准。
+
+要保持旧的&quot;对任何人开放&quot;行为：设置 channels.discord.dm.policy=&quot;open&quot; 和 channels.discord.dm.allowFrom=[&quot;*&quot;]。
+要使用硬编码允许列表：设置 channels.discord.dm.policy=&quot;allowlist&quot; 并在 channels.discord.dm.allowFrom 中列出发送者。
+要忽略所有私信：设置 channels.discord.dm.enabled=false 或 channels.discord.dm.policy=&quot;disabled&quot;。
+
+
+群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。
+可选服务器规则：设置 channels.discord.guilds，以服务器 ID（首选）或 slug 为键，并包含每个频道的规则。
+可选原生命令：commands.native 默认为 &quot;auto&quot;（Discord/Telegram 开启，Slack 关闭）。使用 channels.discord.commands.native: true|false|&quot;auto&quot; 覆盖；false 会清除之前注册的命令。文本命令由 commands.text 控制，必须作为独立的 /... 消息发送。使用 commands.useAccessGroups: false 可跳过命令的访问组检查。
+
+完整命令列表 &#43; 配置：斜杠命令
+
+
+可选服务器上下文历史：设置 channels.discord.historyLimit（默认 20，回退到 messages.groupChat.historyLimit）以在回复提及时包含最近 N 条服务器消息作为上下文。设置 0 禁用。
+表情反应：智能体可以通过 discord 工具触发表情反应（受 channels.discord.actions.* 控制）。
+
+表情反应移除语义：参见 /tools/reactions。
+discord 工具仅在当前渠道是 Discord 时暴露。
+
+
+原生命令使用隔离的会话键（agent:&lt;agentId&gt;:discord:slash:&lt;userId&gt;）而不是共享的 main 会话。
+
+注意：名称 → ID 解析使用服务器成员搜索，需要 Server Members Intent；如果机器人无法搜索成员，请使用 ID 或 &lt;@id&gt; 提及。
+注意：Slug 为小写，空格替换为 -。频道名称的 slug 不包含前导 #。
+注意：服务器上下文 [from:] 行包含 author.tag &#43; id，便于进行可提及的回复。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/discord/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/discord/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/discord/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Discord（Bot API）">
+  <meta property="og:description" content="状态：已支持通过官方 Discord 机器人网关进行私信和服务器文字频道通信。
+快速设置（新手） 创建 Discord 机器人并复制机器人令牌。 在 Discord 应用设置中启用 Message Content Intent（如果你计划使用允许列表或名称查找，还需启用 Server Members Intent）。 为 OpenClaw 设置令牌： 环境变量：DISCORD_BOT_TOKEN=... 或配置：channels.discord.token: &#34;...&#34;。 如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。 使用消息权限邀请机器人到你的服务器（如果你只想使用私信，可以创建一个私人服务器）。 启动 Gateway 网关。 私信访问默认采用配对模式；首次联系时需批准配对码。 最小配置：
+{ channels: { discord: { enabled: true, token: &#34;YOUR_BOT_TOKEN&#34;, }, }, } 目标 通过 Discord 私信或服务器频道与 OpenClaw 对话。 直接聊天会合并到智能体的主会话（默认 agent:main:main）；服务器频道保持隔离为 agent:&lt;agentId&gt;:discord:channel:&lt;channelId&gt;（显示名称使用 discord:&lt;guildSlug&gt;#&lt;channelSlug&gt;）。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 保持路由确定性：回复始终返回到消息来源的渠道。 工作原理 创建 Discord 应用程序 → Bot，启用你需要的意图（私信 &#43; 服务器消息 &#43; 消息内容），并获取机器人令牌。 使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。 使用 channels.discord.token 配置 OpenClaw（或使用 DISCORD_BOT_TOKEN 作为回退）。 运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 channels.discord.enabled 不为 false 时，它会自动启动 Discord 渠道。 如果你更喜欢使用环境变量，设置 DISCORD_BOT_TOKEN（配置块是可选的）。 直接聊天：发送时使用 user:&lt;id&gt;（或 &lt;@id&gt; 提及）；所有对话都进入共享的 main 会话。纯数字 ID 是模糊的，会被拒绝。 服务器频道：发送时使用 channel:&lt;channelId&gt;。默认需要提及，可以按服务器或按频道设置。 直接聊天：默认通过 channels.discord.dm.policy 进行安全保护（默认：&#34;pairing&#34;）。未知发送者会收到配对码（1 小时后过期）；通过 openclaw pairing approve discord &lt;code&gt; 批准。 要保持旧的&#34;对任何人开放&#34;行为：设置 channels.discord.dm.policy=&#34;open&#34; 和 channels.discord.dm.allowFrom=[&#34;*&#34;]。 要使用硬编码允许列表：设置 channels.discord.dm.policy=&#34;allowlist&#34; 并在 channels.discord.dm.allowFrom 中列出发送者。 要忽略所有私信：设置 channels.discord.dm.enabled=false 或 channels.discord.dm.policy=&#34;disabled&#34;。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 可选服务器规则：设置 channels.discord.guilds，以服务器 ID（首选）或 slug 为键，并包含每个频道的规则。 可选原生命令：commands.native 默认为 &#34;auto&#34;（Discord/Telegram 开启，Slack 关闭）。使用 channels.discord.commands.native: true|false|&#34;auto&#34; 覆盖；false 会清除之前注册的命令。文本命令由 commands.text 控制，必须作为独立的 /... 消息发送。使用 commands.useAccessGroups: false 可跳过命令的访问组检查。 完整命令列表 &#43; 配置：斜杠命令 可选服务器上下文历史：设置 channels.discord.historyLimit（默认 20，回退到 messages.groupChat.historyLimit）以在回复提及时包含最近 N 条服务器消息作为上下文。设置 0 禁用。 表情反应：智能体可以通过 discord 工具触发表情反应（受 channels.discord.actions.* 控制）。 表情反应移除语义：参见 /tools/reactions。 discord 工具仅在当前渠道是 Discord 时暴露。 原生命令使用隔离的会话键（agent:&lt;agentId&gt;:discord:slash:&lt;userId&gt;）而不是共享的 main 会话。 注意：名称 → ID 解析使用服务器成员搜索，需要 Server Members Intent；如果机器人无法搜索成员，请使用 ID 或 &lt;@id&gt; 提及。 注意：Slug 为小写，空格替换为 -。频道名称的 slug 不包含前导 #。 注意：服务器上下文 [from:] 行包含 author.tag &#43; id，便于进行可提及的回复。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Discord（Bot API）">
+<meta name="twitter:description" content="状态：已支持通过官方 Discord 机器人网关进行私信和服务器文字频道通信。
+快速设置（新手）
+
+创建 Discord 机器人并复制机器人令牌。
+在 Discord 应用设置中启用 Message Content Intent（如果你计划使用允许列表或名称查找，还需启用 Server Members Intent）。
+为 OpenClaw 设置令牌：
+
+环境变量：DISCORD_BOT_TOKEN=...
+或配置：channels.discord.token: &quot;...&quot;。
+如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。
+
+
+使用消息权限邀请机器人到你的服务器（如果你只想使用私信，可以创建一个私人服务器）。
+启动 Gateway 网关。
+私信访问默认采用配对模式；首次联系时需批准配对码。
+
+最小配置：
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_BOT_TOKEN&#34;,
+    },
+  },
+}
+目标
+
+通过 Discord 私信或服务器频道与 OpenClaw 对话。
+直接聊天会合并到智能体的主会话（默认 agent:main:main）；服务器频道保持隔离为 agent:&lt;agentId&gt;:discord:channel:&lt;channelId&gt;（显示名称使用 discord:&lt;guildSlug&gt;#&lt;channelSlug&gt;）。
+群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。
+保持路由确定性：回复始终返回到消息来源的渠道。
+
+工作原理
+
+创建 Discord 应用程序 → Bot，启用你需要的意图（私信 &#43; 服务器消息 &#43; 消息内容），并获取机器人令牌。
+使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。
+使用 channels.discord.token 配置 OpenClaw（或使用 DISCORD_BOT_TOKEN 作为回退）。
+运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 channels.discord.enabled 不为 false 时，它会自动启动 Discord 渠道。
+
+如果你更喜欢使用环境变量，设置 DISCORD_BOT_TOKEN（配置块是可选的）。
+
+
+直接聊天：发送时使用 user:&lt;id&gt;（或 &lt;@id&gt; 提及）；所有对话都进入共享的 main 会话。纯数字 ID 是模糊的，会被拒绝。
+服务器频道：发送时使用 channel:&lt;channelId&gt;。默认需要提及，可以按服务器或按频道设置。
+直接聊天：默认通过 channels.discord.dm.policy 进行安全保护（默认：&quot;pairing&quot;）。未知发送者会收到配对码（1 小时后过期）；通过 openclaw pairing approve discord &lt;code&gt; 批准。
+
+要保持旧的&quot;对任何人开放&quot;行为：设置 channels.discord.dm.policy=&quot;open&quot; 和 channels.discord.dm.allowFrom=[&quot;*&quot;]。
+要使用硬编码允许列表：设置 channels.discord.dm.policy=&quot;allowlist&quot; 并在 channels.discord.dm.allowFrom 中列出发送者。
+要忽略所有私信：设置 channels.discord.dm.enabled=false 或 channels.discord.dm.policy=&quot;disabled&quot;。
+
+
+群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。
+可选服务器规则：设置 channels.discord.guilds，以服务器 ID（首选）或 slug 为键，并包含每个频道的规则。
+可选原生命令：commands.native 默认为 &quot;auto&quot;（Discord/Telegram 开启，Slack 关闭）。使用 channels.discord.commands.native: true|false|&quot;auto&quot; 覆盖；false 会清除之前注册的命令。文本命令由 commands.text 控制，必须作为独立的 /... 消息发送。使用 commands.useAccessGroups: false 可跳过命令的访问组检查。
+
+完整命令列表 &#43; 配置：斜杠命令
+
+
+可选服务器上下文历史：设置 channels.discord.historyLimit（默认 20，回退到 messages.groupChat.historyLimit）以在回复提及时包含最近 N 条服务器消息作为上下文。设置 0 禁用。
+表情反应：智能体可以通过 discord 工具触发表情反应（受 channels.discord.actions.* 控制）。
+
+表情反应移除语义：参见 /tools/reactions。
+discord 工具仅在当前渠道是 Discord 时暴露。
+
+
+原生命令使用隔离的会话键（agent:&lt;agentId&gt;:discord:slash:&lt;userId&gt;）而不是共享的 main 会话。
+
+注意：名称 → ID 解析使用服务器成员搜索，需要 Server Members Intent；如果机器人无法搜索成员，请使用 ID 或 &lt;@id&gt; 提及。
+注意：Slug 为小写，空格替换为 -。频道名称的 slug 不包含前导 #。
+注意：服务器上下文 [from:] 行包含 author.tag &#43; id，便于进行可提及的回复。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Discord（Bot API）",
+      "item": "/openclaw/channels/discord/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Discord（Bot API）",
+  "name": "Discord（Bot API）",
+  "description": "状态：已支持通过官方 Discord 机器人网关进行私信和服务器文字频道通信。\n快速设置（新手） 创建 Discord 机器人并复制机器人令牌。 在 Discord 应用设置中启用 Message Content Intent（如果你计划使用允许列表或名称查找，还需启用 Server Members Intent）。 为 OpenClaw 设置令牌： 环境变量：DISCORD_BOT_TOKEN=... 或配置：channels.discord.token: \u0026quot;...\u0026quot;。 如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。 使用消息权限邀请机器人到你的服务器（如果你只想使用私信，可以创建一个私人服务器）。 启动 Gateway 网关。 私信访问默认采用配对模式；首次联系时需批准配对码。 最小配置：\n{ channels: { discord: { enabled: true, token: \u0026#34;YOUR_BOT_TOKEN\u0026#34;, }, }, } 目标 通过 Discord 私信或服务器频道与 OpenClaw 对话。 直接聊天会合并到智能体的主会话（默认 agent:main:main）；服务器频道保持隔离为 agent:\u0026lt;agentId\u0026gt;:discord:channel:\u0026lt;channelId\u0026gt;（显示名称使用 discord:\u0026lt;guildSlug\u0026gt;#\u0026lt;channelSlug\u0026gt;）。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 保持路由确定性：回复始终返回到消息来源的渠道。 工作原理 创建 Discord 应用程序 → Bot，启用你需要的意图（私信 + 服务器消息 + 消息内容），并获取机器人令牌。 使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。 使用 channels.discord.token 配置 OpenClaw（或使用 DISCORD_BOT_TOKEN 作为回退）。 运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 channels.discord.enabled 不为 false 时，它会自动启动 Discord 渠道。 如果你更喜欢使用环境变量，设置 DISCORD_BOT_TOKEN（配置块是可选的）。 直接聊天：发送时使用 user:\u0026lt;id\u0026gt;（或 \u0026lt;@id\u0026gt; 提及）；所有对话都进入共享的 main 会话。纯数字 ID 是模糊的，会被拒绝。 服务器频道：发送时使用 channel:\u0026lt;channelId\u0026gt;。默认需要提及，可以按服务器或按频道设置。 直接聊天：默认通过 channels.discord.dm.policy 进行安全保护（默认：\u0026quot;pairing\u0026quot;）。未知发送者会收到配对码（1 小时后过期）；通过 openclaw pairing approve discord \u0026lt;code\u0026gt; 批准。 要保持旧的\u0026quot;对任何人开放\u0026quot;行为：设置 channels.discord.dm.policy=\u0026quot;open\u0026quot; 和 channels.discord.dm.allowFrom=[\u0026quot;*\u0026quot;]。 要使用硬编码允许列表：设置 channels.discord.dm.policy=\u0026quot;allowlist\u0026quot; 并在 channels.discord.dm.allowFrom 中列出发送者。 要忽略所有私信：设置 channels.discord.dm.enabled=false 或 channels.discord.dm.policy=\u0026quot;disabled\u0026quot;。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 可选服务器规则：设置 channels.discord.guilds，以服务器 ID（首选）或 slug 为键，并包含每个频道的规则。 可选原生命令：commands.native 默认为 \u0026quot;auto\u0026quot;（Discord/Telegram 开启，Slack 关闭）。使用 channels.discord.commands.native: true|false|\u0026quot;auto\u0026quot; 覆盖；false 会清除之前注册的命令。文本命令由 commands.text 控制，必须作为独立的 /... 消息发送。使用 commands.useAccessGroups: false 可跳过命令的访问组检查。 完整命令列表 + 配置：斜杠命令 可选服务器上下文历史：设置 channels.discord.historyLimit（默认 20，回退到 messages.groupChat.historyLimit）以在回复提及时包含最近 N 条服务器消息作为上下文。设置 0 禁用。 表情反应：智能体可以通过 discord 工具触发表情反应（受 channels.discord.actions.* 控制）。 表情反应移除语义：参见 /tools/reactions。 discord 工具仅在当前渠道是 Discord 时暴露。 原生命令使用隔离的会话键（agent:\u0026lt;agentId\u0026gt;:discord:slash:\u0026lt;userId\u0026gt;）而不是共享的 main 会话。 注意：名称 → ID 解析使用服务器成员搜索，需要 Server Members Intent；如果机器人无法搜索成员，请使用 ID 或 \u0026lt;@id\u0026gt; 提及。 注意：Slug 为小写，空格替换为 -。频道名称的 slug 不包含前导 #。 注意：服务器上下文 [from:] 行包含 author.tag + id，便于进行可提及的回复。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态：已支持通过官方 Discord 机器人网关进行私信和服务器文字频道通信。\n快速设置（新手） 创建 Discord 机器人并复制机器人令牌。 在 Discord 应用设置中启用 Message Content Intent（如果你计划使用允许列表或名称查找，还需启用 Server Members Intent）。 为 OpenClaw 设置令牌： 环境变量：DISCORD_BOT_TOKEN=... 或配置：channels.discord.token: \"...\"。 如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。 使用消息权限邀请机器人到你的服务器（如果你只想使用私信，可以创建一个私人服务器）。 启动 Gateway 网关。 私信访问默认采用配对模式；首次联系时需批准配对码。 最小配置：\n{ channels: { discord: { enabled: true, token: \"YOUR_BOT_TOKEN\", }, }, } 目标 通过 Discord 私信或服务器频道与 OpenClaw 对话。 直接聊天会合并到智能体的主会话（默认 agent:main:main）；服务器频道保持隔离为 agent::discord:channel:（显示名称使用 discord:#）。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 保持路由确定性：回复始终返回到消息来源的渠道。 工作原理 创建 Discord 应用程序 → Bot，启用你需要的意图（私信 + 服务器消息 + 消息内容），并获取机器人令牌。 使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。 使用 channels.discord.token 配置 OpenClaw（或使用 DISCORD_BOT_TOKEN 作为回退）。 运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 channels.discord.enabled 不为 false 时，它会自动启动 Discord 渠道。 如果你更喜欢使用环境变量，设置 DISCORD_BOT_TOKEN（配置块是可选的）。 直接聊天：发送时使用 user:（或 \u003c@id\u003e 提及）；所有对话都进入共享的 main 会话。纯数字 ID 是模糊的，会被拒绝。 服务器频道：发送时使用 channel:。默认需要提及，可以按服务器或按频道设置。 直接聊天：默认通过 channels.discord.dm.policy 进行安全保护（默认：\"pairing\"）。未知发送者会收到配对码（1 小时后过期）；通过 openclaw pairing approve discord 批准。 要保持旧的\"对任何人开放\"行为：设置 channels.discord.dm.policy=\"open\" 和 channels.discord.dm.allowFrom=[\"*\"]。 要使用硬编码允许列表：设置 channels.discord.dm.policy=\"allowlist\" 并在 channels.discord.dm.allowFrom 中列出发送者。 要忽略所有私信：设置 channels.discord.dm.enabled=false 或 channels.discord.dm.policy=\"disabled\"。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 可选服务器规则：设置 channels.discord.guilds，以服务器 ID（首选）或 slug 为键，并包含每个频道的规则。 可选原生命令：commands.native 默认为 \"auto\"（Discord/Telegram 开启，Slack 关闭）。使用 channels.discord.commands.native: true|false|\"auto\" 覆盖；false 会清除之前注册的命令。文本命令由 commands.text 控制，必须作为独立的 /... 消息发送。使用 commands.useAccessGroups: false 可跳过命令的访问组检查。 完整命令列表 + 配置：斜杠命令 可选服务器上下文历史：设置 channels.discord.historyLimit（默认 20，回退到 messages.groupChat.historyLimit）以在回复提及时包含最近 N 条服务器消息作为上下文。设置 0 禁用。 表情反应：智能体可以通过 discord 工具触发表情反应（受 channels.discord.actions.* 控制）。 表情反应移除语义：参见 /tools/reactions。 discord 工具仅在当前渠道是 Discord 时暴露。 原生命令使用隔离的会话键（agent::discord:slash:）而不是共享的 main 会话。 注意：名称 → ID 解析使用服务器成员搜索，需要 Server Members Intent；如果机器人无法搜索成员，请使用 ID 或 \u003c@id\u003e 提及。 注意：Slug 为小写，空格替换为 -。频道名称的 slug 不包含前导 #。 注意：服务器上下文 [from:] 行包含 author.tag + id，便于进行可提及的回复。\n配置写入 默认情况下，允许 Discord 写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。\n禁用方式：\n{ channels: { discord: { configWrites: false } }, } 如何创建自己的机器人 这是在服务器（guild）频道（如 #help）中运行 OpenClaw 的\"Discord 开发者门户\"设置。\n1）创建 Discord 应用 + 机器人用户 Discord 开发者门户 → Applications → New Application 在你的应用中： Bot → Add Bot 复制 Bot Token（这是你放入 DISCORD_BOT_TOKEN 的内容） 2）启用 OpenClaw 需要的网关意图 Discord 会阻止\"特权意图\"，除非你明确启用它们。\n在 Bot → Privileged Gateway Intents 中启用：\nMessage Content Intent（在大多数服务器中读取消息文本所必需；没有它你会看到\"Used disallowed intents\"或机器人会连接但不响应消息） Server Members Intent（推荐；服务器中的某些成员/用户查找和允许列表匹配需要） 你通常不需要 Presence Intent。\n3）生成邀请 URL（OAuth2 URL Generator） 在你的应用中：OAuth2 → URL Generator\nScopes\n✅ bot ✅ applications.commands（原生命令所需） Bot Permissions（最小基线）\n✅ View Channels ✅ Send Messages ✅ Read Message History ✅ Embed Links ✅ Attach Files ✅ Add Reactions（可选但推荐） ✅ Use External Emojis / Stickers（可选；仅当你需要时） 除非你在调试并完全信任机器人，否则避免使用 Administrator。\n复制生成的 URL，打开它，选择你的服务器，然后安装机器人。\n4）获取 ID（服务器/用户/频道） Discord 到处使用数字 ID；OpenClaw 配置优先使用 ID。\nDiscord（桌面/网页）→ 用户设置 → 高级 → 启用 开发者模式 右键点击： 服务器名称 → 复制服务器 ID（服务器 ID） 频道（例如 #help）→ 复制频道 ID 你的用户 → 复制用户 ID 5）配置 OpenClaw 令牌 通过环境变量设置机器人令牌（服务器上推荐）：\nDISCORD_BOT_TOKEN=... 或通过配置：\n{ channels: { discord: { enabled: true, token: \"YOUR_BOT_TOKEN\", }, }, } 多账户支持：使用 channels.discord.accounts，每个账户有自己的令牌和可选的 name。参见 gateway/configuration 了解通用模式。\n允许列表 + 频道路由 示例\"单服务器，只允许我，只允许 #help\"：\n{ channels: { discord: { enabled: true, dm: { enabled: false }, guilds: { YOUR_GUILD_ID: { users: [\"YOUR_USER_ID\"], requireMention: true, channels: { help: { allow: true, requireMention: true }, }, }, }, retry: { attempts: 3, minDelayMs: 500, maxDelayMs: 30000, jitter: 0.1, }, }, }, } 注意：\nrequireMention: true 意味着机器人只在被提及时回复（推荐用于共享频道）。 agents.list[].groupChat.mentionPatterns（或 messages.groupChat.mentionPatterns）对于服务器消息也算作提及。 多智能体覆盖：在 agents.list[].groupChat.mentionPatterns 上设置每个智能体的模式。 如果存在 channels，任何未列出的频道默认被拒绝。 使用 \"*\" 频道条目在所有频道应用默认值；显式频道条目覆盖通配符。 话题继承父频道配置（允许列表、requireMention、Skills、提示词等），除非你显式添加话题频道 ID。 机器人发送的消息默认被忽略；设置 channels.discord.allowBots=true 允许它们（自己的消息仍被过滤）。 警告：如果你允许回复其他机器人（channels.discord.allowBots=true），请使用 requireMention、channels.discord.guilds.*.channels..users 允许列表和/或在 AGENTS.md 和 SOUL.md 中设置明确的防护措施来防止机器人之间的回复循环。 6）验证是否工作 启动 Gateway 网关。 在你的服务器频道中发送：@Krill hello（或你的机器人名称）。 如果没有反应：查看下面的故障排除。 故障排除 首先：运行 openclaw doctor 和 openclaw channels status --probe（可操作的警告 + 快速审计）。 “Used disallowed intents”：在开发者门户中启用 Message Content Intent（可能还需要 Server Members Intent），然后重启 Gateway 网关。 机器人连接但从不在服务器频道回复： 缺少 Message Content Intent，或 机器人缺少频道权限（View/Send/Read History），或 你的配置需要提及但你没有提及它，或 你的服务器/频道允许列表拒绝了该频道/用户。 requireMention: false 但仍然没有回复： channels.discord.groupPolicy 默认为 allowlist；将其设置为 \"open\" 或在 channels.discord.guilds 下添加服务器条目（可选择在 channels.discord.guilds..channels 下列出频道以进行限制）。 如果你只设置了 DISCORD_BOT_TOKEN 而从未创建 channels.discord 部分，运行时会将 groupPolicy 默认为 open。添加 channels.discord.groupPolicy、channels.defaults.groupPolicy 或服务器/频道允许列表来锁定它。 requireMention 必须位于 channels.discord.guilds（或特定频道）下。顶层的 channels.discord.requireMention 会被忽略。 权限审计（channels status --probe）只检查数字频道 ID。如果你使用 slug/名称作为 channels.discord.guilds.*.channels 键，审计无法验证权限。 私信不工作：channels.discord.dm.enabled=false、channels.discord.dm.policy=\"disabled\"，或者你尚未被批准（channels.discord.dm.policy=\"pairing\"）。 Discord 中的执行审批：Discord 支持私信中执行审批的按钮 UI（允许一次 / 始终允许 / 拒绝）。/approve ... 仅用于转发的审批，不会解析 Discord 的按钮提示。如果你看到 ❌ Failed to submit approval: Error: unknown approval id 或 UI 从未出现，请检查： 你的配置中有 channels.discord.execApprovals.enabled: true。 你的 Discord 用户 ID 在 channels.discord.execApprovals.approvers 中列出（UI 仅发送给审批者）。 使用私信提示中的按钮（Allow once、Always allow、Deny）。 参见执行审批和斜杠命令了解更广泛的审批和命令流程。 功能和限制 支持私信和服务器文字频道（话题被视为独立频道；不支持语音）。 打字指示器尽力发送；消息分块使用 channels.discord.textChunkLimit（默认 2000），并按行数分割长回复（channels.discord.maxLinesPerMessage，默认 17）。 可选换行分块：设置 channels.discord.chunkMode=\"newline\" 以在空行（段落边界）处分割，然后再进行长度分块。 支持文件上传，最大 channels.discord.mediaMaxMb（默认 8 MB）。 默认服务器回复需要提及，以避免嘈杂的机器人。 当消息引用另一条消息时，会注入回复上下文（引用内容 + ID）。 原生回复线程默认关闭；使用 channels.discord.replyToMode 和回复标签启用。 重试策略 出站 Discord API 调用在速率限制（429）时使用 Discord retry_after（如果可用）进行重试，采用指数退避和抖动。通过 channels.discord.retry 配置。参见重试策略。\n配置 { channels: { discord: { enabled: true, token: \"abc.123\", groupPolicy: \"allowlist\", guilds: { \"*\": { channels: { general: { allow: true }, }, }, }, mediaMaxMb: 8, actions: { reactions: true, stickers: true, emojiUploads: true, stickerUploads: true, polls: true, permissions: true, messages: true, threads: true, pins: true, search: true, memberInfo: true, roleInfo: true, roles: false, channelInfo: true, channels: true, voiceStatus: true, events: true, moderation: false, }, replyToMode: \"off\", dm: { enabled: true, policy: \"pairing\", // pairing | allowlist | open | disabled allowFrom: [\"123456789012345678\", \"steipete\"], groupEnabled: false, groupChannels: [\"openclaw-dm\"], }, guilds: { \"*\": { requireMention: true }, \"123456789012345678\": { slug: \"friends-of-openclaw\", requireMention: false, reactionNotifications: \"own\", users: [\"987654321098765432\", \"steipete\"], channels: { general: { allow: true }, help: { allow: true, requireMention: true, users: [\"987654321098765432\"], skills: [\"search\", \"docs\"], systemPrompt: \"Keep answers short.\", }, }, }, }, }, }, } 确认表情反应通过 messages.ackReaction + messages.ackReactionScope 全局控制。使用 messages.removeAckAfterReply 在机器人回复后清除确认表情反应。\ndm.enabled：设置 false 忽略所有私信（默认 true）。 dm.policy：私信访问控制（推荐 pairing）。\"open\" 需要 dm.allowFrom=[\"*\"]。 dm.allowFrom：私信允许列表（用户 ID 或名称）。用于 dm.policy=\"allowlist\" 和 dm.policy=\"open\" 验证。向导接受用户名，并在机器人可以搜索成员时将其解析为 ID。 dm.groupEnabled：启用群组私信（默认 false）。 dm.groupChannels：群组私信频道 ID 或 slug 的可选允许列表。 groupPolicy：控制服务器频道处理（open|disabled|allowlist）；allowlist 需要频道允许列表。 guilds：按服务器规则，以服务器 ID（首选）或 slug 为键。 guilds.\"*\"：当没有显式条目时应用的默认每服务器设置。 guilds..slug：用于显示名称的可选友好 slug。 guilds..users：可选的每服务器用户允许列表（ID 或名称）。 guilds..tools：可选的每服务器工具策略覆盖（allow/deny/alsoAllow），在频道覆盖缺失时使用。 guilds..toolsBySender：服务器级别的可选每发送者工具策略覆盖（在频道覆盖缺失时应用；支持 \"*\" 通配符）。 guilds..channels..allow：当 groupPolicy=\"allowlist\" 时允许/拒绝频道。 guilds..channels..requireMention：频道的提及限制。 guilds..channels..tools：可选的每频道工具策略覆盖（allow/deny/alsoAllow）。 guilds..channels..toolsBySender：频道内的可选每发送者工具策略覆盖（支持 \"*\" 通配符）。 guilds..channels..users：可选的每频道用户允许列表。 guilds..channels..skills：Skills 过滤器（省略 = 所有 Skills，空 = 无）。 guilds..channels..systemPrompt：频道的额外系统提示词（与频道主题组合）。 guilds..channels..enabled：设置 false 禁用频道。 guilds..channels：频道规则（键为频道 slug 或 ID）。 guilds..requireMention：每服务器提及要求（可按频道覆盖）。 guilds..reactionNotifications：表情反应系统事件模式（off、own、all、allowlist）。 textChunkLimit：出站文本块大小（字符）。默认：2000。 chunkMode：length（默认）仅在超过 textChunkLimit 时分割；newline 在空行（段落边界）处分割，然后再进行长度分块。 maxLinesPerMessage：每条消息的软最大行数。默认：17。 mediaMaxMb：限制保存到磁盘的入站媒体大小。 historyLimit：回复提及时作为上下文包含的最近服务器消息数量（默认 20；回退到 messages.groupChat.historyLimit；0 禁用）。 dmHistoryLimit：私信历史限制（用户轮次）。每用户覆盖：dms[\"\"].historyLimit。 retry：出站 Discord API 调用的重试策略（attempts、minDelayMs、maxDelayMs、jitter）。 pluralkit：解析 PluralKit 代理消息，使系统成员显示为不同的发送者。 actions：每操作工具门控；省略允许所有（设置 false 禁用）。 reactions（涵盖表情反应 + 读取表情反应） stickers、emojiUploads、stickerUploads、polls、permissions、messages、threads、pins、search memberInfo、roleInfo、channelInfo、voiceStatus、events channels（创建/编辑/删除频道 + 类别 + 权限） roles（角色添加/移除，默认 false） moderation（超时/踢出/封禁，默认 false） execApprovals：Discord 专用执行审批私信（按钮 UI）。支持 enabled、approvers、agentFilter、sessionFilter。 表情反应通知使用 guilds..reactionNotifications：\noff：无表情反应事件。 own：机器人自己消息上的表情反应（默认）。 all：所有消息上的所有表情反应。 allowlist：来自 guilds..users 的用户在所有消息上的表情反应（空列表禁用）。 PluralKit（PK）支持 启用 PK 查找，以便代理消息解析到底层系统 + 成员。启用后，OpenClaw 使用成员身份进行允许列表匹配，并将发送者标记为 Member (PK:System) 以避免意外的 Discord 提及。\n{ channels: { discord: { pluralkit: { enabled: true, token: \"pk_live_...\", // 可选；私有系统需要 }, }, }, } 允许列表注意事项（启用 PK 时）：\n在 dm.allowFrom、guilds..users 或每频道 users 中使用 pk:。 成员显示名称也按名称/slug 匹配。 查找使用原始 Discord 消息 ID（代理前的消息），因此 PK API 只在其 30 分钟窗口内解析它。 如果 PK 查找失败（例如，没有令牌的私有系统），代理消息会被视为机器人消息并被丢弃，除非 channels.discord.allowBots=true。 工具操作默认值 操作组 默认 说明 reactions 启用 表情反应 + 列出表情反应 + emojiList stickers 启用 发送贴纸 emojiUploads 启用 上传表情 stickerUploads 启用 上传贴纸 polls 启用 创建投票 permissions 启用 频道权限快照 messages 启用 读取/发送/编辑/删除 threads 启用 创建/列出/回复 pins 启用 置顶/取消置顶/列出 search 启用 消息搜索（预览功能） memberInfo 启用 成员信息 roleInfo 启用 角色列表 channelInfo 启用 频道信息 + 列表 channels 启用 频道/类别管理 voiceStatus 启用 语音状态查询 events 启用 列出/创建预定事件 roles 禁用 角色添加/移除 moderation 禁用 超时/踢出/封禁 replyToMode：off（默认）、first 或 all。仅在模型包含回复标签时适用。 回复标签 要请求线程回复，模型可以在其输出中包含一个标签：\n[[reply_to_current]] — 回复触发的 Discord 消息。 [[reply_to:]] — 回复上下文/历史中的特定消息 ID。当前消息 ID 作为 [message_id: …] 附加到提示词；历史条目已包含 ID。 行为由 channels.discord.replyToMode 控制：\noff：忽略标签。 first：只有第一个出站块/附件是回复。 all：每个出站块/附件都是回复。 允许列表匹配注意事项：\nallowFrom/users/groupChannels 接受 ID、名称、标签或像 \u003c@id\u003e 这样的提及。 支持 discord:/user:（用户）和 channel:（群组私信）等前缀。 使用 * 允许任何发送者/频道。 当存在 guilds..channels 时，未列出的频道默认被拒绝。 当省略 guilds..channels 时，允许列表中服务器的所有频道都被允许。 要不允许任何频道，设置 channels.discord.groupPolicy: \"disabled\"（或保持空允许列表）。 配置向导接受 Guild/Channel 名称（公开 + 私有）并在可能时将其解析为 ID。 启动时，OpenClaw 将允许列表中的频道/用户名称解析为 ID（当机器人可以搜索成员时）并记录映射；未解析的条目保持原样。 原生命令注意事项：\n注册的命令镜像 OpenClaw 的聊天命令。 原生命令遵循与私信/服务器消息相同的允许列表（channels.discord.dm.allowFrom、channels.discord.guilds、每频道规则）。 斜杠命令可能在 Discord UI 中对未在允许列表中的用户仍然可见；OpenClaw 在执行时强制执行允许列表并回复\"未授权\"。 工具操作 智能体可以使用以下操作调用 discord：\nreact / reactions（添加或列出表情反应） sticker、poll、permissions readMessages、sendMessage、editMessage、deleteMessage 读取/搜索/置顶工具负载包含规范化的 timestampMs（UTC 纪元毫秒）和 timestampUtc 以及原始 Discord timestamp。 threadCreate、threadList、threadReply pinMessage、unpinMessage、listPins searchMessages、memberInfo、roleInfo、roleAdd、roleRemove、emojiList channelInfo、channelList、voiceStatus、eventList、eventCreate timeout、kick、ban Discord 消息 ID 在注入的上下文中显示（[discord message id: …] 和历史行），以便智能体可以定位它们。 表情可以是 unicode（例如 ✅）或自定义表情语法如 \u003c:party_blob:1234567890\u003e。\n安全与运维 像对待密码一样对待机器人令牌；在受监督的主机上优先使用 DISCORD_BOT_TOKEN 环境变量，或锁定配置文件权限。 只授予机器人所需的权限（通常是读取/发送消息）。 如果机器人卡住或受到速率限制，在确认没有其他进程拥有 Discord 会话后重启 Gateway 网关（openclaw gateway --force）。 ",
+  "wordCount" : "1061",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/discord/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Discord（Bot API）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%ae%be%e7%bd%ae%e6%96%b0%e6%89%8b" aria-label="快速设置（新手）">快速设置（新手）</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87" aria-label="目标">目标</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86" aria-label="工作原理">工作原理</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%86%99%e5%85%a5" aria-label="配置写入">配置写入</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e5%88%9b%e5%bb%ba%e8%87%aa%e5%b7%b1%e7%9a%84%e6%9c%ba%e5%99%a8%e4%ba%ba" aria-label="如何创建自己的机器人">如何创建自己的机器人</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%88%9b%e5%bb%ba-discord-%e5%ba%94%e7%94%a8--%e6%9c%ba%e5%99%a8%e4%ba%ba%e7%94%a8%e6%88%b7" aria-label="1）创建 Discord 应用 &#43; 机器人用户">1）创建 Discord 应用 + 机器人用户</a></li>
+                <li>
+                    <a href="#2%e5%90%af%e7%94%a8-openclaw-%e9%9c%80%e8%a6%81%e7%9a%84%e7%bd%91%e5%85%b3%e6%84%8f%e5%9b%be" aria-label="2）启用 OpenClaw 需要的网关意图">2）启用 OpenClaw 需要的网关意图</a></li>
+                <li>
+                    <a href="#3%e7%94%9f%e6%88%90%e9%82%80%e8%af%b7-urloauth2-url-generator" aria-label="3）生成邀请 URL（OAuth2 URL Generator）">3）生成邀请 URL（OAuth2 URL Generator）</a></li>
+                <li>
+                    <a href="#4%e8%8e%b7%e5%8f%96-id%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%94%a8%e6%88%b7%e9%a2%91%e9%81%93" aria-label="4）获取 ID（服务器/用户/频道）">4）获取 ID（服务器/用户/频道）</a></li>
+                <li>
+                    <a href="#5%e9%85%8d%e7%bd%ae-openclaw" aria-label="5）配置 OpenClaw">5）配置 OpenClaw</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%a4%e7%89%8c" aria-label="令牌">令牌</a></li>
+                <li>
+                    <a href="#%e5%85%81%e8%ae%b8%e5%88%97%e8%a1%a8--%e9%a2%91%e9%81%93%e8%b7%af%e7%94%b1" aria-label="允许列表 &#43; 频道路由">允许列表 + 频道路由</a></li></ul>
+                </li>
+                <li>
+                    <a href="#6%e9%aa%8c%e8%af%81%e6%98%af%e5%90%a6%e5%b7%a5%e4%bd%9c" aria-label="6）验证是否工作">6）验证是否工作</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd%e5%92%8c%e9%99%90%e5%88%b6" aria-label="功能和限制">功能和限制</a></li>
+                <li>
+                    <a href="#%e9%87%8d%e8%af%95%e7%ad%96%e7%95%a5" aria-label="重试策略">重试策略</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae" aria-label="配置">配置</a><ul>
+                        
+                <li>
+                    <a href="#pluralkitpk%e6%94%af%e6%8c%81" aria-label="PluralKit（PK）支持">PluralKit（PK）支持</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e6%93%8d%e4%bd%9c%e9%bb%98%e8%ae%a4%e5%80%bc" aria-label="工具操作默认值">工具操作默认值</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9e%e5%a4%8d%e6%a0%87%e7%ad%be" aria-label="回复标签">回复标签</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e6%93%8d%e4%bd%9c" aria-label="工具操作">工具操作</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e4%b8%8e%e8%bf%90%e7%bb%b4" aria-label="安全与运维">安全与运维</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>状态：已支持通过官方 Discord 机器人网关进行私信和服务器文字频道通信。</p>
+<h2 id="快速设置新手">快速设置（新手）<a hidden class="anchor" aria-hidden="true" href="#快速设置新手">#</a></h2>
+<ol>
+<li>创建 Discord 机器人并复制机器人令牌。</li>
+<li>在 Discord 应用设置中启用 <strong>Message Content Intent</strong>（如果你计划使用允许列表或名称查找，还需启用 <strong>Server Members Intent</strong>）。</li>
+<li>为 OpenClaw 设置令牌：
+<ul>
+<li>环境变量：<code>DISCORD_BOT_TOKEN=...</code></li>
+<li>或配置：<code>channels.discord.token: &quot;...&quot;</code>。</li>
+<li>如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。</li>
+</ul>
+</li>
+<li>使用消息权限邀请机器人到你的服务器（如果你只想使用私信，可以创建一个私人服务器）。</li>
+<li>启动 Gateway 网关。</li>
+<li>私信访问默认采用配对模式；首次联系时需批准配对码。</li>
+</ol>
+<p>最小配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_BOT_TOKEN&#34;,
+    },
+  },
+}
+</code></pre><h2 id="目标">目标<a hidden class="anchor" aria-hidden="true" href="#目标">#</a></h2>
+<ul>
+<li>通过 Discord 私信或服务器频道与 OpenClaw 对话。</li>
+<li>直接聊天会合并到智能体的主会话（默认 <code>agent:main:main</code>）；服务器频道保持隔离为 <code>agent:&lt;agentId&gt;:discord:channel:&lt;channelId&gt;</code>（显示名称使用 <code>discord:&lt;guildSlug&gt;#&lt;channelSlug&gt;</code>）。</li>
+<li>群组私信默认被忽略；通过 <code>channels.discord.dm.groupEnabled</code> 启用，并可选择通过 <code>channels.discord.dm.groupChannels</code> 进行限制。</li>
+<li>保持路由确定性：回复始终返回到消息来源的渠道。</li>
+</ul>
+<h2 id="工作原理">工作原理<a hidden class="anchor" aria-hidden="true" href="#工作原理">#</a></h2>
+<ol>
+<li>创建 Discord 应用程序 → Bot，启用你需要的意图（私信 + 服务器消息 + 消息内容），并获取机器人令牌。</li>
+<li>使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。</li>
+<li>使用 <code>channels.discord.token</code> 配置 OpenClaw（或使用 <code>DISCORD_BOT_TOKEN</code> 作为回退）。</li>
+<li>运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 <code>channels.discord.enabled</code> 不为 <code>false</code> 时，它会自动启动 Discord 渠道。
+<ul>
+<li>如果你更喜欢使用环境变量，设置 <code>DISCORD_BOT_TOKEN</code>（配置块是可选的）。</li>
+</ul>
+</li>
+<li>直接聊天：发送时使用 <code>user:&lt;id&gt;</code>（或 <code>&lt;@id&gt;</code> 提及）；所有对话都进入共享的 <code>main</code> 会话。纯数字 ID 是模糊的，会被拒绝。</li>
+<li>服务器频道：发送时使用 <code>channel:&lt;channelId&gt;</code>。默认需要提及，可以按服务器或按频道设置。</li>
+<li>直接聊天：默认通过 <code>channels.discord.dm.policy</code> 进行安全保护（默认：<code>&quot;pairing&quot;</code>）。未知发送者会收到配对码（1 小时后过期）；通过 <code>openclaw pairing approve discord &lt;code&gt;</code> 批准。
+<ul>
+<li>要保持旧的&quot;对任何人开放&quot;行为：设置 <code>channels.discord.dm.policy=&quot;open&quot;</code> 和 <code>channels.discord.dm.allowFrom=[&quot;*&quot;]</code>。</li>
+<li>要使用硬编码允许列表：设置 <code>channels.discord.dm.policy=&quot;allowlist&quot;</code> 并在 <code>channels.discord.dm.allowFrom</code> 中列出发送者。</li>
+<li>要忽略所有私信：设置 <code>channels.discord.dm.enabled=false</code> 或 <code>channels.discord.dm.policy=&quot;disabled&quot;</code>。</li>
+</ul>
+</li>
+<li>群组私信默认被忽略；通过 <code>channels.discord.dm.groupEnabled</code> 启用，并可选择通过 <code>channels.discord.dm.groupChannels</code> 进行限制。</li>
+<li>可选服务器规则：设置 <code>channels.discord.guilds</code>，以服务器 ID（首选）或 slug 为键，并包含每个频道的规则。</li>
+<li>可选原生命令：<code>commands.native</code> 默认为 <code>&quot;auto&quot;</code>（Discord/Telegram 开启，Slack 关闭）。使用 <code>channels.discord.commands.native: true|false|&quot;auto&quot;</code> 覆盖；<code>false</code> 会清除之前注册的命令。文本命令由 <code>commands.text</code> 控制，必须作为独立的 <code>/...</code> 消息发送。使用 <code>commands.useAccessGroups: false</code> 可跳过命令的访问组检查。
+<ul>
+<li>完整命令列表 + 配置：<a href="/tools/slash-commands">斜杠命令</a></li>
+</ul>
+</li>
+<li>可选服务器上下文历史：设置 <code>channels.discord.historyLimit</code>（默认 20，回退到 <code>messages.groupChat.historyLimit</code>）以在回复提及时包含最近 N 条服务器消息作为上下文。设置 <code>0</code> 禁用。</li>
+<li>表情反应：智能体可以通过 <code>discord</code> 工具触发表情反应（受 <code>channels.discord.actions.*</code> 控制）。
+<ul>
+<li>表情反应移除语义：参见 <a href="/tools/reactions">/tools/reactions</a>。</li>
+<li><code>discord</code> 工具仅在当前渠道是 Discord 时暴露。</li>
+</ul>
+</li>
+<li>原生命令使用隔离的会话键（<code>agent:&lt;agentId&gt;:discord:slash:&lt;userId&gt;</code>）而不是共享的 <code>main</code> 会话。</li>
+</ol>
+<p>注意：名称 → ID 解析使用服务器成员搜索，需要 Server Members Intent；如果机器人无法搜索成员，请使用 ID 或 <code>&lt;@id&gt;</code> 提及。
+注意：Slug 为小写，空格替换为 <code>-</code>。频道名称的 slug 不包含前导 <code>#</code>。
+注意：服务器上下文 <code>[from:]</code> 行包含 <code>author.tag</code> + <code>id</code>，便于进行可提及的回复。</p>
+<h2 id="配置写入">配置写入<a hidden class="anchor" aria-hidden="true" href="#配置写入">#</a></h2>
+<p>默认情况下，允许 Discord 写入由 <code>/config set|unset</code> 触发的配置更新（需要 <code>commands.config: true</code>）。</p>
+<p>禁用方式：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: { discord: { configWrites: false } },
+}
+</code></pre><h2 id="如何创建自己的机器人">如何创建自己的机器人<a hidden class="anchor" aria-hidden="true" href="#如何创建自己的机器人">#</a></h2>
+<p>这是在服务器（guild）频道（如 <code>#help</code>）中运行 OpenClaw 的&quot;Discord 开发者门户&quot;设置。</p>
+<h3 id="1创建-discord-应用--机器人用户">1）创建 Discord 应用 + 机器人用户<a hidden class="anchor" aria-hidden="true" href="#1创建-discord-应用--机器人用户">#</a></h3>
+<ol>
+<li>Discord 开发者门户 → <strong>Applications</strong> → <strong>New Application</strong></li>
+<li>在你的应用中：
+<ul>
+<li><strong>Bot</strong> → <strong>Add Bot</strong></li>
+<li>复制 <strong>Bot Token</strong>（这是你放入 <code>DISCORD_BOT_TOKEN</code> 的内容）</li>
+</ul>
+</li>
+</ol>
+<h3 id="2启用-openclaw-需要的网关意图">2）启用 OpenClaw 需要的网关意图<a hidden class="anchor" aria-hidden="true" href="#2启用-openclaw-需要的网关意图">#</a></h3>
+<p>Discord 会阻止&quot;特权意图&quot;，除非你明确启用它们。</p>
+<p>在 <strong>Bot</strong> → <strong>Privileged Gateway Intents</strong> 中启用：</p>
+<ul>
+<li><strong>Message Content Intent</strong>（在大多数服务器中读取消息文本所必需；没有它你会看到&quot;Used disallowed intents&quot;或机器人会连接但不响应消息）</li>
+<li><strong>Server Members Intent</strong>（推荐；服务器中的某些成员/用户查找和允许列表匹配需要）</li>
+</ul>
+<p>你通常<strong>不需要</strong> <strong>Presence Intent</strong>。</p>
+<h3 id="3生成邀请-urloauth2-url-generator">3）生成邀请 URL（OAuth2 URL Generator）<a hidden class="anchor" aria-hidden="true" href="#3生成邀请-urloauth2-url-generator">#</a></h3>
+<p>在你的应用中：<strong>OAuth2</strong> → <strong>URL Generator</strong></p>
+<p><strong>Scopes</strong></p>
+<ul>
+<li>✅ <code>bot</code></li>
+<li>✅ <code>applications.commands</code>（原生命令所需）</li>
+</ul>
+<p><strong>Bot Permissions</strong>（最小基线）</p>
+<ul>
+<li>✅ View Channels</li>
+<li>✅ Send Messages</li>
+<li>✅ Read Message History</li>
+<li>✅ Embed Links</li>
+<li>✅ Attach Files</li>
+<li>✅ Add Reactions（可选但推荐）</li>
+<li>✅ Use External Emojis / Stickers（可选；仅当你需要时）</li>
+</ul>
+<p>除非你在调试并完全信任机器人，否则避免使用 <strong>Administrator</strong>。</p>
+<p>复制生成的 URL，打开它，选择你的服务器，然后安装机器人。</p>
+<h3 id="4获取-id服务器用户频道">4）获取 ID（服务器/用户/频道）<a hidden class="anchor" aria-hidden="true" href="#4获取-id服务器用户频道">#</a></h3>
+<p>Discord 到处使用数字 ID；OpenClaw 配置优先使用 ID。</p>
+<ol>
+<li>Discord（桌面/网页）→ <strong>用户设置</strong> → <strong>高级</strong> → 启用 <strong>开发者模式</strong></li>
+<li>右键点击：
+<ul>
+<li>服务器名称 → <strong>复制服务器 ID</strong>（服务器 ID）</li>
+<li>频道（例如 <code>#help</code>）→ <strong>复制频道 ID</strong></li>
+<li>你的用户 → <strong>复制用户 ID</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="5配置-openclaw">5）配置 OpenClaw<a hidden class="anchor" aria-hidden="true" href="#5配置-openclaw">#</a></h3>
+<h4 id="令牌">令牌<a hidden class="anchor" aria-hidden="true" href="#令牌">#</a></h4>
+<p>通过环境变量设置机器人令牌（服务器上推荐）：</p>
+<ul>
+<li><code>DISCORD_BOT_TOKEN=...</code></li>
+</ul>
+<p>或通过配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_BOT_TOKEN&#34;,
+    },
+  },
+}
+</code></pre><p>多账户支持：使用 <code>channels.discord.accounts</code>，每个账户有自己的令牌和可选的 <code>name</code>。参见 <a href="/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts"><code>gateway/configuration</code></a> 了解通用模式。</p>
+<h4 id="允许列表--频道路由">允许列表 + 频道路由<a hidden class="anchor" aria-hidden="true" href="#允许列表--频道路由">#</a></h4>
+<p>示例&quot;单服务器，只允许我，只允许 #help&quot;：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    discord: {
+      enabled: true,
+      dm: { enabled: false },
+      guilds: {
+        YOUR_GUILD_ID: {
+          users: [&#34;YOUR_USER_ID&#34;],
+          requireMention: true,
+          channels: {
+            help: { allow: true, requireMention: true },
+          },
+        },
+      },
+      retry: {
+        attempts: 3,
+        minDelayMs: 500,
+        maxDelayMs: 30000,
+        jitter: 0.1,
+      },
+    },
+  },
+}
+</code></pre><p>注意：</p>
+<ul>
+<li><code>requireMention: true</code> 意味着机器人只在被提及时回复（推荐用于共享频道）。</li>
+<li><code>agents.list[].groupChat.mentionPatterns</code>（或 <code>messages.groupChat.mentionPatterns</code>）对于服务器消息也算作提及。</li>
+<li>多智能体覆盖：在 <code>agents.list[].groupChat.mentionPatterns</code> 上设置每个智能体的模式。</li>
+<li>如果存在 <code>channels</code>，任何未列出的频道默认被拒绝。</li>
+<li>使用 <code>&quot;*&quot;</code> 频道条目在所有频道应用默认值；显式频道条目覆盖通配符。</li>
+<li>话题继承父频道配置（允许列表、<code>requireMention</code>、Skills、提示词等），除非你显式添加话题频道 ID。</li>
+<li>机器人发送的消息默认被忽略；设置 <code>channels.discord.allowBots=true</code> 允许它们（自己的消息仍被过滤）。</li>
+<li>警告：如果你允许回复其他机器人（<code>channels.discord.allowBots=true</code>），请使用 <code>requireMention</code>、<code>channels.discord.guilds.*.channels.&lt;id&gt;.users</code> 允许列表和/或在 <code>AGENTS.md</code> 和 <code>SOUL.md</code> 中设置明确的防护措施来防止机器人之间的回复循环。</li>
+</ul>
+<h3 id="6验证是否工作">6）验证是否工作<a hidden class="anchor" aria-hidden="true" href="#6验证是否工作">#</a></h3>
+<ol>
+<li>启动 Gateway 网关。</li>
+<li>在你的服务器频道中发送：<code>@Krill hello</code>（或你的机器人名称）。</li>
+<li>如果没有反应：查看下面的<strong>故障排除</strong>。</li>
+</ol>
+<h3 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h3>
+<ul>
+<li>首先：运行 <code>openclaw doctor</code> 和 <code>openclaw channels status --probe</code>（可操作的警告 + 快速审计）。</li>
+<li><strong>&ldquo;Used disallowed intents&rdquo;</strong>：在开发者门户中启用 <strong>Message Content Intent</strong>（可能还需要 <strong>Server Members Intent</strong>），然后重启 Gateway 网关。</li>
+<li><strong>机器人连接但从不在服务器频道回复</strong>：
+<ul>
+<li>缺少 <strong>Message Content Intent</strong>，或</li>
+<li>机器人缺少频道权限（View/Send/Read History），或</li>
+<li>你的配置需要提及但你没有提及它，或</li>
+<li>你的服务器/频道允许列表拒绝了该频道/用户。</li>
+</ul>
+</li>
+<li><strong><code>requireMention: false</code> 但仍然没有回复</strong>：</li>
+<li><code>channels.discord.groupPolicy</code> 默认为 <strong>allowlist</strong>；将其设置为 <code>&quot;open&quot;</code> 或在 <code>channels.discord.guilds</code> 下添加服务器条目（可选择在 <code>channels.discord.guilds.&lt;id&gt;.channels</code> 下列出频道以进行限制）。
+<ul>
+<li>如果你只设置了 <code>DISCORD_BOT_TOKEN</code> 而从未创建 <code>channels.discord</code> 部分，运行时会将 <code>groupPolicy</code> 默认为 <code>open</code>。添加 <code>channels.discord.groupPolicy</code>、<code>channels.defaults.groupPolicy</code> 或服务器/频道允许列表来锁定它。</li>
+</ul>
+</li>
+<li><code>requireMention</code> 必须位于 <code>channels.discord.guilds</code>（或特定频道）下。顶层的 <code>channels.discord.requireMention</code> 会被忽略。</li>
+<li><strong>权限审计</strong>（<code>channels status --probe</code>）只检查数字频道 ID。如果你使用 slug/名称作为 <code>channels.discord.guilds.*.channels</code> 键，审计无法验证权限。</li>
+<li><strong>私信不工作</strong>：<code>channels.discord.dm.enabled=false</code>、<code>channels.discord.dm.policy=&quot;disabled&quot;</code>，或者你尚未被批准（<code>channels.discord.dm.policy=&quot;pairing&quot;</code>）。</li>
+<li><strong>Discord 中的执行审批</strong>：Discord 支持私信中执行审批的<strong>按钮 UI</strong>（允许一次 / 始终允许 / 拒绝）。<code>/approve &lt;id&gt; ...</code> 仅用于转发的审批，不会解析 Discord 的按钮提示。如果你看到 <code>❌ Failed to submit approval: Error: unknown approval id</code> 或 UI 从未出现，请检查：
+<ul>
+<li>你的配置中有 <code>channels.discord.execApprovals.enabled: true</code>。</li>
+<li>你的 Discord 用户 ID 在 <code>channels.discord.execApprovals.approvers</code> 中列出（UI 仅发送给审批者）。</li>
+<li>使用私信提示中的按钮（<strong>Allow once</strong>、<strong>Always allow</strong>、<strong>Deny</strong>）。</li>
+<li>参见<a href="/tools/exec-approvals">执行审批</a>和<a href="/tools/slash-commands">斜杠命令</a>了解更广泛的审批和命令流程。</li>
+</ul>
+</li>
+</ul>
+<h2 id="功能和限制">功能和限制<a hidden class="anchor" aria-hidden="true" href="#功能和限制">#</a></h2>
+<ul>
+<li>支持私信和服务器文字频道（话题被视为独立频道；不支持语音）。</li>
+<li>打字指示器尽力发送；消息分块使用 <code>channels.discord.textChunkLimit</code>（默认 2000），并按行数分割长回复（<code>channels.discord.maxLinesPerMessage</code>，默认 17）。</li>
+<li>可选换行分块：设置 <code>channels.discord.chunkMode=&quot;newline&quot;</code> 以在空行（段落边界）处分割，然后再进行长度分块。</li>
+<li>支持文件上传，最大 <code>channels.discord.mediaMaxMb</code>（默认 8 MB）。</li>
+<li>默认服务器回复需要提及，以避免嘈杂的机器人。</li>
+<li>当消息引用另一条消息时，会注入回复上下文（引用内容 + ID）。</li>
+<li>原生回复线程<strong>默认关闭</strong>；使用 <code>channels.discord.replyToMode</code> 和回复标签启用。</li>
+</ul>
+<h2 id="重试策略">重试策略<a hidden class="anchor" aria-hidden="true" href="#重试策略">#</a></h2>
+<p>出站 Discord API 调用在速率限制（429）时使用 Discord <code>retry_after</code>（如果可用）进行重试，采用指数退避和抖动。通过 <code>channels.discord.retry</code> 配置。参见<a href="/concepts/retry">重试策略</a>。</p>
+<h2 id="配置">配置<a hidden class="anchor" aria-hidden="true" href="#配置">#</a></h2>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    discord: {
+      enabled: true,
+      token: &#34;abc.123&#34;,
+      groupPolicy: &#34;allowlist&#34;,
+      guilds: {
+        &#34;*&#34;: {
+          channels: {
+            general: { allow: true },
+          },
+        },
+      },
+      mediaMaxMb: 8,
+      actions: {
+        reactions: true,
+        stickers: true,
+        emojiUploads: true,
+        stickerUploads: true,
+        polls: true,
+        permissions: true,
+        messages: true,
+        threads: true,
+        pins: true,
+        search: true,
+        memberInfo: true,
+        roleInfo: true,
+        roles: false,
+        channelInfo: true,
+        channels: true,
+        voiceStatus: true,
+        events: true,
+        moderation: false,
+      },
+      replyToMode: &#34;off&#34;,
+      dm: {
+        enabled: true,
+        policy: &#34;pairing&#34;, // pairing | allowlist | open | disabled
+        allowFrom: [&#34;123456789012345678&#34;, &#34;steipete&#34;],
+        groupEnabled: false,
+        groupChannels: [&#34;openclaw-dm&#34;],
+      },
+      guilds: {
+        &#34;*&#34;: { requireMention: true },
+        &#34;123456789012345678&#34;: {
+          slug: &#34;friends-of-openclaw&#34;,
+          requireMention: false,
+          reactionNotifications: &#34;own&#34;,
+          users: [&#34;987654321098765432&#34;, &#34;steipete&#34;],
+          channels: {
+            general: { allow: true },
+            help: {
+              allow: true,
+              requireMention: true,
+              users: [&#34;987654321098765432&#34;],
+              skills: [&#34;search&#34;, &#34;docs&#34;],
+              systemPrompt: &#34;Keep answers short.&#34;,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+</code></pre><p>确认表情反应通过 <code>messages.ackReaction</code> + <code>messages.ackReactionScope</code> 全局控制。使用 <code>messages.removeAckAfterReply</code> 在机器人回复后清除确认表情反应。</p>
+<ul>
+<li><code>dm.enabled</code>：设置 <code>false</code> 忽略所有私信（默认 <code>true</code>）。</li>
+<li><code>dm.policy</code>：私信访问控制（推荐 <code>pairing</code>）。<code>&quot;open&quot;</code> 需要 <code>dm.allowFrom=[&quot;*&quot;]</code>。</li>
+<li><code>dm.allowFrom</code>：私信允许列表（用户 ID 或名称）。用于 <code>dm.policy=&quot;allowlist&quot;</code> 和 <code>dm.policy=&quot;open&quot;</code> 验证。向导接受用户名，并在机器人可以搜索成员时将其解析为 ID。</li>
+<li><code>dm.groupEnabled</code>：启用群组私信（默认 <code>false</code>）。</li>
+<li><code>dm.groupChannels</code>：群组私信频道 ID 或 slug 的可选允许列表。</li>
+<li><code>groupPolicy</code>：控制服务器频道处理（<code>open|disabled|allowlist</code>）；<code>allowlist</code> 需要频道允许列表。</li>
+<li><code>guilds</code>：按服务器规则，以服务器 ID（首选）或 slug 为键。</li>
+<li><code>guilds.&quot;*&quot;</code>：当没有显式条目时应用的默认每服务器设置。</li>
+<li><code>guilds.&lt;id&gt;.slug</code>：用于显示名称的可选友好 slug。</li>
+<li><code>guilds.&lt;id&gt;.users</code>：可选的每服务器用户允许列表（ID 或名称）。</li>
+<li><code>guilds.&lt;id&gt;.tools</code>：可选的每服务器工具策略覆盖（<code>allow</code>/<code>deny</code>/<code>alsoAllow</code>），在频道覆盖缺失时使用。</li>
+<li><code>guilds.&lt;id&gt;.toolsBySender</code>：服务器级别的可选每发送者工具策略覆盖（在频道覆盖缺失时应用；支持 <code>&quot;*&quot;</code> 通配符）。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.allow</code>：当 <code>groupPolicy=&quot;allowlist&quot;</code> 时允许/拒绝频道。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.requireMention</code>：频道的提及限制。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.tools</code>：可选的每频道工具策略覆盖（<code>allow</code>/<code>deny</code>/<code>alsoAllow</code>）。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.toolsBySender</code>：频道内的可选每发送者工具策略覆盖（支持 <code>&quot;*&quot;</code> 通配符）。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.users</code>：可选的每频道用户允许列表。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.skills</code>：Skills 过滤器（省略 = 所有 Skills，空 = 无）。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.systemPrompt</code>：频道的额外系统提示词（与频道主题组合）。</li>
+<li><code>guilds.&lt;id&gt;.channels.&lt;channel&gt;.enabled</code>：设置 <code>false</code> 禁用频道。</li>
+<li><code>guilds.&lt;id&gt;.channels</code>：频道规则（键为频道 slug 或 ID）。</li>
+<li><code>guilds.&lt;id&gt;.requireMention</code>：每服务器提及要求（可按频道覆盖）。</li>
+<li><code>guilds.&lt;id&gt;.reactionNotifications</code>：表情反应系统事件模式（<code>off</code>、<code>own</code>、<code>all</code>、<code>allowlist</code>）。</li>
+<li><code>textChunkLimit</code>：出站文本块大小（字符）。默认：2000。</li>
+<li><code>chunkMode</code>：<code>length</code>（默认）仅在超过 <code>textChunkLimit</code> 时分割；<code>newline</code> 在空行（段落边界）处分割，然后再进行长度分块。</li>
+<li><code>maxLinesPerMessage</code>：每条消息的软最大行数。默认：17。</li>
+<li><code>mediaMaxMb</code>：限制保存到磁盘的入站媒体大小。</li>
+<li><code>historyLimit</code>：回复提及时作为上下文包含的最近服务器消息数量（默认 20；回退到 <code>messages.groupChat.historyLimit</code>；<code>0</code> 禁用）。</li>
+<li><code>dmHistoryLimit</code>：私信历史限制（用户轮次）。每用户覆盖：<code>dms[&quot;&lt;user_id&gt;&quot;].historyLimit</code>。</li>
+<li><code>retry</code>：出站 Discord API 调用的重试策略（attempts、minDelayMs、maxDelayMs、jitter）。</li>
+<li><code>pluralkit</code>：解析 PluralKit 代理消息，使系统成员显示为不同的发送者。</li>
+<li><code>actions</code>：每操作工具门控；省略允许所有（设置 <code>false</code> 禁用）。
+<ul>
+<li><code>reactions</code>（涵盖表情反应 + 读取表情反应）</li>
+<li><code>stickers</code>、<code>emojiUploads</code>、<code>stickerUploads</code>、<code>polls</code>、<code>permissions</code>、<code>messages</code>、<code>threads</code>、<code>pins</code>、<code>search</code></li>
+<li><code>memberInfo</code>、<code>roleInfo</code>、<code>channelInfo</code>、<code>voiceStatus</code>、<code>events</code></li>
+<li><code>channels</code>（创建/编辑/删除频道 + 类别 + 权限）</li>
+<li><code>roles</code>（角色添加/移除，默认 <code>false</code>）</li>
+<li><code>moderation</code>（超时/踢出/封禁，默认 <code>false</code>）</li>
+</ul>
+</li>
+<li><code>execApprovals</code>：Discord 专用执行审批私信（按钮 UI）。支持 <code>enabled</code>、<code>approvers</code>、<code>agentFilter</code>、<code>sessionFilter</code>。</li>
+</ul>
+<p>表情反应通知使用 <code>guilds.&lt;id&gt;.reactionNotifications</code>：</p>
+<ul>
+<li><code>off</code>：无表情反应事件。</li>
+<li><code>own</code>：机器人自己消息上的表情反应（默认）。</li>
+<li><code>all</code>：所有消息上的所有表情反应。</li>
+<li><code>allowlist</code>：来自 <code>guilds.&lt;id&gt;.users</code> 的用户在所有消息上的表情反应（空列表禁用）。</li>
+</ul>
+<h3 id="pluralkitpk支持">PluralKit（PK）支持<a hidden class="anchor" aria-hidden="true" href="#pluralkitpk支持">#</a></h3>
+<p>启用 PK 查找，以便代理消息解析到底层系统 + 成员。启用后，OpenClaw 使用成员身份进行允许列表匹配，并将发送者标记为 <code>Member (PK:System)</code> 以避免意外的 Discord 提及。</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    discord: {
+      pluralkit: {
+        enabled: true,
+        token: &#34;pk_live_...&#34;, // 可选；私有系统需要
+      },
+    },
+  },
+}
+</code></pre><p>允许列表注意事项（启用 PK 时）：</p>
+<ul>
+<li>在 <code>dm.allowFrom</code>、<code>guilds.&lt;id&gt;.users</code> 或每频道 <code>users</code> 中使用 <code>pk:&lt;memberId&gt;</code>。</li>
+<li>成员显示名称也按名称/slug 匹配。</li>
+<li>查找使用<strong>原始</strong> Discord 消息 ID（代理前的消息），因此 PK API 只在其 30 分钟窗口内解析它。</li>
+<li>如果 PK 查找失败（例如，没有令牌的私有系统），代理消息会被视为机器人消息并被丢弃，除非 <code>channels.discord.allowBots=true</code>。</li>
+</ul>
+<h3 id="工具操作默认值">工具操作默认值<a hidden class="anchor" aria-hidden="true" href="#工具操作默认值">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th>操作组</th>
+          <th>默认</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>reactions</td>
+          <td>启用</td>
+          <td>表情反应 + 列出表情反应 + emojiList</td>
+      </tr>
+      <tr>
+          <td>stickers</td>
+          <td>启用</td>
+          <td>发送贴纸</td>
+      </tr>
+      <tr>
+          <td>emojiUploads</td>
+          <td>启用</td>
+          <td>上传表情</td>
+      </tr>
+      <tr>
+          <td>stickerUploads</td>
+          <td>启用</td>
+          <td>上传贴纸</td>
+      </tr>
+      <tr>
+          <td>polls</td>
+          <td>启用</td>
+          <td>创建投票</td>
+      </tr>
+      <tr>
+          <td>permissions</td>
+          <td>启用</td>
+          <td>频道权限快照</td>
+      </tr>
+      <tr>
+          <td>messages</td>
+          <td>启用</td>
+          <td>读取/发送/编辑/删除</td>
+      </tr>
+      <tr>
+          <td>threads</td>
+          <td>启用</td>
+          <td>创建/列出/回复</td>
+      </tr>
+      <tr>
+          <td>pins</td>
+          <td>启用</td>
+          <td>置顶/取消置顶/列出</td>
+      </tr>
+      <tr>
+          <td>search</td>
+          <td>启用</td>
+          <td>消息搜索（预览功能）</td>
+      </tr>
+      <tr>
+          <td>memberInfo</td>
+          <td>启用</td>
+          <td>成员信息</td>
+      </tr>
+      <tr>
+          <td>roleInfo</td>
+          <td>启用</td>
+          <td>角色列表</td>
+      </tr>
+      <tr>
+          <td>channelInfo</td>
+          <td>启用</td>
+          <td>频道信息 + 列表</td>
+      </tr>
+      <tr>
+          <td>channels</td>
+          <td>启用</td>
+          <td>频道/类别管理</td>
+      </tr>
+      <tr>
+          <td>voiceStatus</td>
+          <td>启用</td>
+          <td>语音状态查询</td>
+      </tr>
+      <tr>
+          <td>events</td>
+          <td>启用</td>
+          <td>列出/创建预定事件</td>
+      </tr>
+      <tr>
+          <td>roles</td>
+          <td>禁用</td>
+          <td>角色添加/移除</td>
+      </tr>
+      <tr>
+          <td>moderation</td>
+          <td>禁用</td>
+          <td>超时/踢出/封禁</td>
+      </tr>
+  </tbody>
+</table>
+<ul>
+<li><code>replyToMode</code>：<code>off</code>（默认）、<code>first</code> 或 <code>all</code>。仅在模型包含回复标签时适用。</li>
+</ul>
+<h2 id="回复标签">回复标签<a hidden class="anchor" aria-hidden="true" href="#回复标签">#</a></h2>
+<p>要请求线程回复，模型可以在其输出中包含一个标签：</p>
+<ul>
+<li><code>[[reply_to_current]]</code> — 回复触发的 Discord 消息。</li>
+<li><code>[[reply_to:&lt;id&gt;]]</code> — 回复上下文/历史中的特定消息 ID。当前消息 ID 作为 <code>[message_id: …]</code> 附加到提示词；历史条目已包含 ID。</li>
+</ul>
+<p>行为由 <code>channels.discord.replyToMode</code> 控制：</p>
+<ul>
+<li><code>off</code>：忽略标签。</li>
+<li><code>first</code>：只有第一个出站块/附件是回复。</li>
+<li><code>all</code>：每个出站块/附件都是回复。</li>
+</ul>
+<p>允许列表匹配注意事项：</p>
+<ul>
+<li><code>allowFrom</code>/<code>users</code>/<code>groupChannels</code> 接受 ID、名称、标签或像 <code>&lt;@id&gt;</code> 这样的提及。</li>
+<li>支持 <code>discord:</code>/<code>user:</code>（用户）和 <code>channel:</code>（群组私信）等前缀。</li>
+<li>使用 <code>*</code> 允许任何发送者/频道。</li>
+<li>当存在 <code>guilds.&lt;id&gt;.channels</code> 时，未列出的频道默认被拒绝。</li>
+<li>当省略 <code>guilds.&lt;id&gt;.channels</code> 时，允许列表中服务器的所有频道都被允许。</li>
+<li>要<strong>不允许任何频道</strong>，设置 <code>channels.discord.groupPolicy: &quot;disabled&quot;</code>（或保持空允许列表）。</li>
+<li>配置向导接受 <code>Guild/Channel</code> 名称（公开 + 私有）并在可能时将其解析为 ID。</li>
+<li>启动时，OpenClaw 将允许列表中的频道/用户名称解析为 ID（当机器人可以搜索成员时）并记录映射；未解析的条目保持原样。</li>
+</ul>
+<p>原生命令注意事项：</p>
+<ul>
+<li>注册的命令镜像 OpenClaw 的聊天命令。</li>
+<li>原生命令遵循与私信/服务器消息相同的允许列表（<code>channels.discord.dm.allowFrom</code>、<code>channels.discord.guilds</code>、每频道规则）。</li>
+<li>斜杠命令可能在 Discord UI 中对未在允许列表中的用户仍然可见；OpenClaw 在执行时强制执行允许列表并回复&quot;未授权&quot;。</li>
+</ul>
+<h2 id="工具操作">工具操作<a hidden class="anchor" aria-hidden="true" href="#工具操作">#</a></h2>
+<p>智能体可以使用以下操作调用 <code>discord</code>：</p>
+<ul>
+<li><code>react</code> / <code>reactions</code>（添加或列出表情反应）</li>
+<li><code>sticker</code>、<code>poll</code>、<code>permissions</code></li>
+<li><code>readMessages</code>、<code>sendMessage</code>、<code>editMessage</code>、<code>deleteMessage</code></li>
+<li>读取/搜索/置顶工具负载包含规范化的 <code>timestampMs</code>（UTC 纪元毫秒）和 <code>timestampUtc</code> 以及原始 Discord <code>timestamp</code>。</li>
+<li><code>threadCreate</code>、<code>threadList</code>、<code>threadReply</code></li>
+<li><code>pinMessage</code>、<code>unpinMessage</code>、<code>listPins</code></li>
+<li><code>searchMessages</code>、<code>memberInfo</code>、<code>roleInfo</code>、<code>roleAdd</code>、<code>roleRemove</code>、<code>emojiList</code></li>
+<li><code>channelInfo</code>、<code>channelList</code>、<code>voiceStatus</code>、<code>eventList</code>、<code>eventCreate</code></li>
+<li><code>timeout</code>、<code>kick</code>、<code>ban</code></li>
+</ul>
+<p>Discord 消息 ID 在注入的上下文中显示（<code>[discord message id: …]</code> 和历史行），以便智能体可以定位它们。
+表情可以是 unicode（例如 <code>✅</code>）或自定义表情语法如 <code>&lt;:party_blob:1234567890&gt;</code>。</p>
+<h2 id="安全与运维">安全与运维<a hidden class="anchor" aria-hidden="true" href="#安全与运维">#</a></h2>
+<ul>
+<li>像对待密码一样对待机器人令牌；在受监督的主机上优先使用 <code>DISCORD_BOT_TOKEN</code> 环境变量，或锁定配置文件权限。</li>
+<li>只授予机器人所需的权限（通常是读取/发送消息）。</li>
+<li>如果机器人卡住或受到速率限制，在确认没有其他进程拥有 Discord 会话后重启 Gateway 网关（<code>openclaw gateway --force</code>）。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/providers/deepgram/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Deepgram（音频转录）</span>
+  </a>
+  <a class="next" href="/openclaw/install/docker/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Docker（可选）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

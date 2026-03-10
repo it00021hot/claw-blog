@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>形式化验证（安全模型） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="本页跟踪 OpenClaw 的形式化安全模型（目前是 TLA&#43;/TLC；根据需要会添加更多）。
+
+注意：一些较旧的链接可能引用了以前的项目名称。
+
+目标（北极星）： 提供机器检查的论证，证明 OpenClaw 在明确假设下执行其
+预期的安全策略（授权、会话隔离、工具门控和
+配置错误安全）。
+目前是什么： 一个可执行的、攻击者驱动的安全回归测试套件：
+
+每个声明都有一个在有限状态空间上运行的模型检查。
+许多声明有一个配对的负面模型，为现实的 bug 类别生成反例追踪。
+
+目前还不是什么： 证明&quot;OpenClaw 在所有方面都是安全的&quot;或完整 TypeScript 实现是正确的。
+模型存放位置
+模型维护在一个单独的仓库中：vignesh07/openclaw-formal-models。
+重要注意事项
+
+这些是模型，不是完整的 TypeScript 实现。模型和代码之间可能存在偏差。
+结果受 TLC 探索的状态空间限制；&ldquo;绿色&quot;并不意味着在建模的假设和边界之外也是安全的。
+一些声明依赖于明确的环境假设（例如，正确的部署、正确的配置输入）。
+
+复现结果
+目前，结果通过在本地克隆模型仓库并运行 TLC 来复现（见下文）。未来的迭代可能提供：
+
+带有公开产物（反例追踪、运行日志）的 CI 运行模型
+用于小型、有界检查的托管&quot;运行此模型&quot;工作流
+
+开始使用：
+git clone https://github.com/vignesh07/openclaw-formal-models
+cd openclaw-formal-models
+
+# 需要 Java 11&#43;（TLC 在 JVM 上运行）。
+# 仓库内置了固定版本的 `tla2tools.jar`（TLA&#43; 工具）并提供 `bin/tlc` &#43; Make 目标。
+
+make &lt;target&gt;
+Gateway 网关暴露和开放 Gateway 网关配置错误
+声明： 在没有认证的情况下绑定到 loopback 之外可能使远程入侵成为可能 / 增加暴露；令牌/密码可以阻止未认证的攻击者（根据模型假设）。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/security/formal-verification/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/security/formal-verification/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/security/formal-verification/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="形式化验证（安全模型）">
+  <meta property="og:description" content="本页跟踪 OpenClaw 的形式化安全模型（目前是 TLA&#43;/TLC；根据需要会添加更多）。
+注意：一些较旧的链接可能引用了以前的项目名称。
+目标（北极星）： 提供机器检查的论证，证明 OpenClaw 在明确假设下执行其 预期的安全策略（授权、会话隔离、工具门控和 配置错误安全）。
+目前是什么： 一个可执行的、攻击者驱动的安全回归测试套件：
+每个声明都有一个在有限状态空间上运行的模型检查。 许多声明有一个配对的负面模型，为现实的 bug 类别生成反例追踪。 目前还不是什么： 证明&#34;OpenClaw 在所有方面都是安全的&#34;或完整 TypeScript 实现是正确的。
+模型存放位置 模型维护在一个单独的仓库中：vignesh07/openclaw-formal-models。
+重要注意事项 这些是模型，不是完整的 TypeScript 实现。模型和代码之间可能存在偏差。 结果受 TLC 探索的状态空间限制；“绿色&#34;并不意味着在建模的假设和边界之外也是安全的。 一些声明依赖于明确的环境假设（例如，正确的部署、正确的配置输入）。 复现结果 目前，结果通过在本地克隆模型仓库并运行 TLC 来复现（见下文）。未来的迭代可能提供：
+带有公开产物（反例追踪、运行日志）的 CI 运行模型 用于小型、有界检查的托管&#34;运行此模型&#34;工作流 开始使用：
+git clone https://github.com/vignesh07/openclaw-formal-models cd openclaw-formal-models # 需要 Java 11&#43;（TLC 在 JVM 上运行）。 # 仓库内置了固定版本的 `tla2tools.jar`（TLA&#43; 工具）并提供 `bin/tlc` &#43; Make 目标。 make &lt;target&gt; Gateway 网关暴露和开放 Gateway 网关配置错误 声明： 在没有认证的情况下绑定到 loopback 之外可能使远程入侵成为可能 / 增加暴露；令牌/密码可以阻止未认证的攻击者（根据模型假设）。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="形式化验证（安全模型）">
+<meta name="twitter:description" content="本页跟踪 OpenClaw 的形式化安全模型（目前是 TLA&#43;/TLC；根据需要会添加更多）。
+
+注意：一些较旧的链接可能引用了以前的项目名称。
+
+目标（北极星）： 提供机器检查的论证，证明 OpenClaw 在明确假设下执行其
+预期的安全策略（授权、会话隔离、工具门控和
+配置错误安全）。
+目前是什么： 一个可执行的、攻击者驱动的安全回归测试套件：
+
+每个声明都有一个在有限状态空间上运行的模型检查。
+许多声明有一个配对的负面模型，为现实的 bug 类别生成反例追踪。
+
+目前还不是什么： 证明&quot;OpenClaw 在所有方面都是安全的&quot;或完整 TypeScript 实现是正确的。
+模型存放位置
+模型维护在一个单独的仓库中：vignesh07/openclaw-formal-models。
+重要注意事项
+
+这些是模型，不是完整的 TypeScript 实现。模型和代码之间可能存在偏差。
+结果受 TLC 探索的状态空间限制；&ldquo;绿色&quot;并不意味着在建模的假设和边界之外也是安全的。
+一些声明依赖于明确的环境假设（例如，正确的部署、正确的配置输入）。
+
+复现结果
+目前，结果通过在本地克隆模型仓库并运行 TLC 来复现（见下文）。未来的迭代可能提供：
+
+带有公开产物（反例追踪、运行日志）的 CI 运行模型
+用于小型、有界检查的托管&quot;运行此模型&quot;工作流
+
+开始使用：
+git clone https://github.com/vignesh07/openclaw-formal-models
+cd openclaw-formal-models
+
+# 需要 Java 11&#43;（TLC 在 JVM 上运行）。
+# 仓库内置了固定版本的 `tla2tools.jar`（TLA&#43; 工具）并提供 `bin/tlc` &#43; Make 目标。
+
+make &lt;target&gt;
+Gateway 网关暴露和开放 Gateway 网关配置错误
+声明： 在没有认证的情况下绑定到 loopback 之外可能使远程入侵成为可能 / 增加暴露；令牌/密码可以阻止未认证的攻击者（根据模型假设）。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "形式化验证（安全模型）",
+      "item": "/openclaw/security/formal-verification/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "形式化验证（安全模型）",
+  "name": "形式化验证（安全模型）",
+  "description": "本页跟踪 OpenClaw 的形式化安全模型（目前是 TLA+/TLC；根据需要会添加更多）。\n注意：一些较旧的链接可能引用了以前的项目名称。\n目标（北极星）： 提供机器检查的论证，证明 OpenClaw 在明确假设下执行其 预期的安全策略（授权、会话隔离、工具门控和 配置错误安全）。\n目前是什么： 一个可执行的、攻击者驱动的安全回归测试套件：\n每个声明都有一个在有限状态空间上运行的模型检查。 许多声明有一个配对的负面模型，为现实的 bug 类别生成反例追踪。 目前还不是什么： 证明\u0026quot;OpenClaw 在所有方面都是安全的\u0026quot;或完整 TypeScript 实现是正确的。\n模型存放位置 模型维护在一个单独的仓库中：vignesh07/openclaw-formal-models。\n重要注意事项 这些是模型，不是完整的 TypeScript 实现。模型和代码之间可能存在偏差。 结果受 TLC 探索的状态空间限制；\u0026ldquo;绿色\u0026quot;并不意味着在建模的假设和边界之外也是安全的。 一些声明依赖于明确的环境假设（例如，正确的部署、正确的配置输入）。 复现结果 目前，结果通过在本地克隆模型仓库并运行 TLC 来复现（见下文）。未来的迭代可能提供：\n带有公开产物（反例追踪、运行日志）的 CI 运行模型 用于小型、有界检查的托管\u0026quot;运行此模型\u0026quot;工作流 开始使用：\ngit clone https://github.com/vignesh07/openclaw-formal-models cd openclaw-formal-models # 需要 Java 11+（TLC 在 JVM 上运行）。 # 仓库内置了固定版本的 `tla2tools.jar`（TLA+ 工具）并提供 `bin/tlc` + Make 目标。 make \u0026lt;target\u0026gt; Gateway 网关暴露和开放 Gateway 网关配置错误 声明： 在没有认证的情况下绑定到 loopback 之外可能使远程入侵成为可能 / 增加暴露；令牌/密码可以阻止未认证的攻击者（根据模型假设）。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "本页跟踪 OpenClaw 的形式化安全模型（目前是 TLA+/TLC；根据需要会添加更多）。\n注意：一些较旧的链接可能引用了以前的项目名称。\n目标（北极星）： 提供机器检查的论证，证明 OpenClaw 在明确假设下执行其 预期的安全策略（授权、会话隔离、工具门控和 配置错误安全）。\n目前是什么： 一个可执行的、攻击者驱动的安全回归测试套件：\n每个声明都有一个在有限状态空间上运行的模型检查。 许多声明有一个配对的负面模型，为现实的 bug 类别生成反例追踪。 目前还不是什么： 证明\"OpenClaw 在所有方面都是安全的\"或完整 TypeScript 实现是正确的。\n模型存放位置 模型维护在一个单独的仓库中：vignesh07/openclaw-formal-models。\n重要注意事项 这些是模型，不是完整的 TypeScript 实现。模型和代码之间可能存在偏差。 结果受 TLC 探索的状态空间限制；“绿色\"并不意味着在建模的假设和边界之外也是安全的。 一些声明依赖于明确的环境假设（例如，正确的部署、正确的配置输入）。 复现结果 目前，结果通过在本地克隆模型仓库并运行 TLC 来复现（见下文）。未来的迭代可能提供：\n带有公开产物（反例追踪、运行日志）的 CI 运行模型 用于小型、有界检查的托管\"运行此模型\"工作流 开始使用：\ngit clone https://github.com/vignesh07/openclaw-formal-models cd openclaw-formal-models # 需要 Java 11+（TLC 在 JVM 上运行）。 # 仓库内置了固定版本的 `tla2tools.jar`（TLA+ 工具）并提供 `bin/tlc` + Make 目标。 make Gateway 网关暴露和开放 Gateway 网关配置错误 声明： 在没有认证的情况下绑定到 loopback 之外可能使远程入侵成为可能 / 增加暴露；令牌/密码可以阻止未认证的攻击者（根据模型假设）。\n绿色运行： make gateway-exposure-v2 make gateway-exposure-v2-protected 红色（预期）： make gateway-exposure-v2-negative 另见：模型仓库中的 docs/gateway-exposure-matrix.md。\nNodes.run 管道（最高风险能力） 声明： nodes.run 需要（a）节点命令允许列表加上声明的命令以及（b）配置时的实时批准；批准被令牌化以防止重放（在模型中）。\n绿色运行： make nodes-pipeline make approvals-token 红色（预期）： make nodes-pipeline-negative make approvals-token-negative 配对存储（私信门控） 声明： 配对请求遵守 TTL 和待处理请求上限。\n绿色运行： make pairing make pairing-cap 红色（预期）： make pairing-negative make pairing-cap-negative 入站门控（提及 + 控制命令绕过） 声明： 在需要提及的群组上下文中，未授权的\"控制命令\"不能绕过提及门控。\n绿色： make ingress-gating 红色（预期）： make ingress-gating-negative 路由/会话键隔离 声明： 来自不同对等方的私信不会折叠到同一会话中，除非明确链接/配置。\n绿色： make routing-isolation 红色（预期）： make routing-isolation-negative v1++：额外的有界模型（并发、重试、追踪正确性） 这些是后续模型，围绕真实世界的故障模式（非原子更新、重试和消息扇出）提高保真度。\n配对存储并发 / 幂等性 声明： 配对存储应该在交错情况下也强制执行 MaxPending 和幂等性（即\"检查然后写入\"必须是原子/加锁的；刷新不应创建重复项）。\n这意味着：\n在并发请求下，你不能超过渠道的 MaxPending。\n对同一 (channel, sender) 的重复请求/刷新不应创建重复的活跃待处理行。\n绿色运行：\nmake pairing-race（原子/加锁的上限检查） make pairing-idempotency make pairing-refresh make pairing-refresh-race 红色（预期）：\nmake pairing-race-negative（非原子 begin/commit 上限竞争） make pairing-idempotency-negative make pairing-refresh-negative make pairing-refresh-race-negative 入站追踪关联 / 幂等性 声明： 摄入应在扇出过程中保持追踪关联，并在提供商重试下保持幂等。\n这意味着：\n当一个外部事件变成多个内部消息时，每个部分都保持相同的追踪/事件标识。\n重试不会导致重复处理。\n如果提供商事件 ID 缺失，去重回退到安全键（例如，追踪 ID）以避免丢弃不同的事件。\n绿色：\nmake ingress-trace make ingress-trace2 make ingress-idempotency make ingress-dedupe-fallback 红色（预期）：\nmake ingress-trace-negative make ingress-trace2-negative make ingress-idempotency-negative make ingress-dedupe-fallback-negative 路由 dmScope 优先级 + identityLinks 声明： 路由必须默认保持私信会话隔离，只有在明确配置时才折叠会话（渠道优先级 + 身份链接）。\n这意味着：\n渠道特定的 dmScope 覆盖必须优先于全局默认值。\nidentityLinks 应该只在明确链接的组内折叠，而不是跨不相关的对等方。\n绿色：\nmake routing-precedence make routing-identitylinks 红色（预期）：\nmake routing-precedence-negative make routing-identitylinks-negative ",
+  "wordCount" : "224",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/security/formal-verification/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      形式化验证（安全模型）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e5%ad%98%e6%94%be%e4%bd%8d%e7%bd%ae" aria-label="模型存放位置">模型存放位置</a></li>
+                <li>
+                    <a href="#%e9%87%8d%e8%a6%81%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="重要注意事项">重要注意事项</a></li>
+                <li>
+                    <a href="#%e5%a4%8d%e7%8e%b0%e7%bb%93%e6%9e%9c" aria-label="复现结果">复现结果</a><ul>
+                        
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e6%9a%b4%e9%9c%b2%e5%92%8c%e5%bc%80%e6%94%be-gateway-%e7%bd%91%e5%85%b3%e9%85%8d%e7%bd%ae%e9%94%99%e8%af%af" aria-label="Gateway 网关暴露和开放 Gateway 网关配置错误">Gateway 网关暴露和开放 Gateway 网关配置错误</a></li>
+                <li>
+                    <a href="#nodesrun-%e7%ae%a1%e9%81%93%e6%9c%80%e9%ab%98%e9%a3%8e%e9%99%a9%e8%83%bd%e5%8a%9b" aria-label="Nodes.run 管道（最高风险能力）">Nodes.run 管道（最高风险能力）</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e5%af%b9%e5%ad%98%e5%82%a8%e7%a7%81%e4%bf%a1%e9%97%a8%e6%8e%a7" aria-label="配对存储（私信门控）">配对存储（私信门控）</a></li>
+                <li>
+                    <a href="#%e5%85%a5%e7%ab%99%e9%97%a8%e6%8e%a7%e6%8f%90%e5%8f%8a--%e6%8e%a7%e5%88%b6%e5%91%bd%e4%bb%a4%e7%bb%95%e8%bf%87" aria-label="入站门控（提及 &#43; 控制命令绕过）">入站门控（提及 + 控制命令绕过）</a></li>
+                <li>
+                    <a href="#%e8%b7%af%e7%94%b1%e4%bc%9a%e8%af%9d%e9%94%ae%e9%9a%94%e7%a6%bb" aria-label="路由/会话键隔离">路由/会话键隔离</a></li></ul>
+                </li>
+                <li>
+                    <a href="#v1%e9%a2%9d%e5%a4%96%e7%9a%84%e6%9c%89%e7%95%8c%e6%a8%a1%e5%9e%8b%e5%b9%b6%e5%8f%91%e9%87%8d%e8%af%95%e8%bf%bd%e8%b8%aa%e6%ad%a3%e7%a1%ae%e6%80%a7" aria-label="v1&#43;&#43;：额外的有界模型（并发、重试、追踪正确性）">v1++：额外的有界模型（并发、重试、追踪正确性）</a><ul>
+                        
+                <li>
+                    <a href="#%e9%85%8d%e5%af%b9%e5%ad%98%e5%82%a8%e5%b9%b6%e5%8f%91--%e5%b9%82%e7%ad%89%e6%80%a7" aria-label="配对存储并发 / 幂等性">配对存储并发 / 幂等性</a></li>
+                <li>
+                    <a href="#%e5%85%a5%e7%ab%99%e8%bf%bd%e8%b8%aa%e5%85%b3%e8%81%94--%e5%b9%82%e7%ad%89%e6%80%a7" aria-label="入站追踪关联 / 幂等性">入站追踪关联 / 幂等性</a></li>
+                <li>
+                    <a href="#%e8%b7%af%e7%94%b1-dmscope-%e4%bc%98%e5%85%88%e7%ba%a7--identitylinks" aria-label="路由 dmScope 优先级 &#43; identityLinks">路由 dmScope 优先级 + identityLinks</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本页跟踪 OpenClaw 的<strong>形式化安全模型</strong>（目前是 TLA+/TLC；根据需要会添加更多）。</p>
+<blockquote>
+<p>注意：一些较旧的链接可能引用了以前的项目名称。</p>
+</blockquote>
+<p><strong>目标（北极星）：</strong> 提供机器检查的论证，证明 OpenClaw 在明确假设下执行其
+预期的安全策略（授权、会话隔离、工具门控和
+配置错误安全）。</p>
+<p><strong>目前是什么：</strong> 一个可执行的、攻击者驱动的<strong>安全回归测试套件</strong>：</p>
+<ul>
+<li>每个声明都有一个在有限状态空间上运行的模型检查。</li>
+<li>许多声明有一个配对的<strong>负面模型</strong>，为现实的 bug 类别生成反例追踪。</li>
+</ul>
+<p><strong>目前还不是什么：</strong> 证明&quot;OpenClaw 在所有方面都是安全的&quot;或完整 TypeScript 实现是正确的。</p>
+<h2 id="模型存放位置">模型存放位置<a hidden class="anchor" aria-hidden="true" href="#模型存放位置">#</a></h2>
+<p>模型维护在一个单独的仓库中：<a href="https://github.com/vignesh07/openclaw-formal-models">vignesh07/openclaw-formal-models</a>。</p>
+<h2 id="重要注意事项">重要注意事项<a hidden class="anchor" aria-hidden="true" href="#重要注意事项">#</a></h2>
+<ul>
+<li>这些是<strong>模型</strong>，不是完整的 TypeScript 实现。模型和代码之间可能存在偏差。</li>
+<li>结果受 TLC 探索的状态空间限制；&ldquo;绿色&quot;并不意味着在建模的假设和边界之外也是安全的。</li>
+<li>一些声明依赖于明确的环境假设（例如，正确的部署、正确的配置输入）。</li>
+</ul>
+<h2 id="复现结果">复现结果<a hidden class="anchor" aria-hidden="true" href="#复现结果">#</a></h2>
+<p>目前，结果通过在本地克隆模型仓库并运行 TLC 来复现（见下文）。未来的迭代可能提供：</p>
+<ul>
+<li>带有公开产物（反例追踪、运行日志）的 CI 运行模型</li>
+<li>用于小型、有界检查的托管&quot;运行此模型&quot;工作流</li>
+</ul>
+<p>开始使用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/vignesh07/openclaw-formal-models
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> openclaw-formal-models
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 需要 Java 11+（TLC 在 JVM 上运行）。</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 仓库内置了固定版本的 `tla2tools.jar`（TLA+ 工具）并提供 `bin/tlc` + Make 目标。</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">make &lt;target&gt;
+</span></span></code></pre></div><h3 id="gateway-网关暴露和开放-gateway-网关配置错误">Gateway 网关暴露和开放 Gateway 网关配置错误<a hidden class="anchor" aria-hidden="true" href="#gateway-网关暴露和开放-gateway-网关配置错误">#</a></h3>
+<p><strong>声明：</strong> 在没有认证的情况下绑定到 loopback 之外可能使远程入侵成为可能 / 增加暴露；令牌/密码可以阻止未认证的攻击者（根据模型假设）。</p>
+<ul>
+<li>绿色运行：
+<ul>
+<li><code>make gateway-exposure-v2</code></li>
+<li><code>make gateway-exposure-v2-protected</code></li>
+</ul>
+</li>
+<li>红色（预期）：
+<ul>
+<li><code>make gateway-exposure-v2-negative</code></li>
+</ul>
+</li>
+</ul>
+<p>另见：模型仓库中的 <code>docs/gateway-exposure-matrix.md</code>。</p>
+<h3 id="nodesrun-管道最高风险能力">Nodes.run 管道（最高风险能力）<a hidden class="anchor" aria-hidden="true" href="#nodesrun-管道最高风险能力">#</a></h3>
+<p><strong>声明：</strong> <code>nodes.run</code> 需要（a）节点命令允许列表加上声明的命令以及（b）配置时的实时批准；批准被令牌化以防止重放（在模型中）。</p>
+<ul>
+<li>绿色运行：
+<ul>
+<li><code>make nodes-pipeline</code></li>
+<li><code>make approvals-token</code></li>
+</ul>
+</li>
+<li>红色（预期）：
+<ul>
+<li><code>make nodes-pipeline-negative</code></li>
+<li><code>make approvals-token-negative</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="配对存储私信门控">配对存储（私信门控）<a hidden class="anchor" aria-hidden="true" href="#配对存储私信门控">#</a></h3>
+<p><strong>声明：</strong> 配对请求遵守 TTL 和待处理请求上限。</p>
+<ul>
+<li>绿色运行：
+<ul>
+<li><code>make pairing</code></li>
+<li><code>make pairing-cap</code></li>
+</ul>
+</li>
+<li>红色（预期）：
+<ul>
+<li><code>make pairing-negative</code></li>
+<li><code>make pairing-cap-negative</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="入站门控提及--控制命令绕过">入站门控（提及 + 控制命令绕过）<a hidden class="anchor" aria-hidden="true" href="#入站门控提及--控制命令绕过">#</a></h3>
+<p><strong>声明：</strong> 在需要提及的群组上下文中，未授权的&quot;控制命令&quot;不能绕过提及门控。</p>
+<ul>
+<li>绿色：
+<ul>
+<li><code>make ingress-gating</code></li>
+</ul>
+</li>
+<li>红色（预期）：
+<ul>
+<li><code>make ingress-gating-negative</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="路由会话键隔离">路由/会话键隔离<a hidden class="anchor" aria-hidden="true" href="#路由会话键隔离">#</a></h3>
+<p><strong>声明：</strong> 来自不同对等方的私信不会折叠到同一会话中，除非明确链接/配置。</p>
+<ul>
+<li>绿色：
+<ul>
+<li><code>make routing-isolation</code></li>
+</ul>
+</li>
+<li>红色（预期）：
+<ul>
+<li><code>make routing-isolation-negative</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="v1额外的有界模型并发重试追踪正确性">v1++：额外的有界模型（并发、重试、追踪正确性）<a hidden class="anchor" aria-hidden="true" href="#v1额外的有界模型并发重试追踪正确性">#</a></h2>
+<p>这些是后续模型，围绕真实世界的故障模式（非原子更新、重试和消息扇出）提高保真度。</p>
+<h3 id="配对存储并发--幂等性">配对存储并发 / 幂等性<a hidden class="anchor" aria-hidden="true" href="#配对存储并发--幂等性">#</a></h3>
+<p><strong>声明：</strong> 配对存储应该在交错情况下也强制执行 <code>MaxPending</code> 和幂等性（即&quot;检查然后写入&quot;必须是原子/加锁的；刷新不应创建重复项）。</p>
+<p>这意味着：</p>
+<ul>
+<li>
+<p>在并发请求下，你不能超过渠道的 <code>MaxPending</code>。</p>
+</li>
+<li>
+<p>对同一 <code>(channel, sender)</code> 的重复请求/刷新不应创建重复的活跃待处理行。</p>
+</li>
+<li>
+<p>绿色运行：</p>
+<ul>
+<li><code>make pairing-race</code>（原子/加锁的上限检查）</li>
+<li><code>make pairing-idempotency</code></li>
+<li><code>make pairing-refresh</code></li>
+<li><code>make pairing-refresh-race</code></li>
+</ul>
+</li>
+<li>
+<p>红色（预期）：</p>
+<ul>
+<li><code>make pairing-race-negative</code>（非原子 begin/commit 上限竞争）</li>
+<li><code>make pairing-idempotency-negative</code></li>
+<li><code>make pairing-refresh-negative</code></li>
+<li><code>make pairing-refresh-race-negative</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="入站追踪关联--幂等性">入站追踪关联 / 幂等性<a hidden class="anchor" aria-hidden="true" href="#入站追踪关联--幂等性">#</a></h3>
+<p><strong>声明：</strong> 摄入应在扇出过程中保持追踪关联，并在提供商重试下保持幂等。</p>
+<p>这意味着：</p>
+<ul>
+<li>
+<p>当一个外部事件变成多个内部消息时，每个部分都保持相同的追踪/事件标识。</p>
+</li>
+<li>
+<p>重试不会导致重复处理。</p>
+</li>
+<li>
+<p>如果提供商事件 ID 缺失，去重回退到安全键（例如，追踪 ID）以避免丢弃不同的事件。</p>
+</li>
+<li>
+<p>绿色：</p>
+<ul>
+<li><code>make ingress-trace</code></li>
+<li><code>make ingress-trace2</code></li>
+<li><code>make ingress-idempotency</code></li>
+<li><code>make ingress-dedupe-fallback</code></li>
+</ul>
+</li>
+<li>
+<p>红色（预期）：</p>
+<ul>
+<li><code>make ingress-trace-negative</code></li>
+<li><code>make ingress-trace2-negative</code></li>
+<li><code>make ingress-idempotency-negative</code></li>
+<li><code>make ingress-dedupe-fallback-negative</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="路由-dmscope-优先级--identitylinks">路由 dmScope 优先级 + identityLinks<a hidden class="anchor" aria-hidden="true" href="#路由-dmscope-优先级--identitylinks">#</a></h3>
+<p><strong>声明：</strong> 路由必须默认保持私信会话隔离，只有在明确配置时才折叠会话（渠道优先级 + 身份链接）。</p>
+<p>这意味着：</p>
+<ul>
+<li>
+<p>渠道特定的 dmScope 覆盖必须优先于全局默认值。</p>
+</li>
+<li>
+<p>identityLinks 应该只在明确链接的组内折叠，而不是跨不相关的对等方。</p>
+</li>
+<li>
+<p>绿色：</p>
+<ul>
+<li><code>make routing-precedence</code></li>
+<li><code>make routing-identitylinks</code></li>
+</ul>
+</li>
+<li>
+<p>红色（预期）：</p>
+<ul>
+<li><code>make routing-precedence-negative</code></li>
+<li><code>make routing-identitylinks-negative</code></li>
+</ul>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/install/development-channels/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>开发渠道</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/heartbeat/">
+    <span class="title">Next »</span>
+    <br>
+    <span>心跳（Gateway 网关）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

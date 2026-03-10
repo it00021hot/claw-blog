@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>系统提示词 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 OpenClaw 拥有，不使用 pi-coding-agent 默认提示词。
+该提示词由 OpenClaw 组装并注入到每次智能体运行中。
+结构
+该提示词设计紧凑，使用固定部分：
+
+Tooling：当前工具列表 &#43; 简短描述。
+Safety：简短的防护提醒，避免追求权力的行为或绕过监督。
+Skills（如果可用）：告诉模型如何按需加载 Skill 指令。
+OpenClaw Self-Update：如何运行 config.apply 和 update.run。
+Workspace：工作目录（agents.defaults.workspace）。
+Documentation：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。
+Workspace Files (injected)：表示下方包含引导文件。
+Sandbox（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。
+Current Date &amp; Time：用户本地时间、时区和时间格式。
+Reply Tags：支持的提供商的可选回复标签语法。
+Heartbeats：心跳提示词和确认行为。
+Runtime：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。
+Reasoning：当前可见性级别 &#43; /reasoning 切换提示。
+
+系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。
+提示词模式
+OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 promptMode（不是面向用户的配置）：
+
+full（默认）：包含上述所有部分。
+minimal：用于子智能体；省略 Skills、Memory Recall、OpenClaw Self-Update、Model Aliases、User Identity、Reply Tags、Messaging、Silent Replies 和 Heartbeats。Tooling、Safety、Workspace、Sandbox、Current Date &amp; Time（已知时）、Runtime 和注入的上下文仍然可用。
+none：仅返回基本身份行。
+
+当 promptMode=minimal 时，额外注入的提示词标记为 Subagent Context 而不是 Group Chat Context。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/system-prompt/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/system-prompt/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/system-prompt/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="系统提示词">
+  <meta property="og:description" content="OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 OpenClaw 拥有，不使用 pi-coding-agent 默认提示词。
+该提示词由 OpenClaw 组装并注入到每次智能体运行中。
+结构 该提示词设计紧凑，使用固定部分：
+Tooling：当前工具列表 &#43; 简短描述。 Safety：简短的防护提醒，避免追求权力的行为或绕过监督。 Skills（如果可用）：告诉模型如何按需加载 Skill 指令。 OpenClaw Self-Update：如何运行 config.apply 和 update.run。 Workspace：工作目录（agents.defaults.workspace）。 Documentation：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。 Workspace Files (injected)：表示下方包含引导文件。 Sandbox（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。 Current Date &amp; Time：用户本地时间、时区和时间格式。 Reply Tags：支持的提供商的可选回复标签语法。 Heartbeats：心跳提示词和确认行为。 Runtime：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。 Reasoning：当前可见性级别 &#43; /reasoning 切换提示。 系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。
+提示词模式 OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 promptMode（不是面向用户的配置）：
+full（默认）：包含上述所有部分。 minimal：用于子智能体；省略 Skills、Memory Recall、OpenClaw Self-Update、Model Aliases、User Identity、Reply Tags、Messaging、Silent Replies 和 Heartbeats。Tooling、Safety、Workspace、Sandbox、Current Date &amp; Time（已知时）、Runtime 和注入的上下文仍然可用。 none：仅返回基本身份行。 当 promptMode=minimal 时，额外注入的提示词标记为 Subagent Context 而不是 Group Chat Context。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="系统提示词">
+<meta name="twitter:description" content="OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 OpenClaw 拥有，不使用 pi-coding-agent 默认提示词。
+该提示词由 OpenClaw 组装并注入到每次智能体运行中。
+结构
+该提示词设计紧凑，使用固定部分：
+
+Tooling：当前工具列表 &#43; 简短描述。
+Safety：简短的防护提醒，避免追求权力的行为或绕过监督。
+Skills（如果可用）：告诉模型如何按需加载 Skill 指令。
+OpenClaw Self-Update：如何运行 config.apply 和 update.run。
+Workspace：工作目录（agents.defaults.workspace）。
+Documentation：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。
+Workspace Files (injected)：表示下方包含引导文件。
+Sandbox（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。
+Current Date &amp; Time：用户本地时间、时区和时间格式。
+Reply Tags：支持的提供商的可选回复标签语法。
+Heartbeats：心跳提示词和确认行为。
+Runtime：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。
+Reasoning：当前可见性级别 &#43; /reasoning 切换提示。
+
+系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。
+提示词模式
+OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 promptMode（不是面向用户的配置）：
+
+full（默认）：包含上述所有部分。
+minimal：用于子智能体；省略 Skills、Memory Recall、OpenClaw Self-Update、Model Aliases、User Identity、Reply Tags、Messaging、Silent Replies 和 Heartbeats。Tooling、Safety、Workspace、Sandbox、Current Date &amp; Time（已知时）、Runtime 和注入的上下文仍然可用。
+none：仅返回基本身份行。
+
+当 promptMode=minimal 时，额外注入的提示词标记为 Subagent Context 而不是 Group Chat Context。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "系统提示词",
+      "item": "/openclaw/concepts/system-prompt/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "系统提示词",
+  "name": "系统提示词",
+  "description": "OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 OpenClaw 拥有，不使用 pi-coding-agent 默认提示词。\n该提示词由 OpenClaw 组装并注入到每次智能体运行中。\n结构 该提示词设计紧凑，使用固定部分：\nTooling：当前工具列表 + 简短描述。 Safety：简短的防护提醒，避免追求权力的行为或绕过监督。 Skills（如果可用）：告诉模型如何按需加载 Skill 指令。 OpenClaw Self-Update：如何运行 config.apply 和 update.run。 Workspace：工作目录（agents.defaults.workspace）。 Documentation：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。 Workspace Files (injected)：表示下方包含引导文件。 Sandbox（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。 Current Date \u0026amp; Time：用户本地时间、时区和时间格式。 Reply Tags：支持的提供商的可选回复标签语法。 Heartbeats：心跳提示词和确认行为。 Runtime：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。 Reasoning：当前可见性级别 + /reasoning 切换提示。 系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。\n提示词模式 OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 promptMode（不是面向用户的配置）：\nfull（默认）：包含上述所有部分。 minimal：用于子智能体；省略 Skills、Memory Recall、OpenClaw Self-Update、Model Aliases、User Identity、Reply Tags、Messaging、Silent Replies 和 Heartbeats。Tooling、Safety、Workspace、Sandbox、Current Date \u0026amp; Time（已知时）、Runtime 和注入的上下文仍然可用。 none：仅返回基本身份行。 当 promptMode=minimal 时，额外注入的提示词标记为 Subagent Context 而不是 Group Chat Context。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 OpenClaw 拥有，不使用 pi-coding-agent 默认提示词。\n该提示词由 OpenClaw 组装并注入到每次智能体运行中。\n结构 该提示词设计紧凑，使用固定部分：\nTooling：当前工具列表 + 简短描述。 Safety：简短的防护提醒，避免追求权力的行为或绕过监督。 Skills（如果可用）：告诉模型如何按需加载 Skill 指令。 OpenClaw Self-Update：如何运行 config.apply 和 update.run。 Workspace：工作目录（agents.defaults.workspace）。 Documentation：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。 Workspace Files (injected)：表示下方包含引导文件。 Sandbox（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。 Current Date \u0026 Time：用户本地时间、时区和时间格式。 Reply Tags：支持的提供商的可选回复标签语法。 Heartbeats：心跳提示词和确认行为。 Runtime：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。 Reasoning：当前可见性级别 + /reasoning 切换提示。 系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。\n提示词模式 OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 promptMode（不是面向用户的配置）：\nfull（默认）：包含上述所有部分。 minimal：用于子智能体；省略 Skills、Memory Recall、OpenClaw Self-Update、Model Aliases、User Identity、Reply Tags、Messaging、Silent Replies 和 Heartbeats。Tooling、Safety、Workspace、Sandbox、Current Date \u0026 Time（已知时）、Runtime 和注入的上下文仍然可用。 none：仅返回基本身份行。 当 promptMode=minimal 时，额外注入的提示词标记为 Subagent Context 而不是 Group Chat Context。\n工作区引导注入 引导文件被修剪后附加在 Project Context 下，这样模型无需显式读取即可看到身份和配置上下文：\nAGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md BOOTSTRAP.md（仅在全新工作区上） 大文件会带截断标记被截断。每个文件的最大大小由 agents.defaults.bootstrapMaxChars 控制（默认：20000）。缺失的文件会注入一个简短的缺失文件标记。\n内部钩子可以通过 agent:bootstrap 拦截此步骤以修改或替换注入的引导文件（例如将 SOUL.md 替换为其他角色）。\n要检查每个注入文件贡献了多少（原始 vs 注入、截断，加上工具 schema 开销），使用 /context list 或 /context detail。参见上下文。\n时间处理 当用户时区已知时，系统提示词包含专用的 Current Date \u0026 Time 部分。为保持提示词缓存稳定，它现在只包含时区（没有动态时钟或时间格式）。\n当智能体需要当前时间时使用 session_status；状态卡片包含时间戳行。\n配置方式：\nagents.defaults.userTimezone agents.defaults.timeFormat（auto | 12 | 24） 完整行为详情参见日期和时间。\nSkills 当存在符合条件的 Skills 时，OpenClaw 注入一个紧凑的可用 Skills 列表（formatSkillsForPrompt），其中包含每个 Skill 的文件路径。提示词指示模型使用 read 加载列出位置（工作区、托管或内置）的 SKILL.md。如果没有符合条件的 Skills，则省略 Skills 部分。\n... ... ... 这使基础提示词保持小巧，同时仍然支持有针对性的 Skill 使用。\n文档 如果可用，系统提示词包含一个 Documentation 部分，指向本地 OpenClaw 文档目录（仓库工作区中的 docs/ 或打包的 npm 包文档），并注明公共镜像、源仓库、社区 Discord 和 ClawHub (https://clawhub.com) 用于 Skills 发现。提示词指示模型首先查阅本地文档了解 OpenClaw 行为、命令、配置或架构，并尽可能自己运行 openclaw status（仅在无法访问时询问用户）。\n",
+  "wordCount" : "167",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/system-prompt/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      系统提示词
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%bb%93%e6%9e%84" aria-label="结构">结构</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e7%a4%ba%e8%af%8d%e6%a8%a1%e5%bc%8f" aria-label="提示词模式">提示词模式</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8c%ba%e5%bc%95%e5%af%bc%e6%b3%a8%e5%85%a5" aria-label="工作区引导注入">工作区引导注入</a></li>
+                <li>
+                    <a href="#%e6%97%b6%e9%97%b4%e5%a4%84%e7%90%86" aria-label="时间处理">时间处理</a></li>
+                <li>
+                    <a href="#skills" aria-label="Skills">Skills</a></li>
+                <li>
+                    <a href="#%e6%96%87%e6%a1%a3" aria-label="文档">文档</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 <strong>OpenClaw 拥有</strong>，不使用 pi-coding-agent 默认提示词。</p>
+<p>该提示词由 OpenClaw 组装并注入到每次智能体运行中。</p>
+<h2 id="结构">结构<a hidden class="anchor" aria-hidden="true" href="#结构">#</a></h2>
+<p>该提示词设计紧凑，使用固定部分：</p>
+<ul>
+<li><strong>Tooling</strong>：当前工具列表 + 简短描述。</li>
+<li><strong>Safety</strong>：简短的防护提醒，避免追求权力的行为或绕过监督。</li>
+<li><strong>Skills</strong>（如果可用）：告诉模型如何按需加载 Skill 指令。</li>
+<li><strong>OpenClaw Self-Update</strong>：如何运行 <code>config.apply</code> 和 <code>update.run</code>。</li>
+<li><strong>Workspace</strong>：工作目录（<code>agents.defaults.workspace</code>）。</li>
+<li><strong>Documentation</strong>：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。</li>
+<li><strong>Workspace Files (injected)</strong>：表示下方包含引导文件。</li>
+<li><strong>Sandbox</strong>（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。</li>
+<li><strong>Current Date &amp; Time</strong>：用户本地时间、时区和时间格式。</li>
+<li><strong>Reply Tags</strong>：支持的提供商的可选回复标签语法。</li>
+<li><strong>Heartbeats</strong>：心跳提示词和确认行为。</li>
+<li><strong>Runtime</strong>：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。</li>
+<li><strong>Reasoning</strong>：当前可见性级别 + /reasoning 切换提示。</li>
+</ul>
+<p>系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。</p>
+<h2 id="提示词模式">提示词模式<a hidden class="anchor" aria-hidden="true" href="#提示词模式">#</a></h2>
+<p>OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 <code>promptMode</code>（不是面向用户的配置）：</p>
+<ul>
+<li><code>full</code>（默认）：包含上述所有部分。</li>
+<li><code>minimal</code>：用于子智能体；省略 <strong>Skills</strong>、<strong>Memory Recall</strong>、<strong>OpenClaw Self-Update</strong>、<strong>Model Aliases</strong>、<strong>User Identity</strong>、<strong>Reply Tags</strong>、<strong>Messaging</strong>、<strong>Silent Replies</strong> 和 <strong>Heartbeats</strong>。Tooling、<strong>Safety</strong>、Workspace、Sandbox、Current Date &amp; Time（已知时）、Runtime 和注入的上下文仍然可用。</li>
+<li><code>none</code>：仅返回基本身份行。</li>
+</ul>
+<p>当 <code>promptMode=minimal</code> 时，额外注入的提示词标记为 <strong>Subagent Context</strong> 而不是 <strong>Group Chat Context</strong>。</p>
+<h2 id="工作区引导注入">工作区引导注入<a hidden class="anchor" aria-hidden="true" href="#工作区引导注入">#</a></h2>
+<p>引导文件被修剪后附加在 <strong>Project Context</strong> 下，这样模型无需显式读取即可看到身份和配置上下文：</p>
+<ul>
+<li><code>AGENTS.md</code></li>
+<li><code>SOUL.md</code></li>
+<li><code>TOOLS.md</code></li>
+<li><code>IDENTITY.md</code></li>
+<li><code>USER.md</code></li>
+<li><code>HEARTBEAT.md</code></li>
+<li><code>BOOTSTRAP.md</code>（仅在全新工作区上）</li>
+</ul>
+<p>大文件会带截断标记被截断。每个文件的最大大小由 <code>agents.defaults.bootstrapMaxChars</code> 控制（默认：20000）。缺失的文件会注入一个简短的缺失文件标记。</p>
+<p>内部钩子可以通过 <code>agent:bootstrap</code> 拦截此步骤以修改或替换注入的引导文件（例如将 <code>SOUL.md</code> 替换为其他角色）。</p>
+<p>要检查每个注入文件贡献了多少（原始 vs 注入、截断，加上工具 schema 开销），使用 <code>/context list</code> 或 <code>/context detail</code>。参见<a href="/concepts/context">上下文</a>。</p>
+<h2 id="时间处理">时间处理<a hidden class="anchor" aria-hidden="true" href="#时间处理">#</a></h2>
+<p>当用户时区已知时，系统提示词包含专用的 <strong>Current Date &amp; Time</strong> 部分。为保持提示词缓存稳定，它现在只包含<strong>时区</strong>（没有动态时钟或时间格式）。</p>
+<p>当智能体需要当前时间时使用 <code>session_status</code>；状态卡片包含时间戳行。</p>
+<p>配置方式：</p>
+<ul>
+<li><code>agents.defaults.userTimezone</code></li>
+<li><code>agents.defaults.timeFormat</code>（<code>auto</code> | <code>12</code> | <code>24</code>）</li>
+</ul>
+<p>完整行为详情参见<a href="/date-time">日期和时间</a>。</p>
+<h2 id="skills">Skills<a hidden class="anchor" aria-hidden="true" href="#skills">#</a></h2>
+<p>当存在符合条件的 Skills 时，OpenClaw 注入一个紧凑的<strong>可用 Skills 列表</strong>（<code>formatSkillsForPrompt</code>），其中包含每个 Skill 的<strong>文件路径</strong>。提示词指示模型使用 <code>read</code> 加载列出位置（工作区、托管或内置）的 SKILL.md。如果没有符合条件的 Skills，则省略 Skills 部分。</p>
+<pre tabindex="0"><code>&lt;available_skills&gt;
+  &lt;skill&gt;
+    &lt;name&gt;...&lt;/name&gt;
+    &lt;description&gt;...&lt;/description&gt;
+    &lt;location&gt;...&lt;/location&gt;
+  &lt;/skill&gt;
+&lt;/available_skills&gt;
+</code></pre><p>这使基础提示词保持小巧，同时仍然支持有针对性的 Skill 使用。</p>
+<h2 id="文档">文档<a hidden class="anchor" aria-hidden="true" href="#文档">#</a></h2>
+<p>如果可用，系统提示词包含一个 <strong>Documentation</strong> 部分，指向本地 OpenClaw 文档目录（仓库工作区中的 <code>docs/</code> 或打包的 npm 包文档），并注明公共镜像、源仓库、社区 Discord 和 ClawHub (<a href="https://clawhub.com">https://clawhub.com</a>) 用于 Skills 发现。提示词指示模型首先查阅本地文档了解 OpenClaw 行为、命令、配置或架构，并尽可能自己运行 <code>openclaw status</code>（仅在无法访问时询问用户）。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/nodes/camera/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>相机捕获（智能体）</span>
+  </a>
+  <a class="next" href="/openclaw/network/">
+    <span class="title">Next »</span>
+    <br>
+    <span>网络中心</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

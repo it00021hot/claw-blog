@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>文档导航中心 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="使用这些导航中心发现每一个页面，包括深入解析和参考文档——它们不一定出现在左侧导航栏中。
+从这里开始
+
+索引
+入门指南
+快速开始
+新手引导
+向导
+安装配置
+仪表盘（本地 Gateway 网关）
+帮助
+文档目录
+配置
+配置示例
+OpenClaw 助手
+展示
+背景故事
+
+安装 &#43; 更新
+
+Docker
+Nix
+更新 / 回滚
+Bun 工作流（实验性）
+
+核心概念
+
+架构
+功能
+网络中心
+智能体运行时
+智能体工作区
+记忆
+智能体循环
+流式传输 &#43; 分块
+多智能体路由
+压缩
+会话
+会话修剪
+会话工具
+队列
+斜杠命令
+RPC 适配器
+TypeBox 模式
+时区处理
+在线状态
+设备发现 &#43; 传输协议
+Bonjour
+渠道路由
+群组
+群组消息
+模型故障转移
+OAuth
+
+提供商 &#43; 入口
+
+聊天渠道中心
+模型提供商中心
+WhatsApp
+Telegram
+Telegram（grammY 注意事项）
+Slack
+Discord
+Mattermost（插件）
+Signal
+BlueBubbles (iMessage)
+iMessage（旧版）
+位置解析
+WebChat
+Webhooks
+Gmail Pub/Sub
+
+Gateway 网关 &#43; 运维
+
+Gateway 网关运维手册
+网络模型
+Gateway 网关配对
+Gateway 网关锁
+后台进程
+健康检查
+心跳
+Doctor
+日志
+沙箱隔离
+仪表盘
+控制界面
+远程访问
+远程 Gateway 网关 README
+Tailscale
+安全
+故障排除
+
+工具 &#43; 自动化
+
+工具概览
+OpenProse
+CLI 参考
+Exec 工具
+提权模式
+定时任务
+定时任务 vs 心跳
+思考 &#43; 详细输出
+模型
+子智能体
+Agent send CLI
+终端界面
+浏览器控制
+浏览器（Linux 故障排除）
+轮询
+
+节点、媒体、语音
+
+节点概览
+摄像头
+图片
+音频
+位置命令
+语音唤醒
+对话模式
+
+平台
+
+平台概览
+macOS
+iOS
+Android
+Windows (WSL2)
+Linux
+Web 界面
+
+macOS 配套应用（高级）
+
+macOS 开发环境配置
+macOS 菜单栏
+macOS 语音唤醒
+macOS 语音悬浮窗
+macOS WebChat
+macOS Canvas
+macOS 子进程
+macOS 健康检查
+macOS 图标
+macOS 日志
+macOS 权限
+macOS 远程
+macOS 签名
+macOS 发布
+macOS Gateway 网关 (launchd)
+macOS XPC
+macOS Skills
+macOS Peekaboo
+
+工作区 &#43; 模板
+
+Skills
+ClawHub
+Skills 配置
+默认 AGENTS
+模板：AGENTS
+模板：BOOTSTRAP
+模板：HEARTBEAT
+模板：IDENTITY
+模板：SOUL
+模板：TOOLS
+模板：USER
+
+实验（探索性）
+
+新手引导配置协议
+定时任务加固笔记
+群组策略加固笔记
+研究：记忆
+模型配置探索
+
+项目
+
+致谢
+
+测试 &#43; 发布
+
+测试
+发布检查清单
+设备型号
+">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/start/hubs/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/start/hubs/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/start/hubs/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="文档导航中心">
+  <meta property="og:description" content="使用这些导航中心发现每一个页面，包括深入解析和参考文档——它们不一定出现在左侧导航栏中。
+从这里开始 索引 入门指南 快速开始 新手引导 向导 安装配置 仪表盘（本地 Gateway 网关） 帮助 文档目录 配置 配置示例 OpenClaw 助手 展示 背景故事 安装 &#43; 更新 Docker Nix 更新 / 回滚 Bun 工作流（实验性） 核心概念 架构 功能 网络中心 智能体运行时 智能体工作区 记忆 智能体循环 流式传输 &#43; 分块 多智能体路由 压缩 会话 会话修剪 会话工具 队列 斜杠命令 RPC 适配器 TypeBox 模式 时区处理 在线状态 设备发现 &#43; 传输协议 Bonjour 渠道路由 群组 群组消息 模型故障转移 OAuth 提供商 &#43; 入口 聊天渠道中心 模型提供商中心 WhatsApp Telegram Telegram（grammY 注意事项） Slack Discord Mattermost（插件） Signal BlueBubbles (iMessage) iMessage（旧版） 位置解析 WebChat Webhooks Gmail Pub/Sub Gateway 网关 &#43; 运维 Gateway 网关运维手册 网络模型 Gateway 网关配对 Gateway 网关锁 后台进程 健康检查 心跳 Doctor 日志 沙箱隔离 仪表盘 控制界面 远程访问 远程 Gateway 网关 README Tailscale 安全 故障排除 工具 &#43; 自动化 工具概览 OpenProse CLI 参考 Exec 工具 提权模式 定时任务 定时任务 vs 心跳 思考 &#43; 详细输出 模型 子智能体 Agent send CLI 终端界面 浏览器控制 浏览器（Linux 故障排除） 轮询 节点、媒体、语音 节点概览 摄像头 图片 音频 位置命令 语音唤醒 对话模式 平台 平台概览 macOS iOS Android Windows (WSL2) Linux Web 界面 macOS 配套应用（高级） macOS 开发环境配置 macOS 菜单栏 macOS 语音唤醒 macOS 语音悬浮窗 macOS WebChat macOS Canvas macOS 子进程 macOS 健康检查 macOS 图标 macOS 日志 macOS 权限 macOS 远程 macOS 签名 macOS 发布 macOS Gateway 网关 (launchd) macOS XPC macOS Skills macOS Peekaboo 工作区 &#43; 模板 Skills ClawHub Skills 配置 默认 AGENTS 模板：AGENTS 模板：BOOTSTRAP 模板：HEARTBEAT 模板：IDENTITY 模板：SOUL 模板：TOOLS 模板：USER 实验（探索性） 新手引导配置协议 定时任务加固笔记 群组策略加固笔记 研究：记忆 模型配置探索 项目 致谢 测试 &#43; 发布 测试 发布检查清单 设备型号 ">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="文档导航中心">
+<meta name="twitter:description" content="使用这些导航中心发现每一个页面，包括深入解析和参考文档——它们不一定出现在左侧导航栏中。
+从这里开始
+
+索引
+入门指南
+快速开始
+新手引导
+向导
+安装配置
+仪表盘（本地 Gateway 网关）
+帮助
+文档目录
+配置
+配置示例
+OpenClaw 助手
+展示
+背景故事
+
+安装 &#43; 更新
+
+Docker
+Nix
+更新 / 回滚
+Bun 工作流（实验性）
+
+核心概念
+
+架构
+功能
+网络中心
+智能体运行时
+智能体工作区
+记忆
+智能体循环
+流式传输 &#43; 分块
+多智能体路由
+压缩
+会话
+会话修剪
+会话工具
+队列
+斜杠命令
+RPC 适配器
+TypeBox 模式
+时区处理
+在线状态
+设备发现 &#43; 传输协议
+Bonjour
+渠道路由
+群组
+群组消息
+模型故障转移
+OAuth
+
+提供商 &#43; 入口
+
+聊天渠道中心
+模型提供商中心
+WhatsApp
+Telegram
+Telegram（grammY 注意事项）
+Slack
+Discord
+Mattermost（插件）
+Signal
+BlueBubbles (iMessage)
+iMessage（旧版）
+位置解析
+WebChat
+Webhooks
+Gmail Pub/Sub
+
+Gateway 网关 &#43; 运维
+
+Gateway 网关运维手册
+网络模型
+Gateway 网关配对
+Gateway 网关锁
+后台进程
+健康检查
+心跳
+Doctor
+日志
+沙箱隔离
+仪表盘
+控制界面
+远程访问
+远程 Gateway 网关 README
+Tailscale
+安全
+故障排除
+
+工具 &#43; 自动化
+
+工具概览
+OpenProse
+CLI 参考
+Exec 工具
+提权模式
+定时任务
+定时任务 vs 心跳
+思考 &#43; 详细输出
+模型
+子智能体
+Agent send CLI
+终端界面
+浏览器控制
+浏览器（Linux 故障排除）
+轮询
+
+节点、媒体、语音
+
+节点概览
+摄像头
+图片
+音频
+位置命令
+语音唤醒
+对话模式
+
+平台
+
+平台概览
+macOS
+iOS
+Android
+Windows (WSL2)
+Linux
+Web 界面
+
+macOS 配套应用（高级）
+
+macOS 开发环境配置
+macOS 菜单栏
+macOS 语音唤醒
+macOS 语音悬浮窗
+macOS WebChat
+macOS Canvas
+macOS 子进程
+macOS 健康检查
+macOS 图标
+macOS 日志
+macOS 权限
+macOS 远程
+macOS 签名
+macOS 发布
+macOS Gateway 网关 (launchd)
+macOS XPC
+macOS Skills
+macOS Peekaboo
+
+工作区 &#43; 模板
+
+Skills
+ClawHub
+Skills 配置
+默认 AGENTS
+模板：AGENTS
+模板：BOOTSTRAP
+模板：HEARTBEAT
+模板：IDENTITY
+模板：SOUL
+模板：TOOLS
+模板：USER
+
+实验（探索性）
+
+新手引导配置协议
+定时任务加固笔记
+群组策略加固笔记
+研究：记忆
+模型配置探索
+
+项目
+
+致谢
+
+测试 &#43; 发布
+
+测试
+发布检查清单
+设备型号
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "文档导航中心",
+      "item": "/openclaw/start/hubs/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "文档导航中心",
+  "name": "文档导航中心",
+  "description": "使用这些导航中心发现每一个页面，包括深入解析和参考文档——它们不一定出现在左侧导航栏中。\n从这里开始 索引 入门指南 快速开始 新手引导 向导 安装配置 仪表盘（本地 Gateway 网关） 帮助 文档目录 配置 配置示例 OpenClaw 助手 展示 背景故事 安装 + 更新 Docker Nix 更新 / 回滚 Bun 工作流（实验性） 核心概念 架构 功能 网络中心 智能体运行时 智能体工作区 记忆 智能体循环 流式传输 + 分块 多智能体路由 压缩 会话 会话修剪 会话工具 队列 斜杠命令 RPC 适配器 TypeBox 模式 时区处理 在线状态 设备发现 + 传输协议 Bonjour 渠道路由 群组 群组消息 模型故障转移 OAuth 提供商 + 入口 聊天渠道中心 模型提供商中心 WhatsApp Telegram Telegram（grammY 注意事项） Slack Discord Mattermost（插件） Signal BlueBubbles (iMessage) iMessage（旧版） 位置解析 WebChat Webhooks Gmail Pub/Sub Gateway 网关 + 运维 Gateway 网关运维手册 网络模型 Gateway 网关配对 Gateway 网关锁 后台进程 健康检查 心跳 Doctor 日志 沙箱隔离 仪表盘 控制界面 远程访问 远程 Gateway 网关 README Tailscale 安全 故障排除 工具 + 自动化 工具概览 OpenProse CLI 参考 Exec 工具 提权模式 定时任务 定时任务 vs 心跳 思考 + 详细输出 模型 子智能体 Agent send CLI 终端界面 浏览器控制 浏览器（Linux 故障排除） 轮询 节点、媒体、语音 节点概览 摄像头 图片 音频 位置命令 语音唤醒 对话模式 平台 平台概览 macOS iOS Android Windows (WSL2) Linux Web 界面 macOS 配套应用（高级） macOS 开发环境配置 macOS 菜单栏 macOS 语音唤醒 macOS 语音悬浮窗 macOS WebChat macOS Canvas macOS 子进程 macOS 健康检查 macOS 图标 macOS 日志 macOS 权限 macOS 远程 macOS 签名 macOS 发布 macOS Gateway 网关 (launchd) macOS XPC macOS Skills macOS Peekaboo 工作区 + 模板 Skills ClawHub Skills 配置 默认 AGENTS 模板：AGENTS 模板：BOOTSTRAP 模板：HEARTBEAT 模板：IDENTITY 模板：SOUL 模板：TOOLS 模板：USER 实验（探索性） 新手引导配置协议 定时任务加固笔记 群组策略加固笔记 研究：记忆 模型配置探索 项目 致谢 测试 + 发布 测试 发布检查清单 设备型号 ",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "使用这些导航中心发现每一个页面，包括深入解析和参考文档——它们不一定出现在左侧导航栏中。\n从这里开始 索引 入门指南 快速开始 新手引导 向导 安装配置 仪表盘（本地 Gateway 网关） 帮助 文档目录 配置 配置示例 OpenClaw 助手 展示 背景故事 安装 + 更新 Docker Nix 更新 / 回滚 Bun 工作流（实验性） 核心概念 架构 功能 网络中心 智能体运行时 智能体工作区 记忆 智能体循环 流式传输 + 分块 多智能体路由 压缩 会话 会话修剪 会话工具 队列 斜杠命令 RPC 适配器 TypeBox 模式 时区处理 在线状态 设备发现 + 传输协议 Bonjour 渠道路由 群组 群组消息 模型故障转移 OAuth 提供商 + 入口 聊天渠道中心 模型提供商中心 WhatsApp Telegram Telegram（grammY 注意事项） Slack Discord Mattermost（插件） Signal BlueBubbles (iMessage) iMessage（旧版） 位置解析 WebChat Webhooks Gmail Pub/Sub Gateway 网关 + 运维 Gateway 网关运维手册 网络模型 Gateway 网关配对 Gateway 网关锁 后台进程 健康检查 心跳 Doctor 日志 沙箱隔离 仪表盘 控制界面 远程访问 远程 Gateway 网关 README Tailscale 安全 故障排除 工具 + 自动化 工具概览 OpenProse CLI 参考 Exec 工具 提权模式 定时任务 定时任务 vs 心跳 思考 + 详细输出 模型 子智能体 Agent send CLI 终端界面 浏览器控制 浏览器（Linux 故障排除） 轮询 节点、媒体、语音 节点概览 摄像头 图片 音频 位置命令 语音唤醒 对话模式 平台 平台概览 macOS iOS Android Windows (WSL2) Linux Web 界面 macOS 配套应用（高级） macOS 开发环境配置 macOS 菜单栏 macOS 语音唤醒 macOS 语音悬浮窗 macOS WebChat macOS Canvas macOS 子进程 macOS 健康检查 macOS 图标 macOS 日志 macOS 权限 macOS 远程 macOS 签名 macOS 发布 macOS Gateway 网关 (launchd) macOS XPC macOS Skills macOS Peekaboo 工作区 + 模板 Skills ClawHub Skills 配置 默认 AGENTS 模板：AGENTS 模板：BOOTSTRAP 模板：HEARTBEAT 模板：IDENTITY 模板：SOUL 模板：TOOLS 模板：USER 实验（探索性） 新手引导配置协议 定时任务加固笔记 群组策略加固笔记 研究：记忆 模型配置探索 项目 致谢 测试 + 发布 测试 发布检查清单 设备型号 ",
+  "wordCount" : "225",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/start/hubs/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      文档导航中心
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%bb%8e%e8%bf%99%e9%87%8c%e5%bc%80%e5%a7%8b" aria-label="从这里开始">从这里开始</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85--%e6%9b%b4%e6%96%b0" aria-label="安装 &#43; 更新">安装 + 更新</a></li>
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" aria-label="核心概念">核心概念</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e4%be%9b%e5%95%86--%e5%85%a5%e5%8f%a3" aria-label="提供商 &#43; 入口">提供商 + 入口</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3--%e8%bf%90%e7%bb%b4" aria-label="Gateway 网关 &#43; 运维">Gateway 网关 + 运维</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7--%e8%87%aa%e5%8a%a8%e5%8c%96" aria-label="工具 &#43; 自动化">工具 + 自动化</a></li>
+                <li>
+                    <a href="#%e8%8a%82%e7%82%b9%e5%aa%92%e4%bd%93%e8%af%ad%e9%9f%b3" aria-label="节点、媒体、语音">节点、媒体、语音</a></li>
+                <li>
+                    <a href="#%e5%b9%b3%e5%8f%b0" aria-label="平台">平台</a></li>
+                <li>
+                    <a href="#macos-%e9%85%8d%e5%a5%97%e5%ba%94%e7%94%a8%e9%ab%98%e7%ba%a7" aria-label="macOS 配套应用（高级）">macOS 配套应用（高级）</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8c%ba--%e6%a8%a1%e6%9d%bf" aria-label="工作区 &#43; 模板">工作区 + 模板</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e9%aa%8c%e6%8e%a2%e7%b4%a2%e6%80%a7" aria-label="实验（探索性）">实验（探索性）</a></li>
+                <li>
+                    <a href="#%e9%a1%b9%e7%9b%ae" aria-label="项目">项目</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95--%e5%8f%91%e5%b8%83" aria-label="测试 &#43; 发布">测试 + 发布</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>使用这些导航中心发现每一个页面，包括深入解析和参考文档——它们不一定出现在左侧导航栏中。</p>
+<h2 id="从这里开始">从这里开始<a hidden class="anchor" aria-hidden="true" href="#从这里开始">#</a></h2>
+<ul>
+<li><a href="/">索引</a></li>
+<li><a href="/start/getting-started">入门指南</a></li>
+<li><a href="/start/quickstart">快速开始</a></li>
+<li><a href="/start/onboarding">新手引导</a></li>
+<li><a href="/start/wizard">向导</a></li>
+<li><a href="/start/setup">安装配置</a></li>
+<li><a href="http://127.0.0.1:18789/">仪表盘（本地 Gateway 网关）</a></li>
+<li><a href="/help">帮助</a></li>
+<li><a href="/start/docs-directory">文档目录</a></li>
+<li><a href="/gateway/configuration">配置</a></li>
+<li><a href="/gateway/configuration-examples">配置示例</a></li>
+<li><a href="/start/openclaw">OpenClaw 助手</a></li>
+<li><a href="/start/showcase">展示</a></li>
+<li><a href="/start/lore">背景故事</a></li>
+</ul>
+<h2 id="安装--更新">安装 + 更新<a hidden class="anchor" aria-hidden="true" href="#安装--更新">#</a></h2>
+<ul>
+<li><a href="/install/docker">Docker</a></li>
+<li><a href="/install/nix">Nix</a></li>
+<li><a href="/install/updating">更新 / 回滚</a></li>
+<li><a href="/install/bun">Bun 工作流（实验性）</a></li>
+</ul>
+<h2 id="核心概念">核心概念<a hidden class="anchor" aria-hidden="true" href="#核心概念">#</a></h2>
+<ul>
+<li><a href="/concepts/architecture">架构</a></li>
+<li><a href="/concepts/features">功能</a></li>
+<li><a href="/network">网络中心</a></li>
+<li><a href="/concepts/agent">智能体运行时</a></li>
+<li><a href="/concepts/agent-workspace">智能体工作区</a></li>
+<li><a href="/concepts/memory">记忆</a></li>
+<li><a href="/concepts/agent-loop">智能体循环</a></li>
+<li><a href="/concepts/streaming">流式传输 + 分块</a></li>
+<li><a href="/concepts/multi-agent">多智能体路由</a></li>
+<li><a href="/concepts/compaction">压缩</a></li>
+<li><a href="/concepts/session">会话</a></li>
+<li><a href="/concepts/session-pruning">会话修剪</a></li>
+<li><a href="/concepts/session-tool">会话工具</a></li>
+<li><a href="/concepts/queue">队列</a></li>
+<li><a href="/tools/slash-commands">斜杠命令</a></li>
+<li><a href="/reference/rpc">RPC 适配器</a></li>
+<li><a href="/concepts/typebox">TypeBox 模式</a></li>
+<li><a href="/concepts/timezone">时区处理</a></li>
+<li><a href="/concepts/presence">在线状态</a></li>
+<li><a href="/gateway/discovery">设备发现 + 传输协议</a></li>
+<li><a href="/gateway/bonjour">Bonjour</a></li>
+<li><a href="/channels/channel-routing">渠道路由</a></li>
+<li><a href="/channels/groups">群组</a></li>
+<li><a href="/channels/group-messages">群组消息</a></li>
+<li><a href="/concepts/model-failover">模型故障转移</a></li>
+<li><a href="/concepts/oauth">OAuth</a></li>
+</ul>
+<h2 id="提供商--入口">提供商 + 入口<a hidden class="anchor" aria-hidden="true" href="#提供商--入口">#</a></h2>
+<ul>
+<li><a href="/channels">聊天渠道中心</a></li>
+<li><a href="/providers/models">模型提供商中心</a></li>
+<li><a href="/channels/whatsapp">WhatsApp</a></li>
+<li><a href="/channels/telegram">Telegram</a></li>
+<li><a href="/channels/grammy">Telegram（grammY 注意事项）</a></li>
+<li><a href="/channels/slack">Slack</a></li>
+<li><a href="/channels/discord">Discord</a></li>
+<li><a href="/channels/mattermost">Mattermost</a>（插件）</li>
+<li><a href="/channels/signal">Signal</a></li>
+<li><a href="/channels/bluebubbles">BlueBubbles (iMessage)</a></li>
+<li><a href="/channels/imessage">iMessage（旧版）</a></li>
+<li><a href="/channels/location">位置解析</a></li>
+<li><a href="/web/webchat">WebChat</a></li>
+<li><a href="/automation/webhook">Webhooks</a></li>
+<li><a href="/automation/gmail-pubsub">Gmail Pub/Sub</a></li>
+</ul>
+<h2 id="gateway-网关--运维">Gateway 网关 + 运维<a hidden class="anchor" aria-hidden="true" href="#gateway-网关--运维">#</a></h2>
+<ul>
+<li><a href="/gateway">Gateway 网关运维手册</a></li>
+<li><a href="/gateway/network-model">网络模型</a></li>
+<li><a href="/gateway/pairing">Gateway 网关配对</a></li>
+<li><a href="/gateway/gateway-lock">Gateway 网关锁</a></li>
+<li><a href="/gateway/background-process">后台进程</a></li>
+<li><a href="/gateway/health">健康检查</a></li>
+<li><a href="/gateway/heartbeat">心跳</a></li>
+<li><a href="/gateway/doctor">Doctor</a></li>
+<li><a href="/gateway/logging">日志</a></li>
+<li><a href="/gateway/sandboxing">沙箱隔离</a></li>
+<li><a href="/web/dashboard">仪表盘</a></li>
+<li><a href="/web/control-ui">控制界面</a></li>
+<li><a href="/gateway/remote">远程访问</a></li>
+<li><a href="/gateway/remote-gateway-readme">远程 Gateway 网关 README</a></li>
+<li><a href="/gateway/tailscale">Tailscale</a></li>
+<li><a href="/gateway/security">安全</a></li>
+<li><a href="/gateway/troubleshooting">故障排除</a></li>
+</ul>
+<h2 id="工具--自动化">工具 + 自动化<a hidden class="anchor" aria-hidden="true" href="#工具--自动化">#</a></h2>
+<ul>
+<li><a href="/tools">工具概览</a></li>
+<li><a href="/prose">OpenProse</a></li>
+<li><a href="/cli">CLI 参考</a></li>
+<li><a href="/tools/exec">Exec 工具</a></li>
+<li><a href="/tools/elevated">提权模式</a></li>
+<li><a href="/automation/cron-jobs">定时任务</a></li>
+<li><a href="/automation/cron-vs-heartbeat">定时任务 vs 心跳</a></li>
+<li><a href="/tools/thinking">思考 + 详细输出</a></li>
+<li><a href="/concepts/models">模型</a></li>
+<li><a href="/tools/subagents">子智能体</a></li>
+<li><a href="/tools/agent-send">Agent send CLI</a></li>
+<li><a href="/web/tui">终端界面</a></li>
+<li><a href="/tools/browser">浏览器控制</a></li>
+<li><a href="/tools/browser-linux-troubleshooting">浏览器（Linux 故障排除）</a></li>
+<li><a href="/automation/poll">轮询</a></li>
+</ul>
+<h2 id="节点媒体语音">节点、媒体、语音<a hidden class="anchor" aria-hidden="true" href="#节点媒体语音">#</a></h2>
+<ul>
+<li><a href="/nodes">节点概览</a></li>
+<li><a href="/nodes/camera">摄像头</a></li>
+<li><a href="/nodes/images">图片</a></li>
+<li><a href="/nodes/audio">音频</a></li>
+<li><a href="/nodes/location-command">位置命令</a></li>
+<li><a href="/nodes/voicewake">语音唤醒</a></li>
+<li><a href="/nodes/talk">对话模式</a></li>
+</ul>
+<h2 id="平台">平台<a hidden class="anchor" aria-hidden="true" href="#平台">#</a></h2>
+<ul>
+<li><a href="/platforms">平台概览</a></li>
+<li><a href="/platforms/macos">macOS</a></li>
+<li><a href="/platforms/ios">iOS</a></li>
+<li><a href="/platforms/android">Android</a></li>
+<li><a href="/platforms/windows">Windows (WSL2)</a></li>
+<li><a href="/platforms/linux">Linux</a></li>
+<li><a href="/web">Web 界面</a></li>
+</ul>
+<h2 id="macos-配套应用高级">macOS 配套应用（高级）<a hidden class="anchor" aria-hidden="true" href="#macos-配套应用高级">#</a></h2>
+<ul>
+<li><a href="/platforms/mac/dev-setup">macOS 开发环境配置</a></li>
+<li><a href="/platforms/mac/menu-bar">macOS 菜单栏</a></li>
+<li><a href="/platforms/mac/voicewake">macOS 语音唤醒</a></li>
+<li><a href="/platforms/mac/voice-overlay">macOS 语音悬浮窗</a></li>
+<li><a href="/platforms/mac/webchat">macOS WebChat</a></li>
+<li><a href="/platforms/mac/canvas">macOS Canvas</a></li>
+<li><a href="/platforms/mac/child-process">macOS 子进程</a></li>
+<li><a href="/platforms/mac/health">macOS 健康检查</a></li>
+<li><a href="/platforms/mac/icon">macOS 图标</a></li>
+<li><a href="/platforms/mac/logging">macOS 日志</a></li>
+<li><a href="/platforms/mac/permissions">macOS 权限</a></li>
+<li><a href="/platforms/mac/remote">macOS 远程</a></li>
+<li><a href="/platforms/mac/signing">macOS 签名</a></li>
+<li><a href="/platforms/mac/release">macOS 发布</a></li>
+<li><a href="/platforms/mac/bundled-gateway">macOS Gateway 网关 (launchd)</a></li>
+<li><a href="/platforms/mac/xpc">macOS XPC</a></li>
+<li><a href="/platforms/mac/skills">macOS Skills</a></li>
+<li><a href="/platforms/mac/peekaboo">macOS Peekaboo</a></li>
+</ul>
+<h2 id="工作区--模板">工作区 + 模板<a hidden class="anchor" aria-hidden="true" href="#工作区--模板">#</a></h2>
+<ul>
+<li><a href="/tools/skills">Skills</a></li>
+<li><a href="/tools/clawhub">ClawHub</a></li>
+<li><a href="/tools/skills-config">Skills 配置</a></li>
+<li><a href="/reference/AGENTS.default">默认 AGENTS</a></li>
+<li><a href="/reference/templates/AGENTS">模板：AGENTS</a></li>
+<li><a href="/reference/templates/BOOTSTRAP">模板：BOOTSTRAP</a></li>
+<li><a href="/reference/templates/HEARTBEAT">模板：HEARTBEAT</a></li>
+<li><a href="/reference/templates/IDENTITY">模板：IDENTITY</a></li>
+<li><a href="/reference/templates/SOUL">模板：SOUL</a></li>
+<li><a href="/reference/templates/TOOLS">模板：TOOLS</a></li>
+<li><a href="/reference/templates/USER">模板：USER</a></li>
+</ul>
+<h2 id="实验探索性">实验（探索性）<a hidden class="anchor" aria-hidden="true" href="#实验探索性">#</a></h2>
+<ul>
+<li><a href="/experiments/onboarding-config-protocol">新手引导配置协议</a></li>
+<li><a href="/experiments/plans/cron-add-hardening">定时任务加固笔记</a></li>
+<li><a href="/experiments/plans/group-policy-hardening">群组策略加固笔记</a></li>
+<li><a href="/experiments/research/memory">研究：记忆</a></li>
+<li><a href="/experiments/proposals/model-config">模型配置探索</a></li>
+</ul>
+<h2 id="项目">项目<a hidden class="anchor" aria-hidden="true" href="#项目">#</a></h2>
+<ul>
+<li><a href="/reference/credits">致谢</a></li>
+</ul>
+<h2 id="测试--发布">测试 + 发布<a hidden class="anchor" aria-hidden="true" href="#测试--发布">#</a></h2>
+<ul>
+<li><a href="/reference/test">测试</a></li>
+<li><a href="/reference/RELEASING">发布检查清单</a></li>
+<li><a href="/reference/device-models">设备型号</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/tts/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>文本转语音（TTS）</span>
+  </a>
+  <a class="next" href="/openclaw/tools/slash-commands/">
+    <span class="title">Next »</span>
+    <br>
+    <span>斜杠命令</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

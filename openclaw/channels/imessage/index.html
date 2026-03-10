@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>iMessage (imsg) | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态：外部 CLI 集成。Gateway 网关生成 imsg rpc（基于 stdio 的 JSON-RPC）。
+快速设置（新手）
+
+确保在此 Mac 上已登录&quot;信息&quot;。
+安装 imsg：
+
+brew install steipete/tap/imsg
+
+
+配置 OpenClaw 的 channels.imessage.cliPath 和 channels.imessage.dbPath。
+启动 Gateway 网关并批准所有 macOS 提示（自动化 &#43; 完全磁盘访问权限）。
+
+最小配置：
+{
+  channels: {
+    imessage: {
+      enabled: true,
+      cliPath: &#34;/usr/local/bin/imsg&#34;,
+      dbPath: &#34;/Users/&lt;you&gt;/Library/Messages/chat.db&#34;,
+    },
+  },
+}
+简介
+
+基于 macOS 上 imsg 的 iMessage 渠道。
+确定性路由：回复始终返回到 iMessage。
+私信共享智能体的主会话；群组是隔离的（agent:&lt;agentId&gt;:imessage:group:&lt;chat_id&gt;）。
+如果多参与者会话以 is_group=false 到达，你仍可使用 channels.imessage.groups 按 chat_id 隔离（参见下方&quot;类群组会话&quot;）。
+
+配置写入
+默认情况下，iMessage 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/imessage/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/imessage/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/imessage/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="iMessage (imsg)">
+  <meta property="og:description" content="状态：外部 CLI 集成。Gateway 网关生成 imsg rpc（基于 stdio 的 JSON-RPC）。
+快速设置（新手） 确保在此 Mac 上已登录&#34;信息&#34;。 安装 imsg： brew install steipete/tap/imsg 配置 OpenClaw 的 channels.imessage.cliPath 和 channels.imessage.dbPath。 启动 Gateway 网关并批准所有 macOS 提示（自动化 &#43; 完全磁盘访问权限）。 最小配置：
+{ channels: { imessage: { enabled: true, cliPath: &#34;/usr/local/bin/imsg&#34;, dbPath: &#34;/Users/&lt;you&gt;/Library/Messages/chat.db&#34;, }, }, } 简介 基于 macOS 上 imsg 的 iMessage 渠道。 确定性路由：回复始终返回到 iMessage。 私信共享智能体的主会话；群组是隔离的（agent:&lt;agentId&gt;:imessage:group:&lt;chat_id&gt;）。 如果多参与者会话以 is_group=false 到达，你仍可使用 channels.imessage.groups 按 chat_id 隔离（参见下方&#34;类群组会话&#34;）。 配置写入 默认情况下，iMessage 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iMessage (imsg)">
+<meta name="twitter:description" content="状态：外部 CLI 集成。Gateway 网关生成 imsg rpc（基于 stdio 的 JSON-RPC）。
+快速设置（新手）
+
+确保在此 Mac 上已登录&quot;信息&quot;。
+安装 imsg：
+
+brew install steipete/tap/imsg
+
+
+配置 OpenClaw 的 channels.imessage.cliPath 和 channels.imessage.dbPath。
+启动 Gateway 网关并批准所有 macOS 提示（自动化 &#43; 完全磁盘访问权限）。
+
+最小配置：
+{
+  channels: {
+    imessage: {
+      enabled: true,
+      cliPath: &#34;/usr/local/bin/imsg&#34;,
+      dbPath: &#34;/Users/&lt;you&gt;/Library/Messages/chat.db&#34;,
+    },
+  },
+}
+简介
+
+基于 macOS 上 imsg 的 iMessage 渠道。
+确定性路由：回复始终返回到 iMessage。
+私信共享智能体的主会话；群组是隔离的（agent:&lt;agentId&gt;:imessage:group:&lt;chat_id&gt;）。
+如果多参与者会话以 is_group=false 到达，你仍可使用 channels.imessage.groups 按 chat_id 隔离（参见下方&quot;类群组会话&quot;）。
+
+配置写入
+默认情况下，iMessage 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "iMessage (imsg)",
+      "item": "/openclaw/channels/imessage/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "iMessage (imsg)",
+  "name": "iMessage (imsg)",
+  "description": "状态：外部 CLI 集成。Gateway 网关生成 imsg rpc（基于 stdio 的 JSON-RPC）。\n快速设置（新手） 确保在此 Mac 上已登录\u0026quot;信息\u0026quot;。 安装 imsg： brew install steipete/tap/imsg 配置 OpenClaw 的 channels.imessage.cliPath 和 channels.imessage.dbPath。 启动 Gateway 网关并批准所有 macOS 提示（自动化 + 完全磁盘访问权限）。 最小配置：\n{ channels: { imessage: { enabled: true, cliPath: \u0026#34;/usr/local/bin/imsg\u0026#34;, dbPath: \u0026#34;/Users/\u0026lt;you\u0026gt;/Library/Messages/chat.db\u0026#34;, }, }, } 简介 基于 macOS 上 imsg 的 iMessage 渠道。 确定性路由：回复始终返回到 iMessage。 私信共享智能体的主会话；群组是隔离的（agent:\u0026lt;agentId\u0026gt;:imessage:group:\u0026lt;chat_id\u0026gt;）。 如果多参与者会话以 is_group=false 到达，你仍可使用 channels.imessage.groups 按 chat_id 隔离（参见下方\u0026quot;类群组会话\u0026quot;）。 配置写入 默认情况下，iMessage 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态：外部 CLI 集成。Gateway 网关生成 imsg rpc（基于 stdio 的 JSON-RPC）。\n快速设置（新手） 确保在此 Mac 上已登录\"信息\"。 安装 imsg： brew install steipete/tap/imsg 配置 OpenClaw 的 channels.imessage.cliPath 和 channels.imessage.dbPath。 启动 Gateway 网关并批准所有 macOS 提示（自动化 + 完全磁盘访问权限）。 最小配置：\n{ channels: { imessage: { enabled: true, cliPath: \"/usr/local/bin/imsg\", dbPath: \"/Users//Library/Messages/chat.db\", }, }, } 简介 基于 macOS 上 imsg 的 iMessage 渠道。 确定性路由：回复始终返回到 iMessage。 私信共享智能体的主会话；群组是隔离的（agent::imessage:group:）。 如果多参与者会话以 is_group=false 到达，你仍可使用 channels.imessage.groups 按 chat_id 隔离（参见下方\"类群组会话\"）。 配置写入 默认情况下，iMessage 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。\n禁用方式：\n{ channels: { imessage: { configWrites: false } }, } 要求 已登录\"信息\"的 macOS。 OpenClaw + imsg 的完全磁盘访问权限（访问\"信息\"数据库）。 发送时需要自动化权限。 channels.imessage.cliPath 可以指向任何代理 stdin/stdout 的命令（例如，通过 SSH 连接到另一台 Mac 并运行 imsg rpc 的包装脚本）。 设置（快速路径） 确保在此 Mac 上已登录\"信息\"。 配置 iMessage 并启动 Gateway 网关。 专用机器人 macOS 用户（用于隔离身份） 如果你希望机器人从独立的 iMessage 身份发送（并保持你的个人\"信息\"整洁），请使用专用 Apple ID + 专用 macOS 用户。\n创建专用 Apple ID（例如：my-cool-bot@icloud.com）。 Apple 可能需要电话号码进行验证 / 2FA。 创建 macOS 用户（例如：openclawhome）并登录。 在该 macOS 用户中打开\"信息\"并使用机器人 Apple ID 登录 iMessage。 启用远程登录（系统设置 → 通用 → 共享 → 远程登录）。 安装 imsg： brew install steipete/tap/imsg 设置 SSH 使 ssh @localhost true 无需密码即可工作。 将 channels.imessage.accounts.bot.cliPath 指向以机器人用户身份运行 imsg 的 SSH 包装脚本。 首次运行注意事项：发送/接收可能需要在机器人 macOS 用户中进行 GUI 批准（自动化 + 完全磁盘访问权限）。如果 imsg rpc 看起来卡住或退出，请登录该用户（屏幕共享很有帮助），运行一次 imsg chats --limit 1 / imsg send ...，批准提示，然后重试。\n示例包装脚本（chmod +x）。将 替换为你的实际 macOS 用户名：\n#!/usr/bin/env bash set -euo pipefail # Run an interactive SSH once first to accept host keys: # ssh @localhost true exec /usr/bin/ssh -o BatchMode=yes -o ConnectTimeout=5 -T @localhost \\ \"/usr/local/bin/imsg\" \"$@\" 示例配置：\n{ channels: { imessage: { enabled: true, accounts: { bot: { name: \"Bot\", enabled: true, cliPath: \"/path/to/imsg-bot\", dbPath: \"/Users//Library/Messages/chat.db\", }, }, }, }, } 对于单账户设置，使用扁平选项（channels.imessage.cliPath、channels.imessage.dbPath）而不是 accounts 映射。\n远程/SSH 变体（可选） 如果你想在另一台 Mac 上使用 iMessage，请将 channels.imessage.cliPath 设置为通过 SSH 在远程 macOS 主机上运行 imsg 的包装脚本。OpenClaw 只需要 stdio。\n示例包装脚本：\n#!/usr/bin/env bash exec ssh -T gateway-host imsg \"$@\" 远程附件： 当 cliPath 通过 SSH 指向远程主机时，“信息\"数据库中的附件路径引用的是远程机器上的文件。OpenClaw 可以通过设置 channels.imessage.remoteHost 自动通过 SCP 获取这些文件：\n{ channels: { imessage: { cliPath: \"~/imsg-ssh\", // SSH wrapper to remote Mac remoteHost: \"user@gateway-host\", // for SCP file transfer includeAttachments: true, }, }, } 如果未设置 remoteHost，OpenClaw 会尝试通过解析包装脚本中的 SSH 命令自动检测。建议显式配置以提高可靠性。\n通过 Tailscale 连接远程 Mac（示例） 如果 Gateway 网关运行在 Linux 主机/虚拟机上但 iMessage 必须运行在 Mac 上，Tailscale 是最简单的桥接方式：Gateway 网关通过 tailnet 与 Mac 通信，通过 SSH 运行 imsg，并通过 SCP 获取附件。\n架构：\n┌──────────────────────────────┐ SSH (imsg rpc) ┌──────────────────────────┐ │ Gateway host (Linux/VM) │──────────────────────────────────▶│ Mac with Messages + imsg │ │ - openclaw gateway │ SCP (attachments) │ - Messages signed in │ │ - channels.imessage.cliPath │◀──────────────────────────────────│ - Remote Login enabled │ └──────────────────────────────┘ └──────────────────────────┘ ▲ │ Tailscale tailnet (hostname or 100.x.y.z) ▼ user@gateway-host 具体配置示例（Tailscale 主机名）：\n{ channels: { imessage: { enabled: true, cliPath: \"~/.openclaw/scripts/imsg-ssh\", remoteHost: \"bot@mac-mini.tailnet-1234.ts.net\", includeAttachments: true, dbPath: \"/Users/bot/Library/Messages/chat.db\", }, }, } 示例包装脚本（~/.openclaw/scripts/imsg-ssh）：\n#!/usr/bin/env bash exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg \"$@\" 注意事项：\n确保 Mac 已登录\"信息”，并已启用远程登录。 使用 SSH 密钥使 ssh bot@mac-mini.tailnet-1234.ts.net 无需提示即可工作。 remoteHost 应与 SSH 目标匹配，以便 SCP 可以获取附件。 多账户支持：使用 channels.imessage.accounts 配置每个账户及可选的 name。参见 gateway/configuration 了解共享模式。不要提交 ~/.openclaw/openclaw.json（它通常包含令牌）。\n访问控制（私信 + 群组） 私信：\n默认：channels.imessage.dmPolicy = \"pairing\"。 未知发送者会收到配对码；消息在批准前会被忽略（配对码在 1 小时后过期）。 批准方式： openclaw pairing list imessage openclaw pairing approve imessage 配对是 iMessage 私信的默认令牌交换方式。详情：配对 群组：\nchannels.imessage.groupPolicy = open | allowlist | disabled。 设置 allowlist 时，channels.imessage.groupAllowFrom 控制谁可以在群组中触发。 提及检测使用 agents.list[].groupChat.mentionPatterns（或 messages.groupChat.mentionPatterns），因为 iMessage 没有原生提及元数据。 多智能体覆盖：在 agents.list[].groupChat.mentionPatterns 上设置每个智能体的模式。 工作原理（行为） imsg 流式传输消息事件；Gateway 网关将它们规范化为共享渠道信封。 回复始终路由回相同的 chat id 或 handle。 类群组会话（is_group=false） 某些 iMessage 会话可能有多个参与者，但根据\"信息\"存储聊天标识符的方式，仍以 is_group=false 到达。\n如果你在 channels.imessage.groups 下显式配置了 chat_id，OpenClaw 会将该会话视为\"群组\"用于：\n会话隔离（独立的 agent::imessage:group: 会话键） 群组允许列表 / 提及检测行为 示例：\n{ channels: { imessage: { groupPolicy: \"allowlist\", groupAllowFrom: [\"+15555550123\"], groups: { \"42\": { requireMention: false }, }, }, }, } 当你想为特定会话使用隔离的个性/模型时这很有用（参见多智能体路由）。关于文件系统隔离，参见沙箱隔离。\n媒体 + 限制 通过 channels.imessage.includeAttachments 可选附件摄取。 通过 channels.imessage.mediaMaxMb 设置媒体上限。 限制 出站文本按 channels.imessage.textChunkLimit 分块（默认 4000）。 可选换行分块：设置 channels.imessage.chunkMode=\"newline\" 在长度分块前按空行（段落边界）分割。 媒体上传受 channels.imessage.mediaMaxMb 限制（默认 16）。 寻址 / 投递目标 优先使用 chat_id 进行稳定路由：\nchat_id:123（推荐） chat_guid:... chat_identifier:... 直接 handle：imessage:+1555 / sms:+1555 / user@example.com 列出聊天：\nimsg chats --limit 20 配置参考（iMessage） 完整配置：配置\n提供商选项：\nchannels.imessage.enabled：启用/禁用渠道启动。 channels.imessage.cliPath：imsg 路径。 channels.imessage.dbPath：“信息\"数据库路径。 channels.imessage.remoteHost：当 cliPath 指向远程 Mac 时用于 SCP 附件传输的 SSH 主机（例如 user@gateway-host）。如未设置则从 SSH 包装脚本自动检测。 channels.imessage.service：imessage | sms | auto。 channels.imessage.region：短信区域。 channels.imessage.dmPolicy：pairing | allowlist | open | disabled（默认：pairing）。 channels.imessage.allowFrom：私信允许列表（handle、邮箱、E.164 号码或 chat_id:*）。open 需要 \"*\"。iMessage 没有用户名；使用 handle 或聊天目标。 channels.imessage.groupPolicy：open | allowlist | disabled（默认：allowlist）。 channels.imessage.groupAllowFrom：群组发送者允许列表。 channels.imessage.historyLimit / channels.imessage.accounts.*.historyLimit：作为上下文包含的最大群组消息数（0 禁用）。 channels.imessage.dmHistoryLimit：私信历史限制（用户轮次）。每用户覆盖：channels.imessage.dms[\"\"].historyLimit。 channels.imessage.groups：每群组默认值 + 允许列表（使用 \"*\" 作为全局默认值）。 channels.imessage.includeAttachments：将附件摄取到上下文。 channels.imessage.mediaMaxMb：入站/出站媒体上限（MB）。 channels.imessage.textChunkLimit：出站分块大小（字符）。 channels.imessage.chunkMode：length（默认）或 newline 在长度分块前按空行（段落边界）分割。 相关全局选项：\nagents.list[].groupChat.mentionPatterns（或 messages.groupChat.mentionPatterns）。 messages.responsePrefix。 ",
+  "wordCount" : "639",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/imessage/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      iMessage (imsg)
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%ae%be%e7%bd%ae%e6%96%b0%e6%89%8b" aria-label="快速设置（新手）">快速设置（新手）</a></li>
+                <li>
+                    <a href="#%e7%ae%80%e4%bb%8b" aria-label="简介">简介</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%86%99%e5%85%a5" aria-label="配置写入">配置写入</a></li>
+                <li>
+                    <a href="#%e8%a6%81%e6%b1%82" aria-label="要求">要求</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae%e5%bf%ab%e9%80%9f%e8%b7%af%e5%be%84" aria-label="设置（快速路径）">设置（快速路径）</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%93%e7%94%a8%e6%9c%ba%e5%99%a8%e4%ba%ba-macos-%e7%94%a8%e6%88%b7%e7%94%a8%e4%ba%8e%e9%9a%94%e7%a6%bb%e8%ba%ab%e4%bb%bd" aria-label="专用机器人 macOS 用户（用于隔离身份）">专用机器人 macOS 用户（用于隔离身份）</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8bssh-%e5%8f%98%e4%bd%93%e5%8f%af%e9%80%89" aria-label="远程/SSH 变体（可选）">远程/SSH 变体（可选）</a><ul>
+                        
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87-tailscale-%e8%bf%9e%e6%8e%a5%e8%bf%9c%e7%a8%8b-mac%e7%a4%ba%e4%be%8b" aria-label="通过 Tailscale 连接远程 Mac（示例）">通过 Tailscale 连接远程 Mac（示例）</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6%e7%a7%81%e4%bf%a1--%e7%be%a4%e7%bb%84" aria-label="访问控制（私信 &#43; 群组）">访问控制（私信 + 群组）</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86%e8%a1%8c%e4%b8%ba" aria-label="工作原理（行为）">工作原理（行为）</a></li>
+                <li>
+                    <a href="#%e7%b1%bb%e7%be%a4%e7%bb%84%e4%bc%9a%e8%af%9dis_groupfalse" aria-label="类群组会话（is_group=false）">类群组会话（is_group=false）</a></li>
+                <li>
+                    <a href="#%e5%aa%92%e4%bd%93--%e9%99%90%e5%88%b6" aria-label="媒体 &#43; 限制">媒体 + 限制</a></li>
+                <li>
+                    <a href="#%e9%99%90%e5%88%b6" aria-label="限制">限制</a></li>
+                <li>
+                    <a href="#%e5%af%bb%e5%9d%80--%e6%8a%95%e9%80%92%e7%9b%ae%e6%a0%87" aria-label="寻址 / 投递目标">寻址 / 投递目标</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83imessage" aria-label="配置参考（iMessage）">配置参考（iMessage）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>状态：外部 CLI 集成。Gateway 网关生成 <code>imsg rpc</code>（基于 stdio 的 JSON-RPC）。</p>
+<h2 id="快速设置新手">快速设置（新手）<a hidden class="anchor" aria-hidden="true" href="#快速设置新手">#</a></h2>
+<ol>
+<li>确保在此 Mac 上已登录&quot;信息&quot;。</li>
+<li>安装 <code>imsg</code>：
+<ul>
+<li><code>brew install steipete/tap/imsg</code></li>
+</ul>
+</li>
+<li>配置 OpenClaw 的 <code>channels.imessage.cliPath</code> 和 <code>channels.imessage.dbPath</code>。</li>
+<li>启动 Gateway 网关并批准所有 macOS 提示（自动化 + 完全磁盘访问权限）。</li>
+</ol>
+<p>最小配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    imessage: {
+      enabled: true,
+      cliPath: &#34;/usr/local/bin/imsg&#34;,
+      dbPath: &#34;/Users/&lt;you&gt;/Library/Messages/chat.db&#34;,
+    },
+  },
+}
+</code></pre><h2 id="简介">简介<a hidden class="anchor" aria-hidden="true" href="#简介">#</a></h2>
+<ul>
+<li>基于 macOS 上 <code>imsg</code> 的 iMessage 渠道。</li>
+<li>确定性路由：回复始终返回到 iMessage。</li>
+<li>私信共享智能体的主会话；群组是隔离的（<code>agent:&lt;agentId&gt;:imessage:group:&lt;chat_id&gt;</code>）。</li>
+<li>如果多参与者会话以 <code>is_group=false</code> 到达，你仍可使用 <code>channels.imessage.groups</code> 按 <code>chat_id</code> 隔离（参见下方&quot;类群组会话&quot;）。</li>
+</ul>
+<h2 id="配置写入">配置写入<a hidden class="anchor" aria-hidden="true" href="#配置写入">#</a></h2>
+<p>默认情况下，iMessage 允许写入由 <code>/config set|unset</code> 触发的配置更新（需要 <code>commands.config: true</code>）。</p>
+<p>禁用方式：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: { imessage: { configWrites: false } },
+}
+</code></pre><h2 id="要求">要求<a hidden class="anchor" aria-hidden="true" href="#要求">#</a></h2>
+<ul>
+<li>已登录&quot;信息&quot;的 macOS。</li>
+<li>OpenClaw + <code>imsg</code> 的完全磁盘访问权限（访问&quot;信息&quot;数据库）。</li>
+<li>发送时需要自动化权限。</li>
+<li><code>channels.imessage.cliPath</code> 可以指向任何代理 stdin/stdout 的命令（例如，通过 SSH 连接到另一台 Mac 并运行 <code>imsg rpc</code> 的包装脚本）。</li>
+</ul>
+<h2 id="设置快速路径">设置（快速路径）<a hidden class="anchor" aria-hidden="true" href="#设置快速路径">#</a></h2>
+<ol>
+<li>确保在此 Mac 上已登录&quot;信息&quot;。</li>
+<li>配置 iMessage 并启动 Gateway 网关。</li>
+</ol>
+<h3 id="专用机器人-macos-用户用于隔离身份">专用机器人 macOS 用户（用于隔离身份）<a hidden class="anchor" aria-hidden="true" href="#专用机器人-macos-用户用于隔离身份">#</a></h3>
+<p>如果你希望机器人从<strong>独立的 iMessage 身份</strong>发送（并保持你的个人&quot;信息&quot;整洁），请使用专用 Apple ID + 专用 macOS 用户。</p>
+<ol>
+<li>创建专用 Apple ID（例如：<code>my-cool-bot@icloud.com</code>）。
+<ul>
+<li>Apple 可能需要电话号码进行验证 / 2FA。</li>
+</ul>
+</li>
+<li>创建 macOS 用户（例如：<code>openclawhome</code>）并登录。</li>
+<li>在该 macOS 用户中打开&quot;信息&quot;并使用机器人 Apple ID 登录 iMessage。</li>
+<li>启用远程登录（系统设置 → 通用 → 共享 → 远程登录）。</li>
+<li>安装 <code>imsg</code>：
+<ul>
+<li><code>brew install steipete/tap/imsg</code></li>
+</ul>
+</li>
+<li>设置 SSH 使 <code>ssh &lt;bot-macos-user&gt;@localhost true</code> 无需密码即可工作。</li>
+<li>将 <code>channels.imessage.accounts.bot.cliPath</code> 指向以机器人用户身份运行 <code>imsg</code> 的 SSH 包装脚本。</li>
+</ol>
+<p>首次运行注意事项：发送/接收可能需要在<em>机器人 macOS 用户</em>中进行 GUI 批准（自动化 + 完全磁盘访问权限）。如果 <code>imsg rpc</code> 看起来卡住或退出，请登录该用户（屏幕共享很有帮助），运行一次 <code>imsg chats --limit 1</code> / <code>imsg send ...</code>，批准提示，然后重试。</p>
+<p>示例包装脚本（<code>chmod +x</code>）。将 <code>&lt;bot-macos-user&gt;</code> 替换为你的实际 macOS 用户名：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="nb">set</span> -euo pipefail
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Run an interactive SSH once first to accept host keys:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   ssh &lt;bot-macos-user&gt;@localhost true</span>
+</span></span><span class="line"><span class="cl"><span class="nb">exec</span> /usr/bin/ssh -o <span class="nv">BatchMode</span><span class="o">=</span>yes -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">5</span> -T &lt;bot-macos-user&gt;@localhost <span class="se">\
+</span></span></span><span class="line"><span class="cl">  <span class="s2">&#34;/usr/local/bin/imsg&#34;</span> <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p>示例配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    imessage: {
+      enabled: true,
+      accounts: {
+        bot: {
+          name: &#34;Bot&#34;,
+          enabled: true,
+          cliPath: &#34;/path/to/imsg-bot&#34;,
+          dbPath: &#34;/Users/&lt;bot-macos-user&gt;/Library/Messages/chat.db&#34;,
+        },
+      },
+    },
+  },
+}
+</code></pre><p>对于单账户设置，使用扁平选项（<code>channels.imessage.cliPath</code>、<code>channels.imessage.dbPath</code>）而不是 <code>accounts</code> 映射。</p>
+<h3 id="远程ssh-变体可选">远程/SSH 变体（可选）<a hidden class="anchor" aria-hidden="true" href="#远程ssh-变体可选">#</a></h3>
+<p>如果你想在另一台 Mac 上使用 iMessage，请将 <code>channels.imessage.cliPath</code> 设置为通过 SSH 在远程 macOS 主机上运行 <code>imsg</code> 的包装脚本。OpenClaw 只需要 stdio。</p>
+<p>示例包装脚本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="nb">exec</span> ssh -T gateway-host imsg <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p><strong>远程附件：</strong> 当 <code>cliPath</code> 通过 SSH 指向远程主机时，&ldquo;信息&quot;数据库中的附件路径引用的是远程机器上的文件。OpenClaw 可以通过设置 <code>channels.imessage.remoteHost</code> 自动通过 SCP 获取这些文件：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    imessage: {
+      cliPath: &#34;~/imsg-ssh&#34;, // SSH wrapper to remote Mac
+      remoteHost: &#34;user@gateway-host&#34;, // for SCP file transfer
+      includeAttachments: true,
+    },
+  },
+}
+</code></pre><p>如果未设置 <code>remoteHost</code>，OpenClaw 会尝试通过解析包装脚本中的 SSH 命令自动检测。建议显式配置以提高可靠性。</p>
+<h4 id="通过-tailscale-连接远程-mac示例">通过 Tailscale 连接远程 Mac（示例）<a hidden class="anchor" aria-hidden="true" href="#通过-tailscale-连接远程-mac示例">#</a></h4>
+<p>如果 Gateway 网关运行在 Linux 主机/虚拟机上但 iMessage 必须运行在 Mac 上，Tailscale 是最简单的桥接方式：Gateway 网关通过 tailnet 与 Mac 通信，通过 SSH 运行 <code>imsg</code>，并通过 SCP 获取附件。</p>
+<p>架构：</p>
+<pre tabindex="0"><code>┌──────────────────────────────┐          SSH (imsg rpc)          ┌──────────────────────────┐
+│ Gateway host (Linux/VM)      │──────────────────────────────────▶│ Mac with Messages + imsg │
+│ - openclaw gateway           │          SCP (attachments)        │ - Messages signed in     │
+│ - channels.imessage.cliPath  │◀──────────────────────────────────│ - Remote Login enabled   │
+└──────────────────────────────┘                                   └──────────────────────────┘
+              ▲
+              │ Tailscale tailnet (hostname or 100.x.y.z)
+              ▼
+        user@gateway-host
+</code></pre><p>具体配置示例（Tailscale 主机名）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    imessage: {
+      enabled: true,
+      cliPath: &#34;~/.openclaw/scripts/imsg-ssh&#34;,
+      remoteHost: &#34;bot@mac-mini.tailnet-1234.ts.net&#34;,
+      includeAttachments: true,
+      dbPath: &#34;/Users/bot/Library/Messages/chat.db&#34;,
+    },
+  },
+}
+</code></pre><p>示例包装脚本（<code>~/.openclaw/scripts/imsg-ssh</code>）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="nb">exec</span> ssh -T bot@mac-mini.tailnet-1234.ts.net imsg <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>确保 Mac 已登录&quot;信息&rdquo;，并已启用远程登录。</li>
+<li>使用 SSH 密钥使 <code>ssh bot@mac-mini.tailnet-1234.ts.net</code> 无需提示即可工作。</li>
+<li><code>remoteHost</code> 应与 SSH 目标匹配，以便 SCP 可以获取附件。</li>
+</ul>
+<p>多账户支持：使用 <code>channels.imessage.accounts</code> 配置每个账户及可选的 <code>name</code>。参见 <a href="/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts"><code>gateway/configuration</code></a> 了解共享模式。不要提交 <code>~/.openclaw/openclaw.json</code>（它通常包含令牌）。</p>
+<h2 id="访问控制私信--群组">访问控制（私信 + 群组）<a hidden class="anchor" aria-hidden="true" href="#访问控制私信--群组">#</a></h2>
+<p>私信：</p>
+<ul>
+<li>默认：<code>channels.imessage.dmPolicy = &quot;pairing&quot;</code>。</li>
+<li>未知发送者会收到配对码；消息在批准前会被忽略（配对码在 1 小时后过期）。</li>
+<li>批准方式：
+<ul>
+<li><code>openclaw pairing list imessage</code></li>
+<li><code>openclaw pairing approve imessage &lt;CODE&gt;</code></li>
+</ul>
+</li>
+<li>配对是 iMessage 私信的默认令牌交换方式。详情：<a href="/channels/pairing">配对</a></li>
+</ul>
+<p>群组：</p>
+<ul>
+<li><code>channels.imessage.groupPolicy = open | allowlist | disabled</code>。</li>
+<li>设置 <code>allowlist</code> 时，<code>channels.imessage.groupAllowFrom</code> 控制谁可以在群组中触发。</li>
+<li>提及检测使用 <code>agents.list[].groupChat.mentionPatterns</code>（或 <code>messages.groupChat.mentionPatterns</code>），因为 iMessage 没有原生提及元数据。</li>
+<li>多智能体覆盖：在 <code>agents.list[].groupChat.mentionPatterns</code> 上设置每个智能体的模式。</li>
+</ul>
+<h2 id="工作原理行为">工作原理（行为）<a hidden class="anchor" aria-hidden="true" href="#工作原理行为">#</a></h2>
+<ul>
+<li><code>imsg</code> 流式传输消息事件；Gateway 网关将它们规范化为共享渠道信封。</li>
+<li>回复始终路由回相同的 chat id 或 handle。</li>
+</ul>
+<h2 id="类群组会话is_groupfalse">类群组会话（<code>is_group=false</code>）<a hidden class="anchor" aria-hidden="true" href="#类群组会话is_groupfalse">#</a></h2>
+<p>某些 iMessage 会话可能有多个参与者，但根据&quot;信息&quot;存储聊天标识符的方式，仍以 <code>is_group=false</code> 到达。</p>
+<p>如果你在 <code>channels.imessage.groups</code> 下显式配置了 <code>chat_id</code>，OpenClaw 会将该会话视为&quot;群组&quot;用于：</p>
+<ul>
+<li>会话隔离（独立的 <code>agent:&lt;agentId&gt;:imessage:group:&lt;chat_id&gt;</code> 会话键）</li>
+<li>群组允许列表 / 提及检测行为</li>
+</ul>
+<p>示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    imessage: {
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;+15555550123&#34;],
+      groups: {
+        &#34;42&#34;: { requireMention: false },
+      },
+    },
+  },
+}
+</code></pre><p>当你想为特定会话使用隔离的个性/模型时这很有用（参见<a href="/concepts/multi-agent">多智能体路由</a>）。关于文件系统隔离，参见<a href="/gateway/sandboxing">沙箱隔离</a>。</p>
+<h2 id="媒体--限制">媒体 + 限制<a hidden class="anchor" aria-hidden="true" href="#媒体--限制">#</a></h2>
+<ul>
+<li>通过 <code>channels.imessage.includeAttachments</code> 可选附件摄取。</li>
+<li>通过 <code>channels.imessage.mediaMaxMb</code> 设置媒体上限。</li>
+</ul>
+<h2 id="限制">限制<a hidden class="anchor" aria-hidden="true" href="#限制">#</a></h2>
+<ul>
+<li>出站文本按 <code>channels.imessage.textChunkLimit</code> 分块（默认 4000）。</li>
+<li>可选换行分块：设置 <code>channels.imessage.chunkMode=&quot;newline&quot;</code> 在长度分块前按空行（段落边界）分割。</li>
+<li>媒体上传受 <code>channels.imessage.mediaMaxMb</code> 限制（默认 16）。</li>
+</ul>
+<h2 id="寻址--投递目标">寻址 / 投递目标<a hidden class="anchor" aria-hidden="true" href="#寻址--投递目标">#</a></h2>
+<p>优先使用 <code>chat_id</code> 进行稳定路由：</p>
+<ul>
+<li><code>chat_id:123</code>（推荐）</li>
+<li><code>chat_guid:...</code></li>
+<li><code>chat_identifier:...</code></li>
+<li>直接 handle：<code>imessage:+1555</code> / <code>sms:+1555</code> / <code>user@example.com</code></li>
+</ul>
+<p>列出聊天：</p>
+<pre tabindex="0"><code>imsg chats --limit 20
+</code></pre><h2 id="配置参考imessage">配置参考（iMessage）<a hidden class="anchor" aria-hidden="true" href="#配置参考imessage">#</a></h2>
+<p>完整配置：<a href="/gateway/configuration">配置</a></p>
+<p>提供商选项：</p>
+<ul>
+<li><code>channels.imessage.enabled</code>：启用/禁用渠道启动。</li>
+<li><code>channels.imessage.cliPath</code>：<code>imsg</code> 路径。</li>
+<li><code>channels.imessage.dbPath</code>：&ldquo;信息&quot;数据库路径。</li>
+<li><code>channels.imessage.remoteHost</code>：当 <code>cliPath</code> 指向远程 Mac 时用于 SCP 附件传输的 SSH 主机（例如 <code>user@gateway-host</code>）。如未设置则从 SSH 包装脚本自动检测。</li>
+<li><code>channels.imessage.service</code>：<code>imessage | sms | auto</code>。</li>
+<li><code>channels.imessage.region</code>：短信区域。</li>
+<li><code>channels.imessage.dmPolicy</code>：<code>pairing | allowlist | open | disabled</code>（默认：pairing）。</li>
+<li><code>channels.imessage.allowFrom</code>：私信允许列表（handle、邮箱、E.164 号码或 <code>chat_id:*</code>）。<code>open</code> 需要 <code>&quot;*&quot;</code>。iMessage 没有用户名；使用 handle 或聊天目标。</li>
+<li><code>channels.imessage.groupPolicy</code>：<code>open | allowlist | disabled</code>（默认：allowlist）。</li>
+<li><code>channels.imessage.groupAllowFrom</code>：群组发送者允许列表。</li>
+<li><code>channels.imessage.historyLimit</code> / <code>channels.imessage.accounts.*.historyLimit</code>：作为上下文包含的最大群组消息数（0 禁用）。</li>
+<li><code>channels.imessage.dmHistoryLimit</code>：私信历史限制（用户轮次）。每用户覆盖：<code>channels.imessage.dms[&quot;&lt;handle&gt;&quot;].historyLimit</code>。</li>
+<li><code>channels.imessage.groups</code>：每群组默认值 + 允许列表（使用 <code>&quot;*&quot;</code> 作为全局默认值）。</li>
+<li><code>channels.imessage.includeAttachments</code>：将附件摄取到上下文。</li>
+<li><code>channels.imessage.mediaMaxMb</code>：入站/出站媒体上限（MB）。</li>
+<li><code>channels.imessage.textChunkLimit</code>：出站分块大小（字符）。</li>
+<li><code>channels.imessage.chunkMode</code>：<code>length</code>（默认）或 <code>newline</code> 在长度分块前按空行（段落边界）分割。</li>
+</ul>
+<p>相关全局选项：</p>
+<ul>
+<li><code>agents.list[].groupChat.mentionPatterns</code>（或 <code>messages.groupChat.mentionPatterns</code>）。</li>
+<li><code>messages.responsePrefix</code>。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/reference/templates/identity.dev/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>IDENTITY.md - 智能体身份</span>
+  </a>
+  <a class="next" href="/openclaw/platforms/ios/">
+    <span class="title">Next »</span>
+    <br>
+    <span>iOS 应用（节点）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

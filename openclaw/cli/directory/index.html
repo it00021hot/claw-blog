@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>`openclaw directory` | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="对支持目录功能的渠道进行查找（联系人/对等方、群组和&quot;我&quot;）。
+通用参数
+
+--channel &lt;name&gt;：渠道 ID/别名（配置了多个渠道时为必填；仅配置一个渠道时自动选择）
+--account &lt;id&gt;：账号 ID（默认：渠道默认账号）
+--json：输出 JSON 格式
+
+说明
+
+directory 用于帮助你查找可粘贴到其他命令中的 ID（特别是 openclaw message send --target ...）。
+对于许多渠道，结果来源于配置（允许列表/已配置的群组），而非实时的提供商目录。
+默认输出为以制表符分隔的 id（有时包含 name）；脚本中请使用 --json。
+
+将结果用于 message send
+openclaw directory peers list --channel slack --query &#34;U0&#34;
+openclaw message send --channel slack --target user:U012ABCDEF --message &#34;hello&#34;
+ID 格式（按渠道）
+
+WhatsApp：&#43;15551234567（私聊），1234567890-1234567890@g.us（群组）
+Telegram：@username 或数字聊天 ID；群组为数字 ID
+Slack：user:U… 和 channel:C…
+Discord：user:&lt;id&gt; 和 channel:&lt;id&gt;
+Matrix（插件）：user:@user:server、room:!roomId:server 或 #alias:server
+Microsoft Teams（插件）：user:&lt;id&gt; 和 conversation:&lt;id&gt;
+Zalo（插件）：用户 ID（Bot API）
+Zalo Personal / zalouser（插件）：来自 zca 的会话 ID（私聊/群组）（me、friend list、group list）
+
+Self（&ldquo;我&rdquo;）
+openclaw directory self --channel zalouser
+Peers（联系人/用户）
+openclaw directory peers list --channel zalouser
+openclaw directory peers list --channel zalouser --query &#34;name&#34;
+openclaw directory peers list --channel zalouser --limit 50
+群组
+openclaw directory groups list --channel zalouser
+openclaw directory groups list --channel zalouser --query &#34;work&#34;
+openclaw directory groups members --channel zalouser --group-id &lt;id&gt;
+">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/cli/directory/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/cli/directory/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/cli/directory/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="`openclaw directory`">
+  <meta property="og:description" content="对支持目录功能的渠道进行查找（联系人/对等方、群组和&#34;我&#34;）。
+通用参数 --channel &lt;name&gt;：渠道 ID/别名（配置了多个渠道时为必填；仅配置一个渠道时自动选择） --account &lt;id&gt;：账号 ID（默认：渠道默认账号） --json：输出 JSON 格式 说明 directory 用于帮助你查找可粘贴到其他命令中的 ID（特别是 openclaw message send --target ...）。 对于许多渠道，结果来源于配置（允许列表/已配置的群组），而非实时的提供商目录。 默认输出为以制表符分隔的 id（有时包含 name）；脚本中请使用 --json。 将结果用于 message send openclaw directory peers list --channel slack --query &#34;U0&#34; openclaw message send --channel slack --target user:U012ABCDEF --message &#34;hello&#34; ID 格式（按渠道） WhatsApp：&#43;15551234567（私聊），1234567890-1234567890@g.us（群组） Telegram：@username 或数字聊天 ID；群组为数字 ID Slack：user:U… 和 channel:C… Discord：user:&lt;id&gt; 和 channel:&lt;id&gt; Matrix（插件）：user:@user:server、room:!roomId:server 或 #alias:server Microsoft Teams（插件）：user:&lt;id&gt; 和 conversation:&lt;id&gt; Zalo（插件）：用户 ID（Bot API） Zalo Personal / zalouser（插件）：来自 zca 的会话 ID（私聊/群组）（me、friend list、group list） Self（“我”） openclaw directory self --channel zalouser Peers（联系人/用户） openclaw directory peers list --channel zalouser openclaw directory peers list --channel zalouser --query &#34;name&#34; openclaw directory peers list --channel zalouser --limit 50 群组 openclaw directory groups list --channel zalouser openclaw directory groups list --channel zalouser --query &#34;work&#34; openclaw directory groups members --channel zalouser --group-id &lt;id&gt; ">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="`openclaw directory`">
+<meta name="twitter:description" content="对支持目录功能的渠道进行查找（联系人/对等方、群组和&quot;我&quot;）。
+通用参数
+
+--channel &lt;name&gt;：渠道 ID/别名（配置了多个渠道时为必填；仅配置一个渠道时自动选择）
+--account &lt;id&gt;：账号 ID（默认：渠道默认账号）
+--json：输出 JSON 格式
+
+说明
+
+directory 用于帮助你查找可粘贴到其他命令中的 ID（特别是 openclaw message send --target ...）。
+对于许多渠道，结果来源于配置（允许列表/已配置的群组），而非实时的提供商目录。
+默认输出为以制表符分隔的 id（有时包含 name）；脚本中请使用 --json。
+
+将结果用于 message send
+openclaw directory peers list --channel slack --query &#34;U0&#34;
+openclaw message send --channel slack --target user:U012ABCDEF --message &#34;hello&#34;
+ID 格式（按渠道）
+
+WhatsApp：&#43;15551234567（私聊），1234567890-1234567890@g.us（群组）
+Telegram：@username 或数字聊天 ID；群组为数字 ID
+Slack：user:U… 和 channel:C…
+Discord：user:&lt;id&gt; 和 channel:&lt;id&gt;
+Matrix（插件）：user:@user:server、room:!roomId:server 或 #alias:server
+Microsoft Teams（插件）：user:&lt;id&gt; 和 conversation:&lt;id&gt;
+Zalo（插件）：用户 ID（Bot API）
+Zalo Personal / zalouser（插件）：来自 zca 的会话 ID（私聊/群组）（me、friend list、group list）
+
+Self（&ldquo;我&rdquo;）
+openclaw directory self --channel zalouser
+Peers（联系人/用户）
+openclaw directory peers list --channel zalouser
+openclaw directory peers list --channel zalouser --query &#34;name&#34;
+openclaw directory peers list --channel zalouser --limit 50
+群组
+openclaw directory groups list --channel zalouser
+openclaw directory groups list --channel zalouser --query &#34;work&#34;
+openclaw directory groups members --channel zalouser --group-id &lt;id&gt;
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "`openclaw directory`",
+      "item": "/openclaw/cli/directory/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "`openclaw directory`",
+  "name": "\u0060openclaw directory\u0060",
+  "description": "对支持目录功能的渠道进行查找（联系人/对等方、群组和\u0026quot;我\u0026quot;）。\n通用参数 --channel \u0026lt;name\u0026gt;：渠道 ID/别名（配置了多个渠道时为必填；仅配置一个渠道时自动选择） --account \u0026lt;id\u0026gt;：账号 ID（默认：渠道默认账号） --json：输出 JSON 格式 说明 directory 用于帮助你查找可粘贴到其他命令中的 ID（特别是 openclaw message send --target ...）。 对于许多渠道，结果来源于配置（允许列表/已配置的群组），而非实时的提供商目录。 默认输出为以制表符分隔的 id（有时包含 name）；脚本中请使用 --json。 将结果用于 message send openclaw directory peers list --channel slack --query \u0026#34;U0\u0026#34; openclaw message send --channel slack --target user:U012ABCDEF --message \u0026#34;hello\u0026#34; ID 格式（按渠道） WhatsApp：+15551234567（私聊），1234567890-1234567890@g.us（群组） Telegram：@username 或数字聊天 ID；群组为数字 ID Slack：user:U… 和 channel:C… Discord：user:\u0026lt;id\u0026gt; 和 channel:\u0026lt;id\u0026gt; Matrix（插件）：user:@user:server、room:!roomId:server 或 #alias:server Microsoft Teams（插件）：user:\u0026lt;id\u0026gt; 和 conversation:\u0026lt;id\u0026gt; Zalo（插件）：用户 ID（Bot API） Zalo Personal / zalouser（插件）：来自 zca 的会话 ID（私聊/群组）（me、friend list、group list） Self（\u0026ldquo;我\u0026rdquo;） openclaw directory self --channel zalouser Peers（联系人/用户） openclaw directory peers list --channel zalouser openclaw directory peers list --channel zalouser --query \u0026#34;name\u0026#34; openclaw directory peers list --channel zalouser --limit 50 群组 openclaw directory groups list --channel zalouser openclaw directory groups list --channel zalouser --query \u0026#34;work\u0026#34; openclaw directory groups members --channel zalouser --group-id \u0026lt;id\u0026gt; ",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "对支持目录功能的渠道进行查找（联系人/对等方、群组和\"我\"）。\n通用参数 --channel ：渠道 ID/别名（配置了多个渠道时为必填；仅配置一个渠道时自动选择） --account ：账号 ID（默认：渠道默认账号） --json：输出 JSON 格式 说明 directory 用于帮助你查找可粘贴到其他命令中的 ID（特别是 openclaw message send --target ...）。 对于许多渠道，结果来源于配置（允许列表/已配置的群组），而非实时的提供商目录。 默认输出为以制表符分隔的 id（有时包含 name）；脚本中请使用 --json。 将结果用于 message send openclaw directory peers list --channel slack --query \"U0\" openclaw message send --channel slack --target user:U012ABCDEF --message \"hello\" ID 格式（按渠道） WhatsApp：+15551234567（私聊），1234567890-1234567890@g.us（群组） Telegram：@username 或数字聊天 ID；群组为数字 ID Slack：user:U… 和 channel:C… Discord：user: 和 channel: Matrix（插件）：user:@user:server、room:!roomId:server 或 #alias:server Microsoft Teams（插件）：user: 和 conversation: Zalo（插件）：用户 ID（Bot API） Zalo Personal / zalouser（插件）：来自 zca 的会话 ID（私聊/群组）（me、friend list、group list） Self（“我”） openclaw directory self --channel zalouser Peers（联系人/用户） openclaw directory peers list --channel zalouser openclaw directory peers list --channel zalouser --query \"name\" openclaw directory peers list --channel zalouser --limit 50 群组 openclaw directory groups list --channel zalouser openclaw directory groups list --channel zalouser --query \"work\" openclaw directory groups members --channel zalouser --group-id ",
+  "wordCount" : "129",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/cli/directory/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      `openclaw directory`
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%80%9a%e7%94%a8%e5%8f%82%e6%95%b0" aria-label="通用参数">通用参数</a></li>
+                <li>
+                    <a href="#%e8%af%b4%e6%98%8e" aria-label="说明">说明</a></li>
+                <li>
+                    <a href="#%e5%b0%86%e7%bb%93%e6%9e%9c%e7%94%a8%e4%ba%8e-message-send" aria-label="将结果用于 message send">将结果用于 message send</a></li>
+                <li>
+                    <a href="#id-%e6%a0%bc%e5%bc%8f%e6%8c%89%e6%b8%a0%e9%81%93" aria-label="ID 格式（按渠道）">ID 格式（按渠道）</a></li>
+                <li>
+                    <a href="#self%e6%88%91" aria-label="Self（&ldquo;我&rdquo;）">Self（&ldquo;我&rdquo;）</a></li>
+                <li>
+                    <a href="#peers%e8%81%94%e7%b3%bb%e4%ba%ba%e7%94%a8%e6%88%b7" aria-label="Peers（联系人/用户）">Peers（联系人/用户）</a></li>
+                <li>
+                    <a href="#%e7%be%a4%e7%bb%84" aria-label="群组">群组</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>对支持目录功能的渠道进行查找（联系人/对等方、群组和&quot;我&quot;）。</p>
+<h2 id="通用参数">通用参数<a hidden class="anchor" aria-hidden="true" href="#通用参数">#</a></h2>
+<ul>
+<li><code>--channel &lt;name&gt;</code>：渠道 ID/别名（配置了多个渠道时为必填；仅配置一个渠道时自动选择）</li>
+<li><code>--account &lt;id&gt;</code>：账号 ID（默认：渠道默认账号）</li>
+<li><code>--json</code>：输出 JSON 格式</li>
+</ul>
+<h2 id="说明">说明<a hidden class="anchor" aria-hidden="true" href="#说明">#</a></h2>
+<ul>
+<li><code>directory</code> 用于帮助你查找可粘贴到其他命令中的 ID（特别是 <code>openclaw message send --target ...</code>）。</li>
+<li>对于许多渠道，结果来源于配置（允许列表/已配置的群组），而非实时的提供商目录。</li>
+<li>默认输出为以制表符分隔的 <code>id</code>（有时包含 <code>name</code>）；脚本中请使用 <code>--json</code>。</li>
+</ul>
+<h2 id="将结果用于-message-send">将结果用于 <code>message send</code><a hidden class="anchor" aria-hidden="true" href="#将结果用于-message-send">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw directory peers list --channel slack --query <span class="s2">&#34;U0&#34;</span>
+</span></span><span class="line"><span class="cl">openclaw message send --channel slack --target user:U012ABCDEF --message <span class="s2">&#34;hello&#34;</span>
+</span></span></code></pre></div><h2 id="id-格式按渠道">ID 格式（按渠道）<a hidden class="anchor" aria-hidden="true" href="#id-格式按渠道">#</a></h2>
+<ul>
+<li>WhatsApp：<code>+15551234567</code>（私聊），<code>1234567890-1234567890@g.us</code>（群组）</li>
+<li>Telegram：<code>@username</code> 或数字聊天 ID；群组为数字 ID</li>
+<li>Slack：<code>user:U…</code> 和 <code>channel:C…</code></li>
+<li>Discord：<code>user:&lt;id&gt;</code> 和 <code>channel:&lt;id&gt;</code></li>
+<li>Matrix（插件）：<code>user:@user:server</code>、<code>room:!roomId:server</code> 或 <code>#alias:server</code></li>
+<li>Microsoft Teams（插件）：<code>user:&lt;id&gt;</code> 和 <code>conversation:&lt;id&gt;</code></li>
+<li>Zalo（插件）：用户 ID（Bot API）</li>
+<li>Zalo Personal / <code>zalouser</code>（插件）：来自 <code>zca</code> 的会话 ID（私聊/群组）（<code>me</code>、<code>friend list</code>、<code>group list</code>）</li>
+</ul>
+<h2 id="self我">Self（&ldquo;我&rdquo;）<a hidden class="anchor" aria-hidden="true" href="#self我">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw directory self --channel zalouser
+</span></span></code></pre></div><h2 id="peers联系人用户">Peers（联系人/用户）<a hidden class="anchor" aria-hidden="true" href="#peers联系人用户">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw directory peers list --channel zalouser
+</span></span><span class="line"><span class="cl">openclaw directory peers list --channel zalouser --query <span class="s2">&#34;name&#34;</span>
+</span></span><span class="line"><span class="cl">openclaw directory peers list --channel zalouser --limit <span class="m">50</span>
+</span></span></code></pre></div><h2 id="群组">群组<a hidden class="anchor" aria-hidden="true" href="#群组">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw directory groups list --channel zalouser
+</span></span><span class="line"><span class="cl">openclaw directory groups list --channel zalouser --query <span class="s2">&#34;work&#34;</span>
+</span></span><span class="line"><span class="cl">openclaw directory groups members --channel zalouser --group-id &lt;id&gt;
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/cli/devices/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>`openclaw devices`</span>
+  </a>
+  <a class="next" href="/openclaw/cli/dns/">
+    <span class="title">Next »</span>
+    <br>
+    <span>`openclaw dns`</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

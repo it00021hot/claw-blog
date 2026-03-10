@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Hooks | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="Hooks 提供了一个可扩展的事件驱动系统，用于响应智能体命令和事件自动执行操作。Hooks 从目录中自动发现，可以通过 CLI 命令管理，类似于 OpenClaw 中 Skills 的工作方式。
+入门指南
+Hooks 是在事件发生时运行的小脚本。有两种类型：
+
+Hooks（本页）：当智能体事件触发时在 Gateway 网关内运行，如 /new、/reset、/stop 或生命周期事件。
+Webhooks：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 Webhook Hooks 或使用 openclaw webhooks 获取 Gmail 助手命令。
+
+Hooks 也可以捆绑在插件中；参见 插件。
+常见用途：
+
+重置会话时保存记忆快照
+保留命令审计跟踪用于故障排除或合规
+会话开始或结束时触发后续自动化
+事件触发时向智能体工作区写入文件或调用外部 API
+
+如果你能写一个小的 TypeScript 函数，你就能写一个 hook。Hooks 会自动发现，你可以通过 CLI 启用或禁用它们。
+概述
+hooks 系统允许你：
+
+在发出 /new 时将会话上下文保存到记忆
+记录所有命令以供审计
+在智能体生命周期事件上触发自定义自动化
+在不修改核心代码的情况下扩展 OpenClaw 的行为
+
+入门
+捆绑的 Hooks
+OpenClaw 附带三个自动发现的捆绑 hooks：
+
+💾 session-memory：当你发出 /new 时将会话上下文保存到智能体工作区（默认 ~/.openclaw/workspace/memory/）
+📝 command-logger：将所有命令事件记录到 ~/.openclaw/logs/commands.log
+🚀 boot-md：当 Gateway 网关启动时运行 BOOT.md（需要启用内部 hooks）
+
+列出可用的 hooks：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/automation/hooks/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/automation/hooks/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/automation/hooks/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Hooks">
+  <meta property="og:description" content="Hooks 提供了一个可扩展的事件驱动系统，用于响应智能体命令和事件自动执行操作。Hooks 从目录中自动发现，可以通过 CLI 命令管理，类似于 OpenClaw 中 Skills 的工作方式。
+入门指南 Hooks 是在事件发生时运行的小脚本。有两种类型：
+Hooks（本页）：当智能体事件触发时在 Gateway 网关内运行，如 /new、/reset、/stop 或生命周期事件。 Webhooks：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 Webhook Hooks 或使用 openclaw webhooks 获取 Gmail 助手命令。 Hooks 也可以捆绑在插件中；参见 插件。
+常见用途：
+重置会话时保存记忆快照 保留命令审计跟踪用于故障排除或合规 会话开始或结束时触发后续自动化 事件触发时向智能体工作区写入文件或调用外部 API 如果你能写一个小的 TypeScript 函数，你就能写一个 hook。Hooks 会自动发现，你可以通过 CLI 启用或禁用它们。
+概述 hooks 系统允许你：
+在发出 /new 时将会话上下文保存到记忆 记录所有命令以供审计 在智能体生命周期事件上触发自定义自动化 在不修改核心代码的情况下扩展 OpenClaw 的行为 入门 捆绑的 Hooks OpenClaw 附带三个自动发现的捆绑 hooks：
+💾 session-memory：当你发出 /new 时将会话上下文保存到智能体工作区（默认 ~/.openclaw/workspace/memory/） 📝 command-logger：将所有命令事件记录到 ~/.openclaw/logs/commands.log 🚀 boot-md：当 Gateway 网关启动时运行 BOOT.md（需要启用内部 hooks） 列出可用的 hooks：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hooks">
+<meta name="twitter:description" content="Hooks 提供了一个可扩展的事件驱动系统，用于响应智能体命令和事件自动执行操作。Hooks 从目录中自动发现，可以通过 CLI 命令管理，类似于 OpenClaw 中 Skills 的工作方式。
+入门指南
+Hooks 是在事件发生时运行的小脚本。有两种类型：
+
+Hooks（本页）：当智能体事件触发时在 Gateway 网关内运行，如 /new、/reset、/stop 或生命周期事件。
+Webhooks：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 Webhook Hooks 或使用 openclaw webhooks 获取 Gmail 助手命令。
+
+Hooks 也可以捆绑在插件中；参见 插件。
+常见用途：
+
+重置会话时保存记忆快照
+保留命令审计跟踪用于故障排除或合规
+会话开始或结束时触发后续自动化
+事件触发时向智能体工作区写入文件或调用外部 API
+
+如果你能写一个小的 TypeScript 函数，你就能写一个 hook。Hooks 会自动发现，你可以通过 CLI 启用或禁用它们。
+概述
+hooks 系统允许你：
+
+在发出 /new 时将会话上下文保存到记忆
+记录所有命令以供审计
+在智能体生命周期事件上触发自定义自动化
+在不修改核心代码的情况下扩展 OpenClaw 的行为
+
+入门
+捆绑的 Hooks
+OpenClaw 附带三个自动发现的捆绑 hooks：
+
+💾 session-memory：当你发出 /new 时将会话上下文保存到智能体工作区（默认 ~/.openclaw/workspace/memory/）
+📝 command-logger：将所有命令事件记录到 ~/.openclaw/logs/commands.log
+🚀 boot-md：当 Gateway 网关启动时运行 BOOT.md（需要启用内部 hooks）
+
+列出可用的 hooks：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Hooks",
+      "item": "/openclaw/automation/hooks/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Hooks",
+  "name": "Hooks",
+  "description": "Hooks 提供了一个可扩展的事件驱动系统，用于响应智能体命令和事件自动执行操作。Hooks 从目录中自动发现，可以通过 CLI 命令管理，类似于 OpenClaw 中 Skills 的工作方式。\n入门指南 Hooks 是在事件发生时运行的小脚本。有两种类型：\nHooks（本页）：当智能体事件触发时在 Gateway 网关内运行，如 /new、/reset、/stop 或生命周期事件。 Webhooks：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 Webhook Hooks 或使用 openclaw webhooks 获取 Gmail 助手命令。 Hooks 也可以捆绑在插件中；参见 插件。\n常见用途：\n重置会话时保存记忆快照 保留命令审计跟踪用于故障排除或合规 会话开始或结束时触发后续自动化 事件触发时向智能体工作区写入文件或调用外部 API 如果你能写一个小的 TypeScript 函数，你就能写一个 hook。Hooks 会自动发现，你可以通过 CLI 启用或禁用它们。\n概述 hooks 系统允许你：\n在发出 /new 时将会话上下文保存到记忆 记录所有命令以供审计 在智能体生命周期事件上触发自定义自动化 在不修改核心代码的情况下扩展 OpenClaw 的行为 入门 捆绑的 Hooks OpenClaw 附带三个自动发现的捆绑 hooks：\n💾 session-memory：当你发出 /new 时将会话上下文保存到智能体工作区（默认 ~/.openclaw/workspace/memory/） 📝 command-logger：将所有命令事件记录到 ~/.openclaw/logs/commands.log 🚀 boot-md：当 Gateway 网关启动时运行 BOOT.md（需要启用内部 hooks） 列出可用的 hooks：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "Hooks 提供了一个可扩展的事件驱动系统，用于响应智能体命令和事件自动执行操作。Hooks 从目录中自动发现，可以通过 CLI 命令管理，类似于 OpenClaw 中 Skills 的工作方式。\n入门指南 Hooks 是在事件发生时运行的小脚本。有两种类型：\nHooks（本页）：当智能体事件触发时在 Gateway 网关内运行，如 /new、/reset、/stop 或生命周期事件。 Webhooks：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 Webhook Hooks 或使用 openclaw webhooks 获取 Gmail 助手命令。 Hooks 也可以捆绑在插件中；参见 插件。\n常见用途：\n重置会话时保存记忆快照 保留命令审计跟踪用于故障排除或合规 会话开始或结束时触发后续自动化 事件触发时向智能体工作区写入文件或调用外部 API 如果你能写一个小的 TypeScript 函数，你就能写一个 hook。Hooks 会自动发现，你可以通过 CLI 启用或禁用它们。\n概述 hooks 系统允许你：\n在发出 /new 时将会话上下文保存到记忆 记录所有命令以供审计 在智能体生命周期事件上触发自定义自动化 在不修改核心代码的情况下扩展 OpenClaw 的行为 入门 捆绑的 Hooks OpenClaw 附带三个自动发现的捆绑 hooks：\n💾 session-memory：当你发出 /new 时将会话上下文保存到智能体工作区（默认 ~/.openclaw/workspace/memory/） 📝 command-logger：将所有命令事件记录到 ~/.openclaw/logs/commands.log 🚀 boot-md：当 Gateway 网关启动时运行 BOOT.md（需要启用内部 hooks） 列出可用的 hooks：\nopenclaw hooks list 启用一个 hook：\nopenclaw hooks enable session-memory 检查 hook 状态：\nopenclaw hooks check 获取详细信息：\nopenclaw hooks info session-memory 新手引导 在新手引导期间（openclaw onboard），你将被提示启用推荐的 hooks。向导会自动发现符合条件的 hooks 并呈现供选择。\nHook 发现 Hooks 从三个目录自动发现（按优先级顺序）：\n工作区 hooks：/hooks/（每智能体，最高优先级） 托管 hooks：~/.openclaw/hooks/（用户安装，跨工作区共享） 捆绑 hooks：/dist/hooks/bundled/（随 OpenClaw 附带） 托管 hook 目录可以是单个 hook 或 hook 包（包目录）。\n每个 hook 是一个包含以下内容的目录：\nmy-hook/ ├── HOOK.md # 元数据 + 文档 └── handler.ts # 处理程序实现 Hook 包（npm/archives） Hook 包是标准的 npm 包，通过 package.json 中的 openclaw.hooks 导出一个或多个 hooks。使用以下命令安装：\nopenclaw hooks install 示例 package.json：\n{ \"name\": \"@acme/my-hooks\", \"version\": \"0.1.0\", \"openclaw\": { \"hooks\": [\"./hooks/my-hook\", \"./hooks/other-hook\"] } } 每个条目指向包含 HOOK.md 和 handler.ts（或 index.ts）的 hook 目录。 Hook 包可以附带依赖；它们将安装在 ~/.openclaw/hooks/ 下。\nHook 结构 HOOK.md 格式 HOOK.md 文件在 YAML frontmatter 中包含元数据，加上 Markdown 文档：\n--- name: my-hook description: \"Short description of what this hook does\" homepage: https://docs.openclaw.ai/automation/hooks#my-hook metadata: { \"openclaw\": { \"emoji\": \"🔗\", \"events\": [\"command:new\"], \"requires\": { \"bins\": [\"node\"] } } } --- # My Hook Detailed documentation goes here... ## What It Does - Listens for `/new` commands - Performs some action - Logs the result ## Requirements - Node.js must be installed ## Configuration No configuration needed. 元数据字段 metadata.openclaw 对象支持：\nemoji：CLI 的显示表情符号（例如 \"💾\"） events：要监听的事件数组（例如 [\"command:new\", \"command:reset\"]） export：要使用的命名导出（默认为 \"default\"） homepage：文档 URL requires：可选要求 bins：PATH 中需要的二进制文件（例如 [\"git\", \"node\"]） anyBins：这些二进制文件中至少有一个必须存在 env：需要的环境变量 config：需要的配置路径（例如 [\"workspace.dir\"]） os：需要的平台（例如 [\"darwin\", \"linux\"]） always：绕过资格检查（布尔值） install：安装方法（对于捆绑 hooks：[{\"id\":\"bundled\",\"kind\":\"bundled\"}]） 处理程序实现 handler.ts 文件导出一个 HookHandler 函数：\nimport type { HookHandler } from \"../../src/hooks/hooks.js\"; const myHandler: HookHandler = async (event) =\u003e { // Only trigger on 'new' command if (event.type !== \"command\" || event.action !== \"new\") { return; } console.log(`[my-hook] New command triggered`); console.log(` Session: ${event.sessionKey}`); console.log(` Timestamp: ${event.timestamp.toISOString()}`); // Your custom logic here // Optionally send message to user event.messages.push(\"✨ My hook executed!\"); }; export default myHandler; 事件上下文 每个事件包含：\n{ type: 'command' | 'session' | 'agent' | 'gateway', action: string, // e.g., 'new', 'reset', 'stop' sessionKey: string, // Session identifier timestamp: Date, // When the event occurred messages: string[], // Push messages here to send to user context: { sessionEntry?: SessionEntry, sessionId?: string, sessionFile?: string, commandSource?: string, // e.g., 'whatsapp', 'telegram' senderId?: string, workspaceDir?: string, bootstrapFiles?: WorkspaceBootstrapFile[], cfg?: OpenClawConfig } } 事件类型 命令事件 当发出智能体命令时触发：\ncommand：所有命令事件（通用监听器） command:new：当发出 /new 命令时 command:reset：当发出 /reset 命令时 command:stop：当发出 /stop 命令时 智能体事件 agent:bootstrap：在注入工作区引导文件之前（hooks 可以修改 context.bootstrapFiles） Gateway 网关事件 当 Gateway 网关启动时触发：\ngateway:startup：在渠道启动和 hooks 加载之后 工具结果 Hooks（插件 API） 这些 hooks 不是事件流监听器；它们让插件在 OpenClaw 持久化工具结果之前同步调整它们。\ntool_result_persist：在工具结果写入会话记录之前转换它们。必须是同步的；返回更新后的工具结果负载或 undefined 保持原样。参见 智能体循环。 未来事件 计划中的事件类型：\nsession:start：当新会话开始时 session:end：当会话结束时 agent:error：当智能体遇到错误时 message:sent：当消息被发送时 message:received：当消息被接收时 创建自定义 Hooks 1. 选择位置 工作区 hooks（/hooks/）：每智能体，最高优先级 托管 hooks（~/.openclaw/hooks/）：跨工作区共享 2. 创建目录结构 mkdir -p ~/.openclaw/hooks/my-hook cd ~/.openclaw/hooks/my-hook 3. 创建 HOOK.md --- name: my-hook description: \"Does something useful\" metadata: { \"openclaw\": { \"emoji\": \"🎯\", \"events\": [\"command:new\"] } } --- # My Custom Hook This hook does something useful when you issue `/new`. 4. 创建 handler.ts import type { HookHandler } from \"../../src/hooks/hooks.js\"; const handler: HookHandler = async (event) =\u003e { if (event.type !== \"command\" || event.action !== \"new\") { return; } console.log(\"[my-hook] Running!\"); // Your logic here }; export default handler; 5. 启用并测试 # Verify hook is discovered openclaw hooks list # Enable it openclaw hooks enable my-hook # Restart your gateway process (menu bar app restart on macOS, or restart your dev process) # Trigger the event # Send /new via your messaging channel 配置 新配置格式（推荐） { \"hooks\": { \"internal\": { \"enabled\": true, \"entries\": { \"session-memory\": { \"enabled\": true }, \"command-logger\": { \"enabled\": false } } } } } 每 Hook 配置 Hooks 可以有自定义配置：\n{ \"hooks\": { \"internal\": { \"enabled\": true, \"entries\": { \"my-hook\": { \"enabled\": true, \"env\": { \"MY_CUSTOM_VAR\": \"value\" } } } } } } 额外目录 从额外目录加载 hooks：\n{ \"hooks\": { \"internal\": { \"enabled\": true, \"load\": { \"extraDirs\": [\"/path/to/more/hooks\"] } } } } 遗留配置格式（仍然支持） 旧配置格式仍然有效以保持向后兼容：\n{ \"hooks\": { \"internal\": { \"enabled\": true, \"handlers\": [ { \"event\": \"command:new\", \"module\": \"./hooks/handlers/my-handler.ts\", \"export\": \"default\" } ] } } } 迁移：对新 hooks 使用基于发现的新系统。遗留处理程序在基于目录的 hooks 之后加载。\nCLI 命令 列出 Hooks # List all hooks openclaw hooks list # Show only eligible hooks openclaw hooks list --eligible # Verbose output (show missing requirements) openclaw hooks list --verbose # JSON output openclaw hooks list --json Hook 信息 # Show detailed info about a hook openclaw hooks info session-memory # JSON output openclaw hooks info session-memory --json 检查资格 # Show eligibility summary openclaw hooks check # JSON output openclaw hooks check --json 启用/禁用 # Enable a hook openclaw hooks enable session-memory # Disable a hook openclaw hooks disable command-logger 捆绑的 Hooks session-memory 当你发出 /new 时将会话上下文保存到记忆。\n事件：command:new\n要求：必须配置 workspace.dir\n输出：/memory/YYYY-MM-DD-slug.md（默认为 ~/.openclaw/workspace）\n功能：\n使用预重置会话条目定位正确的记录 提取最后 15 行对话 使用 LLM 生成描述性文件名 slug 将会话元数据保存到带日期的记忆文件 示例输出：\n# Session: 2026-01-16 14:30:00 UTC - **Session Key**: agent:main:main - **Session ID**: abc123def456 - **Source**: telegram 文件名示例：\n2026-01-16-vendor-pitch.md 2026-01-16-api-design.md 2026-01-16-1430.md（如果 slug 生成失败则回退到时间戳） 启用：\nopenclaw hooks enable session-memory command-logger 将所有命令事件记录到集中审计文件。\n事件：command\n要求：无\n输出：~/.openclaw/logs/commands.log\n功能：\n捕获事件详情（命令操作、时间戳、会话键、发送者 ID、来源） 以 JSONL 格式追加到日志文件 在后台静默运行 示例日志条目：\n{\"timestamp\":\"2026-01-16T14:30:00.000Z\",\"action\":\"new\",\"sessionKey\":\"agent:main:main\",\"senderId\":\"+1234567890\",\"source\":\"telegram\"} {\"timestamp\":\"2026-01-16T15:45:22.000Z\",\"action\":\"stop\",\"sessionKey\":\"agent:main:main\",\"senderId\":\"user@example.com\",\"source\":\"whatsapp\"} 查看日志：\n# View recent commands tail -n 20 ~/.openclaw/logs/commands.log # Pretty-print with jq cat ~/.openclaw/logs/commands.log | jq . # Filter by action grep '\"action\":\"new\"' ~/.openclaw/logs/commands.log | jq . 启用：\nopenclaw hooks enable command-logger boot-md 当 Gateway 网关启动时运行 BOOT.md（在渠道启动之后）。 必须启用内部 hooks 才能运行。\n事件：gateway:startup\n要求：必须配置 workspace.dir\n功能：\n从你的工作区读取 BOOT.md 通过智能体运行器运行指令 通过 message 工具发送任何请求的出站消息 启用：\nopenclaw hooks enable boot-md 最佳实践 保持处理程序快速 Hooks 在命令处理期间运行。保持它们轻量：\n// ✓ Good - async work, returns immediately const handler: HookHandler = async (event) =\u003e { void processInBackground(event); // Fire and forget }; // ✗ Bad - blocks command processing const handler: HookHandler = async (event) =\u003e { await slowDatabaseQuery(event); await evenSlowerAPICall(event); }; 优雅处理错误 始终包装有风险的操作：\nconst handler: HookHandler = async (event) =\u003e { try { await riskyOperation(event); } catch (err) { console.error(\"[my-handler] Failed:\", err instanceof Error ? err.message : String(err)); // Don't throw - let other handlers run } }; 尽早过滤事件 如果事件不相关则尽早返回：\nconst handler: HookHandler = async (event) =\u003e { // Only handle 'new' commands if (event.type !== \"command\" || event.action !== \"new\") { return; } // Your logic here }; 使用特定事件键 尽可能在元数据中指定确切事件：\nmetadata: { \"openclaw\": { \"events\": [\"command:new\"] } } # Specific 而不是：\nmetadata: { \"openclaw\": { \"events\": [\"command\"] } } # General - more overhead 调试 启用 Hook 日志 Gateway 网关在启动时记录 hook 加载：\nRegistered hook: session-memory -\u003e command:new Registered hook: command-logger -\u003e command Registered hook: boot-md -\u003e gateway:startup 检查发现 列出所有发现的 hooks：\nopenclaw hooks list --verbose 检查注册 在你的处理程序中，记录它被调用的时间：\nconst handler: HookHandler = async (event) =\u003e { console.log(\"[my-handler] Triggered:\", event.type, event.action); // Your logic }; 验证资格 检查为什么 hook 不符合条件：\nopenclaw hooks info my-hook 在输出中查找缺失的要求。\n测试 Gateway 网关日志 监控 Gateway 网关日志以查看 hook 执行：\n# macOS ./scripts/clawlog.sh -f # Other platforms tail -f ~/.openclaw/gateway.log 直接测试 Hooks 隔离测试你的处理程序：\nimport { test } from \"vitest\"; import { createHookEvent } from \"./src/hooks/hooks.js\"; import myHandler from \"./hooks/my-hook/handler.js\"; test(\"my handler works\", async () =\u003e { const event = createHookEvent(\"command\", \"new\", \"test-session\", { foo: \"bar\", }); await myHandler(event); // Assert side effects }); 架构 核心组件 src/hooks/types.ts：类型定义 src/hooks/workspace.ts：目录扫描和加载 src/hooks/frontmatter.ts：HOOK.md 元数据解析 src/hooks/config.ts：资格检查 src/hooks/hooks-status.ts：状态报告 src/hooks/loader.ts：动态模块加载器 src/cli/hooks-cli.ts：CLI 命令 src/gateway/server-startup.ts：在 Gateway 网关启动时加载 hooks src/auto-reply/reply/commands-core.ts：触发命令事件 发现流程 Gateway 网关启动 ↓ 扫描目录（工作区 → 托管 → 捆绑） ↓ 解析 HOOK.md 文件 ↓ 检查资格（bins、env、config、os） ↓ 从符合条件的 hooks 加载处理程序 ↓ 为事件注册处理程序 事件流程 用户发送 /new ↓ 命令验证 ↓ 创建 hook 事件 ↓ 触发 hook（所有注册的处理程序） ↓ 命令处理继续 ↓ 会话重置 故障排除 Hook 未被发现 检查目录结构：\nls -la ~/.openclaw/hooks/my-hook/ # Should show: HOOK.md, handler.ts 验证 HOOK.md 格式：\ncat ~/.openclaw/hooks/my-hook/HOOK.md # Should have YAML frontmatter with name and metadata 列出所有发现的 hooks：\nopenclaw hooks list Hook 不符合条件 检查要求：\nopenclaw hooks info my-hook 查找缺失的：\n二进制文件（检查 PATH） 环境变量 配置值 操作系统兼容性 Hook 未执行 验证 hook 已启用：\nopenclaw hooks list # Should show ✓ next to enabled hooks 重启你的 Gateway 网关进程以重新加载 hooks。\n检查 Gateway 网关日志中的错误：\n./scripts/clawlog.sh | grep hook 处理程序错误 检查 TypeScript/import 错误：\n# Test import directly node -e \"import('./path/to/handler.ts').then(console.log)\" 迁移指南 从遗留配置到发现 之前：\n{ \"hooks\": { \"internal\": { \"enabled\": true, \"handlers\": [ { \"event\": \"command:new\", \"module\": \"./hooks/handlers/my-handler.ts\" } ] } } } 之后：\n创建 hook 目录：\nmkdir -p ~/.openclaw/hooks/my-hook mv ./hooks/handlers/my-handler.ts ~/.openclaw/hooks/my-hook/handler.ts 创建 HOOK.md：\n--- name: my-hook description: \"My custom hook\" metadata: { \"openclaw\": { \"emoji\": \"🎯\", \"events\": [\"command:new\"] } } --- # My Hook Does something useful. 更新配置：\n{ \"hooks\": { \"internal\": { \"enabled\": true, \"entries\": { \"my-hook\": { \"enabled\": true } } } } } 验证并重启你的 Gateway 网关进程：\nopenclaw hooks list # Should show: 🎯 my-hook ✓ 迁移的好处：\n自动发现 CLI 管理 资格检查 更好的文档 一致的结构 另请参阅 CLI 参考：hooks 捆绑 Hooks README Webhook Hooks 配置 ",
+  "wordCount" : "1396",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/automation/hooks/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Hooks
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%85%a5%e9%97%a8%e6%8c%87%e5%8d%97" aria-label="入门指南">入门指南</a></li>
+                <li>
+                    <a href="#%e6%a6%82%e8%bf%b0" aria-label="概述">概述</a></li>
+                <li>
+                    <a href="#%e5%85%a5%e9%97%a8" aria-label="入门">入门</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8d%86%e7%bb%91%e7%9a%84-hooks" aria-label="捆绑的 Hooks">捆绑的 Hooks</a></li>
+                <li>
+                    <a href="#%e6%96%b0%e6%89%8b%e5%bc%95%e5%af%bc" aria-label="新手引导">新手引导</a></li></ul>
+                </li>
+                <li>
+                    <a href="#hook-%e5%8f%91%e7%8e%b0" aria-label="Hook 发现">Hook 发现</a></li>
+                <li>
+                    <a href="#hook-%e5%8c%85npmarchives" aria-label="Hook 包（npm/archives）">Hook 包（npm/archives）</a></li>
+                <li>
+                    <a href="#hook-%e7%bb%93%e6%9e%84" aria-label="Hook 结构">Hook 结构</a><ul>
+                        
+                <li>
+                    <a href="#hookmd-%e6%a0%bc%e5%bc%8f" aria-label="HOOK.md 格式">HOOK.md 格式</a></li>
+                <li>
+                    <a href="#%e5%85%83%e6%95%b0%e6%8d%ae%e5%ad%97%e6%ae%b5" aria-label="元数据字段">元数据字段</a></li>
+                <li>
+                    <a href="#%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f%e5%ae%9e%e7%8e%b0" aria-label="处理程序实现">处理程序实现</a><ul>
+                        
+                <li>
+                    <a href="#%e4%ba%8b%e4%bb%b6%e4%b8%8a%e4%b8%8b%e6%96%87" aria-label="事件上下文">事件上下文</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%8b%e4%bb%b6%e7%b1%bb%e5%9e%8b" aria-label="事件类型">事件类型</a><ul>
+                        
+                <li>
+                    <a href="#%e5%91%bd%e4%bb%a4%e4%ba%8b%e4%bb%b6" aria-label="命令事件">命令事件</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e4%ba%8b%e4%bb%b6" aria-label="智能体事件">智能体事件</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e4%ba%8b%e4%bb%b6" aria-label="Gateway 网关事件">Gateway 网关事件</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e7%bb%93%e6%9e%9c-hooks%e6%8f%92%e4%bb%b6-api" aria-label="工具结果 Hooks（插件 API）">工具结果 Hooks（插件 API）</a></li>
+                <li>
+                    <a href="#%e6%9c%aa%e6%9d%a5%e4%ba%8b%e4%bb%b6" aria-label="未来事件">未来事件</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%88%9b%e5%bb%ba%e8%87%aa%e5%ae%9a%e4%b9%89-hooks" aria-label="创建自定义 Hooks">创建自定义 Hooks</a><ul>
+                        
+                <li>
+                    <a href="#1-%e9%80%89%e6%8b%a9%e4%bd%8d%e7%bd%ae" aria-label="1. 选择位置">1. 选择位置</a></li>
+                <li>
+                    <a href="#2-%e5%88%9b%e5%bb%ba%e7%9b%ae%e5%bd%95%e7%bb%93%e6%9e%84" aria-label="2. 创建目录结构">2. 创建目录结构</a></li>
+                <li>
+                    <a href="#3-%e5%88%9b%e5%bb%ba-hookmd" aria-label="3. 创建 HOOK.md">3. 创建 HOOK.md</a></li>
+                <li>
+                    <a href="#4-%e5%88%9b%e5%bb%ba-handlerts" aria-label="4. 创建 handler.ts">4. 创建 handler.ts</a></li>
+                <li>
+                    <a href="#5-%e5%90%af%e7%94%a8%e5%b9%b6%e6%b5%8b%e8%af%95" aria-label="5. 启用并测试">5. 启用并测试</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae" aria-label="配置">配置</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%b0%e9%85%8d%e7%bd%ae%e6%a0%bc%e5%bc%8f%e6%8e%a8%e8%8d%90" aria-label="新配置格式（推荐）">新配置格式（推荐）</a></li>
+                <li>
+                    <a href="#%e6%af%8f-hook-%e9%85%8d%e7%bd%ae" aria-label="每 Hook 配置">每 Hook 配置</a></li>
+                <li>
+                    <a href="#%e9%a2%9d%e5%a4%96%e7%9b%ae%e5%bd%95" aria-label="额外目录">额外目录</a></li>
+                <li>
+                    <a href="#%e9%81%97%e7%95%99%e9%85%8d%e7%bd%ae%e6%a0%bc%e5%bc%8f%e4%bb%8d%e7%84%b6%e6%94%af%e6%8c%81" aria-label="遗留配置格式（仍然支持）">遗留配置格式（仍然支持）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#cli-%e5%91%bd%e4%bb%a4" aria-label="CLI 命令">CLI 命令</a><ul>
+                        
+                <li>
+                    <a href="#%e5%88%97%e5%87%ba-hooks" aria-label="列出 Hooks">列出 Hooks</a></li>
+                <li>
+                    <a href="#hook-%e4%bf%a1%e6%81%af" aria-label="Hook 信息">Hook 信息</a></li>
+                <li>
+                    <a href="#%e6%a3%80%e6%9f%a5%e8%b5%84%e6%a0%bc" aria-label="检查资格">检查资格</a></li>
+                <li>
+                    <a href="#%e5%90%af%e7%94%a8%e7%a6%81%e7%94%a8" aria-label="启用/禁用">启用/禁用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8d%86%e7%bb%91%e7%9a%84-hooks-1" aria-label="捆绑的 Hooks">捆绑的 Hooks</a><ul>
+                        
+                <li>
+                    <a href="#session-memory" aria-label="session-memory">session-memory</a></li>
+                <li>
+                    <a href="#command-logger" aria-label="command-logger">command-logger</a></li>
+                <li>
+                    <a href="#boot-md" aria-label="boot-md">boot-md</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5" aria-label="最佳实践">最佳实践</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bf%9d%e6%8c%81%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f%e5%bf%ab%e9%80%9f" aria-label="保持处理程序快速">保持处理程序快速</a></li>
+                <li>
+                    <a href="#%e4%bc%98%e9%9b%85%e5%a4%84%e7%90%86%e9%94%99%e8%af%af" aria-label="优雅处理错误">优雅处理错误</a></li>
+                <li>
+                    <a href="#%e5%b0%bd%e6%97%a9%e8%bf%87%e6%bb%a4%e4%ba%8b%e4%bb%b6" aria-label="尽早过滤事件">尽早过滤事件</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e7%89%b9%e5%ae%9a%e4%ba%8b%e4%bb%b6%e9%94%ae" aria-label="使用特定事件键">使用特定事件键</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%b0%83%e8%af%95" aria-label="调试">调试</a><ul>
+                        
+                <li>
+                    <a href="#%e5%90%af%e7%94%a8-hook-%e6%97%a5%e5%bf%97" aria-label="启用 Hook 日志">启用 Hook 日志</a></li>
+                <li>
+                    <a href="#%e6%a3%80%e6%9f%a5%e5%8f%91%e7%8e%b0" aria-label="检查发现">检查发现</a></li>
+                <li>
+                    <a href="#%e6%a3%80%e6%9f%a5%e6%b3%a8%e5%86%8c" aria-label="检查注册">检查注册</a></li>
+                <li>
+                    <a href="#%e9%aa%8c%e8%af%81%e8%b5%84%e6%a0%bc" aria-label="验证资格">验证资格</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95" aria-label="测试">测试</a><ul>
+                        
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e6%97%a5%e5%bf%97" aria-label="Gateway 网关日志">Gateway 网关日志</a></li>
+                <li>
+                    <a href="#%e7%9b%b4%e6%8e%a5%e6%b5%8b%e8%af%95-hooks" aria-label="直接测试 Hooks">直接测试 Hooks</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9e%b6%e6%9e%84" aria-label="架构">架构</a><ul>
+                        
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6" aria-label="核心组件">核心组件</a></li>
+                <li>
+                    <a href="#%e5%8f%91%e7%8e%b0%e6%b5%81%e7%a8%8b" aria-label="发现流程">发现流程</a></li>
+                <li>
+                    <a href="#%e4%ba%8b%e4%bb%b6%e6%b5%81%e7%a8%8b" aria-label="事件流程">事件流程</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#hook-%e6%9c%aa%e8%a2%ab%e5%8f%91%e7%8e%b0" aria-label="Hook 未被发现">Hook 未被发现</a></li>
+                <li>
+                    <a href="#hook-%e4%b8%8d%e7%ac%a6%e5%90%88%e6%9d%a1%e4%bb%b6" aria-label="Hook 不符合条件">Hook 不符合条件</a></li>
+                <li>
+                    <a href="#hook-%e6%9c%aa%e6%89%a7%e8%a1%8c" aria-label="Hook 未执行">Hook 未执行</a></li>
+                <li>
+                    <a href="#%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f%e9%94%99%e8%af%af" aria-label="处理程序错误">处理程序错误</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%bf%81%e7%a7%bb%e6%8c%87%e5%8d%97" aria-label="迁移指南">迁移指南</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bb%8e%e9%81%97%e7%95%99%e9%85%8d%e7%bd%ae%e5%88%b0%e5%8f%91%e7%8e%b0" aria-label="从遗留配置到发现">从遗留配置到发现</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%a6%e8%af%b7%e5%8f%82%e9%98%85" aria-label="另请参阅">另请参阅</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Hooks 提供了一个可扩展的事件驱动系统，用于响应智能体命令和事件自动执行操作。Hooks 从目录中自动发现，可以通过 CLI 命令管理，类似于 OpenClaw 中 Skills 的工作方式。</p>
+<h2 id="入门指南">入门指南<a hidden class="anchor" aria-hidden="true" href="#入门指南">#</a></h2>
+<p>Hooks 是在事件发生时运行的小脚本。有两种类型：</p>
+<ul>
+<li><strong>Hooks</strong>（本页）：当智能体事件触发时在 Gateway 网关内运行，如 <code>/new</code>、<code>/reset</code>、<code>/stop</code> 或生命周期事件。</li>
+<li><strong>Webhooks</strong>：外部 HTTP webhooks，让其他系统触发 OpenClaw 中的工作。参见 <a href="/automation/webhook">Webhook Hooks</a> 或使用 <code>openclaw webhooks</code> 获取 Gmail 助手命令。</li>
+</ul>
+<p>Hooks 也可以捆绑在插件中；参见 <a href="/tools/plugin#plugin-hooks">插件</a>。</p>
+<p>常见用途：</p>
+<ul>
+<li>重置会话时保存记忆快照</li>
+<li>保留命令审计跟踪用于故障排除或合规</li>
+<li>会话开始或结束时触发后续自动化</li>
+<li>事件触发时向智能体工作区写入文件或调用外部 API</li>
+</ul>
+<p>如果你能写一个小的 TypeScript 函数，你就能写一个 hook。Hooks 会自动发现，你可以通过 CLI 启用或禁用它们。</p>
+<h2 id="概述">概述<a hidden class="anchor" aria-hidden="true" href="#概述">#</a></h2>
+<p>hooks 系统允许你：</p>
+<ul>
+<li>在发出 <code>/new</code> 时将会话上下文保存到记忆</li>
+<li>记录所有命令以供审计</li>
+<li>在智能体生命周期事件上触发自定义自动化</li>
+<li>在不修改核心代码的情况下扩展 OpenClaw 的行为</li>
+</ul>
+<h2 id="入门">入门<a hidden class="anchor" aria-hidden="true" href="#入门">#</a></h2>
+<h3 id="捆绑的-hooks">捆绑的 Hooks<a hidden class="anchor" aria-hidden="true" href="#捆绑的-hooks">#</a></h3>
+<p>OpenClaw 附带三个自动发现的捆绑 hooks：</p>
+<ul>
+<li><strong>💾 session-memory</strong>：当你发出 <code>/new</code> 时将会话上下文保存到智能体工作区（默认 <code>~/.openclaw/workspace/memory/</code>）</li>
+<li><strong>📝 command-logger</strong>：将所有命令事件记录到 <code>~/.openclaw/logs/commands.log</code></li>
+<li><strong>🚀 boot-md</strong>：当 Gateway 网关启动时运行 <code>BOOT.md</code>（需要启用内部 hooks）</li>
+</ul>
+<p>列出可用的 hooks：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks list
+</span></span></code></pre></div><p>启用一个 hook：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks <span class="nb">enable</span> session-memory
+</span></span></code></pre></div><p>检查 hook 状态：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks check
+</span></span></code></pre></div><p>获取详细信息：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks info session-memory
+</span></span></code></pre></div><h3 id="新手引导">新手引导<a hidden class="anchor" aria-hidden="true" href="#新手引导">#</a></h3>
+<p>在新手引导期间（<code>openclaw onboard</code>），你将被提示启用推荐的 hooks。向导会自动发现符合条件的 hooks 并呈现供选择。</p>
+<h2 id="hook-发现">Hook 发现<a hidden class="anchor" aria-hidden="true" href="#hook-发现">#</a></h2>
+<p>Hooks 从三个目录自动发现（按优先级顺序）：</p>
+<ol>
+<li><strong>工作区 hooks</strong>：<code>&lt;workspace&gt;/hooks/</code>（每智能体，最高优先级）</li>
+<li><strong>托管 hooks</strong>：<code>~/.openclaw/hooks/</code>（用户安装，跨工作区共享）</li>
+<li><strong>捆绑 hooks</strong>：<code>&lt;openclaw&gt;/dist/hooks/bundled/</code>（随 OpenClaw 附带）</li>
+</ol>
+<p>托管 hook 目录可以是<strong>单个 hook</strong> 或 <strong>hook 包</strong>（包目录）。</p>
+<p>每个 hook 是一个包含以下内容的目录：</p>
+<pre tabindex="0"><code>my-hook/
+├── HOOK.md          # 元数据 + 文档
+└── handler.ts       # 处理程序实现
+</code></pre><h2 id="hook-包npmarchives">Hook 包（npm/archives）<a hidden class="anchor" aria-hidden="true" href="#hook-包npmarchives">#</a></h2>
+<p>Hook 包是标准的 npm 包，通过 <code>package.json</code> 中的 <code>openclaw.hooks</code> 导出一个或多个 hooks。使用以下命令安装：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks install &lt;path-or-spec&gt;
+</span></span></code></pre></div><p>示例 <code>package.json</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;@acme/my-hooks&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;0.1.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;openclaw&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;hooks&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;./hooks/my-hook&#34;</span><span class="p">,</span> <span class="s2">&#34;./hooks/other-hook&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>每个条目指向包含 <code>HOOK.md</code> 和 <code>handler.ts</code>（或 <code>index.ts</code>）的 hook 目录。
+Hook 包可以附带依赖；它们将安装在 <code>~/.openclaw/hooks/&lt;id&gt;</code> 下。</p>
+<h2 id="hook-结构">Hook 结构<a hidden class="anchor" aria-hidden="true" href="#hook-结构">#</a></h2>
+<h3 id="hookmd-格式">HOOK.md 格式<a hidden class="anchor" aria-hidden="true" href="#hookmd-格式">#</a></h3>
+<p><code>HOOK.md</code> 文件在 YAML frontmatter 中包含元数据，加上 Markdown 文档：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">name: my-hook
+</span></span><span class="line"><span class="cl">description: &#34;Short description of what this hook does&#34;
+</span></span><span class="line"><span class="cl">homepage: https://docs.openclaw.ai/automation/hooks<span class="ni">#my</span>-hook
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">  { &#34;openclaw&#34;: { &#34;emoji&#34;: &#34;🔗&#34;, &#34;events&#34;: [&#34;command:new&#34;], &#34;requires&#34;: { &#34;bins&#34;: [&#34;node&#34;] } } }
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gh"># My Hook
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Detailed documentation goes here...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## What It Does
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">-</span> Listens for <span class="sb">`/new`</span> commands
+</span></span><span class="line"><span class="cl"><span class="k">-</span> Performs some action
+</span></span><span class="line"><span class="cl"><span class="k">-</span> Logs the result
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## Requirements
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">-</span> Node.js must be installed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## Configuration
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">No configuration needed.
+</span></span></code></pre></div><h3 id="元数据字段">元数据字段<a hidden class="anchor" aria-hidden="true" href="#元数据字段">#</a></h3>
+<p><code>metadata.openclaw</code> 对象支持：</p>
+<ul>
+<li><strong><code>emoji</code></strong>：CLI 的显示表情符号（例如 <code>&quot;💾&quot;</code>）</li>
+<li><strong><code>events</code></strong>：要监听的事件数组（例如 <code>[&quot;command:new&quot;, &quot;command:reset&quot;]</code>）</li>
+<li><strong><code>export</code></strong>：要使用的命名导出（默认为 <code>&quot;default&quot;</code>）</li>
+<li><strong><code>homepage</code></strong>：文档 URL</li>
+<li><strong><code>requires</code></strong>：可选要求
+<ul>
+<li><strong><code>bins</code></strong>：PATH 中需要的二进制文件（例如 <code>[&quot;git&quot;, &quot;node&quot;]</code>）</li>
+<li><strong><code>anyBins</code></strong>：这些二进制文件中至少有一个必须存在</li>
+<li><strong><code>env</code></strong>：需要的环境变量</li>
+<li><strong><code>config</code></strong>：需要的配置路径（例如 <code>[&quot;workspace.dir&quot;]</code>）</li>
+<li><strong><code>os</code></strong>：需要的平台（例如 <code>[&quot;darwin&quot;, &quot;linux&quot;]</code>）</li>
+</ul>
+</li>
+<li><strong><code>always</code></strong>：绕过资格检查（布尔值）</li>
+<li><strong><code>install</code></strong>：安装方法（对于捆绑 hooks：<code>[{&quot;id&quot;:&quot;bundled&quot;,&quot;kind&quot;:&quot;bundled&quot;}]</code>）</li>
+</ul>
+<h3 id="处理程序实现">处理程序实现<a hidden class="anchor" aria-hidden="true" href="#处理程序实现">#</a></h3>
+<p><code>handler.ts</code> 文件导出一个 <code>HookHandler</code> 函数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">HookHandler</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;../../src/hooks/hooks.js&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">myHandler</span>: <span class="kt">HookHandler</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Only trigger on &#39;new&#39; command
+</span></span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="kr">type</span> <span class="o">!==</span> <span class="s2">&#34;command&#34;</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">action</span> <span class="o">!==</span> <span class="s2">&#34;new&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`[my-hook] New command triggered`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`  Session: </span><span class="si">${</span><span class="nx">event</span><span class="p">.</span><span class="nx">sessionKey</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`  Timestamp: </span><span class="si">${</span><span class="nx">event</span><span class="p">.</span><span class="nx">timestamp</span><span class="p">.</span><span class="nx">toISOString</span><span class="p">()</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Your custom logic here
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Optionally send message to user
+</span></span></span><span class="line"><span class="cl">  <span class="nx">event</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&#34;✨ My hook executed!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">myHandler</span><span class="p">;</span>
+</span></span></code></pre></div><h4 id="事件上下文">事件上下文<a hidden class="anchor" aria-hidden="true" href="#事件上下文">#</a></h4>
+<p>每个事件包含：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">type</span><span class="o">:</span> <span class="s1">&#39;command&#39;</span> <span class="o">|</span> <span class="s1">&#39;session&#39;</span> <span class="o">|</span> <span class="s1">&#39;agent&#39;</span> <span class="o">|</span> <span class="s1">&#39;gateway&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">action</span>: <span class="kt">string</span><span class="p">,</span>              <span class="c1">// e.g., &#39;new&#39;, &#39;reset&#39;, &#39;stop&#39;
+</span></span></span><span class="line"><span class="cl">  <span class="nx">sessionKey</span>: <span class="kt">string</span><span class="p">,</span>          <span class="c1">// Session identifier
+</span></span></span><span class="line"><span class="cl">  <span class="nx">timestamp</span>: <span class="kt">Date</span><span class="p">,</span>             <span class="c1">// When the event occurred
+</span></span></span><span class="line"><span class="cl">  <span class="nx">messages</span>: <span class="kt">string</span><span class="p">[],</span>          <span class="c1">// Push messages here to send to user
+</span></span></span><span class="line"><span class="cl">  <span class="nx">context</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sessionEntry?</span>: <span class="kt">SessionEntry</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sessionId?</span>: <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sessionFile?</span>: <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">commandSource?</span>: <span class="kt">string</span><span class="p">,</span>    <span class="c1">// e.g., &#39;whatsapp&#39;, &#39;telegram&#39;
+</span></span></span><span class="line"><span class="cl">    <span class="nx">senderId?</span>: <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">workspaceDir?</span>: <span class="kt">string</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">bootstrapFiles?</span>: <span class="kt">WorkspaceBootstrapFile</span><span class="p">[],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">cfg?</span>: <span class="kt">OpenClawConfig</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="事件类型">事件类型<a hidden class="anchor" aria-hidden="true" href="#事件类型">#</a></h2>
+<h3 id="命令事件">命令事件<a hidden class="anchor" aria-hidden="true" href="#命令事件">#</a></h3>
+<p>当发出智能体命令时触发：</p>
+<ul>
+<li><strong><code>command</code></strong>：所有命令事件（通用监听器）</li>
+<li><strong><code>command:new</code></strong>：当发出 <code>/new</code> 命令时</li>
+<li><strong><code>command:reset</code></strong>：当发出 <code>/reset</code> 命令时</li>
+<li><strong><code>command:stop</code></strong>：当发出 <code>/stop</code> 命令时</li>
+</ul>
+<h3 id="智能体事件">智能体事件<a hidden class="anchor" aria-hidden="true" href="#智能体事件">#</a></h3>
+<ul>
+<li><strong><code>agent:bootstrap</code></strong>：在注入工作区引导文件之前（hooks 可以修改 <code>context.bootstrapFiles</code>）</li>
+</ul>
+<h3 id="gateway-网关事件">Gateway 网关事件<a hidden class="anchor" aria-hidden="true" href="#gateway-网关事件">#</a></h3>
+<p>当 Gateway 网关启动时触发：</p>
+<ul>
+<li><strong><code>gateway:startup</code></strong>：在渠道启动和 hooks 加载之后</li>
+</ul>
+<h3 id="工具结果-hooks插件-api">工具结果 Hooks（插件 API）<a hidden class="anchor" aria-hidden="true" href="#工具结果-hooks插件-api">#</a></h3>
+<p>这些 hooks 不是事件流监听器；它们让插件在 OpenClaw 持久化工具结果之前同步调整它们。</p>
+<ul>
+<li><strong><code>tool_result_persist</code></strong>：在工具结果写入会话记录之前转换它们。必须是同步的；返回更新后的工具结果负载或 <code>undefined</code> 保持原样。参见 <a href="/concepts/agent-loop">智能体循环</a>。</li>
+</ul>
+<h3 id="未来事件">未来事件<a hidden class="anchor" aria-hidden="true" href="#未来事件">#</a></h3>
+<p>计划中的事件类型：</p>
+<ul>
+<li><strong><code>session:start</code></strong>：当新会话开始时</li>
+<li><strong><code>session:end</code></strong>：当会话结束时</li>
+<li><strong><code>agent:error</code></strong>：当智能体遇到错误时</li>
+<li><strong><code>message:sent</code></strong>：当消息被发送时</li>
+<li><strong><code>message:received</code></strong>：当消息被接收时</li>
+</ul>
+<h2 id="创建自定义-hooks">创建自定义 Hooks<a hidden class="anchor" aria-hidden="true" href="#创建自定义-hooks">#</a></h2>
+<h3 id="1-选择位置">1. 选择位置<a hidden class="anchor" aria-hidden="true" href="#1-选择位置">#</a></h3>
+<ul>
+<li><strong>工作区 hooks</strong>（<code>&lt;workspace&gt;/hooks/</code>）：每智能体，最高优先级</li>
+<li><strong>托管 hooks</strong>（<code>~/.openclaw/hooks/</code>）：跨工作区共享</li>
+</ul>
+<h3 id="2-创建目录结构">2. 创建目录结构<a hidden class="anchor" aria-hidden="true" href="#2-创建目录结构">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p ~/.openclaw/hooks/my-hook
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ~/.openclaw/hooks/my-hook
+</span></span></code></pre></div><h3 id="3-创建-hookmd">3. 创建 HOOK.md<a hidden class="anchor" aria-hidden="true" href="#3-创建-hookmd">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">name: my-hook
+</span></span><span class="line"><span class="cl">description: &#34;Does something useful&#34;
+</span></span><span class="line"><span class="cl">metadata: { &#34;openclaw&#34;: { &#34;emoji&#34;: &#34;🎯&#34;, &#34;events&#34;: [&#34;command:new&#34;] } }
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gh"># My Custom Hook
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">This hook does something useful when you issue <span class="sb">`/new`</span>.
+</span></span></code></pre></div><h3 id="4-创建-handlerts">4. 创建 handler.ts<a hidden class="anchor" aria-hidden="true" href="#4-创建-handlerts">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="kr">type</span> <span class="p">{</span> <span class="nx">HookHandler</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;../../src/hooks/hooks.js&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span>: <span class="kt">HookHandler</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="kr">type</span> <span class="o">!==</span> <span class="s2">&#34;command&#34;</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">action</span> <span class="o">!==</span> <span class="s2">&#34;new&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;[my-hook] Running!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Your logic here
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">handler</span><span class="p">;</span>
+</span></span></code></pre></div><h3 id="5-启用并测试">5. 启用并测试<a hidden class="anchor" aria-hidden="true" href="#5-启用并测试">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Verify hook is discovered</span>
+</span></span><span class="line"><span class="cl">openclaw hooks list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Enable it</span>
+</span></span><span class="line"><span class="cl">openclaw hooks <span class="nb">enable</span> my-hook
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Restart your gateway process (menu bar app restart on macOS, or restart your dev process)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Trigger the event</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Send /new via your messaging channel</span>
+</span></span></code></pre></div><h2 id="配置">配置<a hidden class="anchor" aria-hidden="true" href="#配置">#</a></h2>
+<h3 id="新配置格式推荐">新配置格式（推荐）<a hidden class="anchor" aria-hidden="true" href="#新配置格式推荐">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;hooks&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;internal&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;session-memory&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;command-logger&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="每-hook-配置">每 Hook 配置<a hidden class="anchor" aria-hidden="true" href="#每-hook-配置">#</a></h3>
+<p>Hooks 可以有自定义配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;hooks&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;internal&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;my-hook&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;env&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;MY_CUSTOM_VAR&#34;</span><span class="p">:</span> <span class="s2">&#34;value&#34;</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="额外目录">额外目录<a hidden class="anchor" aria-hidden="true" href="#额外目录">#</a></h3>
+<p>从额外目录加载 hooks：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;hooks&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;internal&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;load&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;extraDirs&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;/path/to/more/hooks&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="遗留配置格式仍然支持">遗留配置格式（仍然支持）<a hidden class="anchor" aria-hidden="true" href="#遗留配置格式仍然支持">#</a></h3>
+<p>旧配置格式仍然有效以保持向后兼容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;hooks&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;internal&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;handlers&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;event&#34;</span><span class="p">:</span> <span class="s2">&#34;command:new&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;./hooks/handlers/my-handler.ts&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;export&#34;</span><span class="p">:</span> <span class="s2">&#34;default&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>迁移</strong>：对新 hooks 使用基于发现的新系统。遗留处理程序在基于目录的 hooks 之后加载。</p>
+<h2 id="cli-命令">CLI 命令<a hidden class="anchor" aria-hidden="true" href="#cli-命令">#</a></h2>
+<h3 id="列出-hooks">列出 Hooks<a hidden class="anchor" aria-hidden="true" href="#列出-hooks">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># List all hooks</span>
+</span></span><span class="line"><span class="cl">openclaw hooks list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Show only eligible hooks</span>
+</span></span><span class="line"><span class="cl">openclaw hooks list --eligible
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Verbose output (show missing requirements)</span>
+</span></span><span class="line"><span class="cl">openclaw hooks list --verbose
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># JSON output</span>
+</span></span><span class="line"><span class="cl">openclaw hooks list --json
+</span></span></code></pre></div><h3 id="hook-信息">Hook 信息<a hidden class="anchor" aria-hidden="true" href="#hook-信息">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Show detailed info about a hook</span>
+</span></span><span class="line"><span class="cl">openclaw hooks info session-memory
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># JSON output</span>
+</span></span><span class="line"><span class="cl">openclaw hooks info session-memory --json
+</span></span></code></pre></div><h3 id="检查资格">检查资格<a hidden class="anchor" aria-hidden="true" href="#检查资格">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Show eligibility summary</span>
+</span></span><span class="line"><span class="cl">openclaw hooks check
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># JSON output</span>
+</span></span><span class="line"><span class="cl">openclaw hooks check --json
+</span></span></code></pre></div><h3 id="启用禁用">启用/禁用<a hidden class="anchor" aria-hidden="true" href="#启用禁用">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Enable a hook</span>
+</span></span><span class="line"><span class="cl">openclaw hooks <span class="nb">enable</span> session-memory
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Disable a hook</span>
+</span></span><span class="line"><span class="cl">openclaw hooks disable command-logger
+</span></span></code></pre></div><h2 id="捆绑的-hooks-1">捆绑的 Hooks<a hidden class="anchor" aria-hidden="true" href="#捆绑的-hooks-1">#</a></h2>
+<h3 id="session-memory">session-memory<a hidden class="anchor" aria-hidden="true" href="#session-memory">#</a></h3>
+<p>当你发出 <code>/new</code> 时将会话上下文保存到记忆。</p>
+<p><strong>事件</strong>：<code>command:new</code></p>
+<p><strong>要求</strong>：必须配置 <code>workspace.dir</code></p>
+<p><strong>输出</strong>：<code>&lt;workspace&gt;/memory/YYYY-MM-DD-slug.md</code>（默认为 <code>~/.openclaw/workspace</code>）</p>
+<p><strong>功能</strong>：</p>
+<ol>
+<li>使用预重置会话条目定位正确的记录</li>
+<li>提取最后 15 行对话</li>
+<li>使用 LLM 生成描述性文件名 slug</li>
+<li>将会话元数据保存到带日期的记忆文件</li>
+</ol>
+<p><strong>示例输出</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl"><span class="gh"># Session: 2026-01-16 14:30:00 UTC
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">-</span> **Session Key**: agent:main:main
+</span></span><span class="line"><span class="cl"><span class="k">-</span> **Session ID**: abc123def456
+</span></span><span class="line"><span class="cl"><span class="k">-</span> **Source**: telegram
+</span></span></code></pre></div><p><strong>文件名示例</strong>：</p>
+<ul>
+<li><code>2026-01-16-vendor-pitch.md</code></li>
+<li><code>2026-01-16-api-design.md</code></li>
+<li><code>2026-01-16-1430.md</code>（如果 slug 生成失败则回退到时间戳）</li>
+</ul>
+<p><strong>启用</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks <span class="nb">enable</span> session-memory
+</span></span></code></pre></div><h3 id="command-logger">command-logger<a hidden class="anchor" aria-hidden="true" href="#command-logger">#</a></h3>
+<p>将所有命令事件记录到集中审计文件。</p>
+<p><strong>事件</strong>：<code>command</code></p>
+<p><strong>要求</strong>：无</p>
+<p><strong>输出</strong>：<code>~/.openclaw/logs/commands.log</code></p>
+<p><strong>功能</strong>：</p>
+<ol>
+<li>捕获事件详情（命令操作、时间戳、会话键、发送者 ID、来源）</li>
+<li>以 JSONL 格式追加到日志文件</li>
+<li>在后台静默运行</li>
+</ol>
+<p><strong>示例日志条目</strong>：</p>
+<pre tabindex="0"><code class="language-jsonl" data-lang="jsonl">{&#34;timestamp&#34;:&#34;2026-01-16T14:30:00.000Z&#34;,&#34;action&#34;:&#34;new&#34;,&#34;sessionKey&#34;:&#34;agent:main:main&#34;,&#34;senderId&#34;:&#34;+1234567890&#34;,&#34;source&#34;:&#34;telegram&#34;}
+{&#34;timestamp&#34;:&#34;2026-01-16T15:45:22.000Z&#34;,&#34;action&#34;:&#34;stop&#34;,&#34;sessionKey&#34;:&#34;agent:main:main&#34;,&#34;senderId&#34;:&#34;user@example.com&#34;,&#34;source&#34;:&#34;whatsapp&#34;}
+</code></pre><p><strong>查看日志</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># View recent commands</span>
+</span></span><span class="line"><span class="cl">tail -n <span class="m">20</span> ~/.openclaw/logs/commands.log
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Pretty-print with jq</span>
+</span></span><span class="line"><span class="cl">cat ~/.openclaw/logs/commands.log <span class="p">|</span> jq .
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Filter by action</span>
+</span></span><span class="line"><span class="cl">grep <span class="s1">&#39;&#34;action&#34;:&#34;new&#34;&#39;</span> ~/.openclaw/logs/commands.log <span class="p">|</span> jq .
+</span></span></code></pre></div><p><strong>启用</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks <span class="nb">enable</span> command-logger
+</span></span></code></pre></div><h3 id="boot-md">boot-md<a hidden class="anchor" aria-hidden="true" href="#boot-md">#</a></h3>
+<p>当 Gateway 网关启动时运行 <code>BOOT.md</code>（在渠道启动之后）。
+必须启用内部 hooks 才能运行。</p>
+<p><strong>事件</strong>：<code>gateway:startup</code></p>
+<p><strong>要求</strong>：必须配置 <code>workspace.dir</code></p>
+<p><strong>功能</strong>：</p>
+<ol>
+<li>从你的工作区读取 <code>BOOT.md</code></li>
+<li>通过智能体运行器运行指令</li>
+<li>通过 message 工具发送任何请求的出站消息</li>
+</ol>
+<p><strong>启用</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks <span class="nb">enable</span> boot-md
+</span></span></code></pre></div><h2 id="最佳实践">最佳实践<a hidden class="anchor" aria-hidden="true" href="#最佳实践">#</a></h2>
+<h3 id="保持处理程序快速">保持处理程序快速<a hidden class="anchor" aria-hidden="true" href="#保持处理程序快速">#</a></h3>
+<p>Hooks 在命令处理期间运行。保持它们轻量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// ✓ Good - async work, returns immediately
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span>: <span class="kt">HookHandler</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">void</span> <span class="nx">processInBackground</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span> <span class="c1">// Fire and forget
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// ✗ Bad - blocks command processing
+</span></span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span>: <span class="kt">HookHandler</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">await</span> <span class="nx">slowDatabaseQuery</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">await</span> <span class="nx">evenSlowerAPICall</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><h3 id="优雅处理错误">优雅处理错误<a hidden class="anchor" aria-hidden="true" href="#优雅处理错误">#</a></h3>
+<p>始终包装有风险的操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span>: <span class="kt">HookHandler</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="nx">riskyOperation</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;[my-handler] Failed:&#34;</span><span class="p">,</span> <span class="nx">err</span> <span class="k">instanceof</span> <span class="nb">Error</span> <span class="o">?</span> <span class="nx">err.message</span> : <span class="kt">String</span><span class="p">(</span><span class="nx">err</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Don&#39;t throw - let other handlers run
+</span></span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><h3 id="尽早过滤事件">尽早过滤事件<a hidden class="anchor" aria-hidden="true" href="#尽早过滤事件">#</a></h3>
+<p>如果事件不相关则尽早返回：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span>: <span class="kt">HookHandler</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Only handle &#39;new&#39; commands
+</span></span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="kr">type</span> <span class="o">!==</span> <span class="s2">&#34;command&#34;</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">action</span> <span class="o">!==</span> <span class="s2">&#34;new&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Your logic here
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><h3 id="使用特定事件键">使用特定事件键<a hidden class="anchor" aria-hidden="true" href="#使用特定事件键">#</a></h3>
+<p>尽可能在元数据中指定确切事件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span>{<span class="w"> </span><span class="nt">&#34;openclaw&#34;: { &#34;events&#34;: </span><span class="p">[</span><span class="s2">&#34;command:new&#34;</span><span class="p">]</span><span class="w"> </span>}<span class="w"> </span>}<span class="w"> </span><span class="c"># Specific</span><span class="w">
+</span></span></span></code></pre></div><p>而不是：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span>{<span class="w"> </span><span class="nt">&#34;openclaw&#34;: { &#34;events&#34;: </span><span class="p">[</span><span class="s2">&#34;command&#34;</span><span class="p">]</span><span class="w"> </span>}<span class="w"> </span>}<span class="w"> </span><span class="c"># General - more overhead</span><span class="w">
+</span></span></span></code></pre></div><h2 id="调试">调试<a hidden class="anchor" aria-hidden="true" href="#调试">#</a></h2>
+<h3 id="启用-hook-日志">启用 Hook 日志<a hidden class="anchor" aria-hidden="true" href="#启用-hook-日志">#</a></h3>
+<p>Gateway 网关在启动时记录 hook 加载：</p>
+<pre tabindex="0"><code>Registered hook: session-memory -&gt; command:new
+Registered hook: command-logger -&gt; command
+Registered hook: boot-md -&gt; gateway:startup
+</code></pre><h3 id="检查发现">检查发现<a hidden class="anchor" aria-hidden="true" href="#检查发现">#</a></h3>
+<p>列出所有发现的 hooks：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks list --verbose
+</span></span></code></pre></div><h3 id="检查注册">检查注册<a hidden class="anchor" aria-hidden="true" href="#检查注册">#</a></h3>
+<p>在你的处理程序中，记录它被调用的时间：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">handler</span>: <span class="kt">HookHandler</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;[my-handler] Triggered:&#34;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="kr">type</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">action</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Your logic
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><h3 id="验证资格">验证资格<a hidden class="anchor" aria-hidden="true" href="#验证资格">#</a></h3>
+<p>检查为什么 hook 不符合条件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks info my-hook
+</span></span></code></pre></div><p>在输出中查找缺失的要求。</p>
+<h2 id="测试">测试<a hidden class="anchor" aria-hidden="true" href="#测试">#</a></h2>
+<h3 id="gateway-网关日志">Gateway 网关日志<a hidden class="anchor" aria-hidden="true" href="#gateway-网关日志">#</a></h3>
+<p>监控 Gateway 网关日志以查看 hook 执行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># macOS</span>
+</span></span><span class="line"><span class="cl">./scripts/clawlog.sh -f
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Other platforms</span>
+</span></span><span class="line"><span class="cl">tail -f ~/.openclaw/gateway.log
+</span></span></code></pre></div><h3 id="直接测试-hooks">直接测试 Hooks<a hidden class="anchor" aria-hidden="true" href="#直接测试-hooks">#</a></h3>
+<p>隔离测试你的处理程序：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">test</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;vitest&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">createHookEvent</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;./src/hooks/hooks.js&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="nx">myHandler</span> <span class="kr">from</span> <span class="s2">&#34;./hooks/my-hook/handler.js&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">test</span><span class="p">(</span><span class="s2">&#34;my handler works&#34;</span><span class="p">,</span> <span class="kr">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">event</span> <span class="o">=</span> <span class="nx">createHookEvent</span><span class="p">(</span><span class="s2">&#34;command&#34;</span><span class="p">,</span> <span class="s2">&#34;new&#34;</span><span class="p">,</span> <span class="s2">&#34;test-session&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">foo</span><span class="o">:</span> <span class="s2">&#34;bar&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">await</span> <span class="nx">myHandler</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Assert side effects
+</span></span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><h2 id="架构">架构<a hidden class="anchor" aria-hidden="true" href="#架构">#</a></h2>
+<h3 id="核心组件">核心组件<a hidden class="anchor" aria-hidden="true" href="#核心组件">#</a></h3>
+<ul>
+<li><strong><code>src/hooks/types.ts</code></strong>：类型定义</li>
+<li><strong><code>src/hooks/workspace.ts</code></strong>：目录扫描和加载</li>
+<li><strong><code>src/hooks/frontmatter.ts</code></strong>：HOOK.md 元数据解析</li>
+<li><strong><code>src/hooks/config.ts</code></strong>：资格检查</li>
+<li><strong><code>src/hooks/hooks-status.ts</code></strong>：状态报告</li>
+<li><strong><code>src/hooks/loader.ts</code></strong>：动态模块加载器</li>
+<li><strong><code>src/cli/hooks-cli.ts</code></strong>：CLI 命令</li>
+<li><strong><code>src/gateway/server-startup.ts</code></strong>：在 Gateway 网关启动时加载 hooks</li>
+<li><strong><code>src/auto-reply/reply/commands-core.ts</code></strong>：触发命令事件</li>
+</ul>
+<h3 id="发现流程">发现流程<a hidden class="anchor" aria-hidden="true" href="#发现流程">#</a></h3>
+<pre tabindex="0"><code>Gateway 网关启动
+    ↓
+扫描目录（工作区 → 托管 → 捆绑）
+    ↓
+解析 HOOK.md 文件
+    ↓
+检查资格（bins、env、config、os）
+    ↓
+从符合条件的 hooks 加载处理程序
+    ↓
+为事件注册处理程序
+</code></pre><h3 id="事件流程">事件流程<a hidden class="anchor" aria-hidden="true" href="#事件流程">#</a></h3>
+<pre tabindex="0"><code>用户发送 /new
+    ↓
+命令验证
+    ↓
+创建 hook 事件
+    ↓
+触发 hook（所有注册的处理程序）
+    ↓
+命令处理继续
+    ↓
+会话重置
+</code></pre><h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="hook-未被发现">Hook 未被发现<a hidden class="anchor" aria-hidden="true" href="#hook-未被发现">#</a></h3>
+<ol>
+<li>
+<p>检查目录结构：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ls -la ~/.openclaw/hooks/my-hook/
+</span></span><span class="line"><span class="cl"><span class="c1"># Should show: HOOK.md, handler.ts</span>
+</span></span></code></pre></div></li>
+<li>
+<p>验证 HOOK.md 格式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat ~/.openclaw/hooks/my-hook/HOOK.md
+</span></span><span class="line"><span class="cl"><span class="c1"># Should have YAML frontmatter with name and metadata</span>
+</span></span></code></pre></div></li>
+<li>
+<p>列出所有发现的 hooks：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks list
+</span></span></code></pre></div></li>
+</ol>
+<h3 id="hook-不符合条件">Hook 不符合条件<a hidden class="anchor" aria-hidden="true" href="#hook-不符合条件">#</a></h3>
+<p>检查要求：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks info my-hook
+</span></span></code></pre></div><p>查找缺失的：</p>
+<ul>
+<li>二进制文件（检查 PATH）</li>
+<li>环境变量</li>
+<li>配置值</li>
+<li>操作系统兼容性</li>
+</ul>
+<h3 id="hook-未执行">Hook 未执行<a hidden class="anchor" aria-hidden="true" href="#hook-未执行">#</a></h3>
+<ol>
+<li>
+<p>验证 hook 已启用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks list
+</span></span><span class="line"><span class="cl"><span class="c1"># Should show ✓ next to enabled hooks</span>
+</span></span></code></pre></div></li>
+<li>
+<p>重启你的 Gateway 网关进程以重新加载 hooks。</p>
+</li>
+<li>
+<p>检查 Gateway 网关日志中的错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./scripts/clawlog.sh <span class="p">|</span> grep hook
+</span></span></code></pre></div></li>
+</ol>
+<h3 id="处理程序错误">处理程序错误<a hidden class="anchor" aria-hidden="true" href="#处理程序错误">#</a></h3>
+<p>检查 TypeScript/import 错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Test import directly</span>
+</span></span><span class="line"><span class="cl">node -e <span class="s2">&#34;import(&#39;./path/to/handler.ts&#39;).then(console.log)&#34;</span>
+</span></span></code></pre></div><h2 id="迁移指南">迁移指南<a hidden class="anchor" aria-hidden="true" href="#迁移指南">#</a></h2>
+<h3 id="从遗留配置到发现">从遗留配置到发现<a hidden class="anchor" aria-hidden="true" href="#从遗留配置到发现">#</a></h3>
+<p><strong>之前</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;hooks&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;internal&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;handlers&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;event&#34;</span><span class="p">:</span> <span class="s2">&#34;command:new&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;./hooks/handlers/my-handler.ts&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>之后</strong>：</p>
+<ol>
+<li>
+<p>创建 hook 目录：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p ~/.openclaw/hooks/my-hook
+</span></span><span class="line"><span class="cl">mv ./hooks/handlers/my-handler.ts ~/.openclaw/hooks/my-hook/handler.ts
+</span></span></code></pre></div></li>
+<li>
+<p>创建 HOOK.md：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">name: my-hook
+</span></span><span class="line"><span class="cl">description: &#34;My custom hook&#34;
+</span></span><span class="line"><span class="cl">metadata: { &#34;openclaw&#34;: { &#34;emoji&#34;: &#34;🎯&#34;, &#34;events&#34;: [&#34;command:new&#34;] } }
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gh"># My Hook
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Does something useful.
+</span></span></code></pre></div></li>
+<li>
+<p>更新配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;hooks&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;internal&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;my-hook&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div></li>
+<li>
+<p>验证并重启你的 Gateway 网关进程：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw hooks list
+</span></span><span class="line"><span class="cl"><span class="c1"># Should show: 🎯 my-hook ✓</span>
+</span></span></code></pre></div></li>
+</ol>
+<p><strong>迁移的好处</strong>：</p>
+<ul>
+<li>自动发现</li>
+<li>CLI 管理</li>
+<li>资格检查</li>
+<li>更好的文档</li>
+<li>一致的结构</li>
+</ul>
+<h2 id="另请参阅">另请参阅<a hidden class="anchor" aria-hidden="true" href="#另请参阅">#</a></h2>
+<ul>
+<li><a href="/cli/hooks">CLI 参考：hooks</a></li>
+<li><a href="https://github.com/openclaw/openclaw/tree/main/src/hooks/bundled">捆绑 Hooks README</a></li>
+<li><a href="/automation/webhook">Webhook Hooks</a></li>
+<li><a href="/gateway/configuration#hooks">配置</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/reference/templates/heartbeat/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>HEARTBEAT.md</span>
+  </a>
+  <a class="next" href="/openclaw/reference/templates/identity/">
+    <span class="title">Next »</span>
+    <br>
+    <span>IDENTITY.md - 我是谁？</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

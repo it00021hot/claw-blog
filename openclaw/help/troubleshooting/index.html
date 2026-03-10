@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>故障排除 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="最初的六十秒
+按顺序运行这些命令：
+openclaw status
+openclaw status --all
+openclaw gateway probe
+openclaw logs --follow
+openclaw doctor
+如果 Gateway 网关可达，进行深度探测：
+openclaw status --deep
+常见的“它坏了”情况
+openclaw: command not found
+几乎总是 Node/npm PATH 问题。从这里开始：
+
+安装（Node/npm PATH 安装完整性检查）
+
+安装程序失败（或你需要完整日志）
+以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose
+对于 beta 安装：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose
+你也可以设置 OPENCLAW_VERBOSE=1 代替标志。
+Gateway 网关“unauthorized”、无法连接或持续重连
+
+Gateway 网关故障排除
+Gateway 网关认证
+
+控制 UI 在 HTTP 上失败（需要设备身份）
+
+Gateway 网关故障排除
+控制 UI
+
+docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity）
+一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 阻止 docs.openclaw.ai。
+禁用 Advanced Security 或将 docs.openclaw.ai 添加到允许列表，然后重试。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/help/troubleshooting/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/help/troubleshooting/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/help/troubleshooting/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="故障排除">
+  <meta property="og:description" content="最初的六十秒 按顺序运行这些命令：
+openclaw status openclaw status --all openclaw gateway probe openclaw logs --follow openclaw doctor 如果 Gateway 网关可达，进行深度探测：
+openclaw status --deep 常见的“它坏了”情况 openclaw: command not found 几乎总是 Node/npm PATH 问题。从这里开始：
+安装（Node/npm PATH 安装完整性检查） 安装程序失败（或你需要完整日志） 以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose 对于 beta 安装：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose 你也可以设置 OPENCLAW_VERBOSE=1 代替标志。
+Gateway 网关“unauthorized”、无法连接或持续重连 Gateway 网关故障排除 Gateway 网关认证 控制 UI 在 HTTP 上失败（需要设备身份） Gateway 网关故障排除 控制 UI docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity） 一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 阻止 docs.openclaw.ai。 禁用 Advanced Security 或将 docs.openclaw.ai 添加到允许列表，然后重试。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="故障排除">
+<meta name="twitter:description" content="最初的六十秒
+按顺序运行这些命令：
+openclaw status
+openclaw status --all
+openclaw gateway probe
+openclaw logs --follow
+openclaw doctor
+如果 Gateway 网关可达，进行深度探测：
+openclaw status --deep
+常见的“它坏了”情况
+openclaw: command not found
+几乎总是 Node/npm PATH 问题。从这里开始：
+
+安装（Node/npm PATH 安装完整性检查）
+
+安装程序失败（或你需要完整日志）
+以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose
+对于 beta 安装：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose
+你也可以设置 OPENCLAW_VERBOSE=1 代替标志。
+Gateway 网关“unauthorized”、无法连接或持续重连
+
+Gateway 网关故障排除
+Gateway 网关认证
+
+控制 UI 在 HTTP 上失败（需要设备身份）
+
+Gateway 网关故障排除
+控制 UI
+
+docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity）
+一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 阻止 docs.openclaw.ai。
+禁用 Advanced Security 或将 docs.openclaw.ai 添加到允许列表，然后重试。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "故障排除",
+      "item": "/openclaw/help/troubleshooting/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "故障排除",
+  "name": "故障排除",
+  "description": "最初的六十秒 按顺序运行这些命令：\nopenclaw status openclaw status --all openclaw gateway probe openclaw logs --follow openclaw doctor 如果 Gateway 网关可达，进行深度探测：\nopenclaw status --deep 常见的“它坏了”情况 openclaw: command not found 几乎总是 Node/npm PATH 问题。从这里开始：\n安装（Node/npm PATH 安装完整性检查） 安装程序失败（或你需要完整日志） 以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：\ncurl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose 对于 beta 安装：\ncurl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose 你也可以设置 OPENCLAW_VERBOSE=1 代替标志。\nGateway 网关“unauthorized”、无法连接或持续重连 Gateway 网关故障排除 Gateway 网关认证 控制 UI 在 HTTP 上失败（需要设备身份） Gateway 网关故障排除 控制 UI docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity） 一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 阻止 docs.openclaw.ai。 禁用 Advanced Security 或将 docs.openclaw.ai 添加到允许列表，然后重试。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "最初的六十秒 按顺序运行这些命令：\nopenclaw status openclaw status --all openclaw gateway probe openclaw logs --follow openclaw doctor 如果 Gateway 网关可达，进行深度探测：\nopenclaw status --deep 常见的“它坏了”情况 openclaw: command not found 几乎总是 Node/npm PATH 问题。从这里开始：\n安装（Node/npm PATH 安装完整性检查） 安装程序失败（或你需要完整日志） 以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：\ncurl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose 对于 beta 安装：\ncurl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose 你也可以设置 OPENCLAW_VERBOSE=1 代替标志。\nGateway 网关“unauthorized”、无法连接或持续重连 Gateway 网关故障排除 Gateway 网关认证 控制 UI 在 HTTP 上失败（需要设备身份） Gateway 网关故障排除 控制 UI docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity） 一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 阻止 docs.openclaw.ai。 禁用 Advanced Security 或将 docs.openclaw.ai 添加到允许列表，然后重试。\nXfinity Advanced Security 帮助：https://www.xfinity.com/support/articles/using-xfinity-xfi-advanced-security 快速检查：尝试移动热点或 VPN 以确认这是 ISP 级别的过滤 服务显示运行中，但 RPC 探测失败 Gateway 网关故障排除 后台进程/服务 模型/认证失败（速率限制、账单、“all models failed”） 模型 OAuth / 认证概念 /model 显示 model not allowed 这通常意味着 agents.defaults.models 配置为允许列表。当它非空时，只能选择那些提供商/模型键。\n检查允许列表：openclaw config get agents.defaults.models 添加你想要的模型（或清除允许列表）然后重试 /model 使用 /models 浏览允许的提供商/模型 提交问题时 粘贴一份安全报告：\nopenclaw status --all 如果可以的话，包含来自 openclaw logs --follow 的相关日志尾部。\n",
+  "wordCount" : "142",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/help/troubleshooting/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      故障排除
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%9c%80%e5%88%9d%e7%9a%84%e5%85%ad%e5%8d%81%e7%a7%92" aria-label="最初的六十秒">最初的六十秒</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e7%9a%84%e5%ae%83%e5%9d%8f%e4%ba%86%e6%83%85%e5%86%b5" aria-label="常见的“它坏了”情况">常见的“它坏了”情况</a><ul>
+                        
+                <li>
+                    <a href="#openclaw-command-not-found" aria-label="openclaw: command not found">openclaw: command not found</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e7%a8%8b%e5%ba%8f%e5%a4%b1%e8%b4%a5%e6%88%96%e4%bd%a0%e9%9c%80%e8%a6%81%e5%ae%8c%e6%95%b4%e6%97%a5%e5%bf%97" aria-label="安装程序失败（或你需要完整日志）">安装程序失败（或你需要完整日志）</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3unauthorized%e6%97%a0%e6%b3%95%e8%bf%9e%e6%8e%a5%e6%88%96%e6%8c%81%e7%bb%ad%e9%87%8d%e8%bf%9e" aria-label="Gateway 网关“unauthorized”、无法连接或持续重连">Gateway 网关“unauthorized”、无法连接或持续重连</a></li>
+                <li>
+                    <a href="#%e6%8e%a7%e5%88%b6-ui-%e5%9c%a8-http-%e4%b8%8a%e5%a4%b1%e8%b4%a5%e9%9c%80%e8%a6%81%e8%ae%be%e5%a4%87%e8%ba%ab%e4%bb%bd" aria-label="控制 UI 在 HTTP 上失败（需要设备身份）">控制 UI 在 HTTP 上失败（需要设备身份）</a></li>
+                <li>
+                    <a href="#docsopenclawai-%e6%98%be%e7%a4%ba-ssl-%e9%94%99%e8%af%afcomcastxfinity" aria-label="docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity）">docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity）</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e6%98%be%e7%a4%ba%e8%bf%90%e8%a1%8c%e4%b8%ad%e4%bd%86-rpc-%e6%8e%a2%e6%b5%8b%e5%a4%b1%e8%b4%a5" aria-label="服务显示运行中，但 RPC 探测失败">服务显示运行中，但 RPC 探测失败</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e8%ae%a4%e8%af%81%e5%a4%b1%e8%b4%a5%e9%80%9f%e7%8e%87%e9%99%90%e5%88%b6%e8%b4%a6%e5%8d%95all-models-failed" aria-label="模型/认证失败（速率限制、账单、“all models failed”）">模型/认证失败（速率限制、账单、“all models failed”）</a></li>
+                <li>
+                    <a href="#model-%e6%98%be%e7%a4%ba-model-not-allowed" aria-label="/model 显示 model not allowed">/model 显示 model not allowed</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e4%ba%a4%e9%97%ae%e9%a2%98%e6%97%b6" aria-label="提交问题时">提交问题时</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="最初的六十秒">最初的六十秒<a hidden class="anchor" aria-hidden="true" href="#最初的六十秒">#</a></h2>
+<p>按顺序运行这些命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw status
+</span></span><span class="line"><span class="cl">openclaw status --all
+</span></span><span class="line"><span class="cl">openclaw gateway probe
+</span></span><span class="line"><span class="cl">openclaw logs --follow
+</span></span><span class="line"><span class="cl">openclaw doctor
+</span></span></code></pre></div><p>如果 Gateway 网关可达，进行深度探测：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw status --deep
+</span></span></code></pre></div><h2 id="常见的它坏了情况">常见的“它坏了”情况<a hidden class="anchor" aria-hidden="true" href="#常见的它坏了情况">#</a></h2>
+<h3 id="openclaw-command-not-found"><code>openclaw: command not found</code><a hidden class="anchor" aria-hidden="true" href="#openclaw-command-not-found">#</a></h3>
+<p>几乎总是 Node/npm PATH 问题。从这里开始：</p>
+<ul>
+<li><a href="/install#nodejs--npm-path-sanity">安装（Node/npm PATH 安装完整性检查）</a></li>
+</ul>
+<h3 id="安装程序失败或你需要完整日志">安装程序失败（或你需要完整日志）<a hidden class="anchor" aria-hidden="true" href="#安装程序失败或你需要完整日志">#</a></h3>
+<p>以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://openclaw.ai/install.sh <span class="p">|</span> bash -s -- --verbose
+</span></span></code></pre></div><p>对于 beta 安装：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://openclaw.ai/install.sh <span class="p">|</span> bash -s -- --beta --verbose
+</span></span></code></pre></div><p>你也可以设置 <code>OPENCLAW_VERBOSE=1</code> 代替标志。</p>
+<h3 id="gateway-网关unauthorized无法连接或持续重连">Gateway 网关“unauthorized”、无法连接或持续重连<a hidden class="anchor" aria-hidden="true" href="#gateway-网关unauthorized无法连接或持续重连">#</a></h3>
+<ul>
+<li><a href="/gateway/troubleshooting">Gateway 网关故障排除</a></li>
+<li><a href="/gateway/authentication">Gateway 网关认证</a></li>
+</ul>
+<h3 id="控制-ui-在-http-上失败需要设备身份">控制 UI 在 HTTP 上失败（需要设备身份）<a hidden class="anchor" aria-hidden="true" href="#控制-ui-在-http-上失败需要设备身份">#</a></h3>
+<ul>
+<li><a href="/gateway/troubleshooting">Gateway 网关故障排除</a></li>
+<li><a href="/web/control-ui#insecure-http">控制 UI</a></li>
+</ul>
+<h3 id="docsopenclawai-显示-ssl-错误comcastxfinity"><code>docs.openclaw.ai</code> 显示 SSL 错误（Comcast/Xfinity）<a hidden class="anchor" aria-hidden="true" href="#docsopenclawai-显示-ssl-错误comcastxfinity">#</a></h3>
+<p>一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 阻止 <code>docs.openclaw.ai</code>。
+禁用 Advanced Security 或将 <code>docs.openclaw.ai</code> 添加到允许列表，然后重试。</p>
+<ul>
+<li>Xfinity Advanced Security 帮助：https://www.xfinity.com/support/articles/using-xfinity-xfi-advanced-security</li>
+<li>快速检查：尝试移动热点或 VPN 以确认这是 ISP 级别的过滤</li>
+</ul>
+<h3 id="服务显示运行中但-rpc-探测失败">服务显示运行中，但 RPC 探测失败<a hidden class="anchor" aria-hidden="true" href="#服务显示运行中但-rpc-探测失败">#</a></h3>
+<ul>
+<li><a href="/gateway/troubleshooting">Gateway 网关故障排除</a></li>
+<li><a href="/gateway/background-process">后台进程/服务</a></li>
+</ul>
+<h3 id="模型认证失败速率限制账单all-models-failed">模型/认证失败（速率限制、账单、“all models failed”）<a hidden class="anchor" aria-hidden="true" href="#模型认证失败速率限制账单all-models-failed">#</a></h3>
+<ul>
+<li><a href="/cli/models">模型</a></li>
+<li><a href="/concepts/oauth">OAuth / 认证概念</a></li>
+</ul>
+<h3 id="model-显示-model-not-allowed"><code>/model</code> 显示 <code>model not allowed</code><a hidden class="anchor" aria-hidden="true" href="#model-显示-model-not-allowed">#</a></h3>
+<p>这通常意味着 <code>agents.defaults.models</code> 配置为允许列表。当它非空时，只能选择那些提供商/模型键。</p>
+<ul>
+<li>检查允许列表：<code>openclaw config get agents.defaults.models</code></li>
+<li>添加你想要的模型（或清除允许列表）然后重试 <code>/model</code></li>
+<li>使用 <code>/models</code> 浏览允许的提供商/模型</li>
+</ul>
+<h3 id="提交问题时">提交问题时<a hidden class="anchor" aria-hidden="true" href="#提交问题时">#</a></h3>
+<p>粘贴一份安全报告：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw status --all
+</span></span></code></pre></div><p>如果可以的话，包含来自 <code>openclaw logs --follow</code> 的相关日志尾部。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/plugins/manifest/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>插件清单（openclaw.plugin.json）</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/troubleshooting/">
+    <span class="title">Next »</span>
+    <br>
+    <span>故障排除 🔧</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

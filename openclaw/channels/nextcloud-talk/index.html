@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Nextcloud Talk（插件） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态：通过插件支持（webhook 机器人）。支持私信、房间、表情回应和 Markdown 消息。
+需要插件
+Nextcloud Talk 以插件形式提供，不包含在核心安装包中。
+通过 CLI 安装（npm 仓库）：
+openclaw plugins install @openclaw/nextcloud-talk
+本地检出安装（从 git 仓库运行时）：
+openclaw plugins install ./extensions/nextcloud-talk
+如果你在配置/新手引导过程中选择了 Nextcloud Talk，并且检测到 git 检出，
+OpenClaw 将自动提供本地安装路径。
+详情：插件
+快速设置（新手）
+
+安装 Nextcloud Talk 插件。
+在你的 Nextcloud 服务器上创建机器人：
+./occ talk:bot:install &#34;OpenClaw&#34; &#34;&lt;shared-secret&gt;&#34; &#34;&lt;webhook-url&gt;&#34; --feature reaction
+
+在目标房间设置中启用机器人。
+配置 OpenClaw：
+
+配置项：channels.nextcloud-talk.baseUrl &#43; channels.nextcloud-talk.botSecret
+或环境变量：NEXTCLOUD_TALK_BOT_SECRET（仅默认账户）
+
+
+重启 Gateway 网关（或完成新手引导）。
+
+最小配置：
+{
+  channels: {
+    &#34;nextcloud-talk&#34;: {
+      enabled: true,
+      baseUrl: &#34;https://cloud.example.com&#34;,
+      botSecret: &#34;shared-secret&#34;,
+      dmPolicy: &#34;pairing&#34;,
+    },
+  },
+}
+注意事项
+
+机器人无法主动发起私信。用户必须先向机器人发送消息。
+Webhook URL 必须可被 Gateway 网关访问；如果在代理后面，请设置 webhookPublicUrl。
+机器人 API 不支持媒体上传；媒体以 URL 形式发送。
+Webhook 载荷无法区分私信和房间；设置 apiUser &#43; apiPassword 以启用房间类型查询（否则私信将被视为房间）。
+
+访问控制（私信）
+
+默认：channels.nextcloud-talk.dmPolicy = &quot;pairing&quot;。未知发送者将收到配对码。
+批准方式：
+
+openclaw pairing list nextcloud-talk
+openclaw pairing approve nextcloud-talk &lt;CODE&gt;
+
+
+公开私信：channels.nextcloud-talk.dmPolicy=&quot;open&quot; 加上 channels.nextcloud-talk.allowFrom=[&quot;*&quot;]。
+
+房间（群组）
+
+默认：channels.nextcloud-talk.groupPolicy = &quot;allowlist&quot;（需要提及触发）。
+使用 channels.nextcloud-talk.rooms 设置房间白名单：
+
+{
+  channels: {
+    &#34;nextcloud-talk&#34;: {
+      rooms: {
+        &#34;room-token&#34;: { requireMention: true },
+      },
+    },
+  },
+}
+
+如需禁止所有房间，保持白名单为空或设置 channels.nextcloud-talk.groupPolicy=&quot;disabled&quot;。
+
+功能支持
+
+  
+      
+          功能
+          状态
+      
+  
+  
+      
+          私信
+          支持
+      
+      
+          房间
+          支持
+      
+      
+          话题
+          不支持
+      
+      
+          媒体
+          仅 URL
+      
+      
+          表情回应
+          支持
+      
+      
+          原生命令
+          不支持
+      
+  
+
+配置参考（Nextcloud Talk）
+完整配置：配置">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/nextcloud-talk/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/nextcloud-talk/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/nextcloud-talk/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Nextcloud Talk（插件）">
+  <meta property="og:description" content="状态：通过插件支持（webhook 机器人）。支持私信、房间、表情回应和 Markdown 消息。
+需要插件 Nextcloud Talk 以插件形式提供，不包含在核心安装包中。
+通过 CLI 安装（npm 仓库）：
+openclaw plugins install @openclaw/nextcloud-talk 本地检出安装（从 git 仓库运行时）：
+openclaw plugins install ./extensions/nextcloud-talk 如果你在配置/新手引导过程中选择了 Nextcloud Talk，并且检测到 git 检出， OpenClaw 将自动提供本地安装路径。
+详情：插件
+快速设置（新手） 安装 Nextcloud Talk 插件。 在你的 Nextcloud 服务器上创建机器人： ./occ talk:bot:install &#34;OpenClaw&#34; &#34;&lt;shared-secret&gt;&#34; &#34;&lt;webhook-url&gt;&#34; --feature reaction 在目标房间设置中启用机器人。 配置 OpenClaw： 配置项：channels.nextcloud-talk.baseUrl &#43; channels.nextcloud-talk.botSecret 或环境变量：NEXTCLOUD_TALK_BOT_SECRET（仅默认账户） 重启 Gateway 网关（或完成新手引导）。 最小配置：
+{ channels: { &#34;nextcloud-talk&#34;: { enabled: true, baseUrl: &#34;https://cloud.example.com&#34;, botSecret: &#34;shared-secret&#34;, dmPolicy: &#34;pairing&#34;, }, }, } 注意事项 机器人无法主动发起私信。用户必须先向机器人发送消息。 Webhook URL 必须可被 Gateway 网关访问；如果在代理后面，请设置 webhookPublicUrl。 机器人 API 不支持媒体上传；媒体以 URL 形式发送。 Webhook 载荷无法区分私信和房间；设置 apiUser &#43; apiPassword 以启用房间类型查询（否则私信将被视为房间）。 访问控制（私信） 默认：channels.nextcloud-talk.dmPolicy = &#34;pairing&#34;。未知发送者将收到配对码。 批准方式： openclaw pairing list nextcloud-talk openclaw pairing approve nextcloud-talk &lt;CODE&gt; 公开私信：channels.nextcloud-talk.dmPolicy=&#34;open&#34; 加上 channels.nextcloud-talk.allowFrom=[&#34;*&#34;]。 房间（群组） 默认：channels.nextcloud-talk.groupPolicy = &#34;allowlist&#34;（需要提及触发）。 使用 channels.nextcloud-talk.rooms 设置房间白名单： { channels: { &#34;nextcloud-talk&#34;: { rooms: { &#34;room-token&#34;: { requireMention: true }, }, }, }, } 如需禁止所有房间，保持白名单为空或设置 channels.nextcloud-talk.groupPolicy=&#34;disabled&#34;。 功能支持 功能 状态 私信 支持 房间 支持 话题 不支持 媒体 仅 URL 表情回应 支持 原生命令 不支持 配置参考（Nextcloud Talk） 完整配置：配置">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nextcloud Talk（插件）">
+<meta name="twitter:description" content="状态：通过插件支持（webhook 机器人）。支持私信、房间、表情回应和 Markdown 消息。
+需要插件
+Nextcloud Talk 以插件形式提供，不包含在核心安装包中。
+通过 CLI 安装（npm 仓库）：
+openclaw plugins install @openclaw/nextcloud-talk
+本地检出安装（从 git 仓库运行时）：
+openclaw plugins install ./extensions/nextcloud-talk
+如果你在配置/新手引导过程中选择了 Nextcloud Talk，并且检测到 git 检出，
+OpenClaw 将自动提供本地安装路径。
+详情：插件
+快速设置（新手）
+
+安装 Nextcloud Talk 插件。
+在你的 Nextcloud 服务器上创建机器人：
+./occ talk:bot:install &#34;OpenClaw&#34; &#34;&lt;shared-secret&gt;&#34; &#34;&lt;webhook-url&gt;&#34; --feature reaction
+
+在目标房间设置中启用机器人。
+配置 OpenClaw：
+
+配置项：channels.nextcloud-talk.baseUrl &#43; channels.nextcloud-talk.botSecret
+或环境变量：NEXTCLOUD_TALK_BOT_SECRET（仅默认账户）
+
+
+重启 Gateway 网关（或完成新手引导）。
+
+最小配置：
+{
+  channels: {
+    &#34;nextcloud-talk&#34;: {
+      enabled: true,
+      baseUrl: &#34;https://cloud.example.com&#34;,
+      botSecret: &#34;shared-secret&#34;,
+      dmPolicy: &#34;pairing&#34;,
+    },
+  },
+}
+注意事项
+
+机器人无法主动发起私信。用户必须先向机器人发送消息。
+Webhook URL 必须可被 Gateway 网关访问；如果在代理后面，请设置 webhookPublicUrl。
+机器人 API 不支持媒体上传；媒体以 URL 形式发送。
+Webhook 载荷无法区分私信和房间；设置 apiUser &#43; apiPassword 以启用房间类型查询（否则私信将被视为房间）。
+
+访问控制（私信）
+
+默认：channels.nextcloud-talk.dmPolicy = &quot;pairing&quot;。未知发送者将收到配对码。
+批准方式：
+
+openclaw pairing list nextcloud-talk
+openclaw pairing approve nextcloud-talk &lt;CODE&gt;
+
+
+公开私信：channels.nextcloud-talk.dmPolicy=&quot;open&quot; 加上 channels.nextcloud-talk.allowFrom=[&quot;*&quot;]。
+
+房间（群组）
+
+默认：channels.nextcloud-talk.groupPolicy = &quot;allowlist&quot;（需要提及触发）。
+使用 channels.nextcloud-talk.rooms 设置房间白名单：
+
+{
+  channels: {
+    &#34;nextcloud-talk&#34;: {
+      rooms: {
+        &#34;room-token&#34;: { requireMention: true },
+      },
+    },
+  },
+}
+
+如需禁止所有房间，保持白名单为空或设置 channels.nextcloud-talk.groupPolicy=&quot;disabled&quot;。
+
+功能支持
+
+  
+      
+          功能
+          状态
+      
+  
+  
+      
+          私信
+          支持
+      
+      
+          房间
+          支持
+      
+      
+          话题
+          不支持
+      
+      
+          媒体
+          仅 URL
+      
+      
+          表情回应
+          支持
+      
+      
+          原生命令
+          不支持
+      
+  
+
+配置参考（Nextcloud Talk）
+完整配置：配置">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Nextcloud Talk（插件）",
+      "item": "/openclaw/channels/nextcloud-talk/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Nextcloud Talk（插件）",
+  "name": "Nextcloud Talk（插件）",
+  "description": "状态：通过插件支持（webhook 机器人）。支持私信、房间、表情回应和 Markdown 消息。\n需要插件 Nextcloud Talk 以插件形式提供，不包含在核心安装包中。\n通过 CLI 安装（npm 仓库）：\nopenclaw plugins install @openclaw/nextcloud-talk 本地检出安装（从 git 仓库运行时）：\nopenclaw plugins install ./extensions/nextcloud-talk 如果你在配置/新手引导过程中选择了 Nextcloud Talk，并且检测到 git 检出， OpenClaw 将自动提供本地安装路径。\n详情：插件\n快速设置（新手） 安装 Nextcloud Talk 插件。 在你的 Nextcloud 服务器上创建机器人： ./occ talk:bot:install \u0026#34;OpenClaw\u0026#34; \u0026#34;\u0026lt;shared-secret\u0026gt;\u0026#34; \u0026#34;\u0026lt;webhook-url\u0026gt;\u0026#34; --feature reaction 在目标房间设置中启用机器人。 配置 OpenClaw： 配置项：channels.nextcloud-talk.baseUrl + channels.nextcloud-talk.botSecret 或环境变量：NEXTCLOUD_TALK_BOT_SECRET（仅默认账户） 重启 Gateway 网关（或完成新手引导）。 最小配置：\n{ channels: { \u0026#34;nextcloud-talk\u0026#34;: { enabled: true, baseUrl: \u0026#34;https://cloud.example.com\u0026#34;, botSecret: \u0026#34;shared-secret\u0026#34;, dmPolicy: \u0026#34;pairing\u0026#34;, }, }, } 注意事项 机器人无法主动发起私信。用户必须先向机器人发送消息。 Webhook URL 必须可被 Gateway 网关访问；如果在代理后面，请设置 webhookPublicUrl。 机器人 API 不支持媒体上传；媒体以 URL 形式发送。 Webhook 载荷无法区分私信和房间；设置 apiUser + apiPassword 以启用房间类型查询（否则私信将被视为房间）。 访问控制（私信） 默认：channels.nextcloud-talk.dmPolicy = \u0026quot;pairing\u0026quot;。未知发送者将收到配对码。 批准方式： openclaw pairing list nextcloud-talk openclaw pairing approve nextcloud-talk \u0026lt;CODE\u0026gt; 公开私信：channels.nextcloud-talk.dmPolicy=\u0026quot;open\u0026quot; 加上 channels.nextcloud-talk.allowFrom=[\u0026quot;*\u0026quot;]。 房间（群组） 默认：channels.nextcloud-talk.groupPolicy = \u0026quot;allowlist\u0026quot;（需要提及触发）。 使用 channels.nextcloud-talk.rooms 设置房间白名单： { channels: { \u0026#34;nextcloud-talk\u0026#34;: { rooms: { \u0026#34;room-token\u0026#34;: { requireMention: true }, }, }, }, } 如需禁止所有房间，保持白名单为空或设置 channels.nextcloud-talk.groupPolicy=\u0026quot;disabled\u0026quot;。 功能支持 功能 状态 私信 支持 房间 支持 话题 不支持 媒体 仅 URL 表情回应 支持 原生命令 不支持 配置参考（Nextcloud Talk） 完整配置：配置\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态：通过插件支持（webhook 机器人）。支持私信、房间、表情回应和 Markdown 消息。\n需要插件 Nextcloud Talk 以插件形式提供，不包含在核心安装包中。\n通过 CLI 安装（npm 仓库）：\nopenclaw plugins install @openclaw/nextcloud-talk 本地检出安装（从 git 仓库运行时）：\nopenclaw plugins install ./extensions/nextcloud-talk 如果你在配置/新手引导过程中选择了 Nextcloud Talk，并且检测到 git 检出， OpenClaw 将自动提供本地安装路径。\n详情：插件\n快速设置（新手） 安装 Nextcloud Talk 插件。 在你的 Nextcloud 服务器上创建机器人： ./occ talk:bot:install \"OpenClaw\" \"\" \"\" --feature reaction 在目标房间设置中启用机器人。 配置 OpenClaw： 配置项：channels.nextcloud-talk.baseUrl + channels.nextcloud-talk.botSecret 或环境变量：NEXTCLOUD_TALK_BOT_SECRET（仅默认账户） 重启 Gateway 网关（或完成新手引导）。 最小配置：\n{ channels: { \"nextcloud-talk\": { enabled: true, baseUrl: \"https://cloud.example.com\", botSecret: \"shared-secret\", dmPolicy: \"pairing\", }, }, } 注意事项 机器人无法主动发起私信。用户必须先向机器人发送消息。 Webhook URL 必须可被 Gateway 网关访问；如果在代理后面，请设置 webhookPublicUrl。 机器人 API 不支持媒体上传；媒体以 URL 形式发送。 Webhook 载荷无法区分私信和房间；设置 apiUser + apiPassword 以启用房间类型查询（否则私信将被视为房间）。 访问控制（私信） 默认：channels.nextcloud-talk.dmPolicy = \"pairing\"。未知发送者将收到配对码。 批准方式： openclaw pairing list nextcloud-talk openclaw pairing approve nextcloud-talk 公开私信：channels.nextcloud-talk.dmPolicy=\"open\" 加上 channels.nextcloud-talk.allowFrom=[\"*\"]。 房间（群组） 默认：channels.nextcloud-talk.groupPolicy = \"allowlist\"（需要提及触发）。 使用 channels.nextcloud-talk.rooms 设置房间白名单： { channels: { \"nextcloud-talk\": { rooms: { \"room-token\": { requireMention: true }, }, }, }, } 如需禁止所有房间，保持白名单为空或设置 channels.nextcloud-talk.groupPolicy=\"disabled\"。 功能支持 功能 状态 私信 支持 房间 支持 话题 不支持 媒体 仅 URL 表情回应 支持 原生命令 不支持 配置参考（Nextcloud Talk） 完整配置：配置\n提供商选项：\nchannels.nextcloud-talk.enabled：启用/禁用渠道启动。 channels.nextcloud-talk.baseUrl：Nextcloud 实例 URL。 channels.nextcloud-talk.botSecret：机器人共享密钥。 channels.nextcloud-talk.botSecretFile：密钥文件路径。 channels.nextcloud-talk.apiUser：用于房间查询的 API 用户（私信检测）。 channels.nextcloud-talk.apiPassword：用于房间查询的 API/应用密码。 channels.nextcloud-talk.apiPasswordFile：API 密码文件路径。 channels.nextcloud-talk.webhookPort：webhook 监听端口（默认：8788）。 channels.nextcloud-talk.webhookHost：webhook 主机（默认：0.0.0.0）。 channels.nextcloud-talk.webhookPath：webhook 路径（默认：/nextcloud-talk-webhook）。 channels.nextcloud-talk.webhookPublicUrl：外部可达的 webhook URL。 channels.nextcloud-talk.dmPolicy：pairing | allowlist | open | disabled。 channels.nextcloud-talk.allowFrom：私信白名单（用户 ID）。open 需要 \"*\"。 channels.nextcloud-talk.groupPolicy：allowlist | open | disabled。 channels.nextcloud-talk.groupAllowFrom：群组白名单（用户 ID）。 channels.nextcloud-talk.rooms：每个房间的设置和白名单。 channels.nextcloud-talk.historyLimit：群组历史记录限制（0 表示禁用）。 channels.nextcloud-talk.dmHistoryLimit：私信历史记录限制（0 表示禁用）。 channels.nextcloud-talk.dms：每个私信的覆盖设置（historyLimit）。 channels.nextcloud-talk.textChunkLimit：出站文本分块大小（字符数）。 channels.nextcloud-talk.chunkMode：length（默认）或 newline，在长度分块前按空行（段落边界）分割。 channels.nextcloud-talk.blockStreaming：禁用此渠道的分块流式传输。 channels.nextcloud-talk.blockStreamingCoalesce：分块流式传输合并调优。 channels.nextcloud-talk.mediaMaxMb：入站媒体大小上限（MB）。 ",
+  "wordCount" : "206",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/nextcloud-talk/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Nextcloud Talk（插件）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%9c%80%e8%a6%81%e6%8f%92%e4%bb%b6" aria-label="需要插件">需要插件</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%ae%be%e7%bd%ae%e6%96%b0%e6%89%8b" aria-label="快速设置（新手）">快速设置（新手）</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6%e7%a7%81%e4%bf%a1" aria-label="访问控制（私信）">访问控制（私信）</a></li>
+                <li>
+                    <a href="#%e6%88%bf%e9%97%b4%e7%be%a4%e7%bb%84" aria-label="房间（群组）">房间（群组）</a></li>
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd%e6%94%af%e6%8c%81" aria-label="功能支持">功能支持</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83nextcloud-talk" aria-label="配置参考（Nextcloud Talk）">配置参考（Nextcloud Talk）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>状态：通过插件支持（webhook 机器人）。支持私信、房间、表情回应和 Markdown 消息。</p>
+<h2 id="需要插件">需要插件<a hidden class="anchor" aria-hidden="true" href="#需要插件">#</a></h2>
+<p>Nextcloud Talk 以插件形式提供，不包含在核心安装包中。</p>
+<p>通过 CLI 安装（npm 仓库）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install @openclaw/nextcloud-talk
+</span></span></code></pre></div><p>本地检出安装（从 git 仓库运行时）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install ./extensions/nextcloud-talk
+</span></span></code></pre></div><p>如果你在配置/新手引导过程中选择了 Nextcloud Talk，并且检测到 git 检出，
+OpenClaw 将自动提供本地安装路径。</p>
+<p>详情：<a href="/tools/plugin">插件</a></p>
+<h2 id="快速设置新手">快速设置（新手）<a hidden class="anchor" aria-hidden="true" href="#快速设置新手">#</a></h2>
+<ol>
+<li>安装 Nextcloud Talk 插件。</li>
+<li>在你的 Nextcloud 服务器上创建机器人：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./occ talk:bot:install <span class="s2">&#34;OpenClaw&#34;</span> <span class="s2">&#34;&lt;shared-secret&gt;&#34;</span> <span class="s2">&#34;&lt;webhook-url&gt;&#34;</span> --feature reaction
+</span></span></code></pre></div></li>
+<li>在目标房间设置中启用机器人。</li>
+<li>配置 OpenClaw：
+<ul>
+<li>配置项：<code>channels.nextcloud-talk.baseUrl</code> + <code>channels.nextcloud-talk.botSecret</code></li>
+<li>或环境变量：<code>NEXTCLOUD_TALK_BOT_SECRET</code>（仅默认账户）</li>
+</ul>
+</li>
+<li>重启 Gateway 网关（或完成新手引导）。</li>
+</ol>
+<p>最小配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    &#34;nextcloud-talk&#34;: {
+      enabled: true,
+      baseUrl: &#34;https://cloud.example.com&#34;,
+      botSecret: &#34;shared-secret&#34;,
+      dmPolicy: &#34;pairing&#34;,
+    },
+  },
+}
+</code></pre><h2 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h2>
+<ul>
+<li>机器人无法主动发起私信。用户必须先向机器人发送消息。</li>
+<li>Webhook URL 必须可被 Gateway 网关访问；如果在代理后面，请设置 <code>webhookPublicUrl</code>。</li>
+<li>机器人 API 不支持媒体上传；媒体以 URL 形式发送。</li>
+<li>Webhook 载荷无法区分私信和房间；设置 <code>apiUser</code> + <code>apiPassword</code> 以启用房间类型查询（否则私信将被视为房间）。</li>
+</ul>
+<h2 id="访问控制私信">访问控制（私信）<a hidden class="anchor" aria-hidden="true" href="#访问控制私信">#</a></h2>
+<ul>
+<li>默认：<code>channels.nextcloud-talk.dmPolicy = &quot;pairing&quot;</code>。未知发送者将收到配对码。</li>
+<li>批准方式：
+<ul>
+<li><code>openclaw pairing list nextcloud-talk</code></li>
+<li><code>openclaw pairing approve nextcloud-talk &lt;CODE&gt;</code></li>
+</ul>
+</li>
+<li>公开私信：<code>channels.nextcloud-talk.dmPolicy=&quot;open&quot;</code> 加上 <code>channels.nextcloud-talk.allowFrom=[&quot;*&quot;]</code>。</li>
+</ul>
+<h2 id="房间群组">房间（群组）<a hidden class="anchor" aria-hidden="true" href="#房间群组">#</a></h2>
+<ul>
+<li>默认：<code>channels.nextcloud-talk.groupPolicy = &quot;allowlist&quot;</code>（需要提及触发）。</li>
+<li>使用 <code>channels.nextcloud-talk.rooms</code> 设置房间白名单：</li>
+</ul>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    &#34;nextcloud-talk&#34;: {
+      rooms: {
+        &#34;room-token&#34;: { requireMention: true },
+      },
+    },
+  },
+}
+</code></pre><ul>
+<li>如需禁止所有房间，保持白名单为空或设置 <code>channels.nextcloud-talk.groupPolicy=&quot;disabled&quot;</code>。</li>
+</ul>
+<h2 id="功能支持">功能支持<a hidden class="anchor" aria-hidden="true" href="#功能支持">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>功能</th>
+          <th>状态</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>私信</td>
+          <td>支持</td>
+      </tr>
+      <tr>
+          <td>房间</td>
+          <td>支持</td>
+      </tr>
+      <tr>
+          <td>话题</td>
+          <td>不支持</td>
+      </tr>
+      <tr>
+          <td>媒体</td>
+          <td>仅 URL</td>
+      </tr>
+      <tr>
+          <td>表情回应</td>
+          <td>支持</td>
+      </tr>
+      <tr>
+          <td>原生命令</td>
+          <td>不支持</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="配置参考nextcloud-talk">配置参考（Nextcloud Talk）<a hidden class="anchor" aria-hidden="true" href="#配置参考nextcloud-talk">#</a></h2>
+<p>完整配置：<a href="/gateway/configuration">配置</a></p>
+<p>提供商选项：</p>
+<ul>
+<li><code>channels.nextcloud-talk.enabled</code>：启用/禁用渠道启动。</li>
+<li><code>channels.nextcloud-talk.baseUrl</code>：Nextcloud 实例 URL。</li>
+<li><code>channels.nextcloud-talk.botSecret</code>：机器人共享密钥。</li>
+<li><code>channels.nextcloud-talk.botSecretFile</code>：密钥文件路径。</li>
+<li><code>channels.nextcloud-talk.apiUser</code>：用于房间查询的 API 用户（私信检测）。</li>
+<li><code>channels.nextcloud-talk.apiPassword</code>：用于房间查询的 API/应用密码。</li>
+<li><code>channels.nextcloud-talk.apiPasswordFile</code>：API 密码文件路径。</li>
+<li><code>channels.nextcloud-talk.webhookPort</code>：webhook 监听端口（默认：8788）。</li>
+<li><code>channels.nextcloud-talk.webhookHost</code>：webhook 主机（默认：0.0.0.0）。</li>
+<li><code>channels.nextcloud-talk.webhookPath</code>：webhook 路径（默认：/nextcloud-talk-webhook）。</li>
+<li><code>channels.nextcloud-talk.webhookPublicUrl</code>：外部可达的 webhook URL。</li>
+<li><code>channels.nextcloud-talk.dmPolicy</code>：<code>pairing | allowlist | open | disabled</code>。</li>
+<li><code>channels.nextcloud-talk.allowFrom</code>：私信白名单（用户 ID）。<code>open</code> 需要 <code>&quot;*&quot;</code>。</li>
+<li><code>channels.nextcloud-talk.groupPolicy</code>：<code>allowlist | open | disabled</code>。</li>
+<li><code>channels.nextcloud-talk.groupAllowFrom</code>：群组白名单（用户 ID）。</li>
+<li><code>channels.nextcloud-talk.rooms</code>：每个房间的设置和白名单。</li>
+<li><code>channels.nextcloud-talk.historyLimit</code>：群组历史记录限制（0 表示禁用）。</li>
+<li><code>channels.nextcloud-talk.dmHistoryLimit</code>：私信历史记录限制（0 表示禁用）。</li>
+<li><code>channels.nextcloud-talk.dms</code>：每个私信的覆盖设置（historyLimit）。</li>
+<li><code>channels.nextcloud-talk.textChunkLimit</code>：出站文本分块大小（字符数）。</li>
+<li><code>channels.nextcloud-talk.chunkMode</code>：<code>length</code>（默认）或 <code>newline</code>，在长度分块前按空行（段落边界）分割。</li>
+<li><code>channels.nextcloud-talk.blockStreaming</code>：禁用此渠道的分块流式传输。</li>
+<li><code>channels.nextcloud-talk.blockStreamingCoalesce</code>：分块流式传输合并调优。</li>
+<li><code>channels.nextcloud-talk.mediaMaxMb</code>：入站媒体大小上限（MB）。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/providers/moonshot/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Moonshot AI (Kimi)</span>
+  </a>
+  <a class="next" href="/openclaw/install/nix/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Nix 安装</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

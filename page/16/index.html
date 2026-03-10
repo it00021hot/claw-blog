@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Twitch（插件）</h2>
+    </header>
+    <div class="entry-content">
+      <p>通过 IRC 连接支持 Twitch 聊天。OpenClaw 以 Twitch 用户（机器人账户）身份连接，在频道中接收和发送消息。
+需要插件 Twitch 作为插件发布，未与核心安装捆绑。
+通过 CLI 安装（npm 注册表）：
+openclaw plugins install @openclaw/twitch 本地检出（从 git 仓库运行时）：
+openclaw plugins install ./extensions/twitch 详情：插件
+快速设置（新手） 为机器人创建一个专用的 Twitch 账户（或使用现有账户）。 生成凭证：Twitch Token Generator 选择 Bot Token 确认已选择 chat:read 和 chat:write 权限范围 复制 Client ID 和 Access Token 查找你的 Twitch 用户 ID：https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/ 配置令牌： 环境变量：OPENCLAW_TWITCH_ACCESS_TOKEN=...（仅限默认账户） 或配置：channels.twitch.accessToken 如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。 启动 Gateway 网关。 ⚠️ 重要： 添加访问控制（allowFrom 或 allowedRoles）以防止未授权用户触发机器人。requireMention 默认为 true。
+最小配置：
+{ channels: { twitch: { enabled: true, username: &#34;openclaw&#34;, // 机器人的 Twitch 账户 accessToken: &#34;oauth:abc123...&#34;, // OAuth Access Token（或使用 OPENCLAW_TWITCH_ACCESS_TOKEN 环境变量） clientId: &#34;xyz789...&#34;, // Token Generator 中的 Client ID channel: &#34;vevisk&#34;, // 要加入的 Twitch 频道聊天（必填） allowFrom: [&#34;123456789&#34;], // （推荐）仅限你的 Twitch 用户 ID - 从 https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/ 获取 }, }, } 它是什么 由 Gateway 网关拥有的 Twitch 渠道。 确定性路由：回复总是返回到 Twitch。 每个账户映射到一个隔离的会话键 agent:&lt;agentId&gt;:twitch:&lt;accountName&gt;。 username 是机器人账户（进行身份验证的账户），channel 是要加入的聊天室。 设置（详细） 生成凭证 使用 Twitch Token Generator：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Twitch（插件）" href="/openclaw/channels/twitch/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>TUI（终端 UI）</h2>
+    </header>
+    <div class="entry-content">
+      <p>快速开始 启动 Gateway 网关。 openclaw gateway 打开 TUI。 openclaw tui 输入消息并按 Enter。 远程 Gateway 网关：
+openclaw tui --url ws://&lt;host&gt;:&lt;port&gt; --token &lt;gateway-token&gt; 如果你的 Gateway 网关使用密码认证，请使用 --password。
+你看到的内容 标题栏：连接 URL、当前智能体、当前会话。 聊天日志：用户消息、助手回复、系统通知、工具卡片。 状态行：连接/运行状态（连接中、运行中、流式传输中、空闲、错误）。 页脚：连接状态 &#43; 智能体 &#43; 会话 &#43; 模型 &#43; think/verbose/reasoning &#43; token 计数 &#43; 投递状态。 输入：带自动完成的文本编辑器。 心智模型：智能体 &#43; 会话 智能体是唯一的标识符（例如 main、research）。Gateway 网关公开列表。 会话属于当前智能体。 会话键存储为 agent:&lt;agentId&gt;:&lt;sessionKey&gt;。 如果你输入 /session main，TUI 会将其扩展为 agent:&lt;currentAgent&gt;:main。 如果你输入 /session agent:other:main，你会显式切换到该智能体会话。 会话范围： per-sender（默认）：每个智能体有多个会话。 global：TUI 始终使用 global 会话（选择器可能为空）。 当前智能体 &#43; 会话始终在页脚中可见。 发送 &#43; 投递 消息发送到 Gateway 网关；默认情况下不投递到提供商。 开启投递： /deliver on 或设置面板 或使用 openclaw tui --deliver 启动 选择器 &#43; 覆盖层 模型选择器：列出可用模型并设置会话覆盖。 智能体选择器：选择不同的智能体。 会话选择器：仅显示当前智能体的会话。 设置：切换投递、工具输出展开和思考可见性。 键盘快捷键 Enter：发送消息 Esc：中止活动运行 Ctrl&#43;C：清除输入（按两次退出） Ctrl&#43;D：退出 Ctrl&#43;L：模型选择器 Ctrl&#43;G：智能体选择器 Ctrl&#43;P：会话选择器 Ctrl&#43;O：切换工具输出展开 Ctrl&#43;T：切换思考可见性（重新加载历史） 斜杠命令 核心：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to TUI（终端 UI）" href="/openclaw/web/tui/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>TOOLS.md - 用户工具备注（可编辑）</h2>
+    </header>
+    <div class="entry-content">
+      <p>此文件用于记录你关于外部工具和约定的备注。 它不定义哪些工具可用；OpenClaw 在内部提供内置工具。
+示例 imsg 发送 iMessage/SMS：描述收件人/内容，发送前确认。 尽量发送简短消息；避免发送密钥。 sag 文字转语音：指定语音、目标扬声器/房间，以及是否使用流式传输。 添加任何你希望助手了解的关于本地工具链的内容。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to TOOLS.md - 用户工具备注（可编辑）" href="/openclaw/reference/templates/tools.dev/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>TOOLS.md - 本地备注</h2>
+    </header>
+    <div class="entry-content">
+      <p>Skills 定义了工具的工作方式。此文件用于记录你的具体信息——那些你的环境中独有的内容。
+应该放什么 例如：
+摄像头名称和位置 SSH 主机和别名 TTS 首选语音 音箱/房间名称 设备昵称 任何与环境相关的内容 示例 ### Cameras - living-room → 主区域，180° 广角 - front-door → 入口，运动触发 ### SSH - home-server → 192.168.1.100, user: admin ### TTS - Preferred voice: &#34;Nova&#34;（温暖，略带英式口音） - Default speaker: Kitchen HomePod 为什么要分开？ Skills 是共享的。你的配置是你自己的。将它们分开意味着你可以更新 Skills 而不丢失你的备注，也可以分享 Skills 而不泄露你的基础设施信息。
+添加任何对你有帮助的内容。这是你的速查表。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to TOOLS.md - 本地备注" href="/openclaw/reference/templates/tools/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Token 使用与成本</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 跟踪的是 token，而不是字符。Token 是模型特定的，但大多数 OpenAI 风格的模型对于英文文本平均约 4 个字符为一个 token。
+系统提示词如何构建 OpenClaw 在每次运行时组装自己的系统提示词。它包括：
+工具列表 &#43; 简短描述 Skills 列表（仅元数据；指令通过 read 按需加载） 自我更新指令 工作区 &#43; 引导文件（AGENTS.md、SOUL.md、TOOLS.md、IDENTITY.md、USER.md、HEARTBEAT.md、BOOTSTRAP.md（新建时））。大文件会被 agents.defaults.bootstrapMaxChars（默认：20000）截断。 时间（UTC &#43; 用户时区） 回复标签 &#43; 心跳行为 运行时元数据（主机/操作系统/模型/思考） 完整分解参见系统提示词。
+什么算入上下文窗口 模型接收的所有内容都计入上下文限制：
+系统提示词（上面列出的所有部分） 对话历史（用户 &#43; 助手消息） 工具调用和工具结果 附件/转录（图片、音频、文件） 压缩摘要和修剪产物 提供商包装或安全头（不可见，但仍计数） 有关实际分解（每个注入文件、工具、Skills 和系统提示词大小），使用 /context list 或 /context detail。参见上下文。
+如何查看当前 token 使用量 在聊天中使用：
+/status → 带有会话模型、上下文使用量、 最后响应输入/输出 token 和预估成本（仅 API 密钥）的 emoji 丰富的状态卡片。 /usage off|tokens|full → 在每个回复后附加每响应使用量页脚。 每会话持久化（存储为 responseUsage）。 OAuth 认证隐藏成本（仅 token）。 /usage cost → 从 OpenClaw 会话日志显示本地成本摘要。 其他界面：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Token 使用与成本" href="/openclaw/reference/token-use/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Tlon（插件）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Tlon 是一个基于 Urbit 构建的去中心化即时通讯工具。OpenClaw 连接到你的 Urbit ship，可以响应私信和群聊消息。群组回复默认需要 @ 提及，并可通过允许列表进一步限制。
+状态：通过插件支持。支持私信、群组提及、话题回复和纯文本媒体回退（URL 附加到说明文字）。不支持表情回应、投票和原生媒体上传。
+需要插件 Tlon 作为插件提供，不包含在核心安装中。
+通过 CLI 安装（npm 仓库）：
+openclaw plugins install @openclaw/tlon 本地检出（从 git 仓库运行时）：
+openclaw plugins install ./extensions/tlon 详情：插件
+设置 安装 Tlon 插件。 获取你的 ship URL 和登录代码。 配置 channels.tlon。 重启 Gateway 网关。 私信机器人或在群组频道中提及它。 最小配置（单账户）：
+{ channels: { tlon: { enabled: true, ship: &#34;~sampel-palnet&#34;, url: &#34;https://your-ship-host&#34;, code: &#34;lidlut-tabwed-pillex-ridrup&#34;, }, }, } 群组频道 默认启用自动发现。你也可以手动固定频道：
+{ channels: { tlon: { groupChannels: [&#34;chat/~host-ship/general&#34;, &#34;chat/~host-ship/support&#34;], }, }, } 禁用自动发现：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Tlon（插件）" href="/openclaw/channels/tlon/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Telegram（Bot API）</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态：通过 grammY 支持机器人私信和群组，已可用于生产环境。默认使用长轮询；webhook 可选。
+快速设置（入门） 通过 @BotFather（直达链接）创建机器人。确认用户名确实是 @BotFather，然后复制 token。 设置 token： 环境变量：TELEGRAM_BOT_TOKEN=... 或配置：channels.telegram.botToken: &#34;...&#34;。 如果两者都设置了，配置优先（环境变量回退仅适用于默认账户）。 启动 Gateway 网关。 私信访问默认使用配对模式；首次联系时需要批准配对码。 最小配置：
+{ channels: { telegram: { enabled: true, botToken: &#34;123:abc&#34;, dmPolicy: &#34;pairing&#34;, }, }, } 这是什么 一个由 Gateway 网关拥有的 Telegram Bot API 渠道。 确定性路由：回复返回到 Telegram；模型不会选择渠道。 私信共享智能体的主会话；群组保持隔离（agent:&lt;agentId&gt;:telegram:group:&lt;chatId&gt;）。 设置（快速路径） 1）创建机器人 token（BotFather） 打开 Telegram 并与 @BotFather（直达链接）对话。确认用户名确实是 @BotFather。 运行 /newbot，然后按照提示操作（名称 &#43; 以 bot 结尾的用户名）。 复制 token 并安全保存。 可选的 BotFather 设置：
+/setjoingroups — 允许/拒绝将机器人添加到群组。 /setprivacy — 控制机器人是否可以看到所有群组消息。 2）配置 token（环境变量或配置文件） 示例：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Telegram（Bot API）" href="/openclaw/channels/telegram/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Telegram 允许列表加固</h2>
+    </header>
+    <div class="entry-content">
+      <p>日期：2026-01-05
+状态：已完成
+PR：#216
+摘要 Telegram 允许列表现在不区分大小写地接受 telegram: 和 tg: 前缀，并容忍意外的空白。这使入站允许列表检查与出站发送规范化保持一致。
+更改内容 前缀 telegram: 和 tg: 被同等对待（不区分大小写）。 允许列表条目会被修剪；空条目会被忽略。 示例 以下所有形式都被接受为同一 ID：
+telegram:123456 TG:123456 tg:123456 为什么重要 从日志或聊天 ID 复制/粘贴通常会包含前缀和空白。规范化可避免在决定是否在私信或群组中响应时出现误判。
+相关文档 群聊 Telegram 提供商 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Telegram 允许列表加固" href="/openclaw/experiments/plans/group-policy-hardening/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Talk 模式</h2>
+    </header>
+    <div class="entry-content">
+      <p>Talk 模式是一个连续的语音对话循环：
+监听语音 将转录文本发送到模型（main 会话，chat.send） 等待响应 通过 ElevenLabs 朗读（流式播放） 行为（macOS） Talk 模式启用时显示常驻悬浮窗。 监听 → 思考 → 朗读阶段转换。 短暂停顿（静音窗口）后，当前转录文本被发送。 回复被写入 WebChat（与打字相同）。 语音中断（默认开启）：如果用户在助手朗读时开始说话，我们会停止播放并记录中断时间戳供下一个提示使用。 回复中的语音指令 助手可以在回复前添加单行 JSON 来控制语音：
+{ &#34;voice&#34;: &#34;&lt;voice-id&gt;&#34;, &#34;once&#34;: true } 规则：
+仅适用于第一个非空行。 未知键会被忽略。 once: true 仅适用于当前回复。 没有 once 时，该语音成为 Talk 模式的新默认值。 JSON 行在 TTS 播放前会被移除。 支持的键：
+voice / voice_id / voiceId model / model_id / modelId speed、rate（WPM）、stability、similarity、style、speakerBoost seed、normalize、lang、output_format、latency_tier once 配置（~/.openclaw/openclaw.json） { talk: { voiceId: &#34;elevenlabs_voice_id&#34;, modelId: &#34;eleven_v3&#34;, outputFormat: &#34;mp3_44100_128&#34;, apiKey: &#34;elevenlabs_api_key&#34;, interruptOnSpeech: true, }, } 默认值：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Talk 模式" href="/openclaw/nodes/talk/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Tailscale（Gateway 网关仪表盘）</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 可以为 Gateway 网关仪表盘和 WebSocket 端口自动配置 Tailscale Serve（tailnet）或 Funnel（公共）。这使 Gateway 网关保持绑定到 loopback，同时 Tailscale 提供 HTTPS、路由和（对于 Serve）身份头。
+模式 serve：仅限 Tailnet 的 Serve，通过 tailscale serve。Gateway 网关保持在 127.0.0.1 上。 funnel：通过 tailscale funnel 的公共 HTTPS。OpenClaw 需要共享密码。 off：默认（无 Tailscale 自动化）。 认证 设置 gateway.auth.mode 来控制握手：
+token（设置 OPENCLAW_GATEWAY_TOKEN 时的默认值） password（通过 OPENCLAW_GATEWAY_PASSWORD 或配置的共享密钥） 当 tailscale.mode = &#34;serve&#34; 且 gateway.auth.allowTailscale 为 true 时， 有效的 Serve 代理请求可以通过 Tailscale 身份头（tailscale-user-login）进行认证，无需提供令牌/密码。OpenClaw 通过本地 Tailscale 守护进程（tailscale whois）解析 x-forwarded-for 地址并将其与头匹配来验证身份，然后才接受它。 OpenClaw 仅在请求从 loopback 到达并带有 Tailscale 的 x-forwarded-for、x-forwarded-proto 和 x-forwarded-host 头时才将其视为 Serve 请求。 要要求显式凭证，设置 gateway.auth.allowTailscale: false 或强制 gateway.auth.mode: &#34;password&#34;。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Tailscale（Gateway 网关仪表盘）" href="/openclaw/gateway/tailscale/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/15/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/17/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>表情回应工具</h2>
+    </header>
+    <div class="entry-content">
+      <p>跨渠道共享的表情回应语义：
+添加表情回应时，emoji 为必填项。 emoji=&#34;&#34; 在支持的情况下移除机器人的表情回应。 remove: true 在支持的情况下移除指定的表情（需要提供 emoji）。 渠道说明：
+Discord/Slack：空 emoji 移除机器人在该消息上的所有表情回应；remove: true 仅移除指定的表情。 Google Chat：空 emoji 移除应用在该消息上的表情回应；remove: true 仅移除指定的表情。 Telegram：空 emoji 移除机器人的表情回应；remove: true 同样移除表情回应，但工具验证仍要求 emoji 为非空值。 WhatsApp：空 emoji 移除机器人的表情回应；remove: true 映射为空 emoji（仍需提供 emoji）。 Signal：当启用 channels.signal.reactionNotifications 时，收到的表情回应通知会触发系统事件。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 表情回应工具" href="/openclaw/tools/reactions/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>菜单栏状态逻辑</h2>
+    </header>
+    <div class="entry-content">
+      <p>显示内容 我们在菜单栏图标和菜单的第一行状态行中展示当前智能体的工作状态。 工作活跃时隐藏健康状态；当所有会话空闲时恢复显示。 菜单中的&#34;节点&#34;区块仅列出设备（通过 node.list 配对的节点），不包括客户端/在线状态条目。 当提供商用量快照可用时，“用量&#34;部分会显示在上下文下方。 状态模型 会话：事件携带 runId（每次运行）以及载荷中的 sessionKey。“main” 会话的键为 main；如果不存在，则回退到最近更新的会话。 优先级：main 始终优先。如果 main 处于活跃状态，立即显示其状态。如果 main 空闲，则显示最近活跃的非 main 会话。活动进行中不会来回切换；仅在当前会话进入空闲或 main 变为活跃时才切换。 活动类型： job：高层命令执行（state: started|streaming|done|error）。 tool：phase: start|result，包含 toolName 和 meta/args。 IconState 枚举（Swift） idle workingMain(ActivityKind) workingOther(ActivityKind) overridden(ActivityKind)（调试覆盖） ActivityKind → 图标符号 exec → 💻 read → 📄 write → ✍️ edit → 📝 attach → 📎 默认 → 🛠️ 视觉映射 idle：正常小动物图标。 workingMain：带图标符号的徽章，完整色调，腿部&#34;工作&#34;动画。 workingOther：带图标符号的徽章，柔和色调，无快跑动画。 overridden：无论活动状态如何，使用所选的图标符号/色调。 状态行文本（菜单） 工作活跃时：&lt;会话角色&gt; · &lt;活动标签&gt; 示例：Main · exec: pnpm test、Other · read: apps/macos/Sources/OpenClaw/AppState.swift。 空闲时：回退显示健康摘要。 事件接收 来源：控制渠道 agent 事件（ControlChannel.handleAgentEvent）。 解析字段： stream: &#34;job&#34;，包含 data.state 用于启动/停止。 stream: &#34;tool&#34;，包含 data.phase、name，可选 meta/args。 标签： exec：args.command 的第一行。 read/write：缩短的路径。 edit：路径加上从 meta/diff 计数推断的变更类型。 回退：工具名称。 调试覆盖 设置 ▸ 调试 ▸ “图标覆盖” 选择器： 系统（自动）（默认） 工作中：main（按工具类型） 工作中：other（按工具类型） 空闲 通过 @AppStorage(&#34;iconOverride&#34;) 存储；映射到 IconState.overridden。 测试清单 触发 main 会话任务：验证图标立即切换且状态行显示 main 标签。 main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持稳定直到完成。 在 other 活跃时启动 main：图标立即切换到 main。 快速连续工具调用：确保徽章不会闪烁（工具结果的 TTL 宽限期）。 所有会话空闲后健康行重新出现。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 菜单栏状态逻辑" href="/openclaw/platforms/mac/menu-bar/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>菜单栏图标状态</h2>
+    </header>
+    <div class="entry-content">
+      <p>作者：steipete · 更新时间：2025-12-06 · 范围：macOS 应用（apps/macos）
+空闲： 正常图标动画（眨眼、偶尔摆动）。 暂停： 状态项使用 appearsDisabled；无动画。 语音触发（大耳朵）： 语音唤醒检测器在听到唤醒词时调用 AppState.triggerVoiceEars(ttl: nil)，在捕获语音期间保持 earBoostActive=true。耳朵放大（1.9 倍），显示圆形耳孔以提高可读性，然后在 1 秒静音后通过 stopVoiceEars() 恢复。仅由应用内语音管道触发。 工作中（智能体运行中）： AppState.isWorking=true 驱动&#34;尾巴/腿部快速摆动&#34;微动画：工作进行中腿部摆动加快并略有偏移。目前在 WebChat 智能体运行时切换；在接入其他长时间任务时请添加相同的切换逻辑。 接入点
+语音唤醒：运行时/测试器在触发时调用 AppState.triggerVoiceEars(ttl: nil)，在 1 秒静音后调用 stopVoiceEars() 以匹配捕获窗口。 智能体活动：在工作区间前后设置 AppStateStore.shared.setWorking(true/false)（已在 WebChat 智能体调用中完成）。保持区间简短，并在 defer 块中重置以避免动画卡住。 形状与尺寸
+基础图标在 CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:) 中绘制。 耳朵缩放默认为 1.0；语音增强时设置 earScale=1.9 并切换 earHoles=true，不改变整体框架（18×18 pt 模板图像渲染到 36×36 px Retina 后备存储）。 快速摆动使用最高约 1.0 的腿部摆幅并带有轻微的水平抖动；它与现有的空闲摆动叠加。 行为说明
+耳朵/工作状态没有外部 CLI/代理切换；保持仅由应用自身信号控制，以避免意外的状态抖动。 保持 TTL 较短（&lt;10 秒），以便在任务挂起时图标能快速恢复到基准状态。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 菜单栏图标状态" href="/openclaw/platforms/mac/icon/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>节点故障排查</h2>
+    </header>
+    <div class="entry-content">
+      <p>该页面是英文文档的中文占位版本，完整内容请先参考英文版：Node Troubleshooting。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 节点故障排查" href="/openclaw/nodes/troubleshooting/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>自动化故障排查</h2>
+    </header>
+    <div class="entry-content">
+      <p>该页面是英文文档的中文占位版本，完整内容请先参考英文版：Automation Troubleshooting。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 自动化故障排查" href="/openclaw/automation/troubleshooting/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>脚本</h2>
+    </header>
+    <div class="entry-content">
+      <p>scripts/ 目录包含用于本地工作流和运维任务的辅助脚本。 当任务明确与某个脚本相关时使用这些脚本；否则优先使用 CLI。
+约定 除非在文档或发布检查清单中引用，否则脚本为可选。 当 CLI 接口存在时优先使用（例如：认证监控使用 openclaw models status --check）。 假定脚本与特定主机相关；在新机器上运行前请先阅读脚本内容。 认证监控脚本 认证监控脚本的文档请参阅： /automation/auth-monitoring
+添加脚本时 保持脚本专注且有文档说明。 在相关文档中添加简短条目（如果缺少则创建一个）。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 脚本" href="/openclaw/help/scripts/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>群组消息（WhatsApp 网页渠道）</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标：让 Clawd 留在 WhatsApp 群组中，仅在被提及时唤醒，并将该对话线程与个人私信会话分开。
+注意：agents.list[].groupChat.mentionPatterns 现在也被 Telegram/Discord/Slack/iMessage 使用；本文档重点介绍 WhatsApp 特定的行为。对于多智能体设置，为每个智能体设置 agents.list[].groupChat.mentionPatterns（或使用 messages.groupChat.mentionPatterns 作为全局回退）。
+已实现的功能（2025-12-03） 激活模式：mention（默认）或 always。mention 需要被提及（通过 mentionedJids 的真实 WhatsApp @提及、正则表达式模式，或文本中任意位置的机器人 E.164 号码）。always 会在每条消息时唤醒智能体，但它应该只在能提供有意义价值时才回复；否则返回静默令牌 NO_REPLY。默认值可在配置中设置（channels.whatsapp.groups），并可通过 /activation 为每个群组单独覆盖。当设置了 channels.whatsapp.groups 时，它同时充当群组允许列表（包含 &#34;*&#34; 以允许所有群组）。 群组策略：channels.whatsapp.groupPolicy 控制是否接受群组消息（open|disabled|allowlist）。allowlist 使用 channels.whatsapp.groupAllowFrom（回退：显式的 channels.whatsapp.allowFrom）。默认为 allowlist（在你添加发送者之前被阻止）。 独立群组会话：会话键格式为 agent:&lt;agentId&gt;:whatsapp:group:&lt;jid&gt;，因此 /verbose on 或 /think high（作为独立消息发送）等命令仅作用于该群组；个人私信状态不受影响。群组线程会跳过心跳。 上下文注入：仅待处理的群组消息（默认 50 条），即未触发运行的消息，会以 [Chat messages since your last reply - for context] 为前缀注入，触发行在 [Current message - respond to this] 下。已在会话中的消息不会重复注入。 发送者显示：每个群组批次现在以 [from: Sender Name (&#43;E164)] 结尾，让 Pi 知道是谁在说话。 阅后即焚/一次性查看：我们在提取文本/提及之前会先解包这些消息，因此其中的提及仍会触发。 群组系统提示：在群组会话的第一轮（以及每当 /activation 更改模式时），我们会向系统提示注入一段简短说明，如 You are replying inside the WhatsApp group &#34;&lt;subject&gt;&#34;. Group members: Alice (&#43;44...), Bob (&#43;43...), … Activation: trigger-only … Address the specific sender noted in the message context. 如果元数据不可用，我们仍会告知智能体这是一个群聊。 配置示例（WhatsApp） 在 ~/.openclaw/openclaw.json 中添加 groupChat 块，以便在 WhatsApp 剥离文本正文中的可视 @ 时，显示名称提及仍能正常工作：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 群组消息（WhatsApp 网页渠道）" href="/openclaw/channels/group-messages/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>群组</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 在各平台上统一处理群聊：WhatsApp、Telegram、Discord、Slack、Signal、iMessage、Microsoft Teams。
+新手入门（2 分钟） OpenClaw&#34;运行&#34;在你自己的消息账户上。没有单独的 WhatsApp 机器人用户。如果你在一个群组中，OpenClaw 就可以看到该群组并在其中回复。
+默认行为：
+群组受限（groupPolicy: &#34;allowlist&#34;）。 除非你明确禁用提及限制，否则回复需要 @ 提及。 解释：允许列表中的发送者可以通过提及来触发 OpenClaw。
+简而言之
+私信访问由 *.allowFrom 控制。 群组访问由 *.groupPolicy &#43; 允许列表（*.groups、*.groupAllowFrom）控制。 回复触发由提及限制（requireMention、/activation）控制。 快速流程（群消息会发生什么）：
+groupPolicy? disabled -&gt; 丢弃 groupPolicy? allowlist -&gt; 群组允许? 否 -&gt; 丢弃 requireMention? 是 -&gt; 被提及? 否 -&gt; 仅存储为上下文 否则 -&gt; 回复 如果你想…
+目标 设置什么 允许所有群组但仅在 @ 提及时回复 groups: { &#34;*&#34;: { requireMention: true } } 禁用所有群组回复 groupPolicy: &#34;disabled&#34; 仅特定群组 groups: { &#34;&lt;group-id&gt;&#34;: { ... } }（无 &#34;*&#34; 键） 仅你可以在群组中触发 groupPolicy: &#34;allowlist&#34;、groupAllowFrom: [&#34;&#43;1555...&#34;] 会话键 群组会话使用 agent:&lt;agentId&gt;:&lt;channel&gt;:group:&lt;id&gt; 会话键（房间/频道使用 agent:&lt;agentId&gt;:&lt;channel&gt;:channel:&lt;id&gt;）。 Telegram 论坛话题在群组 ID 后添加 :topic:&lt;threadId&gt;，因此每个话题都有自己的会话。 私聊使用主会话（或按发送者配置时使用各自的会话）。 群组会话跳过心跳。 模式：个人私信 &#43; 公开群组（单智能体） 是的——如果你的&#34;个人&#34;流量是私信而&#34;公开&#34;流量是群组，这种方式效果很好。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 群组" href="/openclaw/channels/groups/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>网络中心</h2>
+    </header>
+    <div class="entry-content">
+      <p>本中心汇集了 OpenClaw 如何在 localhost、局域网和 tailnet 之间连接、配对和保护设备的核心文档。
+核心模型 Gateway 网关架构 Gateway 网关协议 Gateway 网关运维手册 Web 接口 &#43; 绑定模式 配对 &#43; 身份 配对概述（私信 &#43; 节点） Gateway 网关拥有的节点配对 Devices CLI（配对 &#43; token 轮换） Pairing CLI（私信审批） 本地信任：
+本地连接（loopback 或 Gateway 网关主机自身的 tailnet 地址）可以自动批准配对，以保持同主机用户体验的流畅性。 非本地的 tailnet/局域网客户端仍需要显式的配对批准。 设备发现 &#43; 传输协议 设备发现与传输协议 Bonjour / mDNS 远程访问（SSH） Tailscale 节点 &#43; 传输协议 节点概述 桥接协议（旧版节点） 节点运维手册：iOS 节点运维手册：Android 安全 安全概述 Gateway 网关配置参考 故障排除 Doctor </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 网络中心" href="/openclaw/network/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>系统提示词</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 OpenClaw 拥有，不使用 pi-coding-agent 默认提示词。
+该提示词由 OpenClaw 组装并注入到每次智能体运行中。
+结构 该提示词设计紧凑，使用固定部分：
+Tooling：当前工具列表 &#43; 简短描述。 Safety：简短的防护提醒，避免追求权力的行为或绕过监督。 Skills（如果可用）：告诉模型如何按需加载 Skill 指令。 OpenClaw Self-Update：如何运行 config.apply 和 update.run。 Workspace：工作目录（agents.defaults.workspace）。 Documentation：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。 Workspace Files (injected)：表示下方包含引导文件。 Sandbox（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。 Current Date &amp; Time：用户本地时间、时区和时间格式。 Reply Tags：支持的提供商的可选回复标签语法。 Heartbeats：心跳提示词和确认行为。 Runtime：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。 Reasoning：当前可见性级别 &#43; /reasoning 切换提示。 系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。
+提示词模式 OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 promptMode（不是面向用户的配置）：
+full（默认）：包含上述所有部分。 minimal：用于子智能体；省略 Skills、Memory Recall、OpenClaw Self-Update、Model Aliases、User Identity、Reply Tags、Messaging、Silent Replies 和 Heartbeats。Tooling、Safety、Workspace、Sandbox、Current Date &amp; Time（已知时）、Runtime 和注入的上下文仍然可用。 none：仅返回基本身份行。 当 promptMode=minimal 时，额外注入的提示词标记为 Subagent Context 而不是 Group Chat Context。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 系统提示词" href="/openclaw/concepts/system-prompt/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/2/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/4/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>配置示例 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="以下示例与当前配置模式一致。有关详尽的参考和每个字段的说明，请参阅配置。
+快速开始
+绝对最小配置
+{
+  agent: { workspace: &#34;~/.openclaw/workspace&#34; },
+  channels: { whatsapp: { allowFrom: [&#34;&#43;15555550123&#34;] } },
+}
+保存到 ~/.openclaw/openclaw.json，你就可以从该号码私信机器人了。
+推荐的入门配置
+{
+  identity: {
+    name: &#34;Clawd&#34;,
+    theme: &#34;helpful assistant&#34;,
+    emoji: &#34;🦞&#34;,
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: { primary: &#34;anthropic/claude-sonnet-4-5&#34; },
+  },
+  channels: {
+    whatsapp: {
+      allowFrom: [&#34;&#43;15555550123&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+  },
+}
+扩展示例（主要选项）
+
+JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以使用。
+
+{
+  // 环境 &#43; shell
+  env: {
+    OPENROUTER_API_KEY: &#34;sk-or-...&#34;,
+    vars: {
+      GROQ_API_KEY: &#34;gsk-...&#34;,
+    },
+    shellEnv: {
+      enabled: true,
+      timeoutMs: 15000,
+    },
+  },
+
+  // 认证配置文件元数据（密钥存储在 auth-profiles.json 中）
+  auth: {
+    profiles: {
+      &#34;anthropic:me@example.com&#34;: { provider: &#34;anthropic&#34;, mode: &#34;oauth&#34;, email: &#34;me@example.com&#34; },
+      &#34;anthropic:work&#34;: { provider: &#34;anthropic&#34;, mode: &#34;api_key&#34; },
+      &#34;openai:default&#34;: { provider: &#34;openai&#34;, mode: &#34;api_key&#34; },
+      &#34;openai-codex:default&#34;: { provider: &#34;openai-codex&#34;, mode: &#34;oauth&#34; },
+    },
+    order: {
+      anthropic: [&#34;anthropic:me@example.com&#34;, &#34;anthropic:work&#34;],
+      openai: [&#34;openai:default&#34;],
+      &#34;openai-codex&#34;: [&#34;openai-codex:default&#34;],
+    },
+  },
+
+  // 身份
+  identity: {
+    name: &#34;Samantha&#34;,
+    theme: &#34;helpful sloth&#34;,
+    emoji: &#34;🦥&#34;,
+  },
+
+  // 日志
+  logging: {
+    level: &#34;info&#34;,
+    file: &#34;/tmp/openclaw/openclaw.log&#34;,
+    consoleLevel: &#34;info&#34;,
+    consoleStyle: &#34;pretty&#34;,
+    redactSensitive: &#34;tools&#34;,
+  },
+
+  // 消息格式
+  messages: {
+    messagePrefix: &#34;[openclaw]&#34;,
+    responsePrefix: &#34;&gt;&#34;,
+    ackReaction: &#34;👀&#34;,
+    ackReactionScope: &#34;group-mentions&#34;,
+  },
+
+  // 路由 &#43; 队列
+  routing: {
+    groupChat: {
+      mentionPatterns: [&#34;@openclaw&#34;, &#34;openclaw&#34;],
+      historyLimit: 50,
+    },
+    queue: {
+      mode: &#34;collect&#34;,
+      debounceMs: 1000,
+      cap: 20,
+      drop: &#34;summarize&#34;,
+      byChannel: {
+        whatsapp: &#34;collect&#34;,
+        telegram: &#34;collect&#34;,
+        discord: &#34;collect&#34;,
+        slack: &#34;collect&#34;,
+        signal: &#34;collect&#34;,
+        imessage: &#34;collect&#34;,
+        webchat: &#34;collect&#34;,
+      },
+    },
+  },
+
+  // 工具
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        maxBytes: 20971520,
+        models: [
+          { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; },
+          // 可选的 CLI 回退（Whisper 二进制）：
+          // { type: &#34;cli&#34;, command: &#34;whisper&#34;, args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;] }
+        ],
+        timeoutSeconds: 120,
+      },
+      video: {
+        enabled: true,
+        maxBytes: 52428800,
+        models: [{ provider: &#34;google&#34;, model: &#34;gemini-3-flash-preview&#34; }],
+      },
+    },
+  },
+
+  // 会话行为
+  session: {
+    scope: &#34;per-sender&#34;,
+    reset: {
+      mode: &#34;daily&#34;,
+      atHour: 4,
+      idleMinutes: 60,
+    },
+    resetByChannel: {
+      discord: { mode: &#34;idle&#34;, idleMinutes: 10080 },
+    },
+    resetTriggers: [&#34;/new&#34;, &#34;/reset&#34;],
+    store: &#34;~/.openclaw/agents/default/sessions/sessions.json&#34;,
+    typingIntervalSeconds: 5,
+    sendPolicy: {
+      default: &#34;allow&#34;,
+      rules: [{ action: &#34;deny&#34;, match: { channel: &#34;discord&#34;, chatType: &#34;group&#34; } }],
+    },
+  },
+
+  // 渠道
+  channels: {
+    whatsapp: {
+      dmPolicy: &#34;pairing&#34;,
+      allowFrom: [&#34;&#43;15555550123&#34;],
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;&#43;15555550123&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+
+    telegram: {
+      enabled: true,
+      botToken: &#34;YOUR_TELEGRAM_BOT_TOKEN&#34;,
+      allowFrom: [&#34;123456789&#34;],
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;123456789&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_DISCORD_BOT_TOKEN&#34;,
+      dm: { enabled: true, allowFrom: [&#34;steipete&#34;] },
+      guilds: {
+        &#34;123456789012345678&#34;: {
+          slug: &#34;friends-of-openclaw&#34;,
+          requireMention: false,
+          channels: {
+            general: { allow: true },
+            help: { allow: true, requireMention: true },
+          },
+        },
+      },
+    },
+
+    slack: {
+      enabled: true,
+      botToken: &#34;xoxb-REPLACE_ME&#34;,
+      appToken: &#34;xapp-REPLACE_ME&#34;,
+      channels: {
+        &#34;#general&#34;: { allow: true, requireMention: true },
+      },
+      dm: { enabled: true, allowFrom: [&#34;U123&#34;] },
+      slashCommand: {
+        enabled: true,
+        name: &#34;openclaw&#34;,
+        sessionPrefix: &#34;slack:slash&#34;,
+        ephemeral: true,
+      },
+    },
+  },
+
+  // 智能体运行时
+  agents: {
+    defaults: {
+      workspace: &#34;~/.openclaw/workspace&#34;,
+      userTimezone: &#34;America/Chicago&#34;,
+      model: {
+        primary: &#34;anthropic/claude-sonnet-4-5&#34;,
+        fallbacks: [&#34;anthropic/claude-opus-4-5&#34;, &#34;openai/gpt-5.2&#34;],
+      },
+      imageModel: {
+        primary: &#34;openrouter/anthropic/claude-sonnet-4-5&#34;,
+      },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;opus&#34; },
+        &#34;anthropic/claude-sonnet-4-5&#34;: { alias: &#34;sonnet&#34; },
+        &#34;openai/gpt-5.2&#34;: { alias: &#34;gpt&#34; },
+      },
+      thinkingDefault: &#34;low&#34;,
+      verboseDefault: &#34;off&#34;,
+      elevatedDefault: &#34;on&#34;,
+      blockStreamingDefault: &#34;off&#34;,
+      blockStreamingBreak: &#34;text_end&#34;,
+      blockStreamingChunk: {
+        minChars: 800,
+        maxChars: 1200,
+        breakPreference: &#34;paragraph&#34;,
+      },
+      blockStreamingCoalesce: {
+        idleMs: 1000,
+      },
+      humanDelay: {
+        mode: &#34;natural&#34;,
+      },
+      timeoutSeconds: 600,
+      mediaMaxMb: 5,
+      typingIntervalSeconds: 5,
+      maxConcurrent: 3,
+      heartbeat: {
+        every: &#34;30m&#34;,
+        model: &#34;anthropic/claude-sonnet-4-5&#34;,
+        target: &#34;last&#34;,
+        to: &#34;&#43;15555550123&#34;,
+        prompt: &#34;HEARTBEAT&#34;,
+        ackMaxChars: 300,
+      },
+      memorySearch: {
+        provider: &#34;gemini&#34;,
+        model: &#34;gemini-embedding-001&#34;,
+        remote: {
+          apiKey: &#34;${GEMINI_API_KEY}&#34;,
+        },
+        extraPaths: [&#34;../team-docs&#34;, &#34;/srv/shared-notes&#34;],
+      },
+      sandbox: {
+        mode: &#34;non-main&#34;,
+        perSession: true,
+        workspaceRoot: &#34;~/.openclaw/sandboxes&#34;,
+        docker: {
+          image: &#34;openclaw-sandbox:bookworm-slim&#34;,
+          workdir: &#34;/workspace&#34;,
+          readOnlyRoot: true,
+          tmpfs: [&#34;/tmp&#34;, &#34;/var/tmp&#34;, &#34;/run&#34;],
+          network: &#34;none&#34;,
+          user: &#34;1000:1000&#34;,
+        },
+        browser: {
+          enabled: false,
+        },
+      },
+    },
+  },
+
+  tools: {
+    allow: [&#34;exec&#34;, &#34;process&#34;, &#34;read&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;],
+    deny: [&#34;browser&#34;, &#34;canvas&#34;],
+    exec: {
+      backgroundMs: 10000,
+      timeoutSec: 1800,
+      cleanupMs: 1800000,
+    },
+    elevated: {
+      enabled: true,
+      allowFrom: {
+        whatsapp: [&#34;&#43;15555550123&#34;],
+        telegram: [&#34;123456789&#34;],
+        discord: [&#34;steipete&#34;],
+        slack: [&#34;U123&#34;],
+        signal: [&#34;&#43;15555550123&#34;],
+        imessage: [&#34;user@example.com&#34;],
+        webchat: [&#34;session:demo&#34;],
+      },
+    },
+  },
+
+  // 自定义模型提供商
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      &#34;custom-proxy&#34;: {
+        baseUrl: &#34;http://localhost:4000/v1&#34;,
+        apiKey: &#34;LITELLM_KEY&#34;,
+        api: &#34;openai-responses&#34;,
+        authHeader: true,
+        headers: { &#34;X-Proxy-Region&#34;: &#34;us-west&#34; },
+        models: [
+          {
+            id: &#34;llama-3.1-8b&#34;,
+            name: &#34;Llama 3.1 8B&#34;,
+            api: &#34;openai-responses&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 128000,
+            maxTokens: 32000,
+          },
+        ],
+      },
+    },
+  },
+
+  // Cron 作业
+  cron: {
+    enabled: true,
+    store: &#34;~/.openclaw/cron/cron.json&#34;,
+    maxConcurrentRuns: 2,
+  },
+
+  // Webhooks
+  hooks: {
+    enabled: true,
+    path: &#34;/hooks&#34;,
+    token: &#34;shared-secret&#34;,
+    presets: [&#34;gmail&#34;],
+    transformsDir: &#34;~/.openclaw/hooks&#34;,
+    mappings: [
+      {
+        id: &#34;gmail-hook&#34;,
+        match: { path: &#34;gmail&#34; },
+        action: &#34;agent&#34;,
+        wakeMode: &#34;now&#34;,
+        name: &#34;Gmail&#34;,
+        sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;,
+        messageTemplate: &#34;From: {{messages[0].from}}\nSubject: {{messages[0].subject}}&#34;,
+        textTemplate: &#34;{{messages[0].snippet}}&#34;,
+        deliver: true,
+        channel: &#34;last&#34;,
+        to: &#34;&#43;15555550123&#34;,
+        thinking: &#34;low&#34;,
+        timeoutSeconds: 300,
+        transform: { module: &#34;./transforms/gmail.js&#34;, export: &#34;transformGmail&#34; },
+      },
+    ],
+    gmail: {
+      account: &#34;openclaw@gmail.com&#34;,
+      label: &#34;INBOX&#34;,
+      topic: &#34;projects/&lt;project-id&gt;/topics/gog-gmail-watch&#34;,
+      subscription: &#34;gog-gmail-watch-push&#34;,
+      pushToken: &#34;shared-push-token&#34;,
+      hookUrl: &#34;http://127.0.0.1:18789/hooks/gmail&#34;,
+      includeBody: true,
+      maxBytes: 20000,
+      renewEveryMinutes: 720,
+      serve: { bind: &#34;127.0.0.1&#34;, port: 8788, path: &#34;/&#34; },
+      tailscale: { mode: &#34;funnel&#34;, path: &#34;/gmail-pubsub&#34; },
+    },
+  },
+
+  // Gateway 网关 &#43; 网络
+  gateway: {
+    mode: &#34;local&#34;,
+    port: 18789,
+    bind: &#34;loopback&#34;,
+    controlUi: { enabled: true, basePath: &#34;/openclaw&#34; },
+    auth: {
+      mode: &#34;token&#34;,
+      token: &#34;gateway-token&#34;,
+      allowTailscale: true,
+    },
+    tailscale: { mode: &#34;serve&#34;, resetOnExit: false },
+    remote: { url: &#34;ws://gateway.tailnet:18789&#34;, token: &#34;remote-token&#34; },
+    reload: { mode: &#34;hybrid&#34;, debounceMs: 300 },
+  },
+
+  skills: {
+    allowBundled: [&#34;gemini&#34;, &#34;peekaboo&#34;],
+    load: {
+      extraDirs: [&#34;~/Projects/agent-scripts/skills&#34;],
+    },
+    install: {
+      preferBrew: true,
+      nodeManager: &#34;npm&#34;,
+    },
+    entries: {
+      &#34;nano-banana-pro&#34;: {
+        enabled: true,
+        apiKey: &#34;GEMINI_KEY_HERE&#34;,
+        env: { GEMINI_API_KEY: &#34;GEMINI_KEY_HERE&#34; },
+      },
+      peekaboo: { enabled: true },
+    },
+  },
+}
+常见模式
+多平台设置
+{
+  agent: { workspace: &#34;~/.openclaw/workspace&#34; },
+  channels: {
+    whatsapp: { allowFrom: [&#34;&#43;15555550123&#34;] },
+    telegram: {
+      enabled: true,
+      botToken: &#34;YOUR_TOKEN&#34;,
+      allowFrom: [&#34;123456789&#34;],
+    },
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_TOKEN&#34;,
+      dm: { allowFrom: [&#34;yourname&#34;] },
+    },
+  },
+}
+OAuth 带 API 密钥回退
+{
+  auth: {
+    profiles: {
+      &#34;anthropic:subscription&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;oauth&#34;,
+        email: &#34;me@example.com&#34;,
+      },
+      &#34;anthropic:api&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;api_key&#34;,
+      },
+    },
+    order: {
+      anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;],
+    },
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: {
+      primary: &#34;anthropic/claude-sonnet-4-5&#34;,
+      fallbacks: [&#34;anthropic/claude-opus-4-5&#34;],
+    },
+  },
+}
+Anthropic 订阅 &#43; API 密钥，MiniMax 回退
+{
+  auth: {
+    profiles: {
+      &#34;anthropic:subscription&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;oauth&#34;,
+        email: &#34;user@example.com&#34;,
+      },
+      &#34;anthropic:api&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;api_key&#34;,
+      },
+    },
+    order: {
+      anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;],
+    },
+  },
+  models: {
+    providers: {
+      minimax: {
+        baseUrl: &#34;https://api.minimax.io/anthropic&#34;,
+        api: &#34;anthropic-messages&#34;,
+        apiKey: &#34;${MINIMAX_API_KEY}&#34;,
+      },
+    },
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: {
+      primary: &#34;anthropic/claude-opus-4-5&#34;,
+      fallbacks: [&#34;minimax/MiniMax-M2.1&#34;],
+    },
+  },
+}
+工作机器人（受限访问）
+{
+  identity: {
+    name: &#34;WorkBot&#34;,
+    theme: &#34;professional assistant&#34;,
+  },
+  agent: {
+    workspace: &#34;~/work-openclaw&#34;,
+    elevated: { enabled: false },
+  },
+  channels: {
+    slack: {
+      enabled: true,
+      botToken: &#34;xoxb-...&#34;,
+      channels: {
+        &#34;#engineering&#34;: { allow: true, requireMention: true },
+        &#34;#general&#34;: { allow: true, requireMention: true },
+      },
+    },
+  },
+}
+仅本地模型
+{
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      lmstudio: {
+        baseUrl: &#34;http://127.0.0.1:1234/v1&#34;,
+        apiKey: &#34;lmstudio&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;minimax-m2.1-gs32&#34;,
+            name: &#34;MiniMax M2.1 GS32&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 196608,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+提示
+
+如果你设置 dmPolicy: &quot;open&quot;，匹配的 allowFrom 列表必须包含 &quot;*&quot;。
+提供商 ID 各不相同（电话号码、用户 ID、频道 ID）。使用提供商文档确认格式。
+稍后添加的可选部分：web、browser、ui、discovery、canvasHost、talk、signal、imessage。
+参阅提供商和故障排除了解更深入的设置说明。
+">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/configuration-examples/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/configuration-examples/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/configuration-examples/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="配置示例">
+  <meta property="og:description" content="以下示例与当前配置模式一致。有关详尽的参考和每个字段的说明，请参阅配置。
+快速开始 绝对最小配置 { agent: { workspace: &#34;~/.openclaw/workspace&#34; }, channels: { whatsapp: { allowFrom: [&#34;&#43;15555550123&#34;] } }, } 保存到 ~/.openclaw/openclaw.json，你就可以从该号码私信机器人了。
+推荐的入门配置 { identity: { name: &#34;Clawd&#34;, theme: &#34;helpful assistant&#34;, emoji: &#34;🦞&#34;, }, agent: { workspace: &#34;~/.openclaw/workspace&#34;, model: { primary: &#34;anthropic/claude-sonnet-4-5&#34; }, }, channels: { whatsapp: { allowFrom: [&#34;&#43;15555550123&#34;], groups: { &#34;*&#34;: { requireMention: true } }, }, }, } 扩展示例（主要选项） JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以使用。
+{ // 环境 &#43; shell env: { OPENROUTER_API_KEY: &#34;sk-or-...&#34;, vars: { GROQ_API_KEY: &#34;gsk-...&#34;, }, shellEnv: { enabled: true, timeoutMs: 15000, }, }, // 认证配置文件元数据（密钥存储在 auth-profiles.json 中） auth: { profiles: { &#34;anthropic:me@example.com&#34;: { provider: &#34;anthropic&#34;, mode: &#34;oauth&#34;, email: &#34;me@example.com&#34; }, &#34;anthropic:work&#34;: { provider: &#34;anthropic&#34;, mode: &#34;api_key&#34; }, &#34;openai:default&#34;: { provider: &#34;openai&#34;, mode: &#34;api_key&#34; }, &#34;openai-codex:default&#34;: { provider: &#34;openai-codex&#34;, mode: &#34;oauth&#34; }, }, order: { anthropic: [&#34;anthropic:me@example.com&#34;, &#34;anthropic:work&#34;], openai: [&#34;openai:default&#34;], &#34;openai-codex&#34;: [&#34;openai-codex:default&#34;], }, }, // 身份 identity: { name: &#34;Samantha&#34;, theme: &#34;helpful sloth&#34;, emoji: &#34;🦥&#34;, }, // 日志 logging: { level: &#34;info&#34;, file: &#34;/tmp/openclaw/openclaw.log&#34;, consoleLevel: &#34;info&#34;, consoleStyle: &#34;pretty&#34;, redactSensitive: &#34;tools&#34;, }, // 消息格式 messages: { messagePrefix: &#34;[openclaw]&#34;, responsePrefix: &#34;&gt;&#34;, ackReaction: &#34;👀&#34;, ackReactionScope: &#34;group-mentions&#34;, }, // 路由 &#43; 队列 routing: { groupChat: { mentionPatterns: [&#34;@openclaw&#34;, &#34;openclaw&#34;], historyLimit: 50, }, queue: { mode: &#34;collect&#34;, debounceMs: 1000, cap: 20, drop: &#34;summarize&#34;, byChannel: { whatsapp: &#34;collect&#34;, telegram: &#34;collect&#34;, discord: &#34;collect&#34;, slack: &#34;collect&#34;, signal: &#34;collect&#34;, imessage: &#34;collect&#34;, webchat: &#34;collect&#34;, }, }, }, // 工具 tools: { media: { audio: { enabled: true, maxBytes: 20971520, models: [ { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }, // 可选的 CLI 回退（Whisper 二进制）： // { type: &#34;cli&#34;, command: &#34;whisper&#34;, args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;] } ], timeoutSeconds: 120, }, video: { enabled: true, maxBytes: 52428800, models: [{ provider: &#34;google&#34;, model: &#34;gemini-3-flash-preview&#34; }], }, }, }, // 会话行为 session: { scope: &#34;per-sender&#34;, reset: { mode: &#34;daily&#34;, atHour: 4, idleMinutes: 60, }, resetByChannel: { discord: { mode: &#34;idle&#34;, idleMinutes: 10080 }, }, resetTriggers: [&#34;/new&#34;, &#34;/reset&#34;], store: &#34;~/.openclaw/agents/default/sessions/sessions.json&#34;, typingIntervalSeconds: 5, sendPolicy: { default: &#34;allow&#34;, rules: [{ action: &#34;deny&#34;, match: { channel: &#34;discord&#34;, chatType: &#34;group&#34; } }], }, }, // 渠道 channels: { whatsapp: { dmPolicy: &#34;pairing&#34;, allowFrom: [&#34;&#43;15555550123&#34;], groupPolicy: &#34;allowlist&#34;, groupAllowFrom: [&#34;&#43;15555550123&#34;], groups: { &#34;*&#34;: { requireMention: true } }, }, telegram: { enabled: true, botToken: &#34;YOUR_TELEGRAM_BOT_TOKEN&#34;, allowFrom: [&#34;123456789&#34;], groupPolicy: &#34;allowlist&#34;, groupAllowFrom: [&#34;123456789&#34;], groups: { &#34;*&#34;: { requireMention: true } }, }, discord: { enabled: true, token: &#34;YOUR_DISCORD_BOT_TOKEN&#34;, dm: { enabled: true, allowFrom: [&#34;steipete&#34;] }, guilds: { &#34;123456789012345678&#34;: { slug: &#34;friends-of-openclaw&#34;, requireMention: false, channels: { general: { allow: true }, help: { allow: true, requireMention: true }, }, }, }, }, slack: { enabled: true, botToken: &#34;xoxb-REPLACE_ME&#34;, appToken: &#34;xapp-REPLACE_ME&#34;, channels: { &#34;#general&#34;: { allow: true, requireMention: true }, }, dm: { enabled: true, allowFrom: [&#34;U123&#34;] }, slashCommand: { enabled: true, name: &#34;openclaw&#34;, sessionPrefix: &#34;slack:slash&#34;, ephemeral: true, }, }, }, // 智能体运行时 agents: { defaults: { workspace: &#34;~/.openclaw/workspace&#34;, userTimezone: &#34;America/Chicago&#34;, model: { primary: &#34;anthropic/claude-sonnet-4-5&#34;, fallbacks: [&#34;anthropic/claude-opus-4-5&#34;, &#34;openai/gpt-5.2&#34;], }, imageModel: { primary: &#34;openrouter/anthropic/claude-sonnet-4-5&#34;, }, models: { &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;opus&#34; }, &#34;anthropic/claude-sonnet-4-5&#34;: { alias: &#34;sonnet&#34; }, &#34;openai/gpt-5.2&#34;: { alias: &#34;gpt&#34; }, }, thinkingDefault: &#34;low&#34;, verboseDefault: &#34;off&#34;, elevatedDefault: &#34;on&#34;, blockStreamingDefault: &#34;off&#34;, blockStreamingBreak: &#34;text_end&#34;, blockStreamingChunk: { minChars: 800, maxChars: 1200, breakPreference: &#34;paragraph&#34;, }, blockStreamingCoalesce: { idleMs: 1000, }, humanDelay: { mode: &#34;natural&#34;, }, timeoutSeconds: 600, mediaMaxMb: 5, typingIntervalSeconds: 5, maxConcurrent: 3, heartbeat: { every: &#34;30m&#34;, model: &#34;anthropic/claude-sonnet-4-5&#34;, target: &#34;last&#34;, to: &#34;&#43;15555550123&#34;, prompt: &#34;HEARTBEAT&#34;, ackMaxChars: 300, }, memorySearch: { provider: &#34;gemini&#34;, model: &#34;gemini-embedding-001&#34;, remote: { apiKey: &#34;${GEMINI_API_KEY}&#34;, }, extraPaths: [&#34;../team-docs&#34;, &#34;/srv/shared-notes&#34;], }, sandbox: { mode: &#34;non-main&#34;, perSession: true, workspaceRoot: &#34;~/.openclaw/sandboxes&#34;, docker: { image: &#34;openclaw-sandbox:bookworm-slim&#34;, workdir: &#34;/workspace&#34;, readOnlyRoot: true, tmpfs: [&#34;/tmp&#34;, &#34;/var/tmp&#34;, &#34;/run&#34;], network: &#34;none&#34;, user: &#34;1000:1000&#34;, }, browser: { enabled: false, }, }, }, }, tools: { allow: [&#34;exec&#34;, &#34;process&#34;, &#34;read&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;], deny: [&#34;browser&#34;, &#34;canvas&#34;], exec: { backgroundMs: 10000, timeoutSec: 1800, cleanupMs: 1800000, }, elevated: { enabled: true, allowFrom: { whatsapp: [&#34;&#43;15555550123&#34;], telegram: [&#34;123456789&#34;], discord: [&#34;steipete&#34;], slack: [&#34;U123&#34;], signal: [&#34;&#43;15555550123&#34;], imessage: [&#34;user@example.com&#34;], webchat: [&#34;session:demo&#34;], }, }, }, // 自定义模型提供商 models: { mode: &#34;merge&#34;, providers: { &#34;custom-proxy&#34;: { baseUrl: &#34;http://localhost:4000/v1&#34;, apiKey: &#34;LITELLM_KEY&#34;, api: &#34;openai-responses&#34;, authHeader: true, headers: { &#34;X-Proxy-Region&#34;: &#34;us-west&#34; }, models: [ { id: &#34;llama-3.1-8b&#34;, name: &#34;Llama 3.1 8B&#34;, api: &#34;openai-responses&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 128000, maxTokens: 32000, }, ], }, }, }, // Cron 作业 cron: { enabled: true, store: &#34;~/.openclaw/cron/cron.json&#34;, maxConcurrentRuns: 2, }, // Webhooks hooks: { enabled: true, path: &#34;/hooks&#34;, token: &#34;shared-secret&#34;, presets: [&#34;gmail&#34;], transformsDir: &#34;~/.openclaw/hooks&#34;, mappings: [ { id: &#34;gmail-hook&#34;, match: { path: &#34;gmail&#34; }, action: &#34;agent&#34;, wakeMode: &#34;now&#34;, name: &#34;Gmail&#34;, sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;, messageTemplate: &#34;From: {{messages[0].from}}\nSubject: {{messages[0].subject}}&#34;, textTemplate: &#34;{{messages[0].snippet}}&#34;, deliver: true, channel: &#34;last&#34;, to: &#34;&#43;15555550123&#34;, thinking: &#34;low&#34;, timeoutSeconds: 300, transform: { module: &#34;./transforms/gmail.js&#34;, export: &#34;transformGmail&#34; }, }, ], gmail: { account: &#34;openclaw@gmail.com&#34;, label: &#34;INBOX&#34;, topic: &#34;projects/&lt;project-id&gt;/topics/gog-gmail-watch&#34;, subscription: &#34;gog-gmail-watch-push&#34;, pushToken: &#34;shared-push-token&#34;, hookUrl: &#34;http://127.0.0.1:18789/hooks/gmail&#34;, includeBody: true, maxBytes: 20000, renewEveryMinutes: 720, serve: { bind: &#34;127.0.0.1&#34;, port: 8788, path: &#34;/&#34; }, tailscale: { mode: &#34;funnel&#34;, path: &#34;/gmail-pubsub&#34; }, }, }, // Gateway 网关 &#43; 网络 gateway: { mode: &#34;local&#34;, port: 18789, bind: &#34;loopback&#34;, controlUi: { enabled: true, basePath: &#34;/openclaw&#34; }, auth: { mode: &#34;token&#34;, token: &#34;gateway-token&#34;, allowTailscale: true, }, tailscale: { mode: &#34;serve&#34;, resetOnExit: false }, remote: { url: &#34;ws://gateway.tailnet:18789&#34;, token: &#34;remote-token&#34; }, reload: { mode: &#34;hybrid&#34;, debounceMs: 300 }, }, skills: { allowBundled: [&#34;gemini&#34;, &#34;peekaboo&#34;], load: { extraDirs: [&#34;~/Projects/agent-scripts/skills&#34;], }, install: { preferBrew: true, nodeManager: &#34;npm&#34;, }, entries: { &#34;nano-banana-pro&#34;: { enabled: true, apiKey: &#34;GEMINI_KEY_HERE&#34;, env: { GEMINI_API_KEY: &#34;GEMINI_KEY_HERE&#34; }, }, peekaboo: { enabled: true }, }, }, } 常见模式 多平台设置 { agent: { workspace: &#34;~/.openclaw/workspace&#34; }, channels: { whatsapp: { allowFrom: [&#34;&#43;15555550123&#34;] }, telegram: { enabled: true, botToken: &#34;YOUR_TOKEN&#34;, allowFrom: [&#34;123456789&#34;], }, discord: { enabled: true, token: &#34;YOUR_TOKEN&#34;, dm: { allowFrom: [&#34;yourname&#34;] }, }, }, } OAuth 带 API 密钥回退 { auth: { profiles: { &#34;anthropic:subscription&#34;: { provider: &#34;anthropic&#34;, mode: &#34;oauth&#34;, email: &#34;me@example.com&#34;, }, &#34;anthropic:api&#34;: { provider: &#34;anthropic&#34;, mode: &#34;api_key&#34;, }, }, order: { anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;], }, }, agent: { workspace: &#34;~/.openclaw/workspace&#34;, model: { primary: &#34;anthropic/claude-sonnet-4-5&#34;, fallbacks: [&#34;anthropic/claude-opus-4-5&#34;], }, }, } Anthropic 订阅 &#43; API 密钥，MiniMax 回退 { auth: { profiles: { &#34;anthropic:subscription&#34;: { provider: &#34;anthropic&#34;, mode: &#34;oauth&#34;, email: &#34;user@example.com&#34;, }, &#34;anthropic:api&#34;: { provider: &#34;anthropic&#34;, mode: &#34;api_key&#34;, }, }, order: { anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;], }, }, models: { providers: { minimax: { baseUrl: &#34;https://api.minimax.io/anthropic&#34;, api: &#34;anthropic-messages&#34;, apiKey: &#34;${MINIMAX_API_KEY}&#34;, }, }, }, agent: { workspace: &#34;~/.openclaw/workspace&#34;, model: { primary: &#34;anthropic/claude-opus-4-5&#34;, fallbacks: [&#34;minimax/MiniMax-M2.1&#34;], }, }, } 工作机器人（受限访问） { identity: { name: &#34;WorkBot&#34;, theme: &#34;professional assistant&#34;, }, agent: { workspace: &#34;~/work-openclaw&#34;, elevated: { enabled: false }, }, channels: { slack: { enabled: true, botToken: &#34;xoxb-...&#34;, channels: { &#34;#engineering&#34;: { allow: true, requireMention: true }, &#34;#general&#34;: { allow: true, requireMention: true }, }, }, }, } 仅本地模型 { agent: { workspace: &#34;~/.openclaw/workspace&#34;, model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; }, }, models: { mode: &#34;merge&#34;, providers: { lmstudio: { baseUrl: &#34;http://127.0.0.1:1234/v1&#34;, apiKey: &#34;lmstudio&#34;, api: &#34;openai-responses&#34;, models: [ { id: &#34;minimax-m2.1-gs32&#34;, name: &#34;MiniMax M2.1 GS32&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 196608, maxTokens: 8192, }, ], }, }, }, } 提示 如果你设置 dmPolicy: &#34;open&#34;，匹配的 allowFrom 列表必须包含 &#34;*&#34;。 提供商 ID 各不相同（电话号码、用户 ID、频道 ID）。使用提供商文档确认格式。 稍后添加的可选部分：web、browser、ui、discovery、canvasHost、talk、signal、imessage。 参阅提供商和故障排除了解更深入的设置说明。 ">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="配置示例">
+<meta name="twitter:description" content="以下示例与当前配置模式一致。有关详尽的参考和每个字段的说明，请参阅配置。
+快速开始
+绝对最小配置
+{
+  agent: { workspace: &#34;~/.openclaw/workspace&#34; },
+  channels: { whatsapp: { allowFrom: [&#34;&#43;15555550123&#34;] } },
+}
+保存到 ~/.openclaw/openclaw.json，你就可以从该号码私信机器人了。
+推荐的入门配置
+{
+  identity: {
+    name: &#34;Clawd&#34;,
+    theme: &#34;helpful assistant&#34;,
+    emoji: &#34;🦞&#34;,
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: { primary: &#34;anthropic/claude-sonnet-4-5&#34; },
+  },
+  channels: {
+    whatsapp: {
+      allowFrom: [&#34;&#43;15555550123&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+  },
+}
+扩展示例（主要选项）
+
+JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以使用。
+
+{
+  // 环境 &#43; shell
+  env: {
+    OPENROUTER_API_KEY: &#34;sk-or-...&#34;,
+    vars: {
+      GROQ_API_KEY: &#34;gsk-...&#34;,
+    },
+    shellEnv: {
+      enabled: true,
+      timeoutMs: 15000,
+    },
+  },
+
+  // 认证配置文件元数据（密钥存储在 auth-profiles.json 中）
+  auth: {
+    profiles: {
+      &#34;anthropic:me@example.com&#34;: { provider: &#34;anthropic&#34;, mode: &#34;oauth&#34;, email: &#34;me@example.com&#34; },
+      &#34;anthropic:work&#34;: { provider: &#34;anthropic&#34;, mode: &#34;api_key&#34; },
+      &#34;openai:default&#34;: { provider: &#34;openai&#34;, mode: &#34;api_key&#34; },
+      &#34;openai-codex:default&#34;: { provider: &#34;openai-codex&#34;, mode: &#34;oauth&#34; },
+    },
+    order: {
+      anthropic: [&#34;anthropic:me@example.com&#34;, &#34;anthropic:work&#34;],
+      openai: [&#34;openai:default&#34;],
+      &#34;openai-codex&#34;: [&#34;openai-codex:default&#34;],
+    },
+  },
+
+  // 身份
+  identity: {
+    name: &#34;Samantha&#34;,
+    theme: &#34;helpful sloth&#34;,
+    emoji: &#34;🦥&#34;,
+  },
+
+  // 日志
+  logging: {
+    level: &#34;info&#34;,
+    file: &#34;/tmp/openclaw/openclaw.log&#34;,
+    consoleLevel: &#34;info&#34;,
+    consoleStyle: &#34;pretty&#34;,
+    redactSensitive: &#34;tools&#34;,
+  },
+
+  // 消息格式
+  messages: {
+    messagePrefix: &#34;[openclaw]&#34;,
+    responsePrefix: &#34;&gt;&#34;,
+    ackReaction: &#34;👀&#34;,
+    ackReactionScope: &#34;group-mentions&#34;,
+  },
+
+  // 路由 &#43; 队列
+  routing: {
+    groupChat: {
+      mentionPatterns: [&#34;@openclaw&#34;, &#34;openclaw&#34;],
+      historyLimit: 50,
+    },
+    queue: {
+      mode: &#34;collect&#34;,
+      debounceMs: 1000,
+      cap: 20,
+      drop: &#34;summarize&#34;,
+      byChannel: {
+        whatsapp: &#34;collect&#34;,
+        telegram: &#34;collect&#34;,
+        discord: &#34;collect&#34;,
+        slack: &#34;collect&#34;,
+        signal: &#34;collect&#34;,
+        imessage: &#34;collect&#34;,
+        webchat: &#34;collect&#34;,
+      },
+    },
+  },
+
+  // 工具
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        maxBytes: 20971520,
+        models: [
+          { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; },
+          // 可选的 CLI 回退（Whisper 二进制）：
+          // { type: &#34;cli&#34;, command: &#34;whisper&#34;, args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;] }
+        ],
+        timeoutSeconds: 120,
+      },
+      video: {
+        enabled: true,
+        maxBytes: 52428800,
+        models: [{ provider: &#34;google&#34;, model: &#34;gemini-3-flash-preview&#34; }],
+      },
+    },
+  },
+
+  // 会话行为
+  session: {
+    scope: &#34;per-sender&#34;,
+    reset: {
+      mode: &#34;daily&#34;,
+      atHour: 4,
+      idleMinutes: 60,
+    },
+    resetByChannel: {
+      discord: { mode: &#34;idle&#34;, idleMinutes: 10080 },
+    },
+    resetTriggers: [&#34;/new&#34;, &#34;/reset&#34;],
+    store: &#34;~/.openclaw/agents/default/sessions/sessions.json&#34;,
+    typingIntervalSeconds: 5,
+    sendPolicy: {
+      default: &#34;allow&#34;,
+      rules: [{ action: &#34;deny&#34;, match: { channel: &#34;discord&#34;, chatType: &#34;group&#34; } }],
+    },
+  },
+
+  // 渠道
+  channels: {
+    whatsapp: {
+      dmPolicy: &#34;pairing&#34;,
+      allowFrom: [&#34;&#43;15555550123&#34;],
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;&#43;15555550123&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+
+    telegram: {
+      enabled: true,
+      botToken: &#34;YOUR_TELEGRAM_BOT_TOKEN&#34;,
+      allowFrom: [&#34;123456789&#34;],
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;123456789&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_DISCORD_BOT_TOKEN&#34;,
+      dm: { enabled: true, allowFrom: [&#34;steipete&#34;] },
+      guilds: {
+        &#34;123456789012345678&#34;: {
+          slug: &#34;friends-of-openclaw&#34;,
+          requireMention: false,
+          channels: {
+            general: { allow: true },
+            help: { allow: true, requireMention: true },
+          },
+        },
+      },
+    },
+
+    slack: {
+      enabled: true,
+      botToken: &#34;xoxb-REPLACE_ME&#34;,
+      appToken: &#34;xapp-REPLACE_ME&#34;,
+      channels: {
+        &#34;#general&#34;: { allow: true, requireMention: true },
+      },
+      dm: { enabled: true, allowFrom: [&#34;U123&#34;] },
+      slashCommand: {
+        enabled: true,
+        name: &#34;openclaw&#34;,
+        sessionPrefix: &#34;slack:slash&#34;,
+        ephemeral: true,
+      },
+    },
+  },
+
+  // 智能体运行时
+  agents: {
+    defaults: {
+      workspace: &#34;~/.openclaw/workspace&#34;,
+      userTimezone: &#34;America/Chicago&#34;,
+      model: {
+        primary: &#34;anthropic/claude-sonnet-4-5&#34;,
+        fallbacks: [&#34;anthropic/claude-opus-4-5&#34;, &#34;openai/gpt-5.2&#34;],
+      },
+      imageModel: {
+        primary: &#34;openrouter/anthropic/claude-sonnet-4-5&#34;,
+      },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;opus&#34; },
+        &#34;anthropic/claude-sonnet-4-5&#34;: { alias: &#34;sonnet&#34; },
+        &#34;openai/gpt-5.2&#34;: { alias: &#34;gpt&#34; },
+      },
+      thinkingDefault: &#34;low&#34;,
+      verboseDefault: &#34;off&#34;,
+      elevatedDefault: &#34;on&#34;,
+      blockStreamingDefault: &#34;off&#34;,
+      blockStreamingBreak: &#34;text_end&#34;,
+      blockStreamingChunk: {
+        minChars: 800,
+        maxChars: 1200,
+        breakPreference: &#34;paragraph&#34;,
+      },
+      blockStreamingCoalesce: {
+        idleMs: 1000,
+      },
+      humanDelay: {
+        mode: &#34;natural&#34;,
+      },
+      timeoutSeconds: 600,
+      mediaMaxMb: 5,
+      typingIntervalSeconds: 5,
+      maxConcurrent: 3,
+      heartbeat: {
+        every: &#34;30m&#34;,
+        model: &#34;anthropic/claude-sonnet-4-5&#34;,
+        target: &#34;last&#34;,
+        to: &#34;&#43;15555550123&#34;,
+        prompt: &#34;HEARTBEAT&#34;,
+        ackMaxChars: 300,
+      },
+      memorySearch: {
+        provider: &#34;gemini&#34;,
+        model: &#34;gemini-embedding-001&#34;,
+        remote: {
+          apiKey: &#34;${GEMINI_API_KEY}&#34;,
+        },
+        extraPaths: [&#34;../team-docs&#34;, &#34;/srv/shared-notes&#34;],
+      },
+      sandbox: {
+        mode: &#34;non-main&#34;,
+        perSession: true,
+        workspaceRoot: &#34;~/.openclaw/sandboxes&#34;,
+        docker: {
+          image: &#34;openclaw-sandbox:bookworm-slim&#34;,
+          workdir: &#34;/workspace&#34;,
+          readOnlyRoot: true,
+          tmpfs: [&#34;/tmp&#34;, &#34;/var/tmp&#34;, &#34;/run&#34;],
+          network: &#34;none&#34;,
+          user: &#34;1000:1000&#34;,
+        },
+        browser: {
+          enabled: false,
+        },
+      },
+    },
+  },
+
+  tools: {
+    allow: [&#34;exec&#34;, &#34;process&#34;, &#34;read&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;],
+    deny: [&#34;browser&#34;, &#34;canvas&#34;],
+    exec: {
+      backgroundMs: 10000,
+      timeoutSec: 1800,
+      cleanupMs: 1800000,
+    },
+    elevated: {
+      enabled: true,
+      allowFrom: {
+        whatsapp: [&#34;&#43;15555550123&#34;],
+        telegram: [&#34;123456789&#34;],
+        discord: [&#34;steipete&#34;],
+        slack: [&#34;U123&#34;],
+        signal: [&#34;&#43;15555550123&#34;],
+        imessage: [&#34;user@example.com&#34;],
+        webchat: [&#34;session:demo&#34;],
+      },
+    },
+  },
+
+  // 自定义模型提供商
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      &#34;custom-proxy&#34;: {
+        baseUrl: &#34;http://localhost:4000/v1&#34;,
+        apiKey: &#34;LITELLM_KEY&#34;,
+        api: &#34;openai-responses&#34;,
+        authHeader: true,
+        headers: { &#34;X-Proxy-Region&#34;: &#34;us-west&#34; },
+        models: [
+          {
+            id: &#34;llama-3.1-8b&#34;,
+            name: &#34;Llama 3.1 8B&#34;,
+            api: &#34;openai-responses&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 128000,
+            maxTokens: 32000,
+          },
+        ],
+      },
+    },
+  },
+
+  // Cron 作业
+  cron: {
+    enabled: true,
+    store: &#34;~/.openclaw/cron/cron.json&#34;,
+    maxConcurrentRuns: 2,
+  },
+
+  // Webhooks
+  hooks: {
+    enabled: true,
+    path: &#34;/hooks&#34;,
+    token: &#34;shared-secret&#34;,
+    presets: [&#34;gmail&#34;],
+    transformsDir: &#34;~/.openclaw/hooks&#34;,
+    mappings: [
+      {
+        id: &#34;gmail-hook&#34;,
+        match: { path: &#34;gmail&#34; },
+        action: &#34;agent&#34;,
+        wakeMode: &#34;now&#34;,
+        name: &#34;Gmail&#34;,
+        sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;,
+        messageTemplate: &#34;From: {{messages[0].from}}\nSubject: {{messages[0].subject}}&#34;,
+        textTemplate: &#34;{{messages[0].snippet}}&#34;,
+        deliver: true,
+        channel: &#34;last&#34;,
+        to: &#34;&#43;15555550123&#34;,
+        thinking: &#34;low&#34;,
+        timeoutSeconds: 300,
+        transform: { module: &#34;./transforms/gmail.js&#34;, export: &#34;transformGmail&#34; },
+      },
+    ],
+    gmail: {
+      account: &#34;openclaw@gmail.com&#34;,
+      label: &#34;INBOX&#34;,
+      topic: &#34;projects/&lt;project-id&gt;/topics/gog-gmail-watch&#34;,
+      subscription: &#34;gog-gmail-watch-push&#34;,
+      pushToken: &#34;shared-push-token&#34;,
+      hookUrl: &#34;http://127.0.0.1:18789/hooks/gmail&#34;,
+      includeBody: true,
+      maxBytes: 20000,
+      renewEveryMinutes: 720,
+      serve: { bind: &#34;127.0.0.1&#34;, port: 8788, path: &#34;/&#34; },
+      tailscale: { mode: &#34;funnel&#34;, path: &#34;/gmail-pubsub&#34; },
+    },
+  },
+
+  // Gateway 网关 &#43; 网络
+  gateway: {
+    mode: &#34;local&#34;,
+    port: 18789,
+    bind: &#34;loopback&#34;,
+    controlUi: { enabled: true, basePath: &#34;/openclaw&#34; },
+    auth: {
+      mode: &#34;token&#34;,
+      token: &#34;gateway-token&#34;,
+      allowTailscale: true,
+    },
+    tailscale: { mode: &#34;serve&#34;, resetOnExit: false },
+    remote: { url: &#34;ws://gateway.tailnet:18789&#34;, token: &#34;remote-token&#34; },
+    reload: { mode: &#34;hybrid&#34;, debounceMs: 300 },
+  },
+
+  skills: {
+    allowBundled: [&#34;gemini&#34;, &#34;peekaboo&#34;],
+    load: {
+      extraDirs: [&#34;~/Projects/agent-scripts/skills&#34;],
+    },
+    install: {
+      preferBrew: true,
+      nodeManager: &#34;npm&#34;,
+    },
+    entries: {
+      &#34;nano-banana-pro&#34;: {
+        enabled: true,
+        apiKey: &#34;GEMINI_KEY_HERE&#34;,
+        env: { GEMINI_API_KEY: &#34;GEMINI_KEY_HERE&#34; },
+      },
+      peekaboo: { enabled: true },
+    },
+  },
+}
+常见模式
+多平台设置
+{
+  agent: { workspace: &#34;~/.openclaw/workspace&#34; },
+  channels: {
+    whatsapp: { allowFrom: [&#34;&#43;15555550123&#34;] },
+    telegram: {
+      enabled: true,
+      botToken: &#34;YOUR_TOKEN&#34;,
+      allowFrom: [&#34;123456789&#34;],
+    },
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_TOKEN&#34;,
+      dm: { allowFrom: [&#34;yourname&#34;] },
+    },
+  },
+}
+OAuth 带 API 密钥回退
+{
+  auth: {
+    profiles: {
+      &#34;anthropic:subscription&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;oauth&#34;,
+        email: &#34;me@example.com&#34;,
+      },
+      &#34;anthropic:api&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;api_key&#34;,
+      },
+    },
+    order: {
+      anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;],
+    },
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: {
+      primary: &#34;anthropic/claude-sonnet-4-5&#34;,
+      fallbacks: [&#34;anthropic/claude-opus-4-5&#34;],
+    },
+  },
+}
+Anthropic 订阅 &#43; API 密钥，MiniMax 回退
+{
+  auth: {
+    profiles: {
+      &#34;anthropic:subscription&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;oauth&#34;,
+        email: &#34;user@example.com&#34;,
+      },
+      &#34;anthropic:api&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;api_key&#34;,
+      },
+    },
+    order: {
+      anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;],
+    },
+  },
+  models: {
+    providers: {
+      minimax: {
+        baseUrl: &#34;https://api.minimax.io/anthropic&#34;,
+        api: &#34;anthropic-messages&#34;,
+        apiKey: &#34;${MINIMAX_API_KEY}&#34;,
+      },
+    },
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: {
+      primary: &#34;anthropic/claude-opus-4-5&#34;,
+      fallbacks: [&#34;minimax/MiniMax-M2.1&#34;],
+    },
+  },
+}
+工作机器人（受限访问）
+{
+  identity: {
+    name: &#34;WorkBot&#34;,
+    theme: &#34;professional assistant&#34;,
+  },
+  agent: {
+    workspace: &#34;~/work-openclaw&#34;,
+    elevated: { enabled: false },
+  },
+  channels: {
+    slack: {
+      enabled: true,
+      botToken: &#34;xoxb-...&#34;,
+      channels: {
+        &#34;#engineering&#34;: { allow: true, requireMention: true },
+        &#34;#general&#34;: { allow: true, requireMention: true },
+      },
+    },
+  },
+}
+仅本地模型
+{
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      lmstudio: {
+        baseUrl: &#34;http://127.0.0.1:1234/v1&#34;,
+        apiKey: &#34;lmstudio&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;minimax-m2.1-gs32&#34;,
+            name: &#34;MiniMax M2.1 GS32&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 196608,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+提示
+
+如果你设置 dmPolicy: &quot;open&quot;，匹配的 allowFrom 列表必须包含 &quot;*&quot;。
+提供商 ID 各不相同（电话号码、用户 ID、频道 ID）。使用提供商文档确认格式。
+稍后添加的可选部分：web、browser、ui、discovery、canvasHost、talk、signal、imessage。
+参阅提供商和故障排除了解更深入的设置说明。
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "配置示例",
+      "item": "/openclaw/gateway/configuration-examples/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "配置示例",
+  "name": "配置示例",
+  "description": "以下示例与当前配置模式一致。有关详尽的参考和每个字段的说明，请参阅配置。\n快速开始 绝对最小配置 { agent: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34; }, channels: { whatsapp: { allowFrom: [\u0026#34;+15555550123\u0026#34;] } }, } 保存到 ~/.openclaw/openclaw.json，你就可以从该号码私信机器人了。\n推荐的入门配置 { identity: { name: \u0026#34;Clawd\u0026#34;, theme: \u0026#34;helpful assistant\u0026#34;, emoji: \u0026#34;🦞\u0026#34;, }, agent: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34;, model: { primary: \u0026#34;anthropic/claude-sonnet-4-5\u0026#34; }, }, channels: { whatsapp: { allowFrom: [\u0026#34;+15555550123\u0026#34;], groups: { \u0026#34;*\u0026#34;: { requireMention: true } }, }, }, } 扩展示例（主要选项） JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以使用。\n{ // 环境 + shell env: { OPENROUTER_API_KEY: \u0026#34;sk-or-...\u0026#34;, vars: { GROQ_API_KEY: \u0026#34;gsk-...\u0026#34;, }, shellEnv: { enabled: true, timeoutMs: 15000, }, }, // 认证配置文件元数据（密钥存储在 auth-profiles.json 中） auth: { profiles: { \u0026#34;anthropic:me@example.com\u0026#34;: { provider: \u0026#34;anthropic\u0026#34;, mode: \u0026#34;oauth\u0026#34;, email: \u0026#34;me@example.com\u0026#34; }, \u0026#34;anthropic:work\u0026#34;: { provider: \u0026#34;anthropic\u0026#34;, mode: \u0026#34;api_key\u0026#34; }, \u0026#34;openai:default\u0026#34;: { provider: \u0026#34;openai\u0026#34;, mode: \u0026#34;api_key\u0026#34; }, \u0026#34;openai-codex:default\u0026#34;: { provider: \u0026#34;openai-codex\u0026#34;, mode: \u0026#34;oauth\u0026#34; }, }, order: { anthropic: [\u0026#34;anthropic:me@example.com\u0026#34;, \u0026#34;anthropic:work\u0026#34;], openai: [\u0026#34;openai:default\u0026#34;], \u0026#34;openai-codex\u0026#34;: [\u0026#34;openai-codex:default\u0026#34;], }, }, // 身份 identity: { name: \u0026#34;Samantha\u0026#34;, theme: \u0026#34;helpful sloth\u0026#34;, emoji: \u0026#34;🦥\u0026#34;, }, // 日志 logging: { level: \u0026#34;info\u0026#34;, file: \u0026#34;/tmp/openclaw/openclaw.log\u0026#34;, consoleLevel: \u0026#34;info\u0026#34;, consoleStyle: \u0026#34;pretty\u0026#34;, redactSensitive: \u0026#34;tools\u0026#34;, }, // 消息格式 messages: { messagePrefix: \u0026#34;[openclaw]\u0026#34;, responsePrefix: \u0026#34;\u0026gt;\u0026#34;, ackReaction: \u0026#34;👀\u0026#34;, ackReactionScope: \u0026#34;group-mentions\u0026#34;, }, // 路由 + 队列 routing: { groupChat: { mentionPatterns: [\u0026#34;@openclaw\u0026#34;, \u0026#34;openclaw\u0026#34;], historyLimit: 50, }, queue: { mode: \u0026#34;collect\u0026#34;, debounceMs: 1000, cap: 20, drop: \u0026#34;summarize\u0026#34;, byChannel: { whatsapp: \u0026#34;collect\u0026#34;, telegram: \u0026#34;collect\u0026#34;, discord: \u0026#34;collect\u0026#34;, slack: \u0026#34;collect\u0026#34;, signal: \u0026#34;collect\u0026#34;, imessage: \u0026#34;collect\u0026#34;, webchat: \u0026#34;collect\u0026#34;, }, }, }, // 工具 tools: { media: { audio: { enabled: true, maxBytes: 20971520, models: [ { provider: \u0026#34;openai\u0026#34;, model: \u0026#34;gpt-4o-mini-transcribe\u0026#34; }, // 可选的 CLI 回退（Whisper 二进制）： // { type: \u0026#34;cli\u0026#34;, command: \u0026#34;whisper\u0026#34;, args: [\u0026#34;--model\u0026#34;, \u0026#34;base\u0026#34;, \u0026#34;{{MediaPath}}\u0026#34;] } ], timeoutSeconds: 120, }, video: { enabled: true, maxBytes: 52428800, models: [{ provider: \u0026#34;google\u0026#34;, model: \u0026#34;gemini-3-flash-preview\u0026#34; }], }, }, }, // 会话行为 session: { scope: \u0026#34;per-sender\u0026#34;, reset: { mode: \u0026#34;daily\u0026#34;, atHour: 4, idleMinutes: 60, }, resetByChannel: { discord: { mode: \u0026#34;idle\u0026#34;, idleMinutes: 10080 }, }, resetTriggers: [\u0026#34;/new\u0026#34;, \u0026#34;/reset\u0026#34;], store: \u0026#34;~/.openclaw/agents/default/sessions/sessions.json\u0026#34;, typingIntervalSeconds: 5, sendPolicy: { default: \u0026#34;allow\u0026#34;, rules: [{ action: \u0026#34;deny\u0026#34;, match: { channel: \u0026#34;discord\u0026#34;, chatType: \u0026#34;group\u0026#34; } }], }, }, // 渠道 channels: { whatsapp: { dmPolicy: \u0026#34;pairing\u0026#34;, allowFrom: [\u0026#34;+15555550123\u0026#34;], groupPolicy: \u0026#34;allowlist\u0026#34;, groupAllowFrom: [\u0026#34;+15555550123\u0026#34;], groups: { \u0026#34;*\u0026#34;: { requireMention: true } }, }, telegram: { enabled: true, botToken: \u0026#34;YOUR_TELEGRAM_BOT_TOKEN\u0026#34;, allowFrom: [\u0026#34;123456789\u0026#34;], groupPolicy: \u0026#34;allowlist\u0026#34;, groupAllowFrom: [\u0026#34;123456789\u0026#34;], groups: { \u0026#34;*\u0026#34;: { requireMention: true } }, }, discord: { enabled: true, token: \u0026#34;YOUR_DISCORD_BOT_TOKEN\u0026#34;, dm: { enabled: true, allowFrom: [\u0026#34;steipete\u0026#34;] }, guilds: { \u0026#34;123456789012345678\u0026#34;: { slug: \u0026#34;friends-of-openclaw\u0026#34;, requireMention: false, channels: { general: { allow: true }, help: { allow: true, requireMention: true }, }, }, }, }, slack: { enabled: true, botToken: \u0026#34;xoxb-REPLACE_ME\u0026#34;, appToken: \u0026#34;xapp-REPLACE_ME\u0026#34;, channels: { \u0026#34;#general\u0026#34;: { allow: true, requireMention: true }, }, dm: { enabled: true, allowFrom: [\u0026#34;U123\u0026#34;] }, slashCommand: { enabled: true, name: \u0026#34;openclaw\u0026#34;, sessionPrefix: \u0026#34;slack:slash\u0026#34;, ephemeral: true, }, }, }, // 智能体运行时 agents: { defaults: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34;, userTimezone: \u0026#34;America/Chicago\u0026#34;, model: { primary: \u0026#34;anthropic/claude-sonnet-4-5\u0026#34;, fallbacks: [\u0026#34;anthropic/claude-opus-4-5\u0026#34;, \u0026#34;openai/gpt-5.2\u0026#34;], }, imageModel: { primary: \u0026#34;openrouter/anthropic/claude-sonnet-4-5\u0026#34;, }, models: { \u0026#34;anthropic/claude-opus-4-5\u0026#34;: { alias: \u0026#34;opus\u0026#34; }, \u0026#34;anthropic/claude-sonnet-4-5\u0026#34;: { alias: \u0026#34;sonnet\u0026#34; }, \u0026#34;openai/gpt-5.2\u0026#34;: { alias: \u0026#34;gpt\u0026#34; }, }, thinkingDefault: \u0026#34;low\u0026#34;, verboseDefault: \u0026#34;off\u0026#34;, elevatedDefault: \u0026#34;on\u0026#34;, blockStreamingDefault: \u0026#34;off\u0026#34;, blockStreamingBreak: \u0026#34;text_end\u0026#34;, blockStreamingChunk: { minChars: 800, maxChars: 1200, breakPreference: \u0026#34;paragraph\u0026#34;, }, blockStreamingCoalesce: { idleMs: 1000, }, humanDelay: { mode: \u0026#34;natural\u0026#34;, }, timeoutSeconds: 600, mediaMaxMb: 5, typingIntervalSeconds: 5, maxConcurrent: 3, heartbeat: { every: \u0026#34;30m\u0026#34;, model: \u0026#34;anthropic/claude-sonnet-4-5\u0026#34;, target: \u0026#34;last\u0026#34;, to: \u0026#34;+15555550123\u0026#34;, prompt: \u0026#34;HEARTBEAT\u0026#34;, ackMaxChars: 300, }, memorySearch: { provider: \u0026#34;gemini\u0026#34;, model: \u0026#34;gemini-embedding-001\u0026#34;, remote: { apiKey: \u0026#34;${GEMINI_API_KEY}\u0026#34;, }, extraPaths: [\u0026#34;../team-docs\u0026#34;, \u0026#34;/srv/shared-notes\u0026#34;], }, sandbox: { mode: \u0026#34;non-main\u0026#34;, perSession: true, workspaceRoot: \u0026#34;~/.openclaw/sandboxes\u0026#34;, docker: { image: \u0026#34;openclaw-sandbox:bookworm-slim\u0026#34;, workdir: \u0026#34;/workspace\u0026#34;, readOnlyRoot: true, tmpfs: [\u0026#34;/tmp\u0026#34;, \u0026#34;/var/tmp\u0026#34;, \u0026#34;/run\u0026#34;], network: \u0026#34;none\u0026#34;, user: \u0026#34;1000:1000\u0026#34;, }, browser: { enabled: false, }, }, }, }, tools: { allow: [\u0026#34;exec\u0026#34;, \u0026#34;process\u0026#34;, \u0026#34;read\u0026#34;, \u0026#34;write\u0026#34;, \u0026#34;edit\u0026#34;, \u0026#34;apply_patch\u0026#34;], deny: [\u0026#34;browser\u0026#34;, \u0026#34;canvas\u0026#34;], exec: { backgroundMs: 10000, timeoutSec: 1800, cleanupMs: 1800000, }, elevated: { enabled: true, allowFrom: { whatsapp: [\u0026#34;+15555550123\u0026#34;], telegram: [\u0026#34;123456789\u0026#34;], discord: [\u0026#34;steipete\u0026#34;], slack: [\u0026#34;U123\u0026#34;], signal: [\u0026#34;+15555550123\u0026#34;], imessage: [\u0026#34;user@example.com\u0026#34;], webchat: [\u0026#34;session:demo\u0026#34;], }, }, }, // 自定义模型提供商 models: { mode: \u0026#34;merge\u0026#34;, providers: { \u0026#34;custom-proxy\u0026#34;: { baseUrl: \u0026#34;http://localhost:4000/v1\u0026#34;, apiKey: \u0026#34;LITELLM_KEY\u0026#34;, api: \u0026#34;openai-responses\u0026#34;, authHeader: true, headers: { \u0026#34;X-Proxy-Region\u0026#34;: \u0026#34;us-west\u0026#34; }, models: [ { id: \u0026#34;llama-3.1-8b\u0026#34;, name: \u0026#34;Llama 3.1 8B\u0026#34;, api: \u0026#34;openai-responses\u0026#34;, reasoning: false, input: [\u0026#34;text\u0026#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 128000, maxTokens: 32000, }, ], }, }, }, // Cron 作业 cron: { enabled: true, store: \u0026#34;~/.openclaw/cron/cron.json\u0026#34;, maxConcurrentRuns: 2, }, // Webhooks hooks: { enabled: true, path: \u0026#34;/hooks\u0026#34;, token: \u0026#34;shared-secret\u0026#34;, presets: [\u0026#34;gmail\u0026#34;], transformsDir: \u0026#34;~/.openclaw/hooks\u0026#34;, mappings: [ { id: \u0026#34;gmail-hook\u0026#34;, match: { path: \u0026#34;gmail\u0026#34; }, action: \u0026#34;agent\u0026#34;, wakeMode: \u0026#34;now\u0026#34;, name: \u0026#34;Gmail\u0026#34;, sessionKey: \u0026#34;hook:gmail:{{messages[0].id}}\u0026#34;, messageTemplate: \u0026#34;From: {{messages[0].from}}\\nSubject: {{messages[0].subject}}\u0026#34;, textTemplate: \u0026#34;{{messages[0].snippet}}\u0026#34;, deliver: true, channel: \u0026#34;last\u0026#34;, to: \u0026#34;+15555550123\u0026#34;, thinking: \u0026#34;low\u0026#34;, timeoutSeconds: 300, transform: { module: \u0026#34;./transforms/gmail.js\u0026#34;, export: \u0026#34;transformGmail\u0026#34; }, }, ], gmail: { account: \u0026#34;openclaw@gmail.com\u0026#34;, label: \u0026#34;INBOX\u0026#34;, topic: \u0026#34;projects/\u0026lt;project-id\u0026gt;/topics/gog-gmail-watch\u0026#34;, subscription: \u0026#34;gog-gmail-watch-push\u0026#34;, pushToken: \u0026#34;shared-push-token\u0026#34;, hookUrl: \u0026#34;http://127.0.0.1:18789/hooks/gmail\u0026#34;, includeBody: true, maxBytes: 20000, renewEveryMinutes: 720, serve: { bind: \u0026#34;127.0.0.1\u0026#34;, port: 8788, path: \u0026#34;/\u0026#34; }, tailscale: { mode: \u0026#34;funnel\u0026#34;, path: \u0026#34;/gmail-pubsub\u0026#34; }, }, }, // Gateway 网关 + 网络 gateway: { mode: \u0026#34;local\u0026#34;, port: 18789, bind: \u0026#34;loopback\u0026#34;, controlUi: { enabled: true, basePath: \u0026#34;/openclaw\u0026#34; }, auth: { mode: \u0026#34;token\u0026#34;, token: \u0026#34;gateway-token\u0026#34;, allowTailscale: true, }, tailscale: { mode: \u0026#34;serve\u0026#34;, resetOnExit: false }, remote: { url: \u0026#34;ws://gateway.tailnet:18789\u0026#34;, token: \u0026#34;remote-token\u0026#34; }, reload: { mode: \u0026#34;hybrid\u0026#34;, debounceMs: 300 }, }, skills: { allowBundled: [\u0026#34;gemini\u0026#34;, \u0026#34;peekaboo\u0026#34;], load: { extraDirs: [\u0026#34;~/Projects/agent-scripts/skills\u0026#34;], }, install: { preferBrew: true, nodeManager: \u0026#34;npm\u0026#34;, }, entries: { \u0026#34;nano-banana-pro\u0026#34;: { enabled: true, apiKey: \u0026#34;GEMINI_KEY_HERE\u0026#34;, env: { GEMINI_API_KEY: \u0026#34;GEMINI_KEY_HERE\u0026#34; }, }, peekaboo: { enabled: true }, }, }, } 常见模式 多平台设置 { agent: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34; }, channels: { whatsapp: { allowFrom: [\u0026#34;+15555550123\u0026#34;] }, telegram: { enabled: true, botToken: \u0026#34;YOUR_TOKEN\u0026#34;, allowFrom: [\u0026#34;123456789\u0026#34;], }, discord: { enabled: true, token: \u0026#34;YOUR_TOKEN\u0026#34;, dm: { allowFrom: [\u0026#34;yourname\u0026#34;] }, }, }, } OAuth 带 API 密钥回退 { auth: { profiles: { \u0026#34;anthropic:subscription\u0026#34;: { provider: \u0026#34;anthropic\u0026#34;, mode: \u0026#34;oauth\u0026#34;, email: \u0026#34;me@example.com\u0026#34;, }, \u0026#34;anthropic:api\u0026#34;: { provider: \u0026#34;anthropic\u0026#34;, mode: \u0026#34;api_key\u0026#34;, }, }, order: { anthropic: [\u0026#34;anthropic:subscription\u0026#34;, \u0026#34;anthropic:api\u0026#34;], }, }, agent: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34;, model: { primary: \u0026#34;anthropic/claude-sonnet-4-5\u0026#34;, fallbacks: [\u0026#34;anthropic/claude-opus-4-5\u0026#34;], }, }, } Anthropic 订阅 + API 密钥，MiniMax 回退 { auth: { profiles: { \u0026#34;anthropic:subscription\u0026#34;: { provider: \u0026#34;anthropic\u0026#34;, mode: \u0026#34;oauth\u0026#34;, email: \u0026#34;user@example.com\u0026#34;, }, \u0026#34;anthropic:api\u0026#34;: { provider: \u0026#34;anthropic\u0026#34;, mode: \u0026#34;api_key\u0026#34;, }, }, order: { anthropic: [\u0026#34;anthropic:subscription\u0026#34;, \u0026#34;anthropic:api\u0026#34;], }, }, models: { providers: { minimax: { baseUrl: \u0026#34;https://api.minimax.io/anthropic\u0026#34;, api: \u0026#34;anthropic-messages\u0026#34;, apiKey: \u0026#34;${MINIMAX_API_KEY}\u0026#34;, }, }, }, agent: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34;, model: { primary: \u0026#34;anthropic/claude-opus-4-5\u0026#34;, fallbacks: [\u0026#34;minimax/MiniMax-M2.1\u0026#34;], }, }, } 工作机器人（受限访问） { identity: { name: \u0026#34;WorkBot\u0026#34;, theme: \u0026#34;professional assistant\u0026#34;, }, agent: { workspace: \u0026#34;~/work-openclaw\u0026#34;, elevated: { enabled: false }, }, channels: { slack: { enabled: true, botToken: \u0026#34;xoxb-...\u0026#34;, channels: { \u0026#34;#engineering\u0026#34;: { allow: true, requireMention: true }, \u0026#34;#general\u0026#34;: { allow: true, requireMention: true }, }, }, }, } 仅本地模型 { agent: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34;, model: { primary: \u0026#34;lmstudio/minimax-m2.1-gs32\u0026#34; }, }, models: { mode: \u0026#34;merge\u0026#34;, providers: { lmstudio: { baseUrl: \u0026#34;http://127.0.0.1:1234/v1\u0026#34;, apiKey: \u0026#34;lmstudio\u0026#34;, api: \u0026#34;openai-responses\u0026#34;, models: [ { id: \u0026#34;minimax-m2.1-gs32\u0026#34;, name: \u0026#34;MiniMax M2.1 GS32\u0026#34;, reasoning: false, input: [\u0026#34;text\u0026#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 196608, maxTokens: 8192, }, ], }, }, }, } 提示 如果你设置 dmPolicy: \u0026quot;open\u0026quot;，匹配的 allowFrom 列表必须包含 \u0026quot;*\u0026quot;。 提供商 ID 各不相同（电话号码、用户 ID、频道 ID）。使用提供商文档确认格式。 稍后添加的可选部分：web、browser、ui、discovery、canvasHost、talk、signal、imessage。 参阅提供商和故障排除了解更深入的设置说明。 ",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "以下示例与当前配置模式一致。有关详尽的参考和每个字段的说明，请参阅配置。\n快速开始 绝对最小配置 { agent: { workspace: \"~/.openclaw/workspace\" }, channels: { whatsapp: { allowFrom: [\"+15555550123\"] } }, } 保存到 ~/.openclaw/openclaw.json，你就可以从该号码私信机器人了。\n推荐的入门配置 { identity: { name: \"Clawd\", theme: \"helpful assistant\", emoji: \"🦞\", }, agent: { workspace: \"~/.openclaw/workspace\", model: { primary: \"anthropic/claude-sonnet-4-5\" }, }, channels: { whatsapp: { allowFrom: [\"+15555550123\"], groups: { \"*\": { requireMention: true } }, }, }, } 扩展示例（主要选项） JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以使用。\n{ // 环境 + shell env: { OPENROUTER_API_KEY: \"sk-or-...\", vars: { GROQ_API_KEY: \"gsk-...\", }, shellEnv: { enabled: true, timeoutMs: 15000, }, }, // 认证配置文件元数据（密钥存储在 auth-profiles.json 中） auth: { profiles: { \"anthropic:me@example.com\": { provider: \"anthropic\", mode: \"oauth\", email: \"me@example.com\" }, \"anthropic:work\": { provider: \"anthropic\", mode: \"api_key\" }, \"openai:default\": { provider: \"openai\", mode: \"api_key\" }, \"openai-codex:default\": { provider: \"openai-codex\", mode: \"oauth\" }, }, order: { anthropic: [\"anthropic:me@example.com\", \"anthropic:work\"], openai: [\"openai:default\"], \"openai-codex\": [\"openai-codex:default\"], }, }, // 身份 identity: { name: \"Samantha\", theme: \"helpful sloth\", emoji: \"🦥\", }, // 日志 logging: { level: \"info\", file: \"/tmp/openclaw/openclaw.log\", consoleLevel: \"info\", consoleStyle: \"pretty\", redactSensitive: \"tools\", }, // 消息格式 messages: { messagePrefix: \"[openclaw]\", responsePrefix: \"\u003e\", ackReaction: \"👀\", ackReactionScope: \"group-mentions\", }, // 路由 + 队列 routing: { groupChat: { mentionPatterns: [\"@openclaw\", \"openclaw\"], historyLimit: 50, }, queue: { mode: \"collect\", debounceMs: 1000, cap: 20, drop: \"summarize\", byChannel: { whatsapp: \"collect\", telegram: \"collect\", discord: \"collect\", slack: \"collect\", signal: \"collect\", imessage: \"collect\", webchat: \"collect\", }, }, }, // 工具 tools: { media: { audio: { enabled: true, maxBytes: 20971520, models: [ { provider: \"openai\", model: \"gpt-4o-mini-transcribe\" }, // 可选的 CLI 回退（Whisper 二进制）： // { type: \"cli\", command: \"whisper\", args: [\"--model\", \"base\", \"{{MediaPath}}\"] } ], timeoutSeconds: 120, }, video: { enabled: true, maxBytes: 52428800, models: [{ provider: \"google\", model: \"gemini-3-flash-preview\" }], }, }, }, // 会话行为 session: { scope: \"per-sender\", reset: { mode: \"daily\", atHour: 4, idleMinutes: 60, }, resetByChannel: { discord: { mode: \"idle\", idleMinutes: 10080 }, }, resetTriggers: [\"/new\", \"/reset\"], store: \"~/.openclaw/agents/default/sessions/sessions.json\", typingIntervalSeconds: 5, sendPolicy: { default: \"allow\", rules: [{ action: \"deny\", match: { channel: \"discord\", chatType: \"group\" } }], }, }, // 渠道 channels: { whatsapp: { dmPolicy: \"pairing\", allowFrom: [\"+15555550123\"], groupPolicy: \"allowlist\", groupAllowFrom: [\"+15555550123\"], groups: { \"*\": { requireMention: true } }, }, telegram: { enabled: true, botToken: \"YOUR_TELEGRAM_BOT_TOKEN\", allowFrom: [\"123456789\"], groupPolicy: \"allowlist\", groupAllowFrom: [\"123456789\"], groups: { \"*\": { requireMention: true } }, }, discord: { enabled: true, token: \"YOUR_DISCORD_BOT_TOKEN\", dm: { enabled: true, allowFrom: [\"steipete\"] }, guilds: { \"123456789012345678\": { slug: \"friends-of-openclaw\", requireMention: false, channels: { general: { allow: true }, help: { allow: true, requireMention: true }, }, }, }, }, slack: { enabled: true, botToken: \"xoxb-REPLACE_ME\", appToken: \"xapp-REPLACE_ME\", channels: { \"#general\": { allow: true, requireMention: true }, }, dm: { enabled: true, allowFrom: [\"U123\"] }, slashCommand: { enabled: true, name: \"openclaw\", sessionPrefix: \"slack:slash\", ephemeral: true, }, }, }, // 智能体运行时 agents: { defaults: { workspace: \"~/.openclaw/workspace\", userTimezone: \"America/Chicago\", model: { primary: \"anthropic/claude-sonnet-4-5\", fallbacks: [\"anthropic/claude-opus-4-5\", \"openai/gpt-5.2\"], }, imageModel: { primary: \"openrouter/anthropic/claude-sonnet-4-5\", }, models: { \"anthropic/claude-opus-4-5\": { alias: \"opus\" }, \"anthropic/claude-sonnet-4-5\": { alias: \"sonnet\" }, \"openai/gpt-5.2\": { alias: \"gpt\" }, }, thinkingDefault: \"low\", verboseDefault: \"off\", elevatedDefault: \"on\", blockStreamingDefault: \"off\", blockStreamingBreak: \"text_end\", blockStreamingChunk: { minChars: 800, maxChars: 1200, breakPreference: \"paragraph\", }, blockStreamingCoalesce: { idleMs: 1000, }, humanDelay: { mode: \"natural\", }, timeoutSeconds: 600, mediaMaxMb: 5, typingIntervalSeconds: 5, maxConcurrent: 3, heartbeat: { every: \"30m\", model: \"anthropic/claude-sonnet-4-5\", target: \"last\", to: \"+15555550123\", prompt: \"HEARTBEAT\", ackMaxChars: 300, }, memorySearch: { provider: \"gemini\", model: \"gemini-embedding-001\", remote: { apiKey: \"${GEMINI_API_KEY}\", }, extraPaths: [\"../team-docs\", \"/srv/shared-notes\"], }, sandbox: { mode: \"non-main\", perSession: true, workspaceRoot: \"~/.openclaw/sandboxes\", docker: { image: \"openclaw-sandbox:bookworm-slim\", workdir: \"/workspace\", readOnlyRoot: true, tmpfs: [\"/tmp\", \"/var/tmp\", \"/run\"], network: \"none\", user: \"1000:1000\", }, browser: { enabled: false, }, }, }, }, tools: { allow: [\"exec\", \"process\", \"read\", \"write\", \"edit\", \"apply_patch\"], deny: [\"browser\", \"canvas\"], exec: { backgroundMs: 10000, timeoutSec: 1800, cleanupMs: 1800000, }, elevated: { enabled: true, allowFrom: { whatsapp: [\"+15555550123\"], telegram: [\"123456789\"], discord: [\"steipete\"], slack: [\"U123\"], signal: [\"+15555550123\"], imessage: [\"user@example.com\"], webchat: [\"session:demo\"], }, }, }, // 自定义模型提供商 models: { mode: \"merge\", providers: { \"custom-proxy\": { baseUrl: \"http://localhost:4000/v1\", apiKey: \"LITELLM_KEY\", api: \"openai-responses\", authHeader: true, headers: { \"X-Proxy-Region\": \"us-west\" }, models: [ { id: \"llama-3.1-8b\", name: \"Llama 3.1 8B\", api: \"openai-responses\", reasoning: false, input: [\"text\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 128000, maxTokens: 32000, }, ], }, }, }, // Cron 作业 cron: { enabled: true, store: \"~/.openclaw/cron/cron.json\", maxConcurrentRuns: 2, }, // Webhooks hooks: { enabled: true, path: \"/hooks\", token: \"shared-secret\", presets: [\"gmail\"], transformsDir: \"~/.openclaw/hooks\", mappings: [ { id: \"gmail-hook\", match: { path: \"gmail\" }, action: \"agent\", wakeMode: \"now\", name: \"Gmail\", sessionKey: \"hook:gmail:{{messages[0].id}}\", messageTemplate: \"From: {{messages[0].from}}\\nSubject: {{messages[0].subject}}\", textTemplate: \"{{messages[0].snippet}}\", deliver: true, channel: \"last\", to: \"+15555550123\", thinking: \"low\", timeoutSeconds: 300, transform: { module: \"./transforms/gmail.js\", export: \"transformGmail\" }, }, ], gmail: { account: \"openclaw@gmail.com\", label: \"INBOX\", topic: \"projects//topics/gog-gmail-watch\", subscription: \"gog-gmail-watch-push\", pushToken: \"shared-push-token\", hookUrl: \"http://127.0.0.1:18789/hooks/gmail\", includeBody: true, maxBytes: 20000, renewEveryMinutes: 720, serve: { bind: \"127.0.0.1\", port: 8788, path: \"/\" }, tailscale: { mode: \"funnel\", path: \"/gmail-pubsub\" }, }, }, // Gateway 网关 + 网络 gateway: { mode: \"local\", port: 18789, bind: \"loopback\", controlUi: { enabled: true, basePath: \"/openclaw\" }, auth: { mode: \"token\", token: \"gateway-token\", allowTailscale: true, }, tailscale: { mode: \"serve\", resetOnExit: false }, remote: { url: \"ws://gateway.tailnet:18789\", token: \"remote-token\" }, reload: { mode: \"hybrid\", debounceMs: 300 }, }, skills: { allowBundled: [\"gemini\", \"peekaboo\"], load: { extraDirs: [\"~/Projects/agent-scripts/skills\"], }, install: { preferBrew: true, nodeManager: \"npm\", }, entries: { \"nano-banana-pro\": { enabled: true, apiKey: \"GEMINI_KEY_HERE\", env: { GEMINI_API_KEY: \"GEMINI_KEY_HERE\" }, }, peekaboo: { enabled: true }, }, }, } 常见模式 多平台设置 { agent: { workspace: \"~/.openclaw/workspace\" }, channels: { whatsapp: { allowFrom: [\"+15555550123\"] }, telegram: { enabled: true, botToken: \"YOUR_TOKEN\", allowFrom: [\"123456789\"], }, discord: { enabled: true, token: \"YOUR_TOKEN\", dm: { allowFrom: [\"yourname\"] }, }, }, } OAuth 带 API 密钥回退 { auth: { profiles: { \"anthropic:subscription\": { provider: \"anthropic\", mode: \"oauth\", email: \"me@example.com\", }, \"anthropic:api\": { provider: \"anthropic\", mode: \"api_key\", }, }, order: { anthropic: [\"anthropic:subscription\", \"anthropic:api\"], }, }, agent: { workspace: \"~/.openclaw/workspace\", model: { primary: \"anthropic/claude-sonnet-4-5\", fallbacks: [\"anthropic/claude-opus-4-5\"], }, }, } Anthropic 订阅 + API 密钥，MiniMax 回退 { auth: { profiles: { \"anthropic:subscription\": { provider: \"anthropic\", mode: \"oauth\", email: \"user@example.com\", }, \"anthropic:api\": { provider: \"anthropic\", mode: \"api_key\", }, }, order: { anthropic: [\"anthropic:subscription\", \"anthropic:api\"], }, }, models: { providers: { minimax: { baseUrl: \"https://api.minimax.io/anthropic\", api: \"anthropic-messages\", apiKey: \"${MINIMAX_API_KEY}\", }, }, }, agent: { workspace: \"~/.openclaw/workspace\", model: { primary: \"anthropic/claude-opus-4-5\", fallbacks: [\"minimax/MiniMax-M2.1\"], }, }, } 工作机器人（受限访问） { identity: { name: \"WorkBot\", theme: \"professional assistant\", }, agent: { workspace: \"~/work-openclaw\", elevated: { enabled: false }, }, channels: { slack: { enabled: true, botToken: \"xoxb-...\", channels: { \"#engineering\": { allow: true, requireMention: true }, \"#general\": { allow: true, requireMention: true }, }, }, }, } 仅本地模型 { agent: { workspace: \"~/.openclaw/workspace\", model: { primary: \"lmstudio/minimax-m2.1-gs32\" }, }, models: { mode: \"merge\", providers: { lmstudio: { baseUrl: \"http://127.0.0.1:1234/v1\", apiKey: \"lmstudio\", api: \"openai-responses\", models: [ { id: \"minimax-m2.1-gs32\", name: \"MiniMax M2.1 GS32\", reasoning: false, input: [\"text\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 196608, maxTokens: 8192, }, ], }, }, }, } 提示 如果你设置 dmPolicy: \"open\"，匹配的 allowFrom 列表必须包含 \"*\"。 提供商 ID 各不相同（电话号码、用户 ID、频道 ID）。使用提供商文档确认格式。 稍后添加的可选部分：web、browser、ui、discovery、canvasHost、talk、signal、imessage。 参阅提供商和故障排除了解更深入的设置说明。 ",
+  "wordCount" : "1155",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/configuration-examples/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      配置示例
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b" aria-label="快速开始">快速开始</a><ul>
+                        
+                <li>
+                    <a href="#%e7%bb%9d%e5%af%b9%e6%9c%80%e5%b0%8f%e9%85%8d%e7%bd%ae" aria-label="绝对最小配置">绝对最小配置</a></li>
+                <li>
+                    <a href="#%e6%8e%a8%e8%8d%90%e7%9a%84%e5%85%a5%e9%97%a8%e9%85%8d%e7%bd%ae" aria-label="推荐的入门配置">推荐的入门配置</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%89%a9%e5%b1%95%e7%a4%ba%e4%be%8b%e4%b8%bb%e8%a6%81%e9%80%89%e9%a1%b9" aria-label="扩展示例（主要选项）">扩展示例（主要选项）</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e6%a8%a1%e5%bc%8f" aria-label="常见模式">常见模式</a><ul>
+                        
+                <li>
+                    <a href="#%e5%a4%9a%e5%b9%b3%e5%8f%b0%e8%ae%be%e7%bd%ae" aria-label="多平台设置">多平台设置</a></li>
+                <li>
+                    <a href="#oauth-%e5%b8%a6-api-%e5%af%86%e9%92%a5%e5%9b%9e%e9%80%80" aria-label="OAuth 带 API 密钥回退">OAuth 带 API 密钥回退</a></li>
+                <li>
+                    <a href="#anthropic-%e8%ae%a2%e9%98%85--api-%e5%af%86%e9%92%a5minimax-%e5%9b%9e%e9%80%80" aria-label="Anthropic 订阅 &#43; API 密钥，MiniMax 回退">Anthropic 订阅 + API 密钥，MiniMax 回退</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e6%9c%ba%e5%99%a8%e4%ba%ba%e5%8f%97%e9%99%90%e8%ae%bf%e9%97%ae" aria-label="工作机器人（受限访问）">工作机器人（受限访问）</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e6%9c%ac%e5%9c%b0%e6%a8%a1%e5%9e%8b" aria-label="仅本地模型">仅本地模型</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8f%90%e7%a4%ba" aria-label="提示">提示</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>以下示例与当前配置模式一致。有关详尽的参考和每个字段的说明，请参阅<a href="/gateway/configuration">配置</a>。</p>
+<h2 id="快速开始">快速开始<a hidden class="anchor" aria-hidden="true" href="#快速开始">#</a></h2>
+<h3 id="绝对最小配置">绝对最小配置<a hidden class="anchor" aria-hidden="true" href="#绝对最小配置">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: { workspace: &#34;~/.openclaw/workspace&#34; },
+  channels: { whatsapp: { allowFrom: [&#34;+15555550123&#34;] } },
+}
+</code></pre><p>保存到 <code>~/.openclaw/openclaw.json</code>，你就可以从该号码私信机器人了。</p>
+<h3 id="推荐的入门配置">推荐的入门配置<a hidden class="anchor" aria-hidden="true" href="#推荐的入门配置">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  identity: {
+    name: &#34;Clawd&#34;,
+    theme: &#34;helpful assistant&#34;,
+    emoji: &#34;🦞&#34;,
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: { primary: &#34;anthropic/claude-sonnet-4-5&#34; },
+  },
+  channels: {
+    whatsapp: {
+      allowFrom: [&#34;+15555550123&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+  },
+}
+</code></pre><h2 id="扩展示例主要选项">扩展示例（主要选项）<a hidden class="anchor" aria-hidden="true" href="#扩展示例主要选项">#</a></h2>
+<blockquote>
+<p>JSON5 允许你使用注释和尾随逗号。普通 JSON 也可以使用。</p>
+</blockquote>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  // 环境 + shell
+  env: {
+    OPENROUTER_API_KEY: &#34;sk-or-...&#34;,
+    vars: {
+      GROQ_API_KEY: &#34;gsk-...&#34;,
+    },
+    shellEnv: {
+      enabled: true,
+      timeoutMs: 15000,
+    },
+  },
+
+  // 认证配置文件元数据（密钥存储在 auth-profiles.json 中）
+  auth: {
+    profiles: {
+      &#34;anthropic:me@example.com&#34;: { provider: &#34;anthropic&#34;, mode: &#34;oauth&#34;, email: &#34;me@example.com&#34; },
+      &#34;anthropic:work&#34;: { provider: &#34;anthropic&#34;, mode: &#34;api_key&#34; },
+      &#34;openai:default&#34;: { provider: &#34;openai&#34;, mode: &#34;api_key&#34; },
+      &#34;openai-codex:default&#34;: { provider: &#34;openai-codex&#34;, mode: &#34;oauth&#34; },
+    },
+    order: {
+      anthropic: [&#34;anthropic:me@example.com&#34;, &#34;anthropic:work&#34;],
+      openai: [&#34;openai:default&#34;],
+      &#34;openai-codex&#34;: [&#34;openai-codex:default&#34;],
+    },
+  },
+
+  // 身份
+  identity: {
+    name: &#34;Samantha&#34;,
+    theme: &#34;helpful sloth&#34;,
+    emoji: &#34;🦥&#34;,
+  },
+
+  // 日志
+  logging: {
+    level: &#34;info&#34;,
+    file: &#34;/tmp/openclaw/openclaw.log&#34;,
+    consoleLevel: &#34;info&#34;,
+    consoleStyle: &#34;pretty&#34;,
+    redactSensitive: &#34;tools&#34;,
+  },
+
+  // 消息格式
+  messages: {
+    messagePrefix: &#34;[openclaw]&#34;,
+    responsePrefix: &#34;&gt;&#34;,
+    ackReaction: &#34;👀&#34;,
+    ackReactionScope: &#34;group-mentions&#34;,
+  },
+
+  // 路由 + 队列
+  routing: {
+    groupChat: {
+      mentionPatterns: [&#34;@openclaw&#34;, &#34;openclaw&#34;],
+      historyLimit: 50,
+    },
+    queue: {
+      mode: &#34;collect&#34;,
+      debounceMs: 1000,
+      cap: 20,
+      drop: &#34;summarize&#34;,
+      byChannel: {
+        whatsapp: &#34;collect&#34;,
+        telegram: &#34;collect&#34;,
+        discord: &#34;collect&#34;,
+        slack: &#34;collect&#34;,
+        signal: &#34;collect&#34;,
+        imessage: &#34;collect&#34;,
+        webchat: &#34;collect&#34;,
+      },
+    },
+  },
+
+  // 工具
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        maxBytes: 20971520,
+        models: [
+          { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; },
+          // 可选的 CLI 回退（Whisper 二进制）：
+          // { type: &#34;cli&#34;, command: &#34;whisper&#34;, args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;] }
+        ],
+        timeoutSeconds: 120,
+      },
+      video: {
+        enabled: true,
+        maxBytes: 52428800,
+        models: [{ provider: &#34;google&#34;, model: &#34;gemini-3-flash-preview&#34; }],
+      },
+    },
+  },
+
+  // 会话行为
+  session: {
+    scope: &#34;per-sender&#34;,
+    reset: {
+      mode: &#34;daily&#34;,
+      atHour: 4,
+      idleMinutes: 60,
+    },
+    resetByChannel: {
+      discord: { mode: &#34;idle&#34;, idleMinutes: 10080 },
+    },
+    resetTriggers: [&#34;/new&#34;, &#34;/reset&#34;],
+    store: &#34;~/.openclaw/agents/default/sessions/sessions.json&#34;,
+    typingIntervalSeconds: 5,
+    sendPolicy: {
+      default: &#34;allow&#34;,
+      rules: [{ action: &#34;deny&#34;, match: { channel: &#34;discord&#34;, chatType: &#34;group&#34; } }],
+    },
+  },
+
+  // 渠道
+  channels: {
+    whatsapp: {
+      dmPolicy: &#34;pairing&#34;,
+      allowFrom: [&#34;+15555550123&#34;],
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;+15555550123&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+
+    telegram: {
+      enabled: true,
+      botToken: &#34;YOUR_TELEGRAM_BOT_TOKEN&#34;,
+      allowFrom: [&#34;123456789&#34;],
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;123456789&#34;],
+      groups: { &#34;*&#34;: { requireMention: true } },
+    },
+
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_DISCORD_BOT_TOKEN&#34;,
+      dm: { enabled: true, allowFrom: [&#34;steipete&#34;] },
+      guilds: {
+        &#34;123456789012345678&#34;: {
+          slug: &#34;friends-of-openclaw&#34;,
+          requireMention: false,
+          channels: {
+            general: { allow: true },
+            help: { allow: true, requireMention: true },
+          },
+        },
+      },
+    },
+
+    slack: {
+      enabled: true,
+      botToken: &#34;xoxb-REPLACE_ME&#34;,
+      appToken: &#34;xapp-REPLACE_ME&#34;,
+      channels: {
+        &#34;#general&#34;: { allow: true, requireMention: true },
+      },
+      dm: { enabled: true, allowFrom: [&#34;U123&#34;] },
+      slashCommand: {
+        enabled: true,
+        name: &#34;openclaw&#34;,
+        sessionPrefix: &#34;slack:slash&#34;,
+        ephemeral: true,
+      },
+    },
+  },
+
+  // 智能体运行时
+  agents: {
+    defaults: {
+      workspace: &#34;~/.openclaw/workspace&#34;,
+      userTimezone: &#34;America/Chicago&#34;,
+      model: {
+        primary: &#34;anthropic/claude-sonnet-4-5&#34;,
+        fallbacks: [&#34;anthropic/claude-opus-4-5&#34;, &#34;openai/gpt-5.2&#34;],
+      },
+      imageModel: {
+        primary: &#34;openrouter/anthropic/claude-sonnet-4-5&#34;,
+      },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;opus&#34; },
+        &#34;anthropic/claude-sonnet-4-5&#34;: { alias: &#34;sonnet&#34; },
+        &#34;openai/gpt-5.2&#34;: { alias: &#34;gpt&#34; },
+      },
+      thinkingDefault: &#34;low&#34;,
+      verboseDefault: &#34;off&#34;,
+      elevatedDefault: &#34;on&#34;,
+      blockStreamingDefault: &#34;off&#34;,
+      blockStreamingBreak: &#34;text_end&#34;,
+      blockStreamingChunk: {
+        minChars: 800,
+        maxChars: 1200,
+        breakPreference: &#34;paragraph&#34;,
+      },
+      blockStreamingCoalesce: {
+        idleMs: 1000,
+      },
+      humanDelay: {
+        mode: &#34;natural&#34;,
+      },
+      timeoutSeconds: 600,
+      mediaMaxMb: 5,
+      typingIntervalSeconds: 5,
+      maxConcurrent: 3,
+      heartbeat: {
+        every: &#34;30m&#34;,
+        model: &#34;anthropic/claude-sonnet-4-5&#34;,
+        target: &#34;last&#34;,
+        to: &#34;+15555550123&#34;,
+        prompt: &#34;HEARTBEAT&#34;,
+        ackMaxChars: 300,
+      },
+      memorySearch: {
+        provider: &#34;gemini&#34;,
+        model: &#34;gemini-embedding-001&#34;,
+        remote: {
+          apiKey: &#34;${GEMINI_API_KEY}&#34;,
+        },
+        extraPaths: [&#34;../team-docs&#34;, &#34;/srv/shared-notes&#34;],
+      },
+      sandbox: {
+        mode: &#34;non-main&#34;,
+        perSession: true,
+        workspaceRoot: &#34;~/.openclaw/sandboxes&#34;,
+        docker: {
+          image: &#34;openclaw-sandbox:bookworm-slim&#34;,
+          workdir: &#34;/workspace&#34;,
+          readOnlyRoot: true,
+          tmpfs: [&#34;/tmp&#34;, &#34;/var/tmp&#34;, &#34;/run&#34;],
+          network: &#34;none&#34;,
+          user: &#34;1000:1000&#34;,
+        },
+        browser: {
+          enabled: false,
+        },
+      },
+    },
+  },
+
+  tools: {
+    allow: [&#34;exec&#34;, &#34;process&#34;, &#34;read&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;],
+    deny: [&#34;browser&#34;, &#34;canvas&#34;],
+    exec: {
+      backgroundMs: 10000,
+      timeoutSec: 1800,
+      cleanupMs: 1800000,
+    },
+    elevated: {
+      enabled: true,
+      allowFrom: {
+        whatsapp: [&#34;+15555550123&#34;],
+        telegram: [&#34;123456789&#34;],
+        discord: [&#34;steipete&#34;],
+        slack: [&#34;U123&#34;],
+        signal: [&#34;+15555550123&#34;],
+        imessage: [&#34;user@example.com&#34;],
+        webchat: [&#34;session:demo&#34;],
+      },
+    },
+  },
+
+  // 自定义模型提供商
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      &#34;custom-proxy&#34;: {
+        baseUrl: &#34;http://localhost:4000/v1&#34;,
+        apiKey: &#34;LITELLM_KEY&#34;,
+        api: &#34;openai-responses&#34;,
+        authHeader: true,
+        headers: { &#34;X-Proxy-Region&#34;: &#34;us-west&#34; },
+        models: [
+          {
+            id: &#34;llama-3.1-8b&#34;,
+            name: &#34;Llama 3.1 8B&#34;,
+            api: &#34;openai-responses&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 128000,
+            maxTokens: 32000,
+          },
+        ],
+      },
+    },
+  },
+
+  // Cron 作业
+  cron: {
+    enabled: true,
+    store: &#34;~/.openclaw/cron/cron.json&#34;,
+    maxConcurrentRuns: 2,
+  },
+
+  // Webhooks
+  hooks: {
+    enabled: true,
+    path: &#34;/hooks&#34;,
+    token: &#34;shared-secret&#34;,
+    presets: [&#34;gmail&#34;],
+    transformsDir: &#34;~/.openclaw/hooks&#34;,
+    mappings: [
+      {
+        id: &#34;gmail-hook&#34;,
+        match: { path: &#34;gmail&#34; },
+        action: &#34;agent&#34;,
+        wakeMode: &#34;now&#34;,
+        name: &#34;Gmail&#34;,
+        sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;,
+        messageTemplate: &#34;From: {{messages[0].from}}\nSubject: {{messages[0].subject}}&#34;,
+        textTemplate: &#34;{{messages[0].snippet}}&#34;,
+        deliver: true,
+        channel: &#34;last&#34;,
+        to: &#34;+15555550123&#34;,
+        thinking: &#34;low&#34;,
+        timeoutSeconds: 300,
+        transform: { module: &#34;./transforms/gmail.js&#34;, export: &#34;transformGmail&#34; },
+      },
+    ],
+    gmail: {
+      account: &#34;openclaw@gmail.com&#34;,
+      label: &#34;INBOX&#34;,
+      topic: &#34;projects/&lt;project-id&gt;/topics/gog-gmail-watch&#34;,
+      subscription: &#34;gog-gmail-watch-push&#34;,
+      pushToken: &#34;shared-push-token&#34;,
+      hookUrl: &#34;http://127.0.0.1:18789/hooks/gmail&#34;,
+      includeBody: true,
+      maxBytes: 20000,
+      renewEveryMinutes: 720,
+      serve: { bind: &#34;127.0.0.1&#34;, port: 8788, path: &#34;/&#34; },
+      tailscale: { mode: &#34;funnel&#34;, path: &#34;/gmail-pubsub&#34; },
+    },
+  },
+
+  // Gateway 网关 + 网络
+  gateway: {
+    mode: &#34;local&#34;,
+    port: 18789,
+    bind: &#34;loopback&#34;,
+    controlUi: { enabled: true, basePath: &#34;/openclaw&#34; },
+    auth: {
+      mode: &#34;token&#34;,
+      token: &#34;gateway-token&#34;,
+      allowTailscale: true,
+    },
+    tailscale: { mode: &#34;serve&#34;, resetOnExit: false },
+    remote: { url: &#34;ws://gateway.tailnet:18789&#34;, token: &#34;remote-token&#34; },
+    reload: { mode: &#34;hybrid&#34;, debounceMs: 300 },
+  },
+
+  skills: {
+    allowBundled: [&#34;gemini&#34;, &#34;peekaboo&#34;],
+    load: {
+      extraDirs: [&#34;~/Projects/agent-scripts/skills&#34;],
+    },
+    install: {
+      preferBrew: true,
+      nodeManager: &#34;npm&#34;,
+    },
+    entries: {
+      &#34;nano-banana-pro&#34;: {
+        enabled: true,
+        apiKey: &#34;GEMINI_KEY_HERE&#34;,
+        env: { GEMINI_API_KEY: &#34;GEMINI_KEY_HERE&#34; },
+      },
+      peekaboo: { enabled: true },
+    },
+  },
+}
+</code></pre><h2 id="常见模式">常见模式<a hidden class="anchor" aria-hidden="true" href="#常见模式">#</a></h2>
+<h3 id="多平台设置">多平台设置<a hidden class="anchor" aria-hidden="true" href="#多平台设置">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: { workspace: &#34;~/.openclaw/workspace&#34; },
+  channels: {
+    whatsapp: { allowFrom: [&#34;+15555550123&#34;] },
+    telegram: {
+      enabled: true,
+      botToken: &#34;YOUR_TOKEN&#34;,
+      allowFrom: [&#34;123456789&#34;],
+    },
+    discord: {
+      enabled: true,
+      token: &#34;YOUR_TOKEN&#34;,
+      dm: { allowFrom: [&#34;yourname&#34;] },
+    },
+  },
+}
+</code></pre><h3 id="oauth-带-api-密钥回退">OAuth 带 API 密钥回退<a hidden class="anchor" aria-hidden="true" href="#oauth-带-api-密钥回退">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  auth: {
+    profiles: {
+      &#34;anthropic:subscription&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;oauth&#34;,
+        email: &#34;me@example.com&#34;,
+      },
+      &#34;anthropic:api&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;api_key&#34;,
+      },
+    },
+    order: {
+      anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;],
+    },
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: {
+      primary: &#34;anthropic/claude-sonnet-4-5&#34;,
+      fallbacks: [&#34;anthropic/claude-opus-4-5&#34;],
+    },
+  },
+}
+</code></pre><h3 id="anthropic-订阅--api-密钥minimax-回退">Anthropic 订阅 + API 密钥，MiniMax 回退<a hidden class="anchor" aria-hidden="true" href="#anthropic-订阅--api-密钥minimax-回退">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  auth: {
+    profiles: {
+      &#34;anthropic:subscription&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;oauth&#34;,
+        email: &#34;user@example.com&#34;,
+      },
+      &#34;anthropic:api&#34;: {
+        provider: &#34;anthropic&#34;,
+        mode: &#34;api_key&#34;,
+      },
+    },
+    order: {
+      anthropic: [&#34;anthropic:subscription&#34;, &#34;anthropic:api&#34;],
+    },
+  },
+  models: {
+    providers: {
+      minimax: {
+        baseUrl: &#34;https://api.minimax.io/anthropic&#34;,
+        api: &#34;anthropic-messages&#34;,
+        apiKey: &#34;${MINIMAX_API_KEY}&#34;,
+      },
+    },
+  },
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: {
+      primary: &#34;anthropic/claude-opus-4-5&#34;,
+      fallbacks: [&#34;minimax/MiniMax-M2.1&#34;],
+    },
+  },
+}
+</code></pre><h3 id="工作机器人受限访问">工作机器人（受限访问）<a hidden class="anchor" aria-hidden="true" href="#工作机器人受限访问">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  identity: {
+    name: &#34;WorkBot&#34;,
+    theme: &#34;professional assistant&#34;,
+  },
+  agent: {
+    workspace: &#34;~/work-openclaw&#34;,
+    elevated: { enabled: false },
+  },
+  channels: {
+    slack: {
+      enabled: true,
+      botToken: &#34;xoxb-...&#34;,
+      channels: {
+        &#34;#engineering&#34;: { allow: true, requireMention: true },
+        &#34;#general&#34;: { allow: true, requireMention: true },
+      },
+    },
+  },
+}
+</code></pre><h3 id="仅本地模型">仅本地模型<a hidden class="anchor" aria-hidden="true" href="#仅本地模型">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      lmstudio: {
+        baseUrl: &#34;http://127.0.0.1:1234/v1&#34;,
+        apiKey: &#34;lmstudio&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;minimax-m2.1-gs32&#34;,
+            name: &#34;MiniMax M2.1 GS32&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 196608,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+</code></pre><h2 id="提示">提示<a hidden class="anchor" aria-hidden="true" href="#提示">#</a></h2>
+<ul>
+<li>如果你设置 <code>dmPolicy: &quot;open&quot;</code>，匹配的 <code>allowFrom</code> 列表必须包含 <code>&quot;*&quot;</code>。</li>
+<li>提供商 ID 各不相同（电话号码、用户 ID、频道 ID）。使用提供商文档确认格式。</li>
+<li>稍后添加的可选部分：<code>web</code>、<code>browser</code>、<code>ui</code>、<code>discovery</code>、<code>canvasHost</code>、<code>talk</code>、<code>signal</code>、<code>imessage</code>。</li>
+<li>参阅<a href="/channels/whatsapp">提供商</a>和<a href="/gateway/troubleshooting">故障排除</a>了解更深入的设置说明。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/gateway/configuration/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>配置 🔧</span>
+  </a>
+  <a class="next" href="/openclaw/concepts/retry/">
+    <span class="title">Next »</span>
+    <br>
+    <span>重试策略</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

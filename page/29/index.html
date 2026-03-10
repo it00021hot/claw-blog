@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw health`</h2>
+    </header>
+    <div class="entry-content">
+      <p>从运行中的 Gateway 网关获取健康状态。
+openclaw health openclaw health --json openclaw health --verbose 注意：
+--verbose 运行实时探测，并在配置了多个账户时打印每个账户的耗时。 当配置了多个智能体时，输出包括每个智能体的会话存储。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw health`" href="/openclaw/cli/health/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw doctor`</h2>
+    </header>
+    <div class="entry-content">
+      <p>Gateway 网关和渠道的健康检查 &#43; 快速修复。
+相关内容：
+故障排除：故障排除 安全审计：安全 示例 openclaw doctor openclaw doctor --repair openclaw doctor --deep 注意事项：
+交互式提示（如钥匙串/OAuth 修复）仅在 stdin 是 TTY 且未设置 --non-interactive 时运行。无头运行（cron、Telegram、无终端）将跳过提示。 --fix（--repair 的别名）会将备份写入 ~/.openclaw/openclaw.json.bak，并删除未知的配置键，同时列出每个删除项。 macOS：launchctl 环境变量覆盖 如果你之前运行过 launchctl setenv OPENCLAW_GATEWAY_TOKEN ...（或 ...PASSWORD），该值会覆盖你的配置文件，并可能导致持续的&#34;未授权&#34;错误。
+launchctl getenv OPENCLAW_GATEWAY_TOKEN launchctl getenv OPENCLAW_GATEWAY_PASSWORD launchctl unsetenv OPENCLAW_GATEWAY_TOKEN launchctl unsetenv OPENCLAW_GATEWAY_PASSWORD </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw doctor`" href="/openclaw/cli/doctor/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw docs`</h2>
+    </header>
+    <div class="entry-content">
+      <p>搜索实时文档索引。
+openclaw docs browser extension openclaw docs sandbox allowHostControl </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw docs`" href="/openclaw/cli/docs/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw dns`</h2>
+    </header>
+    <div class="entry-content">
+      <p>用于广域设备发现（Tailscale &#43; CoreDNS）的 DNS 辅助工具。目前专注于 macOS &#43; Homebrew CoreDNS。
+相关内容：
+Gateway 网关设备发现：设备发现 广域设备发现配置：配置 设置 openclaw dns setup openclaw dns setup --apply </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw dns`" href="/openclaw/cli/dns/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw directory`</h2>
+    </header>
+    <div class="entry-content">
+      <p>对支持目录功能的渠道进行查找（联系人/对等方、群组和&#34;我&#34;）。
+通用参数 --channel &lt;name&gt;：渠道 ID/别名（配置了多个渠道时为必填；仅配置一个渠道时自动选择） --account &lt;id&gt;：账号 ID（默认：渠道默认账号） --json：输出 JSON 格式 说明 directory 用于帮助你查找可粘贴到其他命令中的 ID（特别是 openclaw message send --target ...）。 对于许多渠道，结果来源于配置（允许列表/已配置的群组），而非实时的提供商目录。 默认输出为以制表符分隔的 id（有时包含 name）；脚本中请使用 --json。 将结果用于 message send openclaw directory peers list --channel slack --query &#34;U0&#34; openclaw message send --channel slack --target user:U012ABCDEF --message &#34;hello&#34; ID 格式（按渠道） WhatsApp：&#43;15551234567（私聊），1234567890-1234567890@g.us（群组） Telegram：@username 或数字聊天 ID；群组为数字 ID Slack：user:U… 和 channel:C… Discord：user:&lt;id&gt; 和 channel:&lt;id&gt; Matrix（插件）：user:@user:server、room:!roomId:server 或 #alias:server Microsoft Teams（插件）：user:&lt;id&gt; 和 conversation:&lt;id&gt; Zalo（插件）：用户 ID（Bot API） Zalo Personal / zalouser（插件）：来自 zca 的会话 ID（私聊/群组）（me、friend list、group list） Self（“我”） openclaw directory self --channel zalouser Peers（联系人/用户） openclaw directory peers list --channel zalouser openclaw directory peers list --channel zalouser --query &#34;name&#34; openclaw directory peers list --channel zalouser --limit 50 群组 openclaw directory groups list --channel zalouser openclaw directory groups list --channel zalouser --query &#34;work&#34; openclaw directory groups members --channel zalouser --group-id &lt;id&gt; </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw directory`" href="/openclaw/cli/directory/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw devices`</h2>
+    </header>
+    <div class="entry-content">
+      <p>管理设备配对请求和设备范围的 token。
+命令 openclaw devices list 列出待处理的配对请求和已配对的设备。
+openclaw devices list openclaw devices list --json openclaw devices approve &lt;requestId&gt; 批准待处理的设备配对请求。
+openclaw devices approve &lt;requestId&gt; openclaw devices reject &lt;requestId&gt; 拒绝待处理的设备配对请求。
+openclaw devices reject &lt;requestId&gt; openclaw devices rotate --device &lt;id&gt; --role &lt;role&gt; [--scope &lt;scope...&gt;] 为特定角色轮换设备 token（可选更新 scope）。
+openclaw devices rotate --device &lt;deviceId&gt; --role operator --scope operator.read --scope operator.write openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt; 为特定角色撤销设备 token。
+openclaw devices revoke --device &lt;deviceId&gt; --role node 通用选项 --url &lt;url&gt;：Gateway 网关 WebSocket URL（配置后默认使用 gateway.remote.url）。 --token &lt;token&gt;：Gateway 网关 token（如需要）。 --password &lt;password&gt;：Gateway 网关密码（密码认证）。 --timeout &lt;ms&gt;：RPC 超时。 --json：JSON 输出（推荐用于脚本）。 注意事项 Token 轮换会返回新 token（敏感信息）。请像对待密钥一样对待它。 这些命令需要 operator.pairing（或 operator.admin）scope。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw devices`" href="/openclaw/cli/devices/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw dashboard`</h2>
+    </header>
+    <div class="entry-content">
+      <p>使用当前认证信息打开控制界面。
+openclaw dashboard openclaw dashboard --no-open </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw dashboard`" href="/openclaw/cli/dashboard/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw cron`</h2>
+    </header>
+    <div class="entry-content">
+      <p>管理 Gateway 网关调度器的 cron 作业。
+相关内容：
+Cron 作业：Cron 作业 提示：运行 openclaw cron --help 查看完整的命令集。
+说明：隔离式 cron add 任务默认使用 --announce 投递摘要。使用 --no-deliver 仅内部运行。 --deliver 仍作为 --announce 的弃用别名保留。
+说明：一次性（--at）任务成功后默认删除。使用 --keep-after-run 保留。
+常见编辑 更新投递设置而不更改消息：
+openclaw cron edit &lt;job-id&gt; --announce --channel telegram --to &#34;123456789&#34; 为隔离的作业禁用投递：
+openclaw cron edit &lt;job-id&gt; --no-deliver </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw cron`" href="/openclaw/cli/cron/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw configure`</h2>
+    </header>
+    <div class="entry-content">
+      <p>用于设置凭证、设备和智能体默认值的交互式提示。
+注意：模型部分现在包含一个用于 agents.defaults.models 允许列表的多选项（显示在 /model 和模型选择器中的内容）。
+提示：不带子命令的 openclaw config 会打开相同的向导。使用 openclaw config get|set|unset 进行非交互式编辑。
+相关内容：
+Gateway 网关配置参考：配置 Config CLI：Config 注意事项：
+选择 Gateway 网关运行位置始终会更新 gateway.mode。如果这是你唯一需要的，可以不选择其他部分直接选择&#34;继续&#34;。 面向渠道的服务（Slack/Discord/Matrix/Microsoft Teams）在设置期间会提示输入频道/房间允许列表。你可以输入名称或 ID；向导会尽可能将名称解析为 ID。 示例 openclaw configure openclaw configure --section models --section channels </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw configure`" href="/openclaw/cli/configure/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw config`</h2>
+    </header>
+    <div class="entry-content">
+      <p>配置辅助命令：通过路径获取/设置/取消设置值。不带子命令运行将打开 配置向导（与 openclaw configure 相同）。
+示例 openclaw config get browser.executablePath openclaw config set browser.executablePath &#34;/usr/bin/google-chrome&#34; openclaw config set agents.defaults.heartbeat.every &#34;2h&#34; openclaw config set agents.list[0].tools.exec.node &#34;node-id-or-name&#34; openclaw config unset tools.web.search.apiKey 路径 路径使用点号或括号表示法：
+openclaw config get agents.defaults.workspace openclaw config get agents.list[0].id 使用智能体列表索引来定位特定智能体：
+openclaw config get agents.list openclaw config set agents.list[1].tools.exec.node &#34;node-id-or-name&#34; 值 值会尽可能解析为 JSON5；否则将被视为字符串。 使用 --json 强制要求 JSON5 解析。
+openclaw config set agents.defaults.heartbeat.every &#34;0m&#34; openclaw config set gateway.port 19001 --json openclaw config set channels.whatsapp.groups &#39;[&#34;*&#34;]&#39; --json 编辑后请重启 Gateway 网关。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw config`" href="/openclaw/cli/config/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/28/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/30/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

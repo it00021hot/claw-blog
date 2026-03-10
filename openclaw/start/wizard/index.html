@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>新手引导向导（CLI） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="新手引导向导是在 macOS、Linux 或 Windows（通过 WSL2；强烈推荐）上设置 OpenClaw 的推荐方式。
+它可以在一个引导式流程中配置本地 Gateway 网关或远程 Gateway 网关连接，以及渠道、Skills 和工作区默认值。
+主要入口：
+openclaw onboard
+最快开始聊天的方式：打开控制界面（无需设置渠道）。运行 openclaw dashboard 并在浏览器中聊天。文档：控制面板。
+后续重新配置：
+openclaw configure
+推荐：设置 Brave Search API 密钥，以便智能体可以使用 web_search（web_fetch 无需密钥即可使用）。最简单的方式：openclaw configure --section web，它会存储 tools.web.search.apiKey。文档：Web 工具。
+快速开始 vs 高级
+向导从快速开始（默认值）vs 高级（完全控制）开始。
+快速开始保持默认值：
+
+本地 Gateway 网关（loopback）
+默认工作区（或现有工作区）
+Gateway 网关端口 18789
+Gateway 网关认证 Token（自动生成，即使在 loopback 上）
+Tailscale 暴露 关闭
+Telegram &#43; WhatsApp 私信默认使用允许列表（系统会提示你输入电话号码）
+
+高级暴露每个步骤（模式、工作区、Gateway 网关、渠道、守护进程、Skills）。
+向导做了什么
+**本地模式（默认）**引导你完成：
+
+模型/认证（OpenAI Code (Codex) 订阅 OAuth、Anthropic API 密钥（推荐）或 setup-token（粘贴），以及 MiniMax/GLM/Moonshot/AI Gateway 选项）
+工作区位置 &#43; 引导文件
+Gateway 网关设置（端口/绑定/认证/tailscale）
+提供商（Telegram、WhatsApp、Discord、Google Chat、Mattermost（插件）、Signal）
+守护进程安装（LaunchAgent / systemd 用户单元）
+健康检查
+Skills（推荐）
+
+远程模式仅配置本地客户端连接到其他位置的 Gateway 网关。
+它不会在远程主机上安装或更改任何内容。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/start/wizard/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/start/wizard/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/start/wizard/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="新手引导向导（CLI）">
+  <meta property="og:description" content="新手引导向导是在 macOS、Linux 或 Windows（通过 WSL2；强烈推荐）上设置 OpenClaw 的推荐方式。 它可以在一个引导式流程中配置本地 Gateway 网关或远程 Gateway 网关连接，以及渠道、Skills 和工作区默认值。
+主要入口：
+openclaw onboard 最快开始聊天的方式：打开控制界面（无需设置渠道）。运行 openclaw dashboard 并在浏览器中聊天。文档：控制面板。
+后续重新配置：
+openclaw configure 推荐：设置 Brave Search API 密钥，以便智能体可以使用 web_search（web_fetch 无需密钥即可使用）。最简单的方式：openclaw configure --section web，它会存储 tools.web.search.apiKey。文档：Web 工具。
+快速开始 vs 高级 向导从快速开始（默认值）vs 高级（完全控制）开始。
+快速开始保持默认值：
+本地 Gateway 网关（loopback） 默认工作区（或现有工作区） Gateway 网关端口 18789 Gateway 网关认证 Token（自动生成，即使在 loopback 上） Tailscale 暴露 关闭 Telegram &#43; WhatsApp 私信默认使用允许列表（系统会提示你输入电话号码） 高级暴露每个步骤（模式、工作区、Gateway 网关、渠道、守护进程、Skills）。
+向导做了什么 **本地模式（默认）**引导你完成：
+模型/认证（OpenAI Code (Codex) 订阅 OAuth、Anthropic API 密钥（推荐）或 setup-token（粘贴），以及 MiniMax/GLM/Moonshot/AI Gateway 选项） 工作区位置 &#43; 引导文件 Gateway 网关设置（端口/绑定/认证/tailscale） 提供商（Telegram、WhatsApp、Discord、Google Chat、Mattermost（插件）、Signal） 守护进程安装（LaunchAgent / systemd 用户单元） 健康检查 Skills（推荐） 远程模式仅配置本地客户端连接到其他位置的 Gateway 网关。 它不会在远程主机上安装或更改任何内容。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="新手引导向导（CLI）">
+<meta name="twitter:description" content="新手引导向导是在 macOS、Linux 或 Windows（通过 WSL2；强烈推荐）上设置 OpenClaw 的推荐方式。
+它可以在一个引导式流程中配置本地 Gateway 网关或远程 Gateway 网关连接，以及渠道、Skills 和工作区默认值。
+主要入口：
+openclaw onboard
+最快开始聊天的方式：打开控制界面（无需设置渠道）。运行 openclaw dashboard 并在浏览器中聊天。文档：控制面板。
+后续重新配置：
+openclaw configure
+推荐：设置 Brave Search API 密钥，以便智能体可以使用 web_search（web_fetch 无需密钥即可使用）。最简单的方式：openclaw configure --section web，它会存储 tools.web.search.apiKey。文档：Web 工具。
+快速开始 vs 高级
+向导从快速开始（默认值）vs 高级（完全控制）开始。
+快速开始保持默认值：
+
+本地 Gateway 网关（loopback）
+默认工作区（或现有工作区）
+Gateway 网关端口 18789
+Gateway 网关认证 Token（自动生成，即使在 loopback 上）
+Tailscale 暴露 关闭
+Telegram &#43; WhatsApp 私信默认使用允许列表（系统会提示你输入电话号码）
+
+高级暴露每个步骤（模式、工作区、Gateway 网关、渠道、守护进程、Skills）。
+向导做了什么
+**本地模式（默认）**引导你完成：
+
+模型/认证（OpenAI Code (Codex) 订阅 OAuth、Anthropic API 密钥（推荐）或 setup-token（粘贴），以及 MiniMax/GLM/Moonshot/AI Gateway 选项）
+工作区位置 &#43; 引导文件
+Gateway 网关设置（端口/绑定/认证/tailscale）
+提供商（Telegram、WhatsApp、Discord、Google Chat、Mattermost（插件）、Signal）
+守护进程安装（LaunchAgent / systemd 用户单元）
+健康检查
+Skills（推荐）
+
+远程模式仅配置本地客户端连接到其他位置的 Gateway 网关。
+它不会在远程主机上安装或更改任何内容。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "新手引导向导（CLI）",
+      "item": "/openclaw/start/wizard/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "新手引导向导（CLI）",
+  "name": "新手引导向导（CLI）",
+  "description": "新手引导向导是在 macOS、Linux 或 Windows（通过 WSL2；强烈推荐）上设置 OpenClaw 的推荐方式。 它可以在一个引导式流程中配置本地 Gateway 网关或远程 Gateway 网关连接，以及渠道、Skills 和工作区默认值。\n主要入口：\nopenclaw onboard 最快开始聊天的方式：打开控制界面（无需设置渠道）。运行 openclaw dashboard 并在浏览器中聊天。文档：控制面板。\n后续重新配置：\nopenclaw configure 推荐：设置 Brave Search API 密钥，以便智能体可以使用 web_search（web_fetch 无需密钥即可使用）。最简单的方式：openclaw configure --section web，它会存储 tools.web.search.apiKey。文档：Web 工具。\n快速开始 vs 高级 向导从快速开始（默认值）vs 高级（完全控制）开始。\n快速开始保持默认值：\n本地 Gateway 网关（loopback） 默认工作区（或现有工作区） Gateway 网关端口 18789 Gateway 网关认证 Token（自动生成，即使在 loopback 上） Tailscale 暴露 关闭 Telegram + WhatsApp 私信默认使用允许列表（系统会提示你输入电话号码） 高级暴露每个步骤（模式、工作区、Gateway 网关、渠道、守护进程、Skills）。\n向导做了什么 **本地模式（默认）**引导你完成：\n模型/认证（OpenAI Code (Codex) 订阅 OAuth、Anthropic API 密钥（推荐）或 setup-token（粘贴），以及 MiniMax/GLM/Moonshot/AI Gateway 选项） 工作区位置 + 引导文件 Gateway 网关设置（端口/绑定/认证/tailscale） 提供商（Telegram、WhatsApp、Discord、Google Chat、Mattermost（插件）、Signal） 守护进程安装（LaunchAgent / systemd 用户单元） 健康检查 Skills（推荐） 远程模式仅配置本地客户端连接到其他位置的 Gateway 网关。 它不会在远程主机上安装或更改任何内容。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "新手引导向导是在 macOS、Linux 或 Windows（通过 WSL2；强烈推荐）上设置 OpenClaw 的推荐方式。 它可以在一个引导式流程中配置本地 Gateway 网关或远程 Gateway 网关连接，以及渠道、Skills 和工作区默认值。\n主要入口：\nopenclaw onboard 最快开始聊天的方式：打开控制界面（无需设置渠道）。运行 openclaw dashboard 并在浏览器中聊天。文档：控制面板。\n后续重新配置：\nopenclaw configure 推荐：设置 Brave Search API 密钥，以便智能体可以使用 web_search（web_fetch 无需密钥即可使用）。最简单的方式：openclaw configure --section web，它会存储 tools.web.search.apiKey。文档：Web 工具。\n快速开始 vs 高级 向导从快速开始（默认值）vs 高级（完全控制）开始。\n快速开始保持默认值：\n本地 Gateway 网关（loopback） 默认工作区（或现有工作区） Gateway 网关端口 18789 Gateway 网关认证 Token（自动生成，即使在 loopback 上） Tailscale 暴露 关闭 Telegram + WhatsApp 私信默认使用允许列表（系统会提示你输入电话号码） 高级暴露每个步骤（模式、工作区、Gateway 网关、渠道、守护进程、Skills）。\n向导做了什么 **本地模式（默认）**引导你完成：\n模型/认证（OpenAI Code (Codex) 订阅 OAuth、Anthropic API 密钥（推荐）或 setup-token（粘贴），以及 MiniMax/GLM/Moonshot/AI Gateway 选项） 工作区位置 + 引导文件 Gateway 网关设置（端口/绑定/认证/tailscale） 提供商（Telegram、WhatsApp、Discord、Google Chat、Mattermost（插件）、Signal） 守护进程安装（LaunchAgent / systemd 用户单元） 健康检查 Skills（推荐） 远程模式仅配置本地客户端连接到其他位置的 Gateway 网关。 它不会在远程主机上安装或更改任何内容。\n要添加更多隔离的智能体（独立的工作区 + 会话 + 认证），使用：\nopenclaw agents add 提示：--json 不意味着非交互模式。脚本中请使用 --non-interactive（和 --workspace）。\n流程详情（本地） 现有配置检测\n如果 ~/.openclaw/openclaw.json 存在，选择保留 / 修改 / 重置。 重新运行向导不会清除任何内容，除非你明确选择重置（或传递 --reset）。 如果配置无效或包含遗留键名，向导会停止并要求你在继续之前运行 openclaw doctor。 重置使用 trash（永不使用 rm）并提供范围选项： 仅配置 配置 + 凭证 + 会话 完全重置（同时删除工作区） 模型/认证\nAnthropic API 密钥（推荐）：如果存在则使用 ANTHROPIC_API_KEY，否则提示输入密钥，然后保存供守护进程使用。 Anthropic OAuth（Claude Code CLI）：在 macOS 上，向导检查钥匙串项目\"Claude Code-credentials\"（选择\"始终允许\"以便 launchd 启动不会阻塞）；在 Linux/Windows 上，如果存在则复用 ~/.claude/.credentials.json。 Anthropic 令牌（粘贴 setup-token）：在任何机器上运行 claude setup-token，然后粘贴令牌（你可以命名它；空白 = 默认）。 OpenAI Code (Codex) 订阅（Codex CLI）：如果 ~/.codex/auth.json 存在，向导可以复用它。 OpenAI Code (Codex) 订阅（OAuth）：浏览器流程；粘贴 code#state。 当模型未设置或为 openai/* 时，将 agents.defaults.model 设置为 openai-codex/gpt-5.2。 OpenAI API 密钥：如果存在则使用 OPENAI_API_KEY，否则提示输入密钥，然后保存到 ~/.openclaw/.env 以便 launchd 可以读取。 OpenCode Zen（多模型代理）：提示输入 OPENCODE_API_KEY（或 OPENCODE_ZEN_API_KEY，在 https://opencode.ai/auth 获取）。 API 密钥：为你存储密钥。 Vercel AI Gateway（多模型代理）：提示输入 AI_GATEWAY_API_KEY。 更多详情：Vercel AI Gateway MiniMax M2.1：自动写入配置。 更多详情：MiniMax Synthetic（Anthropic 兼容）：提示输入 SYNTHETIC_API_KEY。 更多详情：Synthetic Moonshot（Kimi K2）：自动写入配置。 Kimi Coding：自动写入配置。 更多详情：Moonshot AI（Kimi + Kimi Coding） 跳过：尚未配置认证。 从检测到的选项中选择默认模型（或手动输入提供商/模型）。 向导运行模型检查，如果配置的模型未知或缺少认证则发出警告。 OAuth 凭证存储在 ~/.openclaw/credentials/oauth.json；认证配置文件存储在 ~/.openclaw/agents//agent/auth-profiles.json（API 密钥 + OAuth）。 更多详情：/concepts/oauth 工作区\n默认 ~/.openclaw/workspace（可配置）。 为智能体引导仪式播种所需的工作区文件。 完整的工作区布局 + 备份指南：智能体工作区 Gateway 网关\n端口、绑定、认证模式、tailscale 暴露。 认证建议：即使对于 loopback 也保持 Token，以便本地 WS 客户端必须进行认证。 仅当你完全信任每个本地进程时才禁用认证。 非 loopback 绑定仍需要认证。 渠道\nWhatsApp：可选的二维码登录。 Telegram：机器人令牌。 Discord：机器人令牌。 Google Chat：服务账户 JSON + webhook 受众。 Mattermost（插件）：机器人令牌 + 基础 URL。 Signal：可选的 signal-cli 安装 + 账户配置。 iMessage：本地 imsg CLI 路径 + 数据库访问。 私信安全：默认为配对。第一条私信发送验证码；通过 openclaw pairing approve 批准或使用允许列表。 守护进程安装\nmacOS：LaunchAgent 需要已登录的用户会话；对于无头环境，使用自定义 LaunchDaemon（未提供）。 Linux（和通过 WSL2 的 Windows）：systemd 用户单元 向导尝试通过 loginctl enable-linger 启用 lingering，以便 Gateway 网关在注销后保持运行。 可能提示 sudo（写入 /var/lib/systemd/linger）；它首先尝试不使用 sudo。 **运行时选择：**Node（推荐；WhatsApp/Telegram 需要）。不推荐 Bun。 健康检查\n启动 Gateway 网关（如果需要）并运行 openclaw health。 提示：openclaw status --deep 在状态输出中添加 Gateway 网关健康探测（需要可达的 Gateway 网关）。 Skills（推荐）\n读取可用的 Skills 并检查要求。 让你选择节点管理器：npm / pnpm（不推荐 bun）。 安装可选依赖项（某些在 macOS 上使用 Homebrew）。 完成\n总结 + 后续步骤，包括用于额外功能的 iOS/Android/macOS 应用。 如果未检测到 GUI，向导会打印控制界面的 SSH 端口转发说明，而不是打开浏览器。 如果控制界面资源缺失，向导会尝试构建它们；回退方案是 pnpm ui:build（自动安装 UI 依赖）。 远程模式 远程模式配置本地客户端连接到其他位置的 Gateway 网关。\n你将设置的内容：\n远程 Gateway 网关 URL（ws://...） 如果远程 Gateway 网关需要认证则需要令牌（推荐） 注意事项：\n不执行远程安装或守护进程更改。 如果 Gateway 网关仅限 loopback，使用 SSH 隧道或 tailnet。 发现提示： macOS：Bonjour（dns-sd） Linux：Avahi（avahi-browse） 添加另一个智能体 使用 openclaw agents add 创建一个具有独立工作区、会话和认证配置文件的单独智能体。不带 --workspace 运行会启动向导。\n它设置的内容：\nagents.list[].name agents.list[].workspace agents.list[].agentDir 注意事项：\n默认工作区遵循 ~/.openclaw/workspace-。 添加 bindings 以路由入站消息（向导可以执行此操作）。 非交互标志：--model、--agent-dir、--bind、--non-interactive。 非交互模式 使用 --non-interactive 自动化或脚本化新手引导：\nopenclaw onboard --non-interactive \\ --mode local \\ --auth-choice apiKey \\ --anthropic-api-key \"$ANTHROPIC_API_KEY\" \\ --gateway-port 18789 \\ --gateway-bind loopback \\ --install-daemon \\ --daemon-runtime node \\ --skip-skills 添加 --json 以获取机器可读的摘要。\nGemini 示例：\nopenclaw onboard --non-interactive \\ --mode local \\ --auth-choice gemini-api-key \\ --gemini-api-key \"$GEMINI_API_KEY\" \\ --gateway-port 18789 \\ --gateway-bind loopback Z.AI 示例：\nopenclaw onboard --non-interactive \\ --mode local \\ --auth-choice zai-api-key \\ --zai-api-key \"$ZAI_API_KEY\" \\ --gateway-port 18789 \\ --gateway-bind loopback Vercel AI Gateway 示例：\nopenclaw onboard --non-interactive \\ --mode local \\ --auth-choice ai-gateway-api-key \\ --ai-gateway-api-key \"$AI_GATEWAY_API_KEY\" \\ --gateway-port 18789 \\ --gateway-bind loopback Moonshot 示例：\nopenclaw onboard --non-interactive \\ --mode local \\ --auth-choice moonshot-api-key \\ --moonshot-api-key \"$MOONSHOT_API_KEY\" \\ --gateway-port 18789 \\ --gateway-bind loopback Synthetic 示例：\nopenclaw onboard --non-interactive \\ --mode local \\ --auth-choice synthetic-api-key \\ --synthetic-api-key \"$SYNTHETIC_API_KEY\" \\ --gateway-port 18789 \\ --gateway-bind loopback OpenCode Zen 示例：\nopenclaw onboard --non-interactive \\ --mode local \\ --auth-choice opencode-zen \\ --opencode-zen-api-key \"$OPENCODE_API_KEY\" \\ --gateway-port 18789 \\ --gateway-bind loopback 添加智能体（非交互）示例：\nopenclaw agents add work \\ --workspace ~/.openclaw/workspace-work \\ --model openai/gpt-5.2 \\ --bind whatsapp:biz \\ --non-interactive \\ --json Gateway 网关向导 RPC Gateway 网关通过 RPC 暴露向导流程（wizard.start、wizard.next、wizard.cancel、wizard.status）。 客户端（macOS 应用、控制界面）可以渲染步骤而无需重新实现新手引导逻辑。\nSignal 设置（signal-cli） 向导可以从 GitHub releases 安装 signal-cli：\n下载适当的发布资源。 存储在 ~/.openclaw/tools/signal-cli// 下。 将 channels.signal.cliPath 写入你的配置。 注意事项：\nJVM 构建需要 Java 21。 可用时使用原生构建。 Windows 使用 WSL2；signal-cli 安装在 WSL 内遵循 Linux 流程。 向导写入的内容 ~/.openclaw/openclaw.json 中的典型字段：\nagents.defaults.workspace agents.defaults.model / models.providers（如果选择了 Minimax） gateway.*（模式、绑定、认证、tailscale） channels.telegram.botToken、channels.discord.token、channels.signal.*、channels.imessage.* 当你在提示中选择加入时的渠道允许列表（Slack/Discord/Matrix/Microsoft Teams）（名称在可能时解析为 ID）。 skills.install.nodeManager wizard.lastRunAt wizard.lastRunVersion wizard.lastRunCommit wizard.lastRunCommand wizard.lastRunMode openclaw agents add 写入 agents.list[] 和可选的 bindings。\nWhatsApp 凭证存储在 ~/.openclaw/credentials/whatsapp// 下。 会话存储在 ~/.openclaw/agents//sessions/ 下。\n某些渠道以插件形式提供。当你在新手引导期间选择一个时，向导会在配置之前提示安装它（npm 或本地路径）。\n相关文档 macOS 应用新手引导：新手引导 配置参考：Gateway 网关配置 提供商：WhatsApp、Telegram、Discord、Google Chat、Signal、iMessage Skills：Skills、Skills 配置 ",
+  "wordCount" : "637",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/start/wizard/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      新手引导向导（CLI）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b-vs-%e9%ab%98%e7%ba%a7" aria-label="快速开始 vs 高级">快速开始 vs 高级</a></li>
+                <li>
+                    <a href="#%e5%90%91%e5%af%bc%e5%81%9a%e4%ba%86%e4%bb%80%e4%b9%88" aria-label="向导做了什么">向导做了什么</a></li>
+                <li>
+                    <a href="#%e6%b5%81%e7%a8%8b%e8%af%a6%e6%83%85%e6%9c%ac%e5%9c%b0" aria-label="流程详情（本地）">流程详情（本地）</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b%e6%a8%a1%e5%bc%8f" aria-label="远程模式">远程模式</a></li>
+                <li>
+                    <a href="#%e6%b7%bb%e5%8a%a0%e5%8f%a6%e4%b8%80%e4%b8%aa%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="添加另一个智能体">添加另一个智能体</a></li>
+                <li>
+                    <a href="#%e9%9d%9e%e4%ba%a4%e4%ba%92%e6%a8%a1%e5%bc%8f" aria-label="非交互模式">非交互模式</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e5%90%91%e5%af%bc-rpc" aria-label="Gateway 网关向导 RPC">Gateway 网关向导 RPC</a></li>
+                <li>
+                    <a href="#signal-%e8%ae%be%e7%bd%aesignal-cli" aria-label="Signal 设置（signal-cli）">Signal 设置（signal-cli）</a></li>
+                <li>
+                    <a href="#%e5%90%91%e5%af%bc%e5%86%99%e5%85%a5%e7%9a%84%e5%86%85%e5%ae%b9" aria-label="向导写入的内容">向导写入的内容</a></li>
+                <li>
+                    <a href="#%e7%9b%b8%e5%85%b3%e6%96%87%e6%a1%a3" aria-label="相关文档">相关文档</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>新手引导向导是在 macOS、Linux 或 Windows（通过 WSL2；强烈推荐）上设置 OpenClaw 的<strong>推荐</strong>方式。
+它可以在一个引导式流程中配置本地 Gateway 网关或远程 Gateway 网关连接，以及渠道、Skills 和工作区默认值。</p>
+<p>主要入口：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard
+</span></span></code></pre></div><p>最快开始聊天的方式：打开控制界面（无需设置渠道）。运行 <code>openclaw dashboard</code> 并在浏览器中聊天。文档：<a href="/web/dashboard">控制面板</a>。</p>
+<p>后续重新配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw configure
+</span></span></code></pre></div><p>推荐：设置 Brave Search API 密钥，以便智能体可以使用 <code>web_search</code>（<code>web_fetch</code> 无需密钥即可使用）。最简单的方式：<code>openclaw configure --section web</code>，它会存储 <code>tools.web.search.apiKey</code>。文档：<a href="/tools/web">Web 工具</a>。</p>
+<h2 id="快速开始-vs-高级">快速开始 vs 高级<a hidden class="anchor" aria-hidden="true" href="#快速开始-vs-高级">#</a></h2>
+<p>向导从<strong>快速开始</strong>（默认值）vs <strong>高级</strong>（完全控制）开始。</p>
+<p><strong>快速开始</strong>保持默认值：</p>
+<ul>
+<li>本地 Gateway 网关（loopback）</li>
+<li>默认工作区（或现有工作区）</li>
+<li>Gateway 网关端口 <strong>18789</strong></li>
+<li>Gateway 网关认证 <strong>Token</strong>（自动生成，即使在 loopback 上）</li>
+<li>Tailscale 暴露 <strong>关闭</strong></li>
+<li>Telegram + WhatsApp 私信默认使用<strong>允许列表</strong>（系统会提示你输入电话号码）</li>
+</ul>
+<p><strong>高级</strong>暴露每个步骤（模式、工作区、Gateway 网关、渠道、守护进程、Skills）。</p>
+<h2 id="向导做了什么">向导做了什么<a hidden class="anchor" aria-hidden="true" href="#向导做了什么">#</a></h2>
+<p>**本地模式（默认）**引导你完成：</p>
+<ul>
+<li>模型/认证（OpenAI Code (Codex) 订阅 OAuth、Anthropic API 密钥（推荐）或 setup-token（粘贴），以及 MiniMax/GLM/Moonshot/AI Gateway 选项）</li>
+<li>工作区位置 + 引导文件</li>
+<li>Gateway 网关设置（端口/绑定/认证/tailscale）</li>
+<li>提供商（Telegram、WhatsApp、Discord、Google Chat、Mattermost（插件）、Signal）</li>
+<li>守护进程安装（LaunchAgent / systemd 用户单元）</li>
+<li>健康检查</li>
+<li>Skills（推荐）</li>
+</ul>
+<p><strong>远程模式</strong>仅配置本地客户端连接到其他位置的 Gateway 网关。
+它<strong>不会</strong>在远程主机上安装或更改任何内容。</p>
+<p>要添加更多隔离的智能体（独立的工作区 + 会话 + 认证），使用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw agents add &lt;name&gt;
+</span></span></code></pre></div><p>提示：<code>--json</code> <strong>不</strong>意味着非交互模式。脚本中请使用 <code>--non-interactive</code>（和 <code>--workspace</code>）。</p>
+<h2 id="流程详情本地">流程详情（本地）<a hidden class="anchor" aria-hidden="true" href="#流程详情本地">#</a></h2>
+<ol>
+<li>
+<p><strong>现有配置检测</strong></p>
+<ul>
+<li>如果 <code>~/.openclaw/openclaw.json</code> 存在，选择<strong>保留 / 修改 / 重置</strong>。</li>
+<li>重新运行向导<strong>不会</strong>清除任何内容，除非你明确选择<strong>重置</strong>（或传递 <code>--reset</code>）。</li>
+<li>如果配置无效或包含遗留键名，向导会停止并要求你在继续之前运行 <code>openclaw doctor</code>。</li>
+<li>重置使用 <code>trash</code>（永不使用 <code>rm</code>）并提供范围选项：
+<ul>
+<li>仅配置</li>
+<li>配置 + 凭证 + 会话</li>
+<li>完全重置（同时删除工作区）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>模型/认证</strong></p>
+<ul>
+<li><strong>Anthropic API 密钥（推荐）</strong>：如果存在则使用 <code>ANTHROPIC_API_KEY</code>，否则提示输入密钥，然后保存供守护进程使用。</li>
+<li><strong>Anthropic OAuth（Claude Code CLI）</strong>：在 macOS 上，向导检查钥匙串项目&quot;Claude Code-credentials&quot;（选择&quot;始终允许&quot;以便 launchd 启动不会阻塞）；在 Linux/Windows 上，如果存在则复用 <code>~/.claude/.credentials.json</code>。</li>
+<li><strong>Anthropic 令牌（粘贴 setup-token）</strong>：在任何机器上运行 <code>claude setup-token</code>，然后粘贴令牌（你可以命名它；空白 = 默认）。</li>
+<li><strong>OpenAI Code (Codex) 订阅（Codex CLI）</strong>：如果 <code>~/.codex/auth.json</code> 存在，向导可以复用它。</li>
+<li><strong>OpenAI Code (Codex) 订阅（OAuth）</strong>：浏览器流程；粘贴 <code>code#state</code>。
+<ul>
+<li>当模型未设置或为 <code>openai/*</code> 时，将 <code>agents.defaults.model</code> 设置为 <code>openai-codex/gpt-5.2</code>。</li>
+</ul>
+</li>
+<li><strong>OpenAI API 密钥</strong>：如果存在则使用 <code>OPENAI_API_KEY</code>，否则提示输入密钥，然后保存到 <code>~/.openclaw/.env</code> 以便 launchd 可以读取。</li>
+<li><strong>OpenCode Zen（多模型代理）</strong>：提示输入 <code>OPENCODE_API_KEY</code>（或 <code>OPENCODE_ZEN_API_KEY</code>，在 <a href="https://opencode.ai/auth">https://opencode.ai/auth</a> 获取）。</li>
+<li><strong>API 密钥</strong>：为你存储密钥。</li>
+<li><strong>Vercel AI Gateway（多模型代理）</strong>：提示输入 <code>AI_GATEWAY_API_KEY</code>。</li>
+<li>更多详情：<a href="/providers/vercel-ai-gateway">Vercel AI Gateway</a></li>
+<li><strong>MiniMax M2.1</strong>：自动写入配置。</li>
+<li>更多详情：<a href="/providers/minimax">MiniMax</a></li>
+<li><strong>Synthetic（Anthropic 兼容）</strong>：提示输入 <code>SYNTHETIC_API_KEY</code>。</li>
+<li>更多详情：<a href="/providers/synthetic">Synthetic</a></li>
+<li><strong>Moonshot（Kimi K2）</strong>：自动写入配置。</li>
+<li><strong>Kimi Coding</strong>：自动写入配置。</li>
+<li>更多详情：<a href="/providers/moonshot">Moonshot AI（Kimi + Kimi Coding）</a></li>
+<li><strong>跳过</strong>：尚未配置认证。</li>
+<li>从检测到的选项中选择默认模型（或手动输入提供商/模型）。</li>
+<li>向导运行模型检查，如果配置的模型未知或缺少认证则发出警告。</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>OAuth 凭证存储在 <code>~/.openclaw/credentials/oauth.json</code>；认证配置文件存储在 <code>~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json</code>（API 密钥 + OAuth）。</li>
+<li>更多详情：<a href="/concepts/oauth">/concepts/oauth</a></li>
+</ul>
+<ol start="3">
+<li>
+<p><strong>工作区</strong></p>
+<ul>
+<li>默认 <code>~/.openclaw/workspace</code>（可配置）。</li>
+<li>为智能体引导仪式播种所需的工作区文件。</li>
+<li>完整的工作区布局 + 备份指南：<a href="/concepts/agent-workspace">智能体工作区</a></li>
+</ul>
+</li>
+<li>
+<p><strong>Gateway 网关</strong></p>
+<ul>
+<li>端口、绑定、认证模式、tailscale 暴露。</li>
+<li>认证建议：即使对于 loopback 也保持 <strong>Token</strong>，以便本地 WS 客户端必须进行认证。</li>
+<li>仅当你完全信任每个本地进程时才禁用认证。</li>
+<li>非 loopback 绑定仍需要认证。</li>
+</ul>
+</li>
+<li>
+<p><strong>渠道</strong></p>
+<ul>
+<li><a href="/channels/whatsapp">WhatsApp</a>：可选的二维码登录。</li>
+<li><a href="/channels/telegram">Telegram</a>：机器人令牌。</li>
+<li><a href="/channels/discord">Discord</a>：机器人令牌。</li>
+<li><a href="/channels/googlechat">Google Chat</a>：服务账户 JSON + webhook 受众。</li>
+<li><a href="/channels/mattermost">Mattermost</a>（插件）：机器人令牌 + 基础 URL。</li>
+<li><a href="/channels/signal">Signal</a>：可选的 <code>signal-cli</code> 安装 + 账户配置。</li>
+<li><a href="/channels/imessage">iMessage</a>：本地 <code>imsg</code> CLI 路径 + 数据库访问。</li>
+<li>私信安全：默认为配对。第一条私信发送验证码；通过 <code>openclaw pairing approve &lt;channel&gt; &lt;code&gt;</code> 批准或使用允许列表。</li>
+</ul>
+</li>
+<li>
+<p><strong>守护进程安装</strong></p>
+<ul>
+<li>macOS：LaunchAgent
+<ul>
+<li>需要已登录的用户会话；对于无头环境，使用自定义 LaunchDaemon（未提供）。</li>
+</ul>
+</li>
+<li>Linux（和通过 WSL2 的 Windows）：systemd 用户单元
+<ul>
+<li>向导尝试通过 <code>loginctl enable-linger &lt;user&gt;</code> 启用 lingering，以便 Gateway 网关在注销后保持运行。</li>
+<li>可能提示 sudo（写入 <code>/var/lib/systemd/linger</code>）；它首先尝试不使用 sudo。</li>
+</ul>
+</li>
+<li>**运行时选择：**Node（推荐；WhatsApp/Telegram 需要）。<strong>不推荐</strong> Bun。</li>
+</ul>
+</li>
+<li>
+<p><strong>健康检查</strong></p>
+<ul>
+<li>启动 Gateway 网关（如果需要）并运行 <code>openclaw health</code>。</li>
+<li>提示：<code>openclaw status --deep</code> 在状态输出中添加 Gateway 网关健康探测（需要可达的 Gateway 网关）。</li>
+</ul>
+</li>
+<li>
+<p><strong>Skills（推荐）</strong></p>
+<ul>
+<li>读取可用的 Skills 并检查要求。</li>
+<li>让你选择节点管理器：<strong>npm / pnpm</strong>（不推荐 bun）。</li>
+<li>安装可选依赖项（某些在 macOS 上使用 Homebrew）。</li>
+</ul>
+</li>
+<li>
+<p><strong>完成</strong></p>
+<ul>
+<li>总结 + 后续步骤，包括用于额外功能的 iOS/Android/macOS 应用。</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>如果未检测到 GUI，向导会打印控制界面的 SSH 端口转发说明，而不是打开浏览器。</li>
+<li>如果控制界面资源缺失，向导会尝试构建它们；回退方案是 <code>pnpm ui:build</code>（自动安装 UI 依赖）。</li>
+</ul>
+<h2 id="远程模式">远程模式<a hidden class="anchor" aria-hidden="true" href="#远程模式">#</a></h2>
+<p>远程模式配置本地客户端连接到其他位置的 Gateway 网关。</p>
+<p>你将设置的内容：</p>
+<ul>
+<li>远程 Gateway 网关 URL（<code>ws://...</code>）</li>
+<li>如果远程 Gateway 网关需要认证则需要令牌（推荐）</li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>不执行远程安装或守护进程更改。</li>
+<li>如果 Gateway 网关仅限 loopback，使用 SSH 隧道或 tailnet。</li>
+<li>发现提示：
+<ul>
+<li>macOS：Bonjour（<code>dns-sd</code>）</li>
+<li>Linux：Avahi（<code>avahi-browse</code>）</li>
+</ul>
+</li>
+</ul>
+<h2 id="添加另一个智能体">添加另一个智能体<a hidden class="anchor" aria-hidden="true" href="#添加另一个智能体">#</a></h2>
+<p>使用 <code>openclaw agents add &lt;name&gt;</code> 创建一个具有独立工作区、会话和认证配置文件的单独智能体。不带 <code>--workspace</code> 运行会启动向导。</p>
+<p>它设置的内容：</p>
+<ul>
+<li><code>agents.list[].name</code></li>
+<li><code>agents.list[].workspace</code></li>
+<li><code>agents.list[].agentDir</code></li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>默认工作区遵循 <code>~/.openclaw/workspace-&lt;agentId&gt;</code>。</li>
+<li>添加 <code>bindings</code> 以路由入站消息（向导可以执行此操作）。</li>
+<li>非交互标志：<code>--model</code>、<code>--agent-dir</code>、<code>--bind</code>、<code>--non-interactive</code>。</li>
+</ul>
+<h2 id="非交互模式">非交互模式<a hidden class="anchor" aria-hidden="true" href="#非交互模式">#</a></h2>
+<p>使用 <code>--non-interactive</code> 自动化或脚本化新手引导：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --mode <span class="nb">local</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --auth-choice apiKey <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --anthropic-api-key <span class="s2">&#34;</span><span class="nv">$ANTHROPIC_API_KEY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-port <span class="m">18789</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-bind loopback <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --install-daemon <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --daemon-runtime node <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --skip-skills
+</span></span></code></pre></div><p>添加 <code>--json</code> 以获取机器可读的摘要。</p>
+<p>Gemini 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --mode <span class="nb">local</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --auth-choice gemini-api-key <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gemini-api-key <span class="s2">&#34;</span><span class="nv">$GEMINI_API_KEY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-port <span class="m">18789</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-bind loopback
+</span></span></code></pre></div><p>Z.AI 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --mode <span class="nb">local</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --auth-choice zai-api-key <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --zai-api-key <span class="s2">&#34;</span><span class="nv">$ZAI_API_KEY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-port <span class="m">18789</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-bind loopback
+</span></span></code></pre></div><p>Vercel AI Gateway 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --mode <span class="nb">local</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --auth-choice ai-gateway-api-key <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --ai-gateway-api-key <span class="s2">&#34;</span><span class="nv">$AI_GATEWAY_API_KEY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-port <span class="m">18789</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-bind loopback
+</span></span></code></pre></div><p>Moonshot 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --mode <span class="nb">local</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --auth-choice moonshot-api-key <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --moonshot-api-key <span class="s2">&#34;</span><span class="nv">$MOONSHOT_API_KEY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-port <span class="m">18789</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-bind loopback
+</span></span></code></pre></div><p>Synthetic 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --mode <span class="nb">local</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --auth-choice synthetic-api-key <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --synthetic-api-key <span class="s2">&#34;</span><span class="nv">$SYNTHETIC_API_KEY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-port <span class="m">18789</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-bind loopback
+</span></span></code></pre></div><p>OpenCode Zen 示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --mode <span class="nb">local</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --auth-choice opencode-zen <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --opencode-zen-api-key <span class="s2">&#34;</span><span class="nv">$OPENCODE_API_KEY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-port <span class="m">18789</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --gateway-bind loopback
+</span></span></code></pre></div><p>添加智能体（非交互）示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw agents add work <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --workspace ~/.openclaw/workspace-work <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --model openai/gpt-5.2 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --bind whatsapp:biz <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --non-interactive <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --json
+</span></span></code></pre></div><h2 id="gateway-网关向导-rpc">Gateway 网关向导 RPC<a hidden class="anchor" aria-hidden="true" href="#gateway-网关向导-rpc">#</a></h2>
+<p>Gateway 网关通过 RPC 暴露向导流程（<code>wizard.start</code>、<code>wizard.next</code>、<code>wizard.cancel</code>、<code>wizard.status</code>）。
+客户端（macOS 应用、控制界面）可以渲染步骤而无需重新实现新手引导逻辑。</p>
+<h2 id="signal-设置signal-cli">Signal 设置（signal-cli）<a hidden class="anchor" aria-hidden="true" href="#signal-设置signal-cli">#</a></h2>
+<p>向导可以从 GitHub releases 安装 <code>signal-cli</code>：</p>
+<ul>
+<li>下载适当的发布资源。</li>
+<li>存储在 <code>~/.openclaw/tools/signal-cli/&lt;version&gt;/</code> 下。</li>
+<li>将 <code>channels.signal.cliPath</code> 写入你的配置。</li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>JVM 构建需要 <strong>Java 21</strong>。</li>
+<li>可用时使用原生构建。</li>
+<li>Windows 使用 WSL2；signal-cli 安装在 WSL 内遵循 Linux 流程。</li>
+</ul>
+<h2 id="向导写入的内容">向导写入的内容<a hidden class="anchor" aria-hidden="true" href="#向导写入的内容">#</a></h2>
+<p><code>~/.openclaw/openclaw.json</code> 中的典型字段：</p>
+<ul>
+<li><code>agents.defaults.workspace</code></li>
+<li><code>agents.defaults.model</code> / <code>models.providers</code>（如果选择了 Minimax）</li>
+<li><code>gateway.*</code>（模式、绑定、认证、tailscale）</li>
+<li><code>channels.telegram.botToken</code>、<code>channels.discord.token</code>、<code>channels.signal.*</code>、<code>channels.imessage.*</code></li>
+<li>当你在提示中选择加入时的渠道允许列表（Slack/Discord/Matrix/Microsoft Teams）（名称在可能时解析为 ID）。</li>
+<li><code>skills.install.nodeManager</code></li>
+<li><code>wizard.lastRunAt</code></li>
+<li><code>wizard.lastRunVersion</code></li>
+<li><code>wizard.lastRunCommit</code></li>
+<li><code>wizard.lastRunCommand</code></li>
+<li><code>wizard.lastRunMode</code></li>
+</ul>
+<p><code>openclaw agents add</code> 写入 <code>agents.list[]</code> 和可选的 <code>bindings</code>。</p>
+<p>WhatsApp 凭证存储在 <code>~/.openclaw/credentials/whatsapp/&lt;accountId&gt;/</code> 下。
+会话存储在 <code>~/.openclaw/agents/&lt;agentId&gt;/sessions/</code> 下。</p>
+<p>某些渠道以插件形式提供。当你在新手引导期间选择一个时，向导会在配置之前提示安装它（npm 或本地路径）。</p>
+<h2 id="相关文档">相关文档<a hidden class="anchor" aria-hidden="true" href="#相关文档">#</a></h2>
+<ul>
+<li>macOS 应用新手引导：<a href="/start/onboarding">新手引导</a></li>
+<li>配置参考：<a href="/gateway/configuration">Gateway 网关配置</a></li>
+<li>提供商：<a href="/channels/whatsapp">WhatsApp</a>、<a href="/channels/telegram">Telegram</a>、<a href="/channels/discord">Discord</a>、<a href="/channels/googlechat">Google Chat</a>、<a href="/channels/signal">Signal</a>、<a href="/channels/imessage">iMessage</a></li>
+<li>Skills：<a href="/tools/skills">Skills</a>、<a href="/tools/skills-config">Skills 配置</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/start/onboarding/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>新手引导（macOS 应用）</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/logging/">
+    <span class="title">Next »</span>
+    <br>
+    <span>日志</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

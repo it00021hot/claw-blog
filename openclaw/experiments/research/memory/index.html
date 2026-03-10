@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>工作区记忆 v2（离线）：研究笔记 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标：Clawd 风格的工作区（agents.defaults.workspace，默认 ~/.openclaw/workspace），其中&quot;记忆&quot;以每天一个 Markdown 文件（memory/YYYY-MM-DD.md）加上一小组稳定文件（例如 memory.md、SOUL.md）的形式存储。
+本文档提出一种离线优先的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加结构化回忆（搜索、实体摘要、置信度更新）。
+为什么要改变？
+当前设置（每天一个文件）非常适合：
+
+&ldquo;仅追加&quot;式日志记录
+人工编辑
+git 支持的持久性 &#43; 可审计性
+低摩擦捕获（&ldquo;直接写下来&rdquo;）
+
+但它在以下方面较弱：
+
+高召回率检索（&ldquo;我们对 X 做了什么决定？&quot;、&ldquo;上次我们尝试 Y 时？&quot;）
+以实体为中心的答案（&ldquo;告诉我关于 Alice / The Castle / warelay 的信息&rdquo;）而无需重读多个文件
+观点/偏好稳定性（以及变化时的证据）
+时间约束（&ldquo;2025 年 11 月期间什么是真实的？&quot;）和冲突解决
+
+设计目标
+
+离线：无需网络即可工作；可在笔记本电脑/Castle 上运行；无云依赖。
+可解释：检索的项目应该可归因（文件 &#43; 位置）并与推理分离。
+低仪式感：每日日志保持 Markdown，无需繁重的 schema 工作。
+增量式：v1 仅使用 FTS 就很有用；语义/向量和图是可选升级。
+对智能体友好：使&quot;在 token 预算内回忆&quot;变得简单（返回小型事实包）。
+
+北极星模型（Hindsight × Letta）
+需要融合两个部分：
+
+Letta/MemGPT 风格的控制循环
+
+
+保持一个小的&quot;核心&quot;始终在上下文中（角色 &#43; 关键用户事实）
+其他所有内容都在上下文之外，通过工具检索
+记忆写入是显式的工具调用（append/replace/insert），持久化后在下一轮重新注入
+
+
+Hindsight 风格的记忆基底
+
+
+分离观察到的、相信的和总结的内容
+支持 retain/recall/reflect
+带有置信度的观点可以随证据演变
+实体感知检索 &#43; 时间查询（即使没有完整的知识图谱）
+
+提议的架构（Markdown 数据源 &#43; 派生索引）
+规范存储（git 友好）
+保持 ~/.openclaw/workspace 作为规范的人类可读记忆。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/experiments/research/memory/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/experiments/research/memory/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/experiments/research/memory/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="工作区记忆 v2（离线）：研究笔记">
+  <meta property="og:description" content="目标：Clawd 风格的工作区（agents.defaults.workspace，默认 ~/.openclaw/workspace），其中&#34;记忆&#34;以每天一个 Markdown 文件（memory/YYYY-MM-DD.md）加上一小组稳定文件（例如 memory.md、SOUL.md）的形式存储。
+本文档提出一种离线优先的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加结构化回忆（搜索、实体摘要、置信度更新）。
+为什么要改变？ 当前设置（每天一个文件）非常适合：
+“仅追加&#34;式日志记录 人工编辑 git 支持的持久性 &#43; 可审计性 低摩擦捕获（“直接写下来”） 但它在以下方面较弱：
+高召回率检索（“我们对 X 做了什么决定？&#34;、“上次我们尝试 Y 时？&#34;） 以实体为中心的答案（“告诉我关于 Alice / The Castle / warelay 的信息”）而无需重读多个文件 观点/偏好稳定性（以及变化时的证据） 时间约束（“2025 年 11 月期间什么是真实的？&#34;）和冲突解决 设计目标 离线：无需网络即可工作；可在笔记本电脑/Castle 上运行；无云依赖。 可解释：检索的项目应该可归因（文件 &#43; 位置）并与推理分离。 低仪式感：每日日志保持 Markdown，无需繁重的 schema 工作。 增量式：v1 仅使用 FTS 就很有用；语义/向量和图是可选升级。 对智能体友好：使&#34;在 token 预算内回忆&#34;变得简单（返回小型事实包）。 北极星模型（Hindsight × Letta） 需要融合两个部分：
+Letta/MemGPT 风格的控制循环 保持一个小的&#34;核心&#34;始终在上下文中（角色 &#43; 关键用户事实） 其他所有内容都在上下文之外，通过工具检索 记忆写入是显式的工具调用（append/replace/insert），持久化后在下一轮重新注入 Hindsight 风格的记忆基底 分离观察到的、相信的和总结的内容 支持 retain/recall/reflect 带有置信度的观点可以随证据演变 实体感知检索 &#43; 时间查询（即使没有完整的知识图谱） 提议的架构（Markdown 数据源 &#43; 派生索引） 规范存储（git 友好） 保持 ~/.openclaw/workspace 作为规范的人类可读记忆。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="工作区记忆 v2（离线）：研究笔记">
+<meta name="twitter:description" content="目标：Clawd 风格的工作区（agents.defaults.workspace，默认 ~/.openclaw/workspace），其中&quot;记忆&quot;以每天一个 Markdown 文件（memory/YYYY-MM-DD.md）加上一小组稳定文件（例如 memory.md、SOUL.md）的形式存储。
+本文档提出一种离线优先的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加结构化回忆（搜索、实体摘要、置信度更新）。
+为什么要改变？
+当前设置（每天一个文件）非常适合：
+
+&ldquo;仅追加&quot;式日志记录
+人工编辑
+git 支持的持久性 &#43; 可审计性
+低摩擦捕获（&ldquo;直接写下来&rdquo;）
+
+但它在以下方面较弱：
+
+高召回率检索（&ldquo;我们对 X 做了什么决定？&quot;、&ldquo;上次我们尝试 Y 时？&quot;）
+以实体为中心的答案（&ldquo;告诉我关于 Alice / The Castle / warelay 的信息&rdquo;）而无需重读多个文件
+观点/偏好稳定性（以及变化时的证据）
+时间约束（&ldquo;2025 年 11 月期间什么是真实的？&quot;）和冲突解决
+
+设计目标
+
+离线：无需网络即可工作；可在笔记本电脑/Castle 上运行；无云依赖。
+可解释：检索的项目应该可归因（文件 &#43; 位置）并与推理分离。
+低仪式感：每日日志保持 Markdown，无需繁重的 schema 工作。
+增量式：v1 仅使用 FTS 就很有用；语义/向量和图是可选升级。
+对智能体友好：使&quot;在 token 预算内回忆&quot;变得简单（返回小型事实包）。
+
+北极星模型（Hindsight × Letta）
+需要融合两个部分：
+
+Letta/MemGPT 风格的控制循环
+
+
+保持一个小的&quot;核心&quot;始终在上下文中（角色 &#43; 关键用户事实）
+其他所有内容都在上下文之外，通过工具检索
+记忆写入是显式的工具调用（append/replace/insert），持久化后在下一轮重新注入
+
+
+Hindsight 风格的记忆基底
+
+
+分离观察到的、相信的和总结的内容
+支持 retain/recall/reflect
+带有置信度的观点可以随证据演变
+实体感知检索 &#43; 时间查询（即使没有完整的知识图谱）
+
+提议的架构（Markdown 数据源 &#43; 派生索引）
+规范存储（git 友好）
+保持 ~/.openclaw/workspace 作为规范的人类可读记忆。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "工作区记忆 v2（离线）：研究笔记",
+      "item": "/openclaw/experiments/research/memory/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "工作区记忆 v2（离线）：研究笔记",
+  "name": "工作区记忆 v2（离线）：研究笔记",
+  "description": "目标：Clawd 风格的工作区（agents.defaults.workspace，默认 ~/.openclaw/workspace），其中\u0026quot;记忆\u0026quot;以每天一个 Markdown 文件（memory/YYYY-MM-DD.md）加上一小组稳定文件（例如 memory.md、SOUL.md）的形式存储。\n本文档提出一种离线优先的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加结构化回忆（搜索、实体摘要、置信度更新）。\n为什么要改变？ 当前设置（每天一个文件）非常适合：\n\u0026ldquo;仅追加\u0026quot;式日志记录 人工编辑 git 支持的持久性 + 可审计性 低摩擦捕获（\u0026ldquo;直接写下来\u0026rdquo;） 但它在以下方面较弱：\n高召回率检索（\u0026ldquo;我们对 X 做了什么决定？\u0026quot;、\u0026ldquo;上次我们尝试 Y 时？\u0026quot;） 以实体为中心的答案（\u0026ldquo;告诉我关于 Alice / The Castle / warelay 的信息\u0026rdquo;）而无需重读多个文件 观点/偏好稳定性（以及变化时的证据） 时间约束（\u0026ldquo;2025 年 11 月期间什么是真实的？\u0026quot;）和冲突解决 设计目标 离线：无需网络即可工作；可在笔记本电脑/Castle 上运行；无云依赖。 可解释：检索的项目应该可归因（文件 + 位置）并与推理分离。 低仪式感：每日日志保持 Markdown，无需繁重的 schema 工作。 增量式：v1 仅使用 FTS 就很有用；语义/向量和图是可选升级。 对智能体友好：使\u0026quot;在 token 预算内回忆\u0026quot;变得简单（返回小型事实包）。 北极星模型（Hindsight × Letta） 需要融合两个部分：\nLetta/MemGPT 风格的控制循环 保持一个小的\u0026quot;核心\u0026quot;始终在上下文中（角色 + 关键用户事实） 其他所有内容都在上下文之外，通过工具检索 记忆写入是显式的工具调用（append/replace/insert），持久化后在下一轮重新注入 Hindsight 风格的记忆基底 分离观察到的、相信的和总结的内容 支持 retain/recall/reflect 带有置信度的观点可以随证据演变 实体感知检索 + 时间查询（即使没有完整的知识图谱） 提议的架构（Markdown 数据源 + 派生索引） 规范存储（git 友好） 保持 ~/.openclaw/workspace 作为规范的人类可读记忆。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标：Clawd 风格的工作区（agents.defaults.workspace，默认 ~/.openclaw/workspace），其中\"记忆\"以每天一个 Markdown 文件（memory/YYYY-MM-DD.md）加上一小组稳定文件（例如 memory.md、SOUL.md）的形式存储。\n本文档提出一种离线优先的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加结构化回忆（搜索、实体摘要、置信度更新）。\n为什么要改变？ 当前设置（每天一个文件）非常适合：\n“仅追加\"式日志记录 人工编辑 git 支持的持久性 + 可审计性 低摩擦捕获（“直接写下来”） 但它在以下方面较弱：\n高召回率检索（“我们对 X 做了什么决定？\"、“上次我们尝试 Y 时？\"） 以实体为中心的答案（“告诉我关于 Alice / The Castle / warelay 的信息”）而无需重读多个文件 观点/偏好稳定性（以及变化时的证据） 时间约束（“2025 年 11 月期间什么是真实的？\"）和冲突解决 设计目标 离线：无需网络即可工作；可在笔记本电脑/Castle 上运行；无云依赖。 可解释：检索的项目应该可归因（文件 + 位置）并与推理分离。 低仪式感：每日日志保持 Markdown，无需繁重的 schema 工作。 增量式：v1 仅使用 FTS 就很有用；语义/向量和图是可选升级。 对智能体友好：使\"在 token 预算内回忆\"变得简单（返回小型事实包）。 北极星模型（Hindsight × Letta） 需要融合两个部分：\nLetta/MemGPT 风格的控制循环 保持一个小的\"核心\"始终在上下文中（角色 + 关键用户事实） 其他所有内容都在上下文之外，通过工具检索 记忆写入是显式的工具调用（append/replace/insert），持久化后在下一轮重新注入 Hindsight 风格的记忆基底 分离观察到的、相信的和总结的内容 支持 retain/recall/reflect 带有置信度的观点可以随证据演变 实体感知检索 + 时间查询（即使没有完整的知识图谱） 提议的架构（Markdown 数据源 + 派生索引） 规范存储（git 友好） 保持 ~/.openclaw/workspace 作为规范的人类可读记忆。\n建议的工作区布局：\n~/.openclaw/workspace/ memory.md # 小型：持久事实 + 偏好（类似核心） memory/ YYYY-MM-DD.md # 每日日志（追加；叙事） bank/ # \"类型化\"记忆页面（稳定、可审查） world.md # 关于世界的客观事实 experience.md # 智能体做了什么（第一人称） opinions.md # 主观偏好/判断 + 置信度 + 证据指针 entities/ Peter.md The-Castle.md warelay.md ... 注意：\n每日日志保持为每日日志。无需将其转换为 JSON。 bank/ 文件是经过整理的，由反思任务生成，仍可手动编辑。 memory.md 保持\"小型 + 类似核心”：你希望 Clawd 每次会话都能看到的内容。 派生存储（机器回忆） 在工作区下添加派生索引（不一定需要 git 跟踪）：\n~/.openclaw/workspace/.memory/index.sqlite 后端支持：\n用于事实 + 实体链接 + 观点元数据的 SQLite schema SQLite FTS5 用于词法回忆（快速、小巧、离线） 可选的嵌入表用于语义回忆（仍然离线） 索引始终可从 Markdown 重建。\nRetain / Recall / Reflect（操作循环） Retain：将每日日志规范化为\"事实” Hindsight 在这里重要的关键洞察：存储叙事性、自包含的事实，而不是微小的片段。\nmemory/YYYY-MM-DD.md 的实用规则：\n在一天结束时（或期间），添加一个 ## Retain 部分，包含 2-5 个要点： 叙事性（保留跨轮上下文） 自包含（独立时也有意义） 标记类型 + 实体提及 示例：\n## Retain - W @Peter: Currently in Marrakech (Nov 27–Dec 1, 2025) for Andy's birthday. - B @warelay: I fixed the Baileys WS crash by wrapping connection.update handlers in try/catch (https://docs.openclaw.ai/see memory/2025-11-27.md). - O(c=0.95) @Peter: Prefers concise replies (\u0026lt;1500 chars) on WhatsApp; long content goes into files. 最小化解析：\n类型前缀：W（世界）、B（经历/传记）、O（观点）、S（观察/摘要；通常是生成的） 实体：@Peter、@warelay 等（slug 映射到 bank/entities/*.md） 观点置信度：O(c=0.0..1.0) 可选 如果你不想让作者考虑这些：反思任务可以从日志的其余部分推断这些要点，但有一个显式的 ## Retain 部分是最简单的\"质量杠杆”。\nRecall：对派生索引的查询 Recall 应支持：\n词法：“查找精确的术语/名称/命令”（FTS5） 实体：“告诉我关于 X 的信息”（实体页面 + 实体链接的事实） 时间：“11 月 27 日前后发生了什么”/“自上周以来” 观点：“Peter 偏好什么？\"（带置信度 + 证据） 返回格式应对智能体友好并引用来源：\nkind（world|experience|opinion|observation） timestamp（来源日期，或如果存在则提取的时间范围） entities（[\"Peter\",\"warelay\"]） content（叙事性事实） source（memory/2025-11-27.md#L12 等） Reflect：生成稳定页面 + 更新信念 反思是一个定时任务（每日或心跳 ultrathink），它：\n根据最近的事实更新 bank/entities/*.md（实体摘要） 根据强化/矛盾更新 bank/opinions.md 置信度 可选地提议对 memory.md（“类似核心\"的持久事实）的编辑 观点演变（简单、可解释）：\n每个观点有： 陈述 置信度 c ∈ [0,1] last_updated 证据链接（支持 + 矛盾的事实 ID） 当新事实到达时： 通过实体重叠 + 相似性找到候选观点（先 FTS，后嵌入） 通过小幅增量更新置信度；大幅跳跃需要强矛盾 + 重复证据 CLI 集成：独立 vs 深度集成 建议：深度集成到 OpenClaw，但保持可分离的核心库。\n为什么要集成到 OpenClaw？ OpenClaw 已经知道： 工作区路径（agents.defaults.workspace） 会话模型 + 心跳 日志记录 + 故障排除模式 你希望智能体自己调用工具： openclaw memory recall \"…\" --k 25 --since 30d openclaw memory reflect --since 7d 为什么仍要分离库？ 保持记忆逻辑可测试，无需 Gateway 网关/运行时 可从其他上下文重用（本地脚本、未来的桌面应用等） 形态： 记忆工具预计是一个小型 CLI + 库层，但这仅是探索性的。\n“S-Collide” / SuCo：何时使用（研究） 如果\"S-Collide\"指的是 SuCo（Subspace Collision）：这是一种 ANN 检索方法，通过在子空间中使用学习/结构化碰撞来实现强召回/延迟权衡（论文：arXiv 2411.14754，2024）。\n对于 ~/.openclaw/workspace 的务实观点：\n不要从 SuCo 开始。 从 SQLite FTS +（可选的）简单嵌入开始；你会立即获得大部分 UX 收益。 仅在以下情况下考虑 SuCo/HNSW/ScaNN 级别的解决方案： 语料库很大（数万/数十万个块） 暴力嵌入搜索变得太慢 召回质量明显受到词法搜索的瓶颈限制 离线友好的替代方案（按复杂性递增）：\nSQLite FTS5 + 元数据过滤（零 ML） 嵌入 + 暴力搜索（如果块数量低，效果出奇地好） HNSW 索引（常见、稳健；需要库绑定） SuCo（研究级；如果有可嵌入的可靠实现则很有吸引力） 开放问题：\n对于你的机器（笔记本 + 台式机）上的\"个人助理记忆”，最佳的离线嵌入模型是什么？ 如果你已经有 Ollama：使用本地模型嵌入；否则在工具链中附带一个小型嵌入模型。 最小可用试点 如果你想要一个最小但仍有用的版本：\n添加 bank/ 实体页面和每日日志中的 ## Retain 部分。 使用 SQLite FTS 进行带引用的回忆（路径 + 行号）。 仅在召回质量或规模需要时添加嵌入。 参考资料 Letta / MemGPT 概念：“核心记忆块” + “档案记忆” + 工具驱动的自编辑记忆。 Hindsight 技术报告：“retain / recall / reflect”，四网络记忆，叙事性事实提取，观点置信度演变。 SuCo：arXiv 2411.14754（2024）：“Subspace Collision\"近似最近邻检索。 ",
+  "wordCount" : "402",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/experiments/research/memory/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      工作区记忆 v2（离线）：研究笔记
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e6%94%b9%e5%8f%98" aria-label="为什么要改变？">为什么要改变？</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e8%ae%a1%e7%9b%ae%e6%a0%87" aria-label="设计目标">设计目标</a></li>
+                <li>
+                    <a href="#%e5%8c%97%e6%9e%81%e6%98%9f%e6%a8%a1%e5%9e%8bhindsight--letta" aria-label="北极星模型（Hindsight × Letta）">北极星模型（Hindsight × Letta）</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e8%ae%ae%e7%9a%84%e6%9e%b6%e6%9e%84markdown-%e6%95%b0%e6%8d%ae%e6%ba%90--%e6%b4%be%e7%94%9f%e7%b4%a2%e5%bc%95" aria-label="提议的架构（Markdown 数据源 &#43; 派生索引）">提议的架构（Markdown 数据源 + 派生索引）</a><ul>
+                        
+                <li>
+                    <a href="#%e8%a7%84%e8%8c%83%e5%ad%98%e5%82%a8git-%e5%8f%8b%e5%a5%bd" aria-label="规范存储（git 友好）">规范存储（git 友好）</a></li>
+                <li>
+                    <a href="#%e6%b4%be%e7%94%9f%e5%ad%98%e5%82%a8%e6%9c%ba%e5%99%a8%e5%9b%9e%e5%bf%86" aria-label="派生存储（机器回忆）">派生存储（机器回忆）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#retain--recall--reflect%e6%93%8d%e4%bd%9c%e5%be%aa%e7%8e%af" aria-label="Retain / Recall / Reflect（操作循环）">Retain / Recall / Reflect（操作循环）</a><ul>
+                        
+                <li>
+                    <a href="#retain%e5%b0%86%e6%af%8f%e6%97%a5%e6%97%a5%e5%bf%97%e8%a7%84%e8%8c%83%e5%8c%96%e4%b8%ba%e4%ba%8b%e5%ae%9e" aria-label="Retain：将每日日志规范化为&quot;事实&rdquo;">Retain：将每日日志规范化为&quot;事实&rdquo;</a></li>
+                <li>
+                    <a href="#recall%e5%af%b9%e6%b4%be%e7%94%9f%e7%b4%a2%e5%bc%95%e7%9a%84%e6%9f%a5%e8%af%a2" aria-label="Recall：对派生索引的查询">Recall：对派生索引的查询</a></li>
+                <li>
+                    <a href="#reflect%e7%94%9f%e6%88%90%e7%a8%b3%e5%ae%9a%e9%a1%b5%e9%9d%a2--%e6%9b%b4%e6%96%b0%e4%bf%a1%e5%bf%b5" aria-label="Reflect：生成稳定页面 &#43; 更新信念">Reflect：生成稳定页面 + 更新信念</a></li></ul>
+                </li>
+                <li>
+                    <a href="#cli-%e9%9b%86%e6%88%90%e7%8b%ac%e7%ab%8b-vs-%e6%b7%b1%e5%ba%a6%e9%9b%86%e6%88%90" aria-label="CLI 集成：独立 vs 深度集成">CLI 集成：独立 vs 深度集成</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e9%9b%86%e6%88%90%e5%88%b0-openclaw" aria-label="为什么要集成到 OpenClaw？">为什么要集成到 OpenClaw？</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bb%8d%e8%a6%81%e5%88%86%e7%a6%bb%e5%ba%93" aria-label="为什么仍要分离库？">为什么仍要分离库？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#s-collide--suco%e4%bd%95%e6%97%b6%e4%bd%bf%e7%94%a8%e7%a0%94%e7%a9%b6" aria-label="&ldquo;S-Collide&rdquo; / SuCo：何时使用（研究）">&ldquo;S-Collide&rdquo; / SuCo：何时使用（研究）</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e5%b0%8f%e5%8f%af%e7%94%a8%e8%af%95%e7%82%b9" aria-label="最小可用试点">最小可用试点</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" aria-label="参考资料">参考资料</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>目标：Clawd 风格的工作区（<code>agents.defaults.workspace</code>，默认 <code>~/.openclaw/workspace</code>），其中&quot;记忆&quot;以每天一个 Markdown 文件（<code>memory/YYYY-MM-DD.md</code>）加上一小组稳定文件（例如 <code>memory.md</code>、<code>SOUL.md</code>）的形式存储。</p>
+<p>本文档提出一种<strong>离线优先</strong>的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加<strong>结构化回忆</strong>（搜索、实体摘要、置信度更新）。</p>
+<h2 id="为什么要改变">为什么要改变？<a hidden class="anchor" aria-hidden="true" href="#为什么要改变">#</a></h2>
+<p>当前设置（每天一个文件）非常适合：</p>
+<ul>
+<li>&ldquo;仅追加&quot;式日志记录</li>
+<li>人工编辑</li>
+<li>git 支持的持久性 + 可审计性</li>
+<li>低摩擦捕获（&ldquo;直接写下来&rdquo;）</li>
+</ul>
+<p>但它在以下方面较弱：</p>
+<ul>
+<li>高召回率检索（&ldquo;我们对 X 做了什么决定？&quot;、&ldquo;上次我们尝试 Y 时？&quot;）</li>
+<li>以实体为中心的答案（&ldquo;告诉我关于 Alice / The Castle / warelay 的信息&rdquo;）而无需重读多个文件</li>
+<li>观点/偏好稳定性（以及变化时的证据）</li>
+<li>时间约束（&ldquo;2025 年 11 月期间什么是真实的？&quot;）和冲突解决</li>
+</ul>
+<h2 id="设计目标">设计目标<a hidden class="anchor" aria-hidden="true" href="#设计目标">#</a></h2>
+<ul>
+<li><strong>离线</strong>：无需网络即可工作；可在笔记本电脑/Castle 上运行；无云依赖。</li>
+<li><strong>可解释</strong>：检索的项目应该可归因（文件 + 位置）并与推理分离。</li>
+<li><strong>低仪式感</strong>：每日日志保持 Markdown，无需繁重的 schema 工作。</li>
+<li><strong>增量式</strong>：v1 仅使用 FTS 就很有用；语义/向量和图是可选升级。</li>
+<li><strong>对智能体友好</strong>：使&quot;在 token 预算内回忆&quot;变得简单（返回小型事实包）。</li>
+</ul>
+<h2 id="北极星模型hindsight--letta">北极星模型（Hindsight × Letta）<a hidden class="anchor" aria-hidden="true" href="#北极星模型hindsight--letta">#</a></h2>
+<p>需要融合两个部分：</p>
+<ol>
+<li><strong>Letta/MemGPT 风格的控制循环</strong></li>
+</ol>
+<ul>
+<li>保持一个小的&quot;核心&quot;始终在上下文中（角色 + 关键用户事实）</li>
+<li>其他所有内容都在上下文之外，通过工具检索</li>
+<li>记忆写入是显式的工具调用（append/replace/insert），持久化后在下一轮重新注入</li>
+</ul>
+<ol start="2">
+<li><strong>Hindsight 风格的记忆基底</strong></li>
+</ol>
+<ul>
+<li>分离观察到的、相信的和总结的内容</li>
+<li>支持 retain/recall/reflect</li>
+<li>带有置信度的观点可以随证据演变</li>
+<li>实体感知检索 + 时间查询（即使没有完整的知识图谱）</li>
+</ul>
+<h2 id="提议的架构markdown-数据源--派生索引">提议的架构（Markdown 数据源 + 派生索引）<a hidden class="anchor" aria-hidden="true" href="#提议的架构markdown-数据源--派生索引">#</a></h2>
+<h3 id="规范存储git-友好">规范存储（git 友好）<a hidden class="anchor" aria-hidden="true" href="#规范存储git-友好">#</a></h3>
+<p>保持 <code>~/.openclaw/workspace</code> 作为规范的人类可读记忆。</p>
+<p>建议的工作区布局：</p>
+<pre tabindex="0"><code>~/.openclaw/workspace/
+  memory.md                    # 小型：持久事实 + 偏好（类似核心）
+  memory/
+    YYYY-MM-DD.md              # 每日日志（追加；叙事）
+  bank/                        # &#34;类型化&#34;记忆页面（稳定、可审查）
+    world.md                   # 关于世界的客观事实
+    experience.md              # 智能体做了什么（第一人称）
+    opinions.md                # 主观偏好/判断 + 置信度 + 证据指针
+    entities/
+      Peter.md
+      The-Castle.md
+      warelay.md
+      ...
+</code></pre><p>注意：</p>
+<ul>
+<li><strong>每日日志保持为每日日志</strong>。无需将其转换为 JSON。</li>
+<li><code>bank/</code> 文件是<strong>经过整理的</strong>，由反思任务生成，仍可手动编辑。</li>
+<li><code>memory.md</code> 保持&quot;小型 + 类似核心&rdquo;：你希望 Clawd 每次会话都能看到的内容。</li>
+</ul>
+<h3 id="派生存储机器回忆">派生存储（机器回忆）<a hidden class="anchor" aria-hidden="true" href="#派生存储机器回忆">#</a></h3>
+<p>在工作区下添加派生索引（不一定需要 git 跟踪）：</p>
+<pre tabindex="0"><code>~/.openclaw/workspace/.memory/index.sqlite
+</code></pre><p>后端支持：</p>
+<ul>
+<li>用于事实 + 实体链接 + 观点元数据的 SQLite schema</li>
+<li>SQLite <strong>FTS5</strong> 用于词法回忆（快速、小巧、离线）</li>
+<li>可选的嵌入表用于语义回忆（仍然离线）</li>
+</ul>
+<p>索引始终<strong>可从 Markdown 重建</strong>。</p>
+<h2 id="retain--recall--reflect操作循环">Retain / Recall / Reflect（操作循环）<a hidden class="anchor" aria-hidden="true" href="#retain--recall--reflect操作循环">#</a></h2>
+<h3 id="retain将每日日志规范化为事实">Retain：将每日日志规范化为&quot;事实&rdquo;<a hidden class="anchor" aria-hidden="true" href="#retain将每日日志规范化为事实">#</a></h3>
+<p>Hindsight 在这里重要的关键洞察：存储<strong>叙事性、自包含的事实</strong>，而不是微小的片段。</p>
+<p><code>memory/YYYY-MM-DD.md</code> 的实用规则：</p>
+<ul>
+<li>在一天结束时（或期间），添加一个 <code>## Retain</code> 部分，包含 2-5 个要点：
+<ul>
+<li>叙事性（保留跨轮上下文）</li>
+<li>自包含（独立时也有意义）</li>
+<li>标记类型 + 实体提及</li>
+</ul>
+</li>
+</ul>
+<p>示例：</p>
+<pre tabindex="0"><code>## Retain
+- W @Peter: Currently in Marrakech (Nov 27–Dec 1, 2025) for Andy&#39;s birthday.
+- B @warelay: I fixed the Baileys WS crash by wrapping connection.update handlers in try/catch (https://docs.openclaw.ai/see memory/2025-11-27.md).
+- O(c=0.95) @Peter: Prefers concise replies (&amp;lt;1500 chars) on WhatsApp; long content goes into files.
+</code></pre><p>最小化解析：</p>
+<ul>
+<li>类型前缀：<code>W</code>（世界）、<code>B</code>（经历/传记）、<code>O</code>（观点）、<code>S</code>（观察/摘要；通常是生成的）</li>
+<li>实体：<code>@Peter</code>、<code>@warelay</code> 等（slug 映射到 <code>bank/entities/*.md</code>）</li>
+<li>观点置信度：<code>O(c=0.0..1.0)</code> 可选</li>
+</ul>
+<p>如果你不想让作者考虑这些：反思任务可以从日志的其余部分推断这些要点，但有一个显式的 <code>## Retain</code> 部分是最简单的&quot;质量杠杆&rdquo;。</p>
+<h3 id="recall对派生索引的查询">Recall：对派生索引的查询<a hidden class="anchor" aria-hidden="true" href="#recall对派生索引的查询">#</a></h3>
+<p>Recall 应支持：</p>
+<ul>
+<li><strong>词法</strong>：&ldquo;查找精确的术语/名称/命令&rdquo;（FTS5）</li>
+<li><strong>实体</strong>：&ldquo;告诉我关于 X 的信息&rdquo;（实体页面 + 实体链接的事实）</li>
+<li><strong>时间</strong>：&ldquo;11 月 27 日前后发生了什么&rdquo;/&ldquo;自上周以来&rdquo;</li>
+<li><strong>观点</strong>：&ldquo;Peter 偏好什么？&quot;（带置信度 + 证据）</li>
+</ul>
+<p>返回格式应对智能体友好并引用来源：</p>
+<ul>
+<li><code>kind</code>（<code>world|experience|opinion|observation</code>）</li>
+<li><code>timestamp</code>（来源日期，或如果存在则提取的时间范围）</li>
+<li><code>entities</code>（<code>[&quot;Peter&quot;,&quot;warelay&quot;]</code>）</li>
+<li><code>content</code>（叙事性事实）</li>
+<li><code>source</code>（<code>memory/2025-11-27.md#L12</code> 等）</li>
+</ul>
+<h3 id="reflect生成稳定页面--更新信念">Reflect：生成稳定页面 + 更新信念<a hidden class="anchor" aria-hidden="true" href="#reflect生成稳定页面--更新信念">#</a></h3>
+<p>反思是一个定时任务（每日或心跳 <code>ultrathink</code>），它：</p>
+<ul>
+<li>根据最近的事实更新 <code>bank/entities/*.md</code>（实体摘要）</li>
+<li>根据强化/矛盾更新 <code>bank/opinions.md</code> 置信度</li>
+<li>可选地提议对 <code>memory.md</code>（&ldquo;类似核心&quot;的持久事实）的编辑</li>
+</ul>
+<p>观点演变（简单、可解释）：</p>
+<ul>
+<li>每个观点有：
+<ul>
+<li>陈述</li>
+<li>置信度 <code>c ∈ [0,1]</code></li>
+<li>last_updated</li>
+<li>证据链接（支持 + 矛盾的事实 ID）</li>
+</ul>
+</li>
+<li>当新事实到达时：
+<ul>
+<li>通过实体重叠 + 相似性找到候选观点（先 FTS，后嵌入）</li>
+<li>通过小幅增量更新置信度；大幅跳跃需要强矛盾 + 重复证据</li>
+</ul>
+</li>
+</ul>
+<h2 id="cli-集成独立-vs-深度集成">CLI 集成：独立 vs 深度集成<a hidden class="anchor" aria-hidden="true" href="#cli-集成独立-vs-深度集成">#</a></h2>
+<p>建议：<strong>深度集成到 OpenClaw</strong>，但保持可分离的核心库。</p>
+<h3 id="为什么要集成到-openclaw">为什么要集成到 OpenClaw？<a hidden class="anchor" aria-hidden="true" href="#为什么要集成到-openclaw">#</a></h3>
+<ul>
+<li>OpenClaw 已经知道：
+<ul>
+<li>工作区路径（<code>agents.defaults.workspace</code>）</li>
+<li>会话模型 + 心跳</li>
+<li>日志记录 + 故障排除模式</li>
+</ul>
+</li>
+<li>你希望智能体自己调用工具：
+<ul>
+<li><code>openclaw memory recall &quot;…&quot; --k 25 --since 30d</code></li>
+<li><code>openclaw memory reflect --since 7d</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="为什么仍要分离库">为什么仍要分离库？<a hidden class="anchor" aria-hidden="true" href="#为什么仍要分离库">#</a></h3>
+<ul>
+<li>保持记忆逻辑可测试，无需 Gateway 网关/运行时</li>
+<li>可从其他上下文重用（本地脚本、未来的桌面应用等）</li>
+</ul>
+<p>形态：
+记忆工具预计是一个小型 CLI + 库层，但这仅是探索性的。</p>
+<h2 id="s-collide--suco何时使用研究">&ldquo;S-Collide&rdquo; / SuCo：何时使用（研究）<a hidden class="anchor" aria-hidden="true" href="#s-collide--suco何时使用研究">#</a></h2>
+<p>如果&quot;S-Collide&quot;指的是 <strong>SuCo（Subspace Collision）</strong>：这是一种 ANN 检索方法，通过在子空间中使用学习/结构化碰撞来实现强召回/延迟权衡（论文：arXiv 2411.14754，2024）。</p>
+<p>对于 <code>~/.openclaw/workspace</code> 的务实观点：</p>
+<ul>
+<li><strong>不要从</strong> SuCo 开始。</li>
+<li>从 SQLite FTS +（可选的）简单嵌入开始；你会立即获得大部分 UX 收益。</li>
+<li>仅在以下情况下考虑 SuCo/HNSW/ScaNN 级别的解决方案：
+<ul>
+<li>语料库很大（数万/数十万个块）</li>
+<li>暴力嵌入搜索变得太慢</li>
+<li>召回质量明显受到词法搜索的瓶颈限制</li>
+</ul>
+</li>
+</ul>
+<p>离线友好的替代方案（按复杂性递增）：</p>
+<ul>
+<li>SQLite FTS5 + 元数据过滤（零 ML）</li>
+<li>嵌入 + 暴力搜索（如果块数量低，效果出奇地好）</li>
+<li>HNSW 索引（常见、稳健；需要库绑定）</li>
+<li>SuCo（研究级；如果有可嵌入的可靠实现则很有吸引力）</li>
+</ul>
+<p>开放问题：</p>
+<ul>
+<li>对于你的机器（笔记本 + 台式机）上的&quot;个人助理记忆&rdquo;，<strong>最佳</strong>的离线嵌入模型是什么？
+<ul>
+<li>如果你已经有 Ollama：使用本地模型嵌入；否则在工具链中附带一个小型嵌入模型。</li>
+</ul>
+</li>
+</ul>
+<h2 id="最小可用试点">最小可用试点<a hidden class="anchor" aria-hidden="true" href="#最小可用试点">#</a></h2>
+<p>如果你想要一个最小但仍有用的版本：</p>
+<ul>
+<li>添加 <code>bank/</code> 实体页面和每日日志中的 <code>## Retain</code> 部分。</li>
+<li>使用 SQLite FTS 进行带引用的回忆（路径 + 行号）。</li>
+<li>仅在召回质量或规模需要时添加嵌入。</li>
+</ul>
+<h2 id="参考资料">参考资料<a hidden class="anchor" aria-hidden="true" href="#参考资料">#</a></h2>
+<ul>
+<li>Letta / MemGPT 概念：&ldquo;核心记忆块&rdquo; + &ldquo;档案记忆&rdquo; + 工具驱动的自编辑记忆。</li>
+<li>Hindsight 技术报告：&ldquo;retain / recall / reflect&rdquo;，四网络记忆，叙事性事实提取，观点置信度演变。</li>
+<li>SuCo：arXiv 2411.14754（2024）：&ldquo;Subspace Collision&quot;近似最近邻检索。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/install/migrating/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>将 OpenClaw 迁移到新机器</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/tools-invoke-http-api/">
+    <span class="title">Next »</span>
+    <br>
+    <span>工具调用（HTTP）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

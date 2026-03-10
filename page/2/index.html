@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>语音浮层生命周期（macOS）</h2>
+    </header>
+    <div class="entry-content">
+      <p>受众：macOS 应用贡献者。目标：在唤醒词与按键说话重叠时保持语音浮层行为可预测。
+当前意图 如果浮层已因唤醒词显示，此时用户按下热键，热键会话会接管现有文本而非重置。浮层在热键按住期间保持显示。用户松开时：如果有去除空白后的文本则发送，否则关闭。 单独使用唤醒词时仍在静音后自动发送；按键说话在松开时立即发送。 已实现（2025 年 12 月 9 日） 浮层会话现在为每次捕获（唤醒词或按键说话）携带一个令牌。当令牌不匹配时，部分/最终/发送/关闭/音量更新会被丢弃，避免过时回调。 按键说话会接管任何可见的浮层文本作为前缀（因此在唤醒浮层显示时按下热键会保留文本并追加新语音）。它最多等待 1.5 秒获取最终转录结果，然后回退到当前文本。 提示音/浮层日志以 info 级别输出，分类为 voicewake.overlay、voicewake.ptt 和 voicewake.chime（会话开始、部分、最终、发送、关闭、提示音原因）。 后续步骤 VoiceSessionCoordinator（actor） 同一时间只拥有一个 VoiceSession。 API（基于令牌）：beginWakeCapture、beginPushToTalk、updatePartial、endCapture、cancel、applyCooldown。 丢弃携带过时令牌的回调（防止旧识别器重新打开浮层）。 VoiceSession（模型） 字段：token、source（wakeWord|pushToTalk）、已提交/临时文本、提示音标志、计时器（自动发送、空闲）、overlayMode（display|editing|sending）、冷却截止时间。 浮层绑定 VoiceSessionPublisher（ObservableObject）将活跃会话镜像到 SwiftUI。 VoiceWakeOverlayView 仅通过 publisher 渲染；绝不直接修改全局单例。 浮层用户操作（sendNow、dismiss、edit）携带会话令牌回调到 coordinator。 统一发送路径 endCapture 时：如果去除空白后文本为空 → 关闭；否则 performSend(session:)（播放一次发送提示音、转发、关闭）。 按键说话：无延迟；唤醒词：可选自动发送延迟。 按键说话结束后对唤醒运行时施加短暂冷却，防止唤醒词立即重新触发。 日志 Coordinator 在子系统 bot.molt、分类 voicewake.overlay 和 voicewake.chime 下输出 .info 级别日志。 关键事件：session_started、adopted_by_push_to_talk、partial、finalized、send、dismiss、cancel、cooldown。 调试清单 复现浮层粘滞问题时流式查看日志：
+sudo log stream --predicate &#39;subsystem == &#34;bot.molt&#34; AND category CONTAINS &#34;voicewake&#34;&#39; --level info --style compact 验证只有一个活跃会话令牌；过时回调应被 coordinator 丢弃。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 语音浮层生命周期（macOS）" href="/openclaw/platforms/mac/voice-overlay/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>语音唤醒与按键通话</h2>
+    </header>
+    <div class="entry-content">
+      <p>模式 唤醒词模式（默认）：常驻语音识别器等待触发词（swabbleTriggerWords）。匹配时开始捕获，显示带有部分文本的悬浮窗，并在静默后自动发送。 按键通话（按住右 Option 键）：按住右 Option 键立即开始捕获——无需触发词。按住时显示悬浮窗；松开后延迟片刻再最终转发，以便你可以调整文本。 运行时行为（唤醒词） 语音识别器位于 VoiceWakeRuntime 中。 仅当唤醒词和下一个词之间有明显停顿（约 0.55 秒间隔）时才触发。悬浮窗/提示音可以在命令开始前的停顿时就启动。 静默窗口：语音流畅时为 2.0 秒，如果只听到触发词则为 5.0 秒。 硬性停止：120 秒，防止会话失控。 会话间去抖动：350 毫秒。 悬浮窗通过 VoiceWakeOverlayController 驱动，带有已提交/临时状态的颜色区分。 发送后，识别器干净地重启以监听下一个触发词。 生命周期不变量 如果启用了语音唤醒且权限已授予，唤醒词识别器应该处于监听状态（除非正在进行显式的按键通话捕获）。 悬浮窗可见性（包括通过 X 按钮手动关闭）绝不能阻止识别器恢复。 悬浮窗卡住的故障模式（之前的问题） 之前，如果悬浮窗卡在可见状态且你手动关闭它，语音唤醒可能会显得&#34;失效&#34;，因为运行时的重启尝试可能被悬浮窗可见性阻止，且没有安排后续重启。
+加固措施：
+唤醒运行时重启不再被悬浮窗可见性阻止。 悬浮窗关闭完成时通过 VoiceSessionCoordinator 触发 VoiceWakeRuntime.refresh(...)，因此手动点击 X 关闭总是会恢复监听。 按键通话细节 热键检测使用全局 .flagsChanged 监视器检测右 Option 键（keyCode 61 &#43; .option）。我们只观察事件（不拦截）。 捕获管道位于 VoicePushToTalk 中：立即启动语音识别，将部分结果流式传输到悬浮窗，并在松开时调用 VoiceWakeForwarder。 按键通话开始时，我们暂停唤醒词运行时以避免音频采集冲突；松开后自动重启。 权限：需要麦克风 &#43; 语音识别权限；查看事件需要辅助功能/输入监控批准。 外接键盘：某些键盘可能无法按预期暴露右 Option 键——如果用户报告未响应，提供备用快捷键。 面向用户的设置 语音唤醒开关：启用唤醒词运行时。 按住 Cmd&#43;Fn 说话：启用按键通话监视器。在 macOS &lt; 26 上禁用。 语言和麦克风选择器、实时电平指示器、触发词表、测试器（仅本地；不转发）。 麦克风选择器在设备断开时保留上次选择，显示断开提示，并临时回退到系统默认设备直到设备恢复。 声音：触发检测和发送时的提示音；默认为 macOS&#34;Glass&#34;系统声音。你可以为每个事件选择任何 NSSound 可加载的文件（例如 MP3/WAV/AIFF）或选择无声音。 转发行为 启用语音唤醒时，转录文本被转发到活动的 Gateway 网关/智能体（与 Mac 应用其他部分使用相同的本地/远程模式）。 回复被投递到上次使用的主提供商（WhatsApp/Telegram/Discord/WebChat）。如果投递失败，错误会被记录，运行记录仍可通过 WebChat/会话日志查看。 转发负载 VoiceWakeForwarder.prefixedTranscript(_:) 在发送前添加机器提示前缀。唤醒词和按键通话路径共享此方法。 快速验证 开启按键通话，按住 Cmd&#43;Fn，说话，松开：悬浮窗应显示部分结果然后发送。 按住时，菜单栏耳朵图标应保持放大状态（使用 triggerVoiceEars(ttl:nil)）；松开后恢复。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 语音唤醒与按键通话" href="/openclaw/platforms/mac/voicewake/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>语音唤醒（全局唤醒词）</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 将唤醒词作为单一全局列表，由 Gateway 网关拥有。
+没有每节点的自定义唤醒词。 任何节点/应用 UI 都可以编辑列表；更改由 Gateway 网关持久化并广播给所有人。 每个设备仍保留自己的语音唤醒启用/禁用开关（本地用户体验 &#43; 权限不同）。 存储（Gateway 网关主机） 唤醒词存储在 Gateway 网关机器上：
+~/.openclaw/settings/voicewake.json 结构：
+{ &#34;triggers&#34;: [&#34;openclaw&#34;, &#34;claude&#34;, &#34;computer&#34;], &#34;updatedAtMs&#34;: 1730000000000 } 协议 方法 voicewake.get → { triggers: string[] } voicewake.set，参数 { triggers: string[] } → { triggers: string[] } 注意事项：
+触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。 为安全起见会强制执行限制（数量/长度上限）。 事件 voicewake.changed 载荷 { triggers: string[] } 接收者：
+所有 WebSocket 客户端（macOS 应用、WebChat 等） 所有已连接的节点（iOS/Android），以及节点连接时作为初始&#34;当前状态&#34;推送。 客户端行为 macOS 应用 使用全局列表来控制 VoiceWakeRuntime 触发器。 在语音唤醒设置中编辑&#34;触发词&#34;会调用 voicewake.set，然后依赖广播保持其他客户端同步。 iOS 节点 使用全局列表进行 VoiceWakeManager 触发检测。 在设置中编辑唤醒词会调用 voicewake.set（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。 Android 节点 在设置中暴露唤醒词编辑器。 通过 Gateway 网关 WS 调用 voicewake.set，使编辑在所有地方同步。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 语音唤醒（全局唤醒词）" href="/openclaw/nodes/voicewake/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>诊断标志</h2>
+    </header>
+    <div class="entry-content">
+      <p>诊断标志让你可以启用定向调试日志，而无需在所有地方开启详细日志。标志是可选启用的，除非子系统检查它们，否则不会生效。
+工作原理 标志是字符串（不区分大小写）。 你可以在配置中或通过环境变量覆盖来启用标志。 支持通配符： telegram.* 匹配 telegram.http * 启用所有标志 通过配置启用 { &#34;diagnostics&#34;: { &#34;flags&#34;: [&#34;telegram.http&#34;] } } 多个标志：
+{ &#34;diagnostics&#34;: { &#34;flags&#34;: [&#34;telegram.http&#34;, &#34;gateway.*&#34;] } } 更改标志后重启 Gateway 网关。
+环境变量覆盖（一次性） OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload 禁用所有标志：
+OPENCLAW_DIAGNOSTICS=0 日志存储位置 标志将日志输出到标准诊断日志文件。默认位置：
+/tmp/openclaw/openclaw-YYYY-MM-DD.log 如果你设置了 logging.file，则使用该路径。日志为 JSONL 格式（每行一个 JSON 对象）。脱敏仍然根据 logging.redactSensitive 应用。
+提取日志 选择最新的日志文件：
+ls -t /tmp/openclaw/openclaw-*.log | head -n 1 过滤 Telegram HTTP 诊断：
+rg &#34;telegram http error&#34; /tmp/openclaw/openclaw-*.log 或在复现时使用 tail：
+tail -f /tmp/openclaw/openclaw-$(date &#43;%F).log | rg &#34;telegram http error&#34; 对于远程 Gateway 网关，你也可以使用 openclaw logs --follow（参见 /cli/logs）。
+注意事项 如果 logging.level 设置为高于 warn，这些日志可能会被抑制。默认的 info 级别即可。 标志可以安全地保持启用状态；它们只影响特定子系统的日志量。 使用 /logging 更改日志目标、级别和脱敏设置。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 诊断标志" href="/openclaw/diagnostics/flags/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>设置</h2>
+    </header>
+    <div class="entry-content">
+      <p>最后更新：2026-01-01
+太长不看 个性化设置存放在仓库之外： ~/.openclaw/workspace（工作区）&#43; ~/.openclaw/openclaw.json（配置）。 稳定工作流： 安装 macOS 应用；让它运行内置的 Gateway 网关。 前沿工作流： 通过 pnpm gateway:watch 自己运行 Gateway 网关，然后让 macOS 应用以本地模式连接。 先决条件（从源码） Node &gt;=22 pnpm Docker（可选；仅用于容器化设置/e2e — 参阅 Docker） 个性化策略（让更新不会造成问题） 如果你想要&#34;100% 为我定制&#34;并且易于更新，将你的自定义内容保存在：
+配置： ~/.openclaw/openclaw.json（JSON/JSON5 格式） 工作区： ~/.openclaw/workspace（Skills、提示、记忆；将其设为私有 git 仓库） 引导一次：
+openclaw setup 在此仓库内部，使用本地 CLI 入口：
+openclaw setup 如果你还没有全局安装，通过 pnpm openclaw setup 运行它。
+稳定工作流（macOS 应用优先） 安装并启动 OpenClaw.app（菜单栏）。 完成新手引导/权限检查清单（TCC 提示）。 确保 Gateway 网关是本地并正在运行（应用管理它）。 链接表面（示例：WhatsApp）： openclaw channels login 完整性检查： openclaw health 如果你的构建版本中没有新手引导：
+运行 openclaw setup，然后 openclaw channels login，然后手动启动 Gateway 网关（openclaw gateway）。 前沿工作流（在终端中运行 Gateway 网关） 目标：开发 TypeScript Gateway 网关，获得热重载，保持 macOS 应用 UI 连接。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 设置" href="/openclaw/start/setup/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>设备型号数据库（友好名称）</h2>
+    </header>
+    <div class="entry-content">
+      <p>macOS 配套应用通过将 Apple 型号标识符（例如 iPad16,6、Mac16,6）映射为人类可读的名称，在实例 UI 中显示友好的 Apple 设备型号名称。
+该映射以 JSON 形式内置于：
+apps/macos/Sources/OpenClaw/Resources/DeviceModels/ 数据来源 我们目前内置的映射来自 MIT 许可的仓库：
+kyle-seongwoo-jun/apple-device-identifiers 为保持构建的确定性，JSON 文件固定到特定的上游提交（记录在 apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md 中）。
+更新数据库 选择要固定的上游提交（iOS 和 macOS 各一个）。 更新 apps/macos/Sources/OpenClaw/Resources/DeviceModels/NOTICE.md 中的提交哈希。 重新下载固定到这些提交的 JSON 文件： IOS_COMMIT=&#34;&lt;commit sha for ios-device-identifiers.json&gt;&#34; MAC_COMMIT=&#34;&lt;commit sha for mac-device-identifiers.json&gt;&#34; curl -fsSL &#34;https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-identifiers/${IOS_COMMIT}/ios-device-identifiers.json&#34; \ -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/ios-device-identifiers.json curl -fsSL &#34;https://raw.githubusercontent.com/kyle-seongwoo-jun/apple-device-identifiers/${MAC_COMMIT}/mac-device-identifiers.json&#34; \ -o apps/macos/Sources/OpenClaw/Resources/DeviceModels/mac-device-identifiers.json 确保 apps/macos/Sources/OpenClaw/Resources/DeviceModels/LICENSE.apple-device-identifiers.txt 仍与上游一致（如果上游许可证发生变更，请替换该文件）。 验证 macOS 应用能够正常构建（无警告）： swift build --package-path apps/macos </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 设备型号数据库（友好名称）" href="/openclaw/reference/device-models/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>设备发现 &amp; 传输协议</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 有两个表面上看起来相似的不同问题：
+操作员远程控制：macOS 菜单栏应用控制运行在其他地方的 Gateway 网关。 节点配对：iOS/Android（以及未来的节点）发现 Gateway 网关并安全配对。 设计目标是将所有网络发现/广播保留在 Node Gateway 网关（openclaw gateway）中，并让客户端（mac 应用、iOS）作为消费者。
+术语 Gateway 网关：一个长期运行的 Gateway 网关进程，拥有状态（会话、配对、节点注册表）并运行渠道。大多数设置每台主机使用一个；也可以进行隔离的多 Gateway 网关设置。 Gateway 网关 WS（控制平面）：默认在 127.0.0.1:18789 上的 WebSocket 端点；可通过 gateway.bind 绑定到 LAN/tailnet。 直连 WS 传输：面向 LAN/tailnet 的 Gateway 网关 WS 端点（无 SSH）。 SSH 传输（回退）：通过 SSH 转发 127.0.0.1:18789 进行远程控制。 旧版 TCP 桥接（已弃用/移除）：旧的节点传输（参见 桥接协议）；不再用于发现广播。 协议详情：
+Gateway 网关协议 桥接协议（旧版） 为什么我们同时保留&#34;直连&#34;和 SSH 直连 WS 在同一网络和 tailnet 内提供最佳用户体验： 通过 Bonjour 在 LAN 上自动发现 配对令牌 &#43; ACL 由 Gateway 网关管理 无需 shell 访问；协议表面可保持紧凑和可审计 SSH 仍然是通用回退方案： 只要你有 SSH 访问权限就能工作（即使跨越不相关的网络） 能应对多播/mDNS 问题 除 SSH 外无需新的入站端口 发现输入（客户端如何了解 Gateway 网关位置） 1）Bonjour / mDNS（仅限 LAN） Bonjour 是尽力而为的，不会跨网络。它仅用于&#34;同一 LAN&#34;的便利性。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 设备发现 & 传输协议" href="/openclaw/gateway/discovery/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>记忆</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 记忆是智能体工作空间中的纯 Markdown 文件。这些文件是唯一的事实来源；模型只&#34;记住&#34;写入磁盘的内容。
+记忆搜索工具由活动的记忆插件提供（默认：memory-core）。使用 plugins.slots.memory = &#34;none&#34; 禁用记忆插件。
+记忆文件（Markdown） 默认工作空间布局使用两个记忆层：
+memory/YYYY-MM-DD.md 每日日志（仅追加）。 在会话开始时读取今天和昨天的内容。 MEMORY.md（可选） 精心整理的长期记忆。 仅在主要的私人会话中加载（绝不在群组上下文中加载）。 这些文件位于工作空间下（agents.defaults.workspace，默认 ~/.openclaw/workspace）。完整布局参见智能体工作空间。
+何时写入记忆 决策、偏好和持久性事实写入 MEMORY.md。 日常笔记和运行上下文写入 memory/YYYY-MM-DD.md。 如果有人说&#34;记住这个&#34;，就写下来（不要只保存在内存中）。 这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。 如果你想让某些内容持久保存，请要求机器人将其写入记忆。 自动记忆刷新（压缩前触发） 当会话接近自动压缩时，OpenClaw 会触发一个静默的智能体回合，提醒模型在上下文被压缩之前写入持久记忆。默认提示明确说明模型可以回复，但通常 NO_REPLY 是正确的响应，因此用户永远不会看到这个回合。
+这由 agents.defaults.compaction.memoryFlush 控制：
+{ agents: { defaults: { compaction: { reserveTokensFloor: 20000, memoryFlush: { enabled: true, softThresholdTokens: 4000, systemPrompt: &#34;Session nearing compaction. Store durable memories now.&#34;, prompt: &#34;Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.&#34;, }, }, }, }, } 详情：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 记忆" href="/openclaw/concepts/memory/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>认证监控</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 通过 openclaw models status 提供 OAuth 过期健康状态。请使用该命令进行自动化和告警；脚本是为手机工作流程提供的可选附加功能。
+推荐方式：CLI 检查（可移植） openclaw models status --check 退出码：
+0：正常 1：凭证过期或缺失 2：即将过期（24 小时内） 此方式适用于 cron/systemd，无需额外脚本。
+可选脚本（运维 / 手机工作流程） 这些脚本位于 scripts/ 目录下，属于可选内容。它们假定你可以通过 SSH 访问 Gateway 网关主机，并针对 systemd &#43; Termux 进行了调优。
+scripts/claude-auth-status.sh 现在使用 openclaw models status --json 作为数据来源（如果 CLI 不可用则回退到直接读取文件），因此请确保 openclaw 在定时器的 PATH 中。 scripts/auth-monitor.sh：cron/systemd 定时器目标；发送告警（ntfy 或手机）。 scripts/systemd/openclaw-auth-monitor.{service,timer}：systemd 用户定时器。 scripts/claude-auth-status.sh：Claude Code &#43; OpenClaw 认证检查器（完整/json/简洁模式）。 scripts/mobile-reauth.sh：通过 SSH 引导的重新认证流程。 scripts/termux-quick-auth.sh：一键小部件状态查看 &#43; 打开认证 URL。 scripts/termux-auth-widget.sh：完整的引导式小部件流程。 scripts/termux-sync-widget.sh：同步 Claude Code 凭证 → OpenClaw。 如果你不需要手机自动化或 systemd 定时器，可以跳过这些脚本。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 认证监控" href="/openclaw/automation/auth-monitoring/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>认证</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 支持模型提供商的 OAuth 和 API 密钥。对于 Anthropic 账户，我们推荐使用 API 密钥。对于 Claude 订阅访问，使用 claude setup-token 创建的长期令牌。
+参阅 /concepts/oauth 了解完整的 OAuth 流程和存储布局。
+推荐的 Anthropic 设置（API 密钥） 如果你直接使用 Anthropic，请使用 API 密钥。
+在 Anthropic 控制台创建 API 密钥。 将其放在 Gateway 网关主机（运行 openclaw gateway 的机器）上。 export ANTHROPIC_API_KEY=&#34;...&#34; openclaw models status 如果 Gateway 网关在 systemd/launchd 下运行，最好将密钥放在 ~/.openclaw/.env 中以便守护进程可以读取： cat &gt;&gt; ~/.openclaw/.env &lt;&lt;&#39;EOF&#39; ANTHROPIC_API_KEY=... EOF 然后重启守护进程（或重启你的 Gateway 网关进程）并重新检查：
+openclaw models status openclaw doctor 如果你不想自己管理环境变量，新手引导向导可以为守护进程使用存储 API 密钥：openclaw onboard。
+参阅帮助了解环境变量继承的详情（env.shellEnv、~/.openclaw/.env、systemd/launchd）。
+Anthropic：setup-token（订阅认证） 对于 Anthropic，推荐的路径是 API 密钥。如果你使用 Claude 订阅，也支持 setup-token 流程。在 Gateway 网关主机上运行：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 认证" href="/openclaw/gateway/authentication/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/3/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

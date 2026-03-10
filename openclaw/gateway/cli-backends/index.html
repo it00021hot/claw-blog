@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLI 后端（回退运行时） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="当 API 提供商宕机、被限流或暂时异常时，OpenClaw 可以运行本地 AI CLI 作为纯文本回退。这是有意保守的设计：
+
+工具被禁用（无工具调用）。
+文本输入 → 文本输出（可靠）。
+支持会话（因此后续轮次保持连贯）。
+如果 CLI 接受图像路径，图像可以传递。
+
+这被设计为安全网而非主要路径。当你想要&quot;始终有效&quot;的文本响应而不依赖外部 API 时使用它。
+新手友好快速开始
+你可以无需任何配置使用 Claude Code CLI（OpenClaw 自带内置默认值）：
+openclaw agent --message &#34;hi&#34; --model claude-cli/opus-4.5
+Codex CLI 也可以开箱即用：
+openclaw agent --message &#34;hi&#34; --model codex-cli/gpt-5.2-codex
+如果你的 Gateway 网关在 launchd/systemd 下运行且 PATH 很精简，只需添加命令路径：
+{
+  agents: {
+    defaults: {
+      cliBackends: {
+        &#34;claude-cli&#34;: {
+          command: &#34;/opt/homebrew/bin/claude&#34;,
+        },
+      },
+    },
+  },
+}
+就这样。除了 CLI 本身外，不需要密钥，不需要额外的认证配置。
+作为回退使用
+将 CLI 后端添加到你的回退列表中，这样它只在主要模型失败时运行：
+{
+  agents: {
+    defaults: {
+      model: {
+        primary: &#34;anthropic/claude-opus-4-5&#34;,
+        fallbacks: [&#34;claude-cli/opus-4.5&#34;],
+      },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+        &#34;claude-cli/opus-4.5&#34;: {},
+      },
+    },
+  },
+}
+注意事项：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/cli-backends/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/cli-backends/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/cli-backends/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLI 后端（回退运行时）">
+  <meta property="og:description" content="当 API 提供商宕机、被限流或暂时异常时，OpenClaw 可以运行本地 AI CLI 作为纯文本回退。这是有意保守的设计：
+工具被禁用（无工具调用）。 文本输入 → 文本输出（可靠）。 支持会话（因此后续轮次保持连贯）。 如果 CLI 接受图像路径，图像可以传递。 这被设计为安全网而非主要路径。当你想要&#34;始终有效&#34;的文本响应而不依赖外部 API 时使用它。
+新手友好快速开始 你可以无需任何配置使用 Claude Code CLI（OpenClaw 自带内置默认值）：
+openclaw agent --message &#34;hi&#34; --model claude-cli/opus-4.5 Codex CLI 也可以开箱即用：
+openclaw agent --message &#34;hi&#34; --model codex-cli/gpt-5.2-codex 如果你的 Gateway 网关在 launchd/systemd 下运行且 PATH 很精简，只需添加命令路径：
+{ agents: { defaults: { cliBackends: { &#34;claude-cli&#34;: { command: &#34;/opt/homebrew/bin/claude&#34;, }, }, }, }, } 就这样。除了 CLI 本身外，不需要密钥，不需要额外的认证配置。
+作为回退使用 将 CLI 后端添加到你的回退列表中，这样它只在主要模型失败时运行：
+{ agents: { defaults: { model: { primary: &#34;anthropic/claude-opus-4-5&#34;, fallbacks: [&#34;claude-cli/opus-4.5&#34;], }, models: { &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; }, &#34;claude-cli/opus-4.5&#34;: {}, }, }, }, } 注意事项：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLI 后端（回退运行时）">
+<meta name="twitter:description" content="当 API 提供商宕机、被限流或暂时异常时，OpenClaw 可以运行本地 AI CLI 作为纯文本回退。这是有意保守的设计：
+
+工具被禁用（无工具调用）。
+文本输入 → 文本输出（可靠）。
+支持会话（因此后续轮次保持连贯）。
+如果 CLI 接受图像路径，图像可以传递。
+
+这被设计为安全网而非主要路径。当你想要&quot;始终有效&quot;的文本响应而不依赖外部 API 时使用它。
+新手友好快速开始
+你可以无需任何配置使用 Claude Code CLI（OpenClaw 自带内置默认值）：
+openclaw agent --message &#34;hi&#34; --model claude-cli/opus-4.5
+Codex CLI 也可以开箱即用：
+openclaw agent --message &#34;hi&#34; --model codex-cli/gpt-5.2-codex
+如果你的 Gateway 网关在 launchd/systemd 下运行且 PATH 很精简，只需添加命令路径：
+{
+  agents: {
+    defaults: {
+      cliBackends: {
+        &#34;claude-cli&#34;: {
+          command: &#34;/opt/homebrew/bin/claude&#34;,
+        },
+      },
+    },
+  },
+}
+就这样。除了 CLI 本身外，不需要密钥，不需要额外的认证配置。
+作为回退使用
+将 CLI 后端添加到你的回退列表中，这样它只在主要模型失败时运行：
+{
+  agents: {
+    defaults: {
+      model: {
+        primary: &#34;anthropic/claude-opus-4-5&#34;,
+        fallbacks: [&#34;claude-cli/opus-4.5&#34;],
+      },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+        &#34;claude-cli/opus-4.5&#34;: {},
+      },
+    },
+  },
+}
+注意事项：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "CLI 后端（回退运行时）",
+      "item": "/openclaw/gateway/cli-backends/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "CLI 后端（回退运行时）",
+  "name": "CLI 后端（回退运行时）",
+  "description": "当 API 提供商宕机、被限流或暂时异常时，OpenClaw 可以运行本地 AI CLI 作为纯文本回退。这是有意保守的设计：\n工具被禁用（无工具调用）。 文本输入 → 文本输出（可靠）。 支持会话（因此后续轮次保持连贯）。 如果 CLI 接受图像路径，图像可以传递。 这被设计为安全网而非主要路径。当你想要\u0026quot;始终有效\u0026quot;的文本响应而不依赖外部 API 时使用它。\n新手友好快速开始 你可以无需任何配置使用 Claude Code CLI（OpenClaw 自带内置默认值）：\nopenclaw agent --message \u0026#34;hi\u0026#34; --model claude-cli/opus-4.5 Codex CLI 也可以开箱即用：\nopenclaw agent --message \u0026#34;hi\u0026#34; --model codex-cli/gpt-5.2-codex 如果你的 Gateway 网关在 launchd/systemd 下运行且 PATH 很精简，只需添加命令路径：\n{ agents: { defaults: { cliBackends: { \u0026#34;claude-cli\u0026#34;: { command: \u0026#34;/opt/homebrew/bin/claude\u0026#34;, }, }, }, }, } 就这样。除了 CLI 本身外，不需要密钥，不需要额外的认证配置。\n作为回退使用 将 CLI 后端添加到你的回退列表中，这样它只在主要模型失败时运行：\n{ agents: { defaults: { model: { primary: \u0026#34;anthropic/claude-opus-4-5\u0026#34;, fallbacks: [\u0026#34;claude-cli/opus-4.5\u0026#34;], }, models: { \u0026#34;anthropic/claude-opus-4-5\u0026#34;: { alias: \u0026#34;Opus\u0026#34; }, \u0026#34;claude-cli/opus-4.5\u0026#34;: {}, }, }, }, } 注意事项：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "当 API 提供商宕机、被限流或暂时异常时，OpenClaw 可以运行本地 AI CLI 作为纯文本回退。这是有意保守的设计：\n工具被禁用（无工具调用）。 文本输入 → 文本输出（可靠）。 支持会话（因此后续轮次保持连贯）。 如果 CLI 接受图像路径，图像可以传递。 这被设计为安全网而非主要路径。当你想要\"始终有效\"的文本响应而不依赖外部 API 时使用它。\n新手友好快速开始 你可以无需任何配置使用 Claude Code CLI（OpenClaw 自带内置默认值）：\nopenclaw agent --message \"hi\" --model claude-cli/opus-4.5 Codex CLI 也可以开箱即用：\nopenclaw agent --message \"hi\" --model codex-cli/gpt-5.2-codex 如果你的 Gateway 网关在 launchd/systemd 下运行且 PATH 很精简，只需添加命令路径：\n{ agents: { defaults: { cliBackends: { \"claude-cli\": { command: \"/opt/homebrew/bin/claude\", }, }, }, }, } 就这样。除了 CLI 本身外，不需要密钥，不需要额外的认证配置。\n作为回退使用 将 CLI 后端添加到你的回退列表中，这样它只在主要模型失败时运行：\n{ agents: { defaults: { model: { primary: \"anthropic/claude-opus-4-5\", fallbacks: [\"claude-cli/opus-4.5\"], }, models: { \"anthropic/claude-opus-4-5\": { alias: \"Opus\" }, \"claude-cli/opus-4.5\": {}, }, }, }, } 注意事项：\n如果你使用 agents.defaults.models（允许列表），必须包含 claude-cli/...。 如果主要提供商失败（认证、限流、超时），OpenClaw 将接着尝试 CLI 后端。 配置概览 所有 CLI 后端位于：\nagents.defaults.cliBackends 每个条目以提供商 ID（例如 claude-cli、my-cli）为键。提供商 ID 成为你的模型引用的左侧部分：\n/ 配置示例 { agents: { defaults: { cliBackends: { \"claude-cli\": { command: \"/opt/homebrew/bin/claude\", }, \"my-cli\": { command: \"my-cli\", args: [\"--json\"], output: \"json\", input: \"arg\", modelArg: \"--model\", modelAliases: { \"claude-opus-4-5\": \"opus\", \"claude-sonnet-4-5\": \"sonnet\", }, sessionArg: \"--session\", sessionMode: \"existing\", sessionIdFields: [\"session_id\", \"conversation_id\"], systemPromptArg: \"--system\", systemPromptWhen: \"first\", imageArg: \"--image\", imageMode: \"repeat\", serialize: true, }, }, }, }, } 工作原理 选择后端基于提供商前缀（claude-cli/...）。 构建系统提示使用相同的 OpenClaw 提示 + 工作区上下文。 执行 CLI并带有会话 ID（如果支持），使历史记录保持一致。 解析输出（JSON 或纯文本）并返回最终文本。 持久化会话 ID按后端，使后续请求复用相同的 CLI 会话。 会话 如果 CLI 支持会话，设置 sessionArg（例如 --session-id）或 sessionArgs（占位符 {sessionId}）当 ID 需要插入到多个标志中时。 如果 CLI 使用带有不同标志的恢复子命令，设置 resumeArgs（恢复时替换 args）以及可选的 resumeOutput（用于非 JSON 恢复）。 sessionMode： always：始终发送会话 ID（如果没有存储则使用新 UUID）。 existing：仅在之前存储了会话 ID 时才发送。 none：从不发送会话 ID。 图像（传递） 如果你的 CLI 接受图像路径，设置 imageArg：\nimageArg: \"--image\", imageMode: \"repeat\" OpenClaw 会将 base64 图像写入临时文件。如果设置了 imageArg，这些路径作为 CLI 参数传递。如果缺少 imageArg，OpenClaw 会将文件路径附加到提示中（路径注入），这对于从纯路径自动加载本地文件的 CLI 来说已经足够（Claude Code CLI 行为）。\n输入 / 输出 output: \"json\"（默认）尝试解析 JSON 并提取文本 + 会话 ID。 output: \"jsonl\" 解析 JSONL 流（Codex CLI --json）并提取最后一条智能体消息以及存在时的 thread_id。 output: \"text\" 将 stdout 视为最终响应。 输入模式：\ninput: \"arg\"（默认）将提示作为最后一个 CLI 参数传递。 input: \"stdin\" 通过 stdin 发送提示。 如果提示很长且设置了 maxPromptArgChars，则使用 stdin。 默认值（内置） OpenClaw 自带 claude-cli 的默认值：\ncommand: \"claude\" args: [\"-p\", \"--output-format\", \"json\", \"--dangerously-skip-permissions\"] resumeArgs: [\"-p\", \"--output-format\", \"json\", \"--dangerously-skip-permissions\", \"--resume\", \"{sessionId}\"] modelArg: \"--model\" systemPromptArg: \"--append-system-prompt\" sessionArg: \"--session-id\" systemPromptWhen: \"first\" sessionMode: \"always\" OpenClaw 也自带 codex-cli 的默认值：\ncommand: \"codex\" args: [\"exec\",\"--json\",\"--color\",\"never\",\"--sandbox\",\"read-only\",\"--skip-git-repo-check\"] resumeArgs: [\"exec\",\"resume\",\"{sessionId}\",\"--color\",\"never\",\"--sandbox\",\"read-only\",\"--skip-git-repo-check\"] output: \"jsonl\" resumeOutput: \"text\" modelArg: \"--model\" imageArg: \"--image\" sessionMode: \"existing\" 仅在需要时覆盖（常见：绝对 command 路径）。\n限制 无 OpenClaw 工具（CLI 后端永远不会收到工具调用）。某些 CLI 可能仍会运行它们自己的智能体工具。 无流式传输（CLI 输出被收集后返回）。 结构化输出取决于 CLI 的 JSON 格式。 Codex CLI 会话通过文本输出恢复（无 JSONL），这比初始的 --json 运行结构化程度低。OpenClaw 会话仍然正常工作。 故障排除 找不到 CLI：将 command 设置为完整路径。 模型名称错误：使用 modelAliases 将 provider/model 映射到 CLI 模型。 无会话连续性：确保设置了 sessionArg 且 sessionMode 不是 none（Codex CLI 目前无法使用 JSON 输出恢复）。 图像被忽略：设置 imageArg（并验证 CLI 支持文件路径）。 ",
+  "wordCount" : "368",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/cli-backends/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      CLI 后端（回退运行时）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%96%b0%e6%89%8b%e5%8f%8b%e5%a5%bd%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b" aria-label="新手友好快速开始">新手友好快速开始</a></li>
+                <li>
+                    <a href="#%e4%bd%9c%e4%b8%ba%e5%9b%9e%e9%80%80%e4%bd%bf%e7%94%a8" aria-label="作为回退使用">作为回退使用</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e6%a6%82%e8%a7%88" aria-label="配置概览">配置概览</a><ul>
+                        
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e7%a4%ba%e4%be%8b" aria-label="配置示例">配置示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86" aria-label="工作原理">工作原理</a></li>
+                <li>
+                    <a href="#%e4%bc%9a%e8%af%9d" aria-label="会话">会话</a></li>
+                <li>
+                    <a href="#%e5%9b%be%e5%83%8f%e4%bc%a0%e9%80%92" aria-label="图像（传递）">图像（传递）</a></li>
+                <li>
+                    <a href="#%e8%be%93%e5%85%a5--%e8%be%93%e5%87%ba" aria-label="输入 / 输出">输入 / 输出</a></li>
+                <li>
+                    <a href="#%e9%bb%98%e8%ae%a4%e5%80%bc%e5%86%85%e7%bd%ae" aria-label="默认值（内置）">默认值（内置）</a></li>
+                <li>
+                    <a href="#%e9%99%90%e5%88%b6" aria-label="限制">限制</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>当 API 提供商宕机、被限流或暂时异常时，OpenClaw 可以运行<strong>本地 AI CLI</strong> 作为<strong>纯文本回退</strong>。这是有意保守的设计：</p>
+<ul>
+<li><strong>工具被禁用</strong>（无工具调用）。</li>
+<li><strong>文本输入 → 文本输出</strong>（可靠）。</li>
+<li><strong>支持会话</strong>（因此后续轮次保持连贯）。</li>
+<li>如果 CLI 接受图像路径，<strong>图像可以传递</strong>。</li>
+</ul>
+<p>这被设计为<strong>安全网</strong>而非主要路径。当你想要&quot;始终有效&quot;的文本响应而不依赖外部 API 时使用它。</p>
+<h2 id="新手友好快速开始">新手友好快速开始<a hidden class="anchor" aria-hidden="true" href="#新手友好快速开始">#</a></h2>
+<p>你可以<strong>无需任何配置</strong>使用 Claude Code CLI（OpenClaw 自带内置默认值）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw agent --message <span class="s2">&#34;hi&#34;</span> --model claude-cli/opus-4.5
+</span></span></code></pre></div><p>Codex CLI 也可以开箱即用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw agent --message <span class="s2">&#34;hi&#34;</span> --model codex-cli/gpt-5.2-codex
+</span></span></code></pre></div><p>如果你的 Gateway 网关在 launchd/systemd 下运行且 PATH 很精简，只需添加命令路径：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      cliBackends: {
+        &#34;claude-cli&#34;: {
+          command: &#34;/opt/homebrew/bin/claude&#34;,
+        },
+      },
+    },
+  },
+}
+</code></pre><p>就这样。除了 CLI 本身外，不需要密钥，不需要额外的认证配置。</p>
+<h2 id="作为回退使用">作为回退使用<a hidden class="anchor" aria-hidden="true" href="#作为回退使用">#</a></h2>
+<p>将 CLI 后端添加到你的回退列表中，这样它只在主要模型失败时运行：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      model: {
+        primary: &#34;anthropic/claude-opus-4-5&#34;,
+        fallbacks: [&#34;claude-cli/opus-4.5&#34;],
+      },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+        &#34;claude-cli/opus-4.5&#34;: {},
+      },
+    },
+  },
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>如果你使用 <code>agents.defaults.models</code>（允许列表），必须包含 <code>claude-cli/...</code>。</li>
+<li>如果主要提供商失败（认证、限流、超时），OpenClaw 将接着尝试 CLI 后端。</li>
+</ul>
+<h2 id="配置概览">配置概览<a hidden class="anchor" aria-hidden="true" href="#配置概览">#</a></h2>
+<p>所有 CLI 后端位于：</p>
+<pre tabindex="0"><code>agents.defaults.cliBackends
+</code></pre><p>每个条目以<strong>提供商 ID</strong>（例如 <code>claude-cli</code>、<code>my-cli</code>）为键。提供商 ID 成为你的模型引用的左侧部分：</p>
+<pre tabindex="0"><code>&lt;provider&gt;/&lt;model&gt;
+</code></pre><h3 id="配置示例">配置示例<a hidden class="anchor" aria-hidden="true" href="#配置示例">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      cliBackends: {
+        &#34;claude-cli&#34;: {
+          command: &#34;/opt/homebrew/bin/claude&#34;,
+        },
+        &#34;my-cli&#34;: {
+          command: &#34;my-cli&#34;,
+          args: [&#34;--json&#34;],
+          output: &#34;json&#34;,
+          input: &#34;arg&#34;,
+          modelArg: &#34;--model&#34;,
+          modelAliases: {
+            &#34;claude-opus-4-5&#34;: &#34;opus&#34;,
+            &#34;claude-sonnet-4-5&#34;: &#34;sonnet&#34;,
+          },
+          sessionArg: &#34;--session&#34;,
+          sessionMode: &#34;existing&#34;,
+          sessionIdFields: [&#34;session_id&#34;, &#34;conversation_id&#34;],
+          systemPromptArg: &#34;--system&#34;,
+          systemPromptWhen: &#34;first&#34;,
+          imageArg: &#34;--image&#34;,
+          imageMode: &#34;repeat&#34;,
+          serialize: true,
+        },
+      },
+    },
+  },
+}
+</code></pre><h2 id="工作原理">工作原理<a hidden class="anchor" aria-hidden="true" href="#工作原理">#</a></h2>
+<ol>
+<li><strong>选择后端</strong>基于提供商前缀（<code>claude-cli/...</code>）。</li>
+<li><strong>构建系统提示</strong>使用相同的 OpenClaw 提示 + 工作区上下文。</li>
+<li><strong>执行 CLI</strong>并带有会话 ID（如果支持），使历史记录保持一致。</li>
+<li><strong>解析输出</strong>（JSON 或纯文本）并返回最终文本。</li>
+<li><strong>持久化会话 ID</strong>按后端，使后续请求复用相同的 CLI 会话。</li>
+</ol>
+<h2 id="会话">会话<a hidden class="anchor" aria-hidden="true" href="#会话">#</a></h2>
+<ul>
+<li>如果 CLI 支持会话，设置 <code>sessionArg</code>（例如 <code>--session-id</code>）或 <code>sessionArgs</code>（占位符 <code>{sessionId}</code>）当 ID 需要插入到多个标志中时。</li>
+<li>如果 CLI 使用带有不同标志的<strong>恢复子命令</strong>，设置 <code>resumeArgs</code>（恢复时替换 <code>args</code>）以及可选的 <code>resumeOutput</code>（用于非 JSON 恢复）。</li>
+<li><code>sessionMode</code>：
+<ul>
+<li><code>always</code>：始终发送会话 ID（如果没有存储则使用新 UUID）。</li>
+<li><code>existing</code>：仅在之前存储了会话 ID 时才发送。</li>
+<li><code>none</code>：从不发送会话 ID。</li>
+</ul>
+</li>
+</ul>
+<h2 id="图像传递">图像（传递）<a hidden class="anchor" aria-hidden="true" href="#图像传递">#</a></h2>
+<p>如果你的 CLI 接受图像路径，设置 <code>imageArg</code>：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">imageArg: &#34;--image&#34;,
+imageMode: &#34;repeat&#34;
+</code></pre><p>OpenClaw 会将 base64 图像写入临时文件。如果设置了 <code>imageArg</code>，这些路径作为 CLI 参数传递。如果缺少 <code>imageArg</code>，OpenClaw 会将文件路径附加到提示中（路径注入），这对于从纯路径自动加载本地文件的 CLI 来说已经足够（Claude Code CLI 行为）。</p>
+<h2 id="输入--输出">输入 / 输出<a hidden class="anchor" aria-hidden="true" href="#输入--输出">#</a></h2>
+<ul>
+<li><code>output: &quot;json&quot;</code>（默认）尝试解析 JSON 并提取文本 + 会话 ID。</li>
+<li><code>output: &quot;jsonl&quot;</code> 解析 JSONL 流（Codex CLI <code>--json</code>）并提取最后一条智能体消息以及存在时的 <code>thread_id</code>。</li>
+<li><code>output: &quot;text&quot;</code> 将 stdout 视为最终响应。</li>
+</ul>
+<p>输入模式：</p>
+<ul>
+<li><code>input: &quot;arg&quot;</code>（默认）将提示作为最后一个 CLI 参数传递。</li>
+<li><code>input: &quot;stdin&quot;</code> 通过 stdin 发送提示。</li>
+<li>如果提示很长且设置了 <code>maxPromptArgChars</code>，则使用 stdin。</li>
+</ul>
+<h2 id="默认值内置">默认值（内置）<a hidden class="anchor" aria-hidden="true" href="#默认值内置">#</a></h2>
+<p>OpenClaw 自带 <code>claude-cli</code> 的默认值：</p>
+<ul>
+<li><code>command: &quot;claude&quot;</code></li>
+<li><code>args: [&quot;-p&quot;, &quot;--output-format&quot;, &quot;json&quot;, &quot;--dangerously-skip-permissions&quot;]</code></li>
+<li><code>resumeArgs: [&quot;-p&quot;, &quot;--output-format&quot;, &quot;json&quot;, &quot;--dangerously-skip-permissions&quot;, &quot;--resume&quot;, &quot;{sessionId}&quot;]</code></li>
+<li><code>modelArg: &quot;--model&quot;</code></li>
+<li><code>systemPromptArg: &quot;--append-system-prompt&quot;</code></li>
+<li><code>sessionArg: &quot;--session-id&quot;</code></li>
+<li><code>systemPromptWhen: &quot;first&quot;</code></li>
+<li><code>sessionMode: &quot;always&quot;</code></li>
+</ul>
+<p>OpenClaw 也自带 <code>codex-cli</code> 的默认值：</p>
+<ul>
+<li><code>command: &quot;codex&quot;</code></li>
+<li><code>args: [&quot;exec&quot;,&quot;--json&quot;,&quot;--color&quot;,&quot;never&quot;,&quot;--sandbox&quot;,&quot;read-only&quot;,&quot;--skip-git-repo-check&quot;]</code></li>
+<li><code>resumeArgs: [&quot;exec&quot;,&quot;resume&quot;,&quot;{sessionId}&quot;,&quot;--color&quot;,&quot;never&quot;,&quot;--sandbox&quot;,&quot;read-only&quot;,&quot;--skip-git-repo-check&quot;]</code></li>
+<li><code>output: &quot;jsonl&quot;</code></li>
+<li><code>resumeOutput: &quot;text&quot;</code></li>
+<li><code>modelArg: &quot;--model&quot;</code></li>
+<li><code>imageArg: &quot;--image&quot;</code></li>
+<li><code>sessionMode: &quot;existing&quot;</code></li>
+</ul>
+<p>仅在需要时覆盖（常见：绝对 <code>command</code> 路径）。</p>
+<h2 id="限制">限制<a hidden class="anchor" aria-hidden="true" href="#限制">#</a></h2>
+<ul>
+<li><strong>无 OpenClaw 工具</strong>（CLI 后端永远不会收到工具调用）。某些 CLI 可能仍会运行它们自己的智能体工具。</li>
+<li><strong>无流式传输</strong>（CLI 输出被收集后返回）。</li>
+<li><strong>结构化输出</strong>取决于 CLI 的 JSON 格式。</li>
+<li><strong>Codex CLI 会话</strong>通过文本输出恢复（无 JSONL），这比初始的 <code>--json</code> 运行结构化程度低。OpenClaw 会话仍然正常工作。</li>
+</ul>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<ul>
+<li><strong>找不到 CLI</strong>：将 <code>command</code> 设置为完整路径。</li>
+<li><strong>模型名称错误</strong>：使用 <code>modelAliases</code> 将 <code>provider/model</code> 映射到 CLI 模型。</li>
+<li><strong>无会话连续性</strong>：确保设置了 <code>sessionArg</code> 且 <code>sessionMode</code> 不是 <code>none</code>（Codex CLI 目前无法使用 JSON 输出恢复）。</li>
+<li><strong>图像被忽略</strong>：设置 <code>imageArg</code>（并验证 CLI 支持文件路径）。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/refactor/clawnet/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Clawnet 重构（协议 &#43; 认证统一）</span>
+  </a>
+  <a class="next" href="/openclaw/experiments/plans/cron-add-hardening/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Cron Add 加固 &amp; Schema 对齐</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

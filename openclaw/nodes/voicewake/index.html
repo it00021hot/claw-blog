@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>语音唤醒（全局唤醒词） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 将唤醒词作为单一全局列表，由 Gateway 网关拥有。
+
+没有每节点的自定义唤醒词。
+任何节点/应用 UI 都可以编辑列表；更改由 Gateway 网关持久化并广播给所有人。
+每个设备仍保留自己的语音唤醒启用/禁用开关（本地用户体验 &#43; 权限不同）。
+
+存储（Gateway 网关主机）
+唤醒词存储在 Gateway 网关机器上：
+
+~/.openclaw/settings/voicewake.json
+
+结构：
+{ &#34;triggers&#34;: [&#34;openclaw&#34;, &#34;claude&#34;, &#34;computer&#34;], &#34;updatedAtMs&#34;: 1730000000000 }
+协议
+方法
+
+voicewake.get → { triggers: string[] }
+voicewake.set，参数 { triggers: string[] } → { triggers: string[] }
+
+注意事项：
+
+触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。
+为安全起见会强制执行限制（数量/长度上限）。
+
+事件
+
+voicewake.changed 载荷 { triggers: string[] }
+
+接收者：
+
+所有 WebSocket 客户端（macOS 应用、WebChat 等）
+所有已连接的节点（iOS/Android），以及节点连接时作为初始&quot;当前状态&quot;推送。
+
+客户端行为
+macOS 应用
+
+使用全局列表来控制 VoiceWakeRuntime 触发器。
+在语音唤醒设置中编辑&quot;触发词&quot;会调用 voicewake.set，然后依赖广播保持其他客户端同步。
+
+iOS 节点
+
+使用全局列表进行 VoiceWakeManager 触发检测。
+在设置中编辑唤醒词会调用 voicewake.set（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。
+
+Android 节点
+
+在设置中暴露唤醒词编辑器。
+通过 Gateway 网关 WS 调用 voicewake.set，使编辑在所有地方同步。
+">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/nodes/voicewake/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/nodes/voicewake/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/nodes/voicewake/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="语音唤醒（全局唤醒词）">
+  <meta property="og:description" content="OpenClaw 将唤醒词作为单一全局列表，由 Gateway 网关拥有。
+没有每节点的自定义唤醒词。 任何节点/应用 UI 都可以编辑列表；更改由 Gateway 网关持久化并广播给所有人。 每个设备仍保留自己的语音唤醒启用/禁用开关（本地用户体验 &#43; 权限不同）。 存储（Gateway 网关主机） 唤醒词存储在 Gateway 网关机器上：
+~/.openclaw/settings/voicewake.json 结构：
+{ &#34;triggers&#34;: [&#34;openclaw&#34;, &#34;claude&#34;, &#34;computer&#34;], &#34;updatedAtMs&#34;: 1730000000000 } 协议 方法 voicewake.get → { triggers: string[] } voicewake.set，参数 { triggers: string[] } → { triggers: string[] } 注意事项：
+触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。 为安全起见会强制执行限制（数量/长度上限）。 事件 voicewake.changed 载荷 { triggers: string[] } 接收者：
+所有 WebSocket 客户端（macOS 应用、WebChat 等） 所有已连接的节点（iOS/Android），以及节点连接时作为初始&#34;当前状态&#34;推送。 客户端行为 macOS 应用 使用全局列表来控制 VoiceWakeRuntime 触发器。 在语音唤醒设置中编辑&#34;触发词&#34;会调用 voicewake.set，然后依赖广播保持其他客户端同步。 iOS 节点 使用全局列表进行 VoiceWakeManager 触发检测。 在设置中编辑唤醒词会调用 voicewake.set（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。 Android 节点 在设置中暴露唤醒词编辑器。 通过 Gateway 网关 WS 调用 voicewake.set，使编辑在所有地方同步。 ">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="语音唤醒（全局唤醒词）">
+<meta name="twitter:description" content="OpenClaw 将唤醒词作为单一全局列表，由 Gateway 网关拥有。
+
+没有每节点的自定义唤醒词。
+任何节点/应用 UI 都可以编辑列表；更改由 Gateway 网关持久化并广播给所有人。
+每个设备仍保留自己的语音唤醒启用/禁用开关（本地用户体验 &#43; 权限不同）。
+
+存储（Gateway 网关主机）
+唤醒词存储在 Gateway 网关机器上：
+
+~/.openclaw/settings/voicewake.json
+
+结构：
+{ &#34;triggers&#34;: [&#34;openclaw&#34;, &#34;claude&#34;, &#34;computer&#34;], &#34;updatedAtMs&#34;: 1730000000000 }
+协议
+方法
+
+voicewake.get → { triggers: string[] }
+voicewake.set，参数 { triggers: string[] } → { triggers: string[] }
+
+注意事项：
+
+触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。
+为安全起见会强制执行限制（数量/长度上限）。
+
+事件
+
+voicewake.changed 载荷 { triggers: string[] }
+
+接收者：
+
+所有 WebSocket 客户端（macOS 应用、WebChat 等）
+所有已连接的节点（iOS/Android），以及节点连接时作为初始&quot;当前状态&quot;推送。
+
+客户端行为
+macOS 应用
+
+使用全局列表来控制 VoiceWakeRuntime 触发器。
+在语音唤醒设置中编辑&quot;触发词&quot;会调用 voicewake.set，然后依赖广播保持其他客户端同步。
+
+iOS 节点
+
+使用全局列表进行 VoiceWakeManager 触发检测。
+在设置中编辑唤醒词会调用 voicewake.set（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。
+
+Android 节点
+
+在设置中暴露唤醒词编辑器。
+通过 Gateway 网关 WS 调用 voicewake.set，使编辑在所有地方同步。
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "语音唤醒（全局唤醒词）",
+      "item": "/openclaw/nodes/voicewake/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "语音唤醒（全局唤醒词）",
+  "name": "语音唤醒（全局唤醒词）",
+  "description": "OpenClaw 将唤醒词作为单一全局列表，由 Gateway 网关拥有。\n没有每节点的自定义唤醒词。 任何节点/应用 UI 都可以编辑列表；更改由 Gateway 网关持久化并广播给所有人。 每个设备仍保留自己的语音唤醒启用/禁用开关（本地用户体验 + 权限不同）。 存储（Gateway 网关主机） 唤醒词存储在 Gateway 网关机器上：\n~/.openclaw/settings/voicewake.json 结构：\n{ \u0026#34;triggers\u0026#34;: [\u0026#34;openclaw\u0026#34;, \u0026#34;claude\u0026#34;, \u0026#34;computer\u0026#34;], \u0026#34;updatedAtMs\u0026#34;: 1730000000000 } 协议 方法 voicewake.get → { triggers: string[] } voicewake.set，参数 { triggers: string[] } → { triggers: string[] } 注意事项：\n触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。 为安全起见会强制执行限制（数量/长度上限）。 事件 voicewake.changed 载荷 { triggers: string[] } 接收者：\n所有 WebSocket 客户端（macOS 应用、WebChat 等） 所有已连接的节点（iOS/Android），以及节点连接时作为初始\u0026quot;当前状态\u0026quot;推送。 客户端行为 macOS 应用 使用全局列表来控制 VoiceWakeRuntime 触发器。 在语音唤醒设置中编辑\u0026quot;触发词\u0026quot;会调用 voicewake.set，然后依赖广播保持其他客户端同步。 iOS 节点 使用全局列表进行 VoiceWakeManager 触发检测。 在设置中编辑唤醒词会调用 voicewake.set（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。 Android 节点 在设置中暴露唤醒词编辑器。 通过 Gateway 网关 WS 调用 voicewake.set，使编辑在所有地方同步。 ",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 将唤醒词作为单一全局列表，由 Gateway 网关拥有。\n没有每节点的自定义唤醒词。 任何节点/应用 UI 都可以编辑列表；更改由 Gateway 网关持久化并广播给所有人。 每个设备仍保留自己的语音唤醒启用/禁用开关（本地用户体验 + 权限不同）。 存储（Gateway 网关主机） 唤醒词存储在 Gateway 网关机器上：\n~/.openclaw/settings/voicewake.json 结构：\n{ \"triggers\": [\"openclaw\", \"claude\", \"computer\"], \"updatedAtMs\": 1730000000000 } 协议 方法 voicewake.get → { triggers: string[] } voicewake.set，参数 { triggers: string[] } → { triggers: string[] } 注意事项：\n触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。 为安全起见会强制执行限制（数量/长度上限）。 事件 voicewake.changed 载荷 { triggers: string[] } 接收者：\n所有 WebSocket 客户端（macOS 应用、WebChat 等） 所有已连接的节点（iOS/Android），以及节点连接时作为初始\"当前状态\"推送。 客户端行为 macOS 应用 使用全局列表来控制 VoiceWakeRuntime 触发器。 在语音唤醒设置中编辑\"触发词\"会调用 voicewake.set，然后依赖广播保持其他客户端同步。 iOS 节点 使用全局列表进行 VoiceWakeManager 触发检测。 在设置中编辑唤醒词会调用 voicewake.set（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。 Android 节点 在设置中暴露唤醒词编辑器。 通过 Gateway 网关 WS 调用 voicewake.set，使编辑在所有地方同步。 ",
+  "wordCount" : "90",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/nodes/voicewake/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      语音唤醒（全局唤醒词）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%ad%98%e5%82%a8gateway-%e7%bd%91%e5%85%b3%e4%b8%bb%e6%9c%ba" aria-label="存储（Gateway 网关主机）">存储（Gateway 网关主机）</a></li>
+                <li>
+                    <a href="#%e5%8d%8f%e8%ae%ae" aria-label="协议">协议</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%b9%e6%b3%95" aria-label="方法">方法</a></li>
+                <li>
+                    <a href="#%e4%ba%8b%e4%bb%b6" aria-label="事件">事件</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%a2%e6%88%b7%e7%ab%af%e8%a1%8c%e4%b8%ba" aria-label="客户端行为">客户端行为</a><ul>
+                        
+                <li>
+                    <a href="#macos-%e5%ba%94%e7%94%a8" aria-label="macOS 应用">macOS 应用</a></li>
+                <li>
+                    <a href="#ios-%e8%8a%82%e7%82%b9" aria-label="iOS 节点">iOS 节点</a></li>
+                <li>
+                    <a href="#android-%e8%8a%82%e7%82%b9" aria-label="Android 节点">Android 节点</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 将<strong>唤醒词作为单一全局列表</strong>，由 <strong>Gateway 网关</strong>拥有。</p>
+<ul>
+<li><strong>没有</strong>每节点的自定义唤醒词。</li>
+<li><strong>任何节点/应用 UI 都可以编辑</strong>列表；更改由 Gateway 网关持久化并广播给所有人。</li>
+<li>每个设备仍保留自己的<strong>语音唤醒启用/禁用</strong>开关（本地用户体验 + 权限不同）。</li>
+</ul>
+<h2 id="存储gateway-网关主机">存储（Gateway 网关主机）<a hidden class="anchor" aria-hidden="true" href="#存储gateway-网关主机">#</a></h2>
+<p>唤醒词存储在 Gateway 网关机器上：</p>
+<ul>
+<li><code>~/.openclaw/settings/voicewake.json</code></li>
+</ul>
+<p>结构：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;triggers&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;openclaw&#34;</span><span class="p">,</span> <span class="s2">&#34;claude&#34;</span><span class="p">,</span> <span class="s2">&#34;computer&#34;</span><span class="p">],</span> <span class="nt">&#34;updatedAtMs&#34;</span><span class="p">:</span> <span class="mi">1730000000000</span> <span class="p">}</span>
+</span></span></code></pre></div><h2 id="协议">协议<a hidden class="anchor" aria-hidden="true" href="#协议">#</a></h2>
+<h3 id="方法">方法<a hidden class="anchor" aria-hidden="true" href="#方法">#</a></h3>
+<ul>
+<li><code>voicewake.get</code> → <code>{ triggers: string[] }</code></li>
+<li><code>voicewake.set</code>，参数 <code>{ triggers: string[] }</code> → <code>{ triggers: string[] }</code></li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。</li>
+<li>为安全起见会强制执行限制（数量/长度上限）。</li>
+</ul>
+<h3 id="事件">事件<a hidden class="anchor" aria-hidden="true" href="#事件">#</a></h3>
+<ul>
+<li><code>voicewake.changed</code> 载荷 <code>{ triggers: string[] }</code></li>
+</ul>
+<p>接收者：</p>
+<ul>
+<li>所有 WebSocket 客户端（macOS 应用、WebChat 等）</li>
+<li>所有已连接的节点（iOS/Android），以及节点连接时作为初始&quot;当前状态&quot;推送。</li>
+</ul>
+<h2 id="客户端行为">客户端行为<a hidden class="anchor" aria-hidden="true" href="#客户端行为">#</a></h2>
+<h3 id="macos-应用">macOS 应用<a hidden class="anchor" aria-hidden="true" href="#macos-应用">#</a></h3>
+<ul>
+<li>使用全局列表来控制 <code>VoiceWakeRuntime</code> 触发器。</li>
+<li>在语音唤醒设置中编辑&quot;触发词&quot;会调用 <code>voicewake.set</code>，然后依赖广播保持其他客户端同步。</li>
+</ul>
+<h3 id="ios-节点">iOS 节点<a hidden class="anchor" aria-hidden="true" href="#ios-节点">#</a></h3>
+<ul>
+<li>使用全局列表进行 <code>VoiceWakeManager</code> 触发检测。</li>
+<li>在设置中编辑唤醒词会调用 <code>voicewake.set</code>（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。</li>
+</ul>
+<h3 id="android-节点">Android 节点<a hidden class="anchor" aria-hidden="true" href="#android-节点">#</a></h3>
+<ul>
+<li>在设置中暴露唤醒词编辑器。</li>
+<li>通过 Gateway 网关 WS 调用 <code>voicewake.set</code>，使编辑在所有地方同步。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/diagnostics/flags/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>诊断标志</span>
+  </a>
+  <a class="next" href="/openclaw/platforms/mac/voicewake/">
+    <span class="title">Next »</span>
+    <br>
+    <span>语音唤醒与按键通话</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

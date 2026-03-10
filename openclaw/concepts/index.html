@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Concepts | CLAW博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="Concepts - CLAW博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Concepts">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Concepts">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "/openclaw/"
+    }
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Concepts",
+      "item": "/openclaw/concepts/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/openclaw/">OpenClaw 🦞</a></div>
+  <h1>
+    Concepts
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Gateway 网关架构
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>最后更新：2026-01-22
+概述 单个长期运行的 Gateway 网关拥有所有消息平台（通过 Baileys 的 WhatsApp、通过 grammY 的 Telegram、Slack、Discord、Signal、iMessage、WebChat）。 控制平面客户端（macOS 应用、CLI、Web 界面、自动化）通过配置的绑定主机（默认 127.0.0.1:18789）上的 WebSocket 连接到 Gateway 网关。 节点（macOS/iOS/Android/无头设备）也通过 WebSocket 连接，但声明 role: node 并带有明确的能力/命令。 每台主机一个 Gateway 网关；它是唯一打开 WhatsApp 会话的位置。 canvas 主机（默认 18793）提供智能体可编辑的 HTML 和 A2UI。 组件和流程 Gateway 网关（守护进程） 维护提供商连接。 暴露类型化的 WS API（请求、响应、服务器推送事件）。 根据 JSON Schema 验证入站帧。 发出事件如 agent、chat、presence、health、heartbeat、cron。 客户端（mac 应用 / CLI / web 管理） 每个客户端一个 WS 连接。 发送请求（health、status、send、agent、system-presence）。 订阅事件（tick、agent、presence、shutdown）。 节点（macOS / iOS / Android / 无头设备） 以 role: node 连接到同一个 WS 服务器。 在 connect 中提供设备身份；配对是基于设备的（角色为 node），批准存储在设备配对存储中。 暴露命令如 canvas.*、camera.*、screen.record、location.get。 协议详情：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Gateway 网关架构" href="/openclaw/concepts/architecture/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Markdown 格式化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 通过将出站 Markdown 转换为共享的中间表示（IR），然后再渲染为特定渠道的输出来进行格式化。IR 保留源文本不变，同时携带样式/链接跨度信息，使分块和渲染在各渠道间保持一致。
+目标 **一致性：**一次解析，多个渲染器。 **安全分块：**在渲染前拆分文本，确保行内格式不会跨块断裂。 **渠道适配：**将同一 IR 映射到 Slack mrkdwn、Telegram HTML 和 Signal 样式范围，无需重新解析 Markdown。 管道 解析 Markdown -&gt; IR IR 是纯文本加上样式跨度（粗体/斜体/删除线/代码/剧透）和链接跨度。 偏移量使用 UTF-16 代码单元，以便 Signal 样式范围与其 API 对齐。 仅当渠道启用了表格转换时才会解析表格。 分块 IR（格式优先） 分块在渲染前对 IR 文本进行操作。 行内格式不会跨块拆分；跨度按块进行切片。 按渠道渲染 Slack： mrkdwn 标记（粗体/斜体/删除线/代码），链接格式为 &lt;url|label&gt;。 Telegram： HTML 标签（&lt;b&gt;、&lt;i&gt;、&lt;s&gt;、&lt;code&gt;、&lt;pre&gt;&lt;code&gt;、&lt;a href&gt;）。 Signal： 纯文本 &#43; text-style 范围；当标签与 URL 不同时，链接变为 label (url)。 IR 示例 输入 Markdown：
+Hello **world** — see [docs](https://docs.openclaw.ai). IR（示意）：
+{ &#34;text&#34;: &#34;Hello world — see docs.&#34;, &#34;styles&#34;: [{ &#34;start&#34;: 6, &#34;end&#34;: 11, &#34;style&#34;: &#34;bold&#34; }], &#34;links&#34;: [{ &#34;start&#34;: 19, &#34;end&#34;: 23, &#34;href&#34;: &#34;https://docs.openclaw.ai&#34; }] } 使用场景 Slack、Telegram 和 Signal 的出站适配器从 IR 进行渲染。 其他渠道（WhatsApp、iMessage、Microsoft Teams、Discord）仍使用纯文本或各自的格式化规则，启用时会在分块前应用 Markdown 表格转换。 表格处理 Markdown 表格在各聊天客户端中的支持并不一致。使用 markdown.tables 按渠道（和按账户）控制转换方式。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Markdown 格式化" href="/openclaw/concepts/markdown-formatting/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">OAuth
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 支持通过 OAuth 进行&#34;订阅认证&#34;，适用于提供此功能的提供商（特别是 OpenAI Codex（ChatGPT OAuth））。对于 Anthropic 订阅，请使用 setup-token 流程。本页说明：
+OAuth 令牌交换的工作原理（PKCE） 令牌存储在哪里（以及原因） 如何处理多账户（配置文件 &#43; 按会话覆盖） OpenClaw 还支持提供商插件，它们自带 OAuth 或 API 密钥流程。通过以下命令运行：
+openclaw models auth login --provider &lt;id&gt; 令牌汇聚点（为什么需要它） OAuth 提供商通常在登录/刷新流程中发放新的刷新令牌。某些提供商（或 OAuth 客户端）在为同一用户/应用发放新令牌时，可能会使旧的刷新令牌失效。
+实际症状：
+你通过 OpenClaw 和 Claude Code / Codex CLI 登录 → 其中一个稍后会随机&#34;登出&#34; 为减少这种情况，OpenClaw 将 auth-profiles.json 视为令牌汇聚点：
+运行时从同一个位置读取凭据 我们可以保留多个配置文件并确定性地路由它们 存储（令牌存放位置） 密钥按智能体存储：
+认证配置文件（OAuth &#43; API 密钥）：~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 运行时缓存（自动管理；请勿编辑）：~/.openclaw/agents/&lt;agentId&gt;/agent/auth.json 仅用于导入的旧版文件（仍然支持，但不是主存储）：
+~/.openclaw/credentials/oauth.json（首次使用时导入到 auth-profiles.json） 以上所有路径也遵循 $OPENCLAW_STATE_DIR（状态目录覆盖）。完整参考：/gateway/configuration
+Anthropic setup-token（订阅认证） 在任意机器上运行 claude setup-token，然后将其粘贴到 OpenClaw 中：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to OAuth" href="/openclaw/concepts/oauth/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">TypeBox 作为协议的事实来源
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>最后更新：2026-01-10
+TypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 Gateway 网关 WebSocket 协议（握手、请求/响应、服务器事件）。这些模式驱动运行时验证、JSON Schema 导出和 macOS 应用的 Swift 代码生成。一个事实来源；其他一切都是生成的。
+如果你想了解更高层次的协议上下文，请从 Gateway 网关架构开始。
+心智模型（30 秒） 每个 Gateway 网关 WS 消息都是以下三种帧之一：
+Request：{ type: &#34;req&#34;, id, method, params } Response：{ type: &#34;res&#34;, id, ok, payload | error } Event：{ type: &#34;event&#34;, event, payload, seq?, stateVersion? } 第一个帧必须是 connect 请求。之后，客户端可以调用方法（例如 health、send、chat.send）并订阅事件（例如 presence、tick、agent）。
+连接流程（最小）：
+Client Gateway |---- req:connect --------&gt;| |&lt;---- res:hello-ok --------| |&lt;---- event:tick ----------| |---- req:health ----------&gt;| |&lt;---- res:health ----------| 常用方法 &#43; 事件：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to TypeBox 作为协议的事实来源" href="/openclaw/concepts/typebox/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">上下文
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>“上下文&#34;是 OpenClaw 在一次运行中发送给模型的所有内容。它受模型的上下文窗口（token 限制）约束。
+新手心智模型：
+系统提示词（OpenClaw 构建）：规则、工具、Skills 列表、时间/运行时，以及注入的工作区文件。 对话历史：你的消息 &#43; 助手在此会话中的消息。 工具调用/结果 &#43; 附件：命令输出、文件读取、图片/音频等。 上下文与&#34;记忆”不是同一回事：记忆可以存储在磁盘上并稍后重新加载；上下文是模型当前窗口内的内容。
+快速开始（检查上下文） /status → 快速查看&#34;我的窗口有多满？&#34; &#43; 会话设置。 /context list → 注入了什么 &#43; 大致大小（每个文件 &#43; 总计）。 /context detail → 更深入的分解：每个文件、每个工具 schema 大小、每个 Skills 条目大小和系统提示词大小。 /usage tokens → 在正常回复后附加每次回复的使用量页脚。 /compact → 将较旧的历史总结为紧凑条目以释放窗口空间。 另请参阅：斜杠命令、Token 使用与成本、压缩。
+示例输出 数值因模型、提供商、工具策略和工作区内容而异。
+/context list 🧠 Context breakdown Workspace: &lt;workspaceDir&gt; Bootstrap max/file: 20,000 chars Sandbox: mode=non-main sandboxed=false System prompt (run): 38,412 chars (~9,603 tok) (Project Context 23,901 chars (~5,976 tok)) Injected workspace files: - AGENTS.md: OK | raw 1,742 chars (~436 tok) | injected 1,742 chars (~436 tok) - SOUL.md: OK | raw 912 chars (~228 tok) | injected 912 chars (~228 tok) - TOOLS.md: TRUNCATED | raw 54,210 chars (~13,553 tok) | injected 20,962 chars (~5,241 tok) - IDENTITY.md: OK | raw 211 chars (~53 tok) | injected 211 chars (~53 tok) - USER.md: OK | raw 388 chars (~97 tok) | injected 388 chars (~97 tok) - HEARTBEAT.md: MISSING | raw 0 | injected 0 - BOOTSTRAP.md: OK | raw 0 chars (~0 tok) | injected 0 chars (~0 tok) Skills list (system prompt text): 2,184 chars (~546 tok) (12 skills) Tools: read, edit, write, exec, process, browser, message, sessions_send, … Tool list (system prompt text): 1,032 chars (~258 tok) Tool schemas (JSON): 31,988 chars (~7,997 tok) (counts toward context; not shown as text) Tools: (same as above) Session tokens (cached): 14,250 total / ctx=32,000 /context detail 🧠 Context breakdown (detailed) … Top skills (prompt entry size): - frontend-design: 412 chars (~103 tok) - oracle: 401 chars (~101 tok) … (&#43;10 more skills) Top tools (schema size): - browser: 9,812 chars (~2,453 tok) - exec: 6,240 chars (~1,560 tok) … (&#43;N more tools) 什么计入上下文窗口 模型接收的所有内容都计入，包括：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 上下文" href="/openclaw/concepts/context/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">上下文窗口与压缩
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>每个模型都有一个上下文窗口（可见的最大 token 数）。长时间运行的对话会累积消息和工具结果；一旦窗口空间紧张，OpenClaw 会压缩较早的历史记录以保持在限制范围内。
+什么是压缩 压缩会将较早的对话总结为一条紧凑的摘要条目，并保持近期消息不变。摘要存储在会话历史中，因此后续请求使用的是：
+压缩摘要 压缩点之后的近期消息 压缩会持久化到会话的 JSONL 历史记录中。
+配置 有关 agents.defaults.compaction 设置，请参阅压缩配置与模式。
+自动压缩（默认开启） 当会话接近或超过模型的上下文窗口时，OpenClaw 会触发自动压缩，并可能使用压缩后的上下文重试原始请求。
+你会看到：
+详细模式下显示 🧹 Auto-compaction complete /status 显示 🧹 Compactions: &lt;count&gt; 在压缩之前，OpenClaw 可以运行一次静默记忆刷写轮次，将持久化笔记写入磁盘。详情及配置请参阅记忆。
+手动压缩 使用 /compact（可选附带指令）强制执行一次压缩：
+/compact Focus on decisions and open questions 上下文窗口来源 上下文窗口因模型而异。OpenClaw 使用已配置提供商目录中的模型定义来确定限制。
+压缩与修剪 压缩：总结并持久化到 JSONL 中。 会话修剪：仅裁剪旧的工具结果，在内存中按请求进行。 有关修剪的详情，请参阅 /concepts/session-pruning。
+提示 当会话感觉过时或上下文臃肿时，使用 /compact。 大型工具输出已被截断；修剪可以进一步减少工具结果的堆积。 如果你需要全新开始，/new 或 /reset 会启动一个新的会话 ID。 </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 上下文窗口与压缩" href="/openclaw/concepts/compaction/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">会话剪枝
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>会话剪枝在每次 LLM 调用之前从内存上下文中修剪旧的工具结果。它不会重写磁盘上的会话历史（*.jsonl）。
+运行时机 当启用 mode: &#34;cache-ttl&#34; 且该会话的最后一次 Anthropic 调用早于 ttl 时。 仅影响该请求发送给模型的消息。 仅对 Anthropic API 调用（和 OpenRouter Anthropic 模型）生效。 为获得最佳效果，请将 ttl 与你的模型 cacheControlTtl 匹配。 剪枝后，TTL 窗口会重置，因此后续请求会保持缓存直到 ttl 再次过期。 智能默认值（Anthropic） OAuth 或 setup-token 配置文件：启用 cache-ttl 剪枝并将心跳设置为 1h。 API 密钥配置文件：启用 cache-ttl 剪枝，将心跳设置为 30m，并将 Anthropic 模型的 cacheControlTtl 默认为 1h。 如果你显式设置了这些值中的任何一个，OpenClaw 不会覆盖它们。 改进内容（成本 &#43; 缓存行为） 为什么要剪枝： Anthropic 提示缓存仅在 TTL 内适用。如果会话空闲超过 TTL，下一个请求会重新缓存完整提示，除非你先修剪它。 什么变得更便宜： 剪枝减少了 TTL 过期后第一个请求的 cacheWrite 大小。 为什么 TTL 重置很重要： 一旦剪枝运行，缓存窗口会重置，因此后续请求可以重用新缓存的提示，而不是再次重新缓存完整历史。 它不做什么： 剪枝不会添加 token 或&#34;双倍&#34;成本；它只改变该 TTL 后第一个请求缓存的内容。 可以剪枝的内容 仅 toolResult 消息。 用户 &#43; 助手消息永远不会被修改。 最后 keepLastAssistants 条助手消息受保护；该截止点之后的工具结果不会被剪枝。 如果没有足够的助手消息来确定截止点，则跳过剪枝。 包含图像块的工具结果会被跳过（永不修剪/清除）。 上下文窗口估算 剪枝使用估算的上下文窗口（字符 ≈ token × 4）。基础窗口按以下顺序解析：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 会话剪枝" href="/openclaw/concepts/session-pruning/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">会话工具
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>目标：小型、不易误用的工具集，使智能体能够列出会话、获取历史记录并向另一个会话发送消息。
+工具名称 sessions_list sessions_history sessions_send sessions_spawn 键模型 主直接聊天桶始终是字面键 &#34;main&#34;（解析为当前智能体的主键）。 群聊使用 agent:&lt;agentId&gt;:&lt;channel&gt;:group:&lt;id&gt; 或 agent:&lt;agentId&gt;:&lt;channel&gt;:channel:&lt;id&gt;（传递完整键）。 定时任务使用 cron:&lt;job.id&gt;。 Hooks 使用 hook:&lt;uuid&gt;，除非明确设置。 Node 会话使用 node-&lt;nodeId&gt;，除非明确设置。 global 和 unknown 是保留值，永远不会被列出。如果 session.scope = &#34;global&#34;，我们会将其别名为 main 用于所有工具，这样调用者永远不会看到 global。
+sessions_list 将会话列为行数组。
+参数：
+kinds?: string[] 过滤器：&#34;main&#34; | &#34;group&#34; | &#34;cron&#34; | &#34;hook&#34; | &#34;node&#34; | &#34;other&#34; 中的任意一个 limit?: number 最大行数（默认：服务器默认值，限制如 200） activeMinutes?: number 仅在 N 分钟内更新的会话 messageLimit?: number 0 = 无消息（默认 0）；&gt;0 = 包含最后 N 条消息 行为：
+messageLimit &gt; 0 获取每个会话的 chat.history 并包含最后 N 条消息。 工具结果在列表输出中被过滤；使用 sessions_history 获取工具消息。 在沙箱隔离的智能体会话中运行时，会话工具默认为仅生成的可见性（见下文）。 行结构（JSON）：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 会话工具" href="/openclaw/concepts/session-tool/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">会话管理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 将每个智能体的一个直接聊天会话视为主会话。直接聊天折叠为 agent:&lt;agentId&gt;:&lt;mainKey&gt;（默认 main），而群组/频道聊天获得各自的键。session.mainKey 会被遵循。
+使用 session.dmScope 控制私信如何分组：
+main（默认）：所有私信共享主会话以保持连续性。 per-peer：跨渠道按发送者 ID 隔离。 per-channel-peer：按渠道 &#43; 发送者隔离（推荐用于多用户收件箱）。 per-account-channel-peer：按账户 &#43; 渠道 &#43; 发送者隔离（推荐用于多账户收件箱）。 使用 session.identityLinks 将带提供商前缀的对等 ID 映射到规范身份，这样在使用 per-peer、per-channel-peer 或 per-account-channel-peer 时，同一个人可以跨渠道共享私信会话。 Gateway 网关是唯一数据源 所有会话状态都由 Gateway 网关拥有（“主” OpenClaw）。UI 客户端（macOS 应用、WebChat 等）必须向 Gateway 网关查询会话列表和令牌计数，而不是读取本地文件。
+在远程模式下，你关心的会话存储位于远程 Gateway 网关主机上，而不是你的 Mac 上。 UI 中显示的令牌计数来自 Gateway 网关的存储字段（inputTokens、outputTokens、totalTokens、contextTokens）。客户端不会解析 JSONL 对话记录来&#34;修正&#34;总数。 状态存储位置 在 Gateway 网关主机上： 存储文件：~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json（每个智能体）。 对话记录：~/.openclaw/agents/&lt;agentId&gt;/sessions/&lt;SessionId&gt;.jsonl（Telegram 话题会话使用 .../&lt;SessionId&gt;-topic-&lt;threadId&gt;.jsonl）。 存储是一个映射 sessionKey -&gt; { sessionId, updatedAt, ... }。删除条目是安全的；它们会按需重新创建。 群组条目可能包含 displayName、channel、subject、room 和 space 以在 UI 中标记会话。 会话条目包含 origin 元数据（标签 &#43; 路由提示），以便 UI 可以解释会话的来源。 OpenClaw 不读取旧版 Pi/Tau 会话文件夹。 会话修剪 默认情况下，OpenClaw 在 LLM 调用之前从内存上下文中修剪旧的工具结果。 这不会重写 JSONL 历史记录。参见 /concepts/session-pruning。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 会话管理" href="/openclaw/concepts/session/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">使用量跟踪
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>功能简介 直接从提供商的使用量端点拉取使用量/配额数据。 不提供估算费用；仅展示提供商报告的时间窗口数据。 展示位置 聊天中的 /status：包含会话 token 数和估算费用的表情符号丰富的状态卡片（仅限 API 密钥）。当可用时，会显示当前模型提供商的使用量。 聊天中的 /usage off|tokens|full：每次响应的使用量页脚（OAuth 仅显示 token 数）。 聊天中的 /usage cost：从 OpenClaw 会话日志汇总的本地费用摘要。 CLI：openclaw status --usage 打印完整的按提供商分类的详细信息。 CLI：openclaw channels list 在提供商配置旁打印相同的使用量快照（使用 --no-usage 跳过）。 macOS 菜单栏：上下文菜单下的&#34;使用量&#34;部分（仅在可用时显示）。 提供商及凭据 Anthropic (Claude)：认证配置中的 OAuth 令牌。 GitHub Copilot：认证配置中的 OAuth 令牌。 Gemini CLI：认证配置中的 OAuth 令牌。 Antigravity：认证配置中的 OAuth 令牌。 OpenAI Codex：认证配置中的 OAuth 令牌（存在时使用 accountId）。 MiniMax：API 密钥（编程计划密钥；MINIMAX_CODE_PLAN_KEY 或 MINIMAX_API_KEY）；使用 5 小时编程计划时间窗口。 z.ai：通过环境变量/配置/认证存储提供的 API 密钥。 如果没有匹配的 OAuth/API 凭据，使用量信息将被隐藏。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 使用量跟踪" href="/openclaw/concepts/usage-tracking/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="/openclaw/concepts/page/2/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

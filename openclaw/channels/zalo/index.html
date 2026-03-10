@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Zalo (Bot API) | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态：实验性。仅支持私信；根据 Zalo 文档，群组即将推出。
+需要插件
+Zalo 以插件形式提供，不包含在核心安装中。
+
+通过 CLI 安装：openclaw plugins install @openclaw/zalo
+或在新手引导期间选择 Zalo 并确认安装提示
+详情：插件
+
+快速设置（初学者）
+
+安装 Zalo 插件：
+
+从源代码检出：openclaw plugins install ./extensions/zalo
+从 npm（如果已发布）：openclaw plugins install @openclaw/zalo
+或在新手引导中选择 Zalo 并确认安装提示
+
+
+设置 token：
+
+环境变量：ZALO_BOT_TOKEN=...
+或配置：channels.zalo.botToken: &quot;...&quot;。
+
+
+重启 Gateway 网关（或完成新手引导）。
+私信访问默认为配对模式；首次联系时批准配对码。
+
+最小配置：
+{
+  channels: {
+    zalo: {
+      enabled: true,
+      botToken: &#34;12345689:abc-xyz&#34;,
+      dmPolicy: &#34;pairing&#34;,
+    },
+  },
+}
+它是什么
+Zalo 是一款专注于越南市场的即时通讯应用；其 Bot API 让 Gateway 网关可以运行一个用于一对一对话的 bot。
+它非常适合需要确定性路由回 Zalo 的支持或通知场景。
+
+由 Gateway 网关拥有的 Zalo Bot API 渠道。
+确定性路由：回复返回到 Zalo；模型不会选择渠道。
+私信共享智能体的主会话。
+群组尚不支持（Zalo 文档标注&quot;即将推出&quot;）。
+
+设置（快速路径）
+1）创建 bot token（Zalo Bot 平台）
+
+前往 https://bot.zaloplatforms.com 并登录。
+创建新 bot 并配置其设置。
+复制 bot token（格式：12345689:abc-xyz）。
+
+2）配置 token（环境变量或配置）
+示例：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/zalo/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/zalo/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/zalo/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Zalo (Bot API)">
+  <meta property="og:description" content="状态：实验性。仅支持私信；根据 Zalo 文档，群组即将推出。
+需要插件 Zalo 以插件形式提供，不包含在核心安装中。
+通过 CLI 安装：openclaw plugins install @openclaw/zalo 或在新手引导期间选择 Zalo 并确认安装提示 详情：插件 快速设置（初学者） 安装 Zalo 插件： 从源代码检出：openclaw plugins install ./extensions/zalo 从 npm（如果已发布）：openclaw plugins install @openclaw/zalo 或在新手引导中选择 Zalo 并确认安装提示 设置 token： 环境变量：ZALO_BOT_TOKEN=... 或配置：channels.zalo.botToken: &#34;...&#34;。 重启 Gateway 网关（或完成新手引导）。 私信访问默认为配对模式；首次联系时批准配对码。 最小配置：
+{ channels: { zalo: { enabled: true, botToken: &#34;12345689:abc-xyz&#34;, dmPolicy: &#34;pairing&#34;, }, }, } 它是什么 Zalo 是一款专注于越南市场的即时通讯应用；其 Bot API 让 Gateway 网关可以运行一个用于一对一对话的 bot。 它非常适合需要确定性路由回 Zalo 的支持或通知场景。
+由 Gateway 网关拥有的 Zalo Bot API 渠道。 确定性路由：回复返回到 Zalo；模型不会选择渠道。 私信共享智能体的主会话。 群组尚不支持（Zalo 文档标注&#34;即将推出&#34;）。 设置（快速路径） 1）创建 bot token（Zalo Bot 平台） 前往 https://bot.zaloplatforms.com 并登录。 创建新 bot 并配置其设置。 复制 bot token（格式：12345689:abc-xyz）。 2）配置 token（环境变量或配置） 示例：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zalo (Bot API)">
+<meta name="twitter:description" content="状态：实验性。仅支持私信；根据 Zalo 文档，群组即将推出。
+需要插件
+Zalo 以插件形式提供，不包含在核心安装中。
+
+通过 CLI 安装：openclaw plugins install @openclaw/zalo
+或在新手引导期间选择 Zalo 并确认安装提示
+详情：插件
+
+快速设置（初学者）
+
+安装 Zalo 插件：
+
+从源代码检出：openclaw plugins install ./extensions/zalo
+从 npm（如果已发布）：openclaw plugins install @openclaw/zalo
+或在新手引导中选择 Zalo 并确认安装提示
+
+
+设置 token：
+
+环境变量：ZALO_BOT_TOKEN=...
+或配置：channels.zalo.botToken: &quot;...&quot;。
+
+
+重启 Gateway 网关（或完成新手引导）。
+私信访问默认为配对模式；首次联系时批准配对码。
+
+最小配置：
+{
+  channels: {
+    zalo: {
+      enabled: true,
+      botToken: &#34;12345689:abc-xyz&#34;,
+      dmPolicy: &#34;pairing&#34;,
+    },
+  },
+}
+它是什么
+Zalo 是一款专注于越南市场的即时通讯应用；其 Bot API 让 Gateway 网关可以运行一个用于一对一对话的 bot。
+它非常适合需要确定性路由回 Zalo 的支持或通知场景。
+
+由 Gateway 网关拥有的 Zalo Bot API 渠道。
+确定性路由：回复返回到 Zalo；模型不会选择渠道。
+私信共享智能体的主会话。
+群组尚不支持（Zalo 文档标注&quot;即将推出&quot;）。
+
+设置（快速路径）
+1）创建 bot token（Zalo Bot 平台）
+
+前往 https://bot.zaloplatforms.com 并登录。
+创建新 bot 并配置其设置。
+复制 bot token（格式：12345689:abc-xyz）。
+
+2）配置 token（环境变量或配置）
+示例：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Zalo (Bot API)",
+      "item": "/openclaw/channels/zalo/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Zalo (Bot API)",
+  "name": "Zalo (Bot API)",
+  "description": "状态：实验性。仅支持私信；根据 Zalo 文档，群组即将推出。\n需要插件 Zalo 以插件形式提供，不包含在核心安装中。\n通过 CLI 安装：openclaw plugins install @openclaw/zalo 或在新手引导期间选择 Zalo 并确认安装提示 详情：插件 快速设置（初学者） 安装 Zalo 插件： 从源代码检出：openclaw plugins install ./extensions/zalo 从 npm（如果已发布）：openclaw plugins install @openclaw/zalo 或在新手引导中选择 Zalo 并确认安装提示 设置 token： 环境变量：ZALO_BOT_TOKEN=... 或配置：channels.zalo.botToken: \u0026quot;...\u0026quot;。 重启 Gateway 网关（或完成新手引导）。 私信访问默认为配对模式；首次联系时批准配对码。 最小配置：\n{ channels: { zalo: { enabled: true, botToken: \u0026#34;12345689:abc-xyz\u0026#34;, dmPolicy: \u0026#34;pairing\u0026#34;, }, }, } 它是什么 Zalo 是一款专注于越南市场的即时通讯应用；其 Bot API 让 Gateway 网关可以运行一个用于一对一对话的 bot。 它非常适合需要确定性路由回 Zalo 的支持或通知场景。\n由 Gateway 网关拥有的 Zalo Bot API 渠道。 确定性路由：回复返回到 Zalo；模型不会选择渠道。 私信共享智能体的主会话。 群组尚不支持（Zalo 文档标注\u0026quot;即将推出\u0026quot;）。 设置（快速路径） 1）创建 bot token（Zalo Bot 平台） 前往 https://bot.zaloplatforms.com 并登录。 创建新 bot 并配置其设置。 复制 bot token（格式：12345689:abc-xyz）。 2）配置 token（环境变量或配置） 示例：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态：实验性。仅支持私信；根据 Zalo 文档，群组即将推出。\n需要插件 Zalo 以插件形式提供，不包含在核心安装中。\n通过 CLI 安装：openclaw plugins install @openclaw/zalo 或在新手引导期间选择 Zalo 并确认安装提示 详情：插件 快速设置（初学者） 安装 Zalo 插件： 从源代码检出：openclaw plugins install ./extensions/zalo 从 npm（如果已发布）：openclaw plugins install @openclaw/zalo 或在新手引导中选择 Zalo 并确认安装提示 设置 token： 环境变量：ZALO_BOT_TOKEN=... 或配置：channels.zalo.botToken: \"...\"。 重启 Gateway 网关（或完成新手引导）。 私信访问默认为配对模式；首次联系时批准配对码。 最小配置：\n{ channels: { zalo: { enabled: true, botToken: \"12345689:abc-xyz\", dmPolicy: \"pairing\", }, }, } 它是什么 Zalo 是一款专注于越南市场的即时通讯应用；其 Bot API 让 Gateway 网关可以运行一个用于一对一对话的 bot。 它非常适合需要确定性路由回 Zalo 的支持或通知场景。\n由 Gateway 网关拥有的 Zalo Bot API 渠道。 确定性路由：回复返回到 Zalo；模型不会选择渠道。 私信共享智能体的主会话。 群组尚不支持（Zalo 文档标注\"即将推出\"）。 设置（快速路径） 1）创建 bot token（Zalo Bot 平台） 前往 https://bot.zaloplatforms.com 并登录。 创建新 bot 并配置其设置。 复制 bot token（格式：12345689:abc-xyz）。 2）配置 token（环境变量或配置） 示例：\n{ channels: { zalo: { enabled: true, botToken: \"12345689:abc-xyz\", dmPolicy: \"pairing\", }, }, } 环境变量选项：ZALO_BOT_TOKEN=...（仅适用于默认账户）。\n多账户支持：使用 channels.zalo.accounts 配置每账户 token 和可选的 name。\n重启 Gateway 网关。当 token 被解析（环境变量或配置）时，Zalo 启动。 私信访问默认为配对模式。当 bot 首次被联系时批准配对码。 工作原理（行为） 入站消息被规范化为带有媒体占位符的共享渠道信封。 回复始终路由回同一 Zalo 聊天。 默认使用长轮询；可通过 channels.zalo.webhookUrl 启用 webhook 模式。 限制 出站文本按 2000 字符分块（Zalo API 限制）。 媒体下载/上传受 channels.zalo.mediaMaxMb 限制（默认 5）。 由于 2000 字符限制使流式传输效果不佳，默认阻止流式传输。 访问控制（私信） 私信访问 默认：channels.zalo.dmPolicy = \"pairing\"。未知发送者会收到配对码；消息在批准前会被忽略（配对码 1 小时后过期）。 通过以下方式批准： openclaw pairing list zalo openclaw pairing approve zalo 配对是默认的令牌交换方式。详情：配对 channels.zalo.allowFrom 接受数字用户 ID（无用户名查找功能）。 长轮询与 webhook 默认：长轮询（不需要公共 URL）。 Webhook 模式：设置 channels.zalo.webhookUrl 和 channels.zalo.webhookSecret。 Webhook secret 必须为 8-256 个字符。 Webhook URL 必须使用 HTTPS。 Zalo 发送事件时带有 X-Bot-Api-Secret-Token 头用于验证。 Gateway 网关 HTTP 在 channels.zalo.webhookPath 处理 webhook 请求（默认为 webhook URL 路径）。 注意： 根据 Zalo API 文档，getUpdates（轮询）和 webhook 是互斥的。\n支持的消息类型 文本消息：完全支持，2000 字符分块。 图片消息：下载和处理入站图片；通过 sendPhoto 发送图片。 贴纸：已记录但未完全处理（无智能体响应）。 不支持的类型：已记录（例如来自受保护用户的消息）。 功能 功能 状态 私信 ✅ 支持 群组 ❌ 即将推出（根据 Zalo 文档） 媒体（图片） ✅ 支持 表情回应 ❌ 不支持 主题 ❌ 不支持 投票 ❌ 不支持 原生命令 ❌ 不支持 流式传输 ⚠️ 已阻止（2000 字符限制） 投递目标（CLI/cron） 使用聊天 id 作为目标。 示例：openclaw message send --channel zalo --target 123456789 --message \"hi\"。 故障排除 Bot 不响应：\n检查 token 是否有效：openclaw channels status --probe 验证发送者已被批准（配对或 allowFrom） 检查 Gateway 网关日志：openclaw logs --follow Webhook 未收到事件：\n确保 webhook URL 使用 HTTPS 验证 secret token 为 8-256 个字符 确认 Gateway 网关 HTTP 端点在配置的路径上可访问 检查 getUpdates 轮询未在运行（它们是互斥的） 配置参考（Zalo） 完整配置：配置\n提供商选项：\nchannels.zalo.enabled：启用/禁用渠道启动。 channels.zalo.botToken：来自 Zalo Bot 平台的 bot token。 channels.zalo.tokenFile：从文件路径读取 token。 channels.zalo.dmPolicy：pairing | allowlist | open | disabled（默认：pairing）。 channels.zalo.allowFrom：私信允许列表（用户 ID）。open 需要 \"*\"。向导会询问数字 ID。 channels.zalo.mediaMaxMb：入站/出站媒体上限（MB，默认 5）。 channels.zalo.webhookUrl：启用 webhook 模式（需要 HTTPS）。 channels.zalo.webhookSecret：webhook secret（8-256 字符）。 channels.zalo.webhookPath：Gateway 网关 HTTP 服务器上的 webhook 路径。 channels.zalo.proxy：API 请求的代理 URL。 多账户选项：\nchannels.zalo.accounts..botToken：每账户 token。 channels.zalo.accounts..tokenFile：每账户 token 文件。 channels.zalo.accounts..name：显示名称。 channels.zalo.accounts..enabled：启用/禁用账户。 channels.zalo.accounts..dmPolicy：每账户私信策略。 channels.zalo.accounts..allowFrom：每账户允许列表。 channels.zalo.accounts..webhookUrl：每账户 webhook URL。 channels.zalo.accounts..webhookSecret：每账户 webhook secret。 channels.zalo.accounts..webhookPath：每账户 webhook 路径。 channels.zalo.accounts..proxy：每账户代理 URL。 ",
+  "wordCount" : "363",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/zalo/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Zalo (Bot API)
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%9c%80%e8%a6%81%e6%8f%92%e4%bb%b6" aria-label="需要插件">需要插件</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%ae%be%e7%bd%ae%e5%88%9d%e5%ad%a6%e8%80%85" aria-label="快速设置（初学者）">快速设置（初学者）</a></li>
+                <li>
+                    <a href="#%e5%ae%83%e6%98%af%e4%bb%80%e4%b9%88" aria-label="它是什么">它是什么</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae%e5%bf%ab%e9%80%9f%e8%b7%af%e5%be%84" aria-label="设置（快速路径）">设置（快速路径）</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%88%9b%e5%bb%ba-bot-tokenzalo-bot-%e5%b9%b3%e5%8f%b0" aria-label="1）创建 bot token（Zalo Bot 平台）">1）创建 bot token（Zalo Bot 平台）</a></li>
+                <li>
+                    <a href="#2%e9%85%8d%e7%bd%ae-token%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f%e6%88%96%e9%85%8d%e7%bd%ae" aria-label="2）配置 token（环境变量或配置）">2）配置 token（环境变量或配置）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86%e8%a1%8c%e4%b8%ba" aria-label="工作原理（行为）">工作原理（行为）</a></li>
+                <li>
+                    <a href="#%e9%99%90%e5%88%b6" aria-label="限制">限制</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6%e7%a7%81%e4%bf%a1" aria-label="访问控制（私信）">访问控制（私信）</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a7%81%e4%bf%a1%e8%ae%bf%e9%97%ae" aria-label="私信访问">私信访问</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%95%bf%e8%bd%ae%e8%af%a2%e4%b8%8e-webhook" aria-label="长轮询与 webhook">长轮询与 webhook</a></li>
+                <li>
+                    <a href="#%e6%94%af%e6%8c%81%e7%9a%84%e6%b6%88%e6%81%af%e7%b1%bb%e5%9e%8b" aria-label="支持的消息类型">支持的消息类型</a></li>
+                <li>
+                    <a href="#%e5%8a%9f%e8%83%bd" aria-label="功能">功能</a></li>
+                <li>
+                    <a href="#%e6%8a%95%e9%80%92%e7%9b%ae%e6%a0%87clicron" aria-label="投递目标（CLI/cron）">投递目标（CLI/cron）</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83zalo" aria-label="配置参考（Zalo）">配置参考（Zalo）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>状态：实验性。仅支持私信；根据 Zalo 文档，群组即将推出。</p>
+<h2 id="需要插件">需要插件<a hidden class="anchor" aria-hidden="true" href="#需要插件">#</a></h2>
+<p>Zalo 以插件形式提供，不包含在核心安装中。</p>
+<ul>
+<li>通过 CLI 安装：<code>openclaw plugins install @openclaw/zalo</code></li>
+<li>或在新手引导期间选择 <strong>Zalo</strong> 并确认安装提示</li>
+<li>详情：<a href="/tools/plugin">插件</a></li>
+</ul>
+<h2 id="快速设置初学者">快速设置（初学者）<a hidden class="anchor" aria-hidden="true" href="#快速设置初学者">#</a></h2>
+<ol>
+<li>安装 Zalo 插件：
+<ul>
+<li>从源代码检出：<code>openclaw plugins install ./extensions/zalo</code></li>
+<li>从 npm（如果已发布）：<code>openclaw plugins install @openclaw/zalo</code></li>
+<li>或在新手引导中选择 <strong>Zalo</strong> 并确认安装提示</li>
+</ul>
+</li>
+<li>设置 token：
+<ul>
+<li>环境变量：<code>ZALO_BOT_TOKEN=...</code></li>
+<li>或配置：<code>channels.zalo.botToken: &quot;...&quot;</code>。</li>
+</ul>
+</li>
+<li>重启 Gateway 网关（或完成新手引导）。</li>
+<li>私信访问默认为配对模式；首次联系时批准配对码。</li>
+</ol>
+<p>最小配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    zalo: {
+      enabled: true,
+      botToken: &#34;12345689:abc-xyz&#34;,
+      dmPolicy: &#34;pairing&#34;,
+    },
+  },
+}
+</code></pre><h2 id="它是什么">它是什么<a hidden class="anchor" aria-hidden="true" href="#它是什么">#</a></h2>
+<p>Zalo 是一款专注于越南市场的即时通讯应用；其 Bot API 让 Gateway 网关可以运行一个用于一对一对话的 bot。
+它非常适合需要确定性路由回 Zalo 的支持或通知场景。</p>
+<ul>
+<li>由 Gateway 网关拥有的 Zalo Bot API 渠道。</li>
+<li>确定性路由：回复返回到 Zalo；模型不会选择渠道。</li>
+<li>私信共享智能体的主会话。</li>
+<li>群组尚不支持（Zalo 文档标注&quot;即将推出&quot;）。</li>
+</ul>
+<h2 id="设置快速路径">设置（快速路径）<a hidden class="anchor" aria-hidden="true" href="#设置快速路径">#</a></h2>
+<h3 id="1创建-bot-tokenzalo-bot-平台">1）创建 bot token（Zalo Bot 平台）<a hidden class="anchor" aria-hidden="true" href="#1创建-bot-tokenzalo-bot-平台">#</a></h3>
+<ol>
+<li>前往 <strong><a href="https://bot.zaloplatforms.com">https://bot.zaloplatforms.com</a></strong> 并登录。</li>
+<li>创建新 bot 并配置其设置。</li>
+<li>复制 bot token（格式：<code>12345689:abc-xyz</code>）。</li>
+</ol>
+<h3 id="2配置-token环境变量或配置">2）配置 token（环境变量或配置）<a hidden class="anchor" aria-hidden="true" href="#2配置-token环境变量或配置">#</a></h3>
+<p>示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    zalo: {
+      enabled: true,
+      botToken: &#34;12345689:abc-xyz&#34;,
+      dmPolicy: &#34;pairing&#34;,
+    },
+  },
+}
+</code></pre><p>环境变量选项：<code>ZALO_BOT_TOKEN=...</code>（仅适用于默认账户）。</p>
+<p>多账户支持：使用 <code>channels.zalo.accounts</code> 配置每账户 token 和可选的 <code>name</code>。</p>
+<ol start="3">
+<li>重启 Gateway 网关。当 token 被解析（环境变量或配置）时，Zalo 启动。</li>
+<li>私信访问默认为配对模式。当 bot 首次被联系时批准配对码。</li>
+</ol>
+<h2 id="工作原理行为">工作原理（行为）<a hidden class="anchor" aria-hidden="true" href="#工作原理行为">#</a></h2>
+<ul>
+<li>入站消息被规范化为带有媒体占位符的共享渠道信封。</li>
+<li>回复始终路由回同一 Zalo 聊天。</li>
+<li>默认使用长轮询；可通过 <code>channels.zalo.webhookUrl</code> 启用 webhook 模式。</li>
+</ul>
+<h2 id="限制">限制<a hidden class="anchor" aria-hidden="true" href="#限制">#</a></h2>
+<ul>
+<li>出站文本按 2000 字符分块（Zalo API 限制）。</li>
+<li>媒体下载/上传受 <code>channels.zalo.mediaMaxMb</code> 限制（默认 5）。</li>
+<li>由于 2000 字符限制使流式传输效果不佳，默认阻止流式传输。</li>
+</ul>
+<h2 id="访问控制私信">访问控制（私信）<a hidden class="anchor" aria-hidden="true" href="#访问控制私信">#</a></h2>
+<h3 id="私信访问">私信访问<a hidden class="anchor" aria-hidden="true" href="#私信访问">#</a></h3>
+<ul>
+<li>默认：<code>channels.zalo.dmPolicy = &quot;pairing&quot;</code>。未知发送者会收到配对码；消息在批准前会被忽略（配对码 1 小时后过期）。</li>
+<li>通过以下方式批准：
+<ul>
+<li><code>openclaw pairing list zalo</code></li>
+<li><code>openclaw pairing approve zalo &lt;CODE&gt;</code></li>
+</ul>
+</li>
+<li>配对是默认的令牌交换方式。详情：<a href="/channels/pairing">配对</a></li>
+<li><code>channels.zalo.allowFrom</code> 接受数字用户 ID（无用户名查找功能）。</li>
+</ul>
+<h2 id="长轮询与-webhook">长轮询与 webhook<a hidden class="anchor" aria-hidden="true" href="#长轮询与-webhook">#</a></h2>
+<ul>
+<li>默认：长轮询（不需要公共 URL）。</li>
+<li>Webhook 模式：设置 <code>channels.zalo.webhookUrl</code> 和 <code>channels.zalo.webhookSecret</code>。
+<ul>
+<li>Webhook secret 必须为 8-256 个字符。</li>
+<li>Webhook URL 必须使用 HTTPS。</li>
+<li>Zalo 发送事件时带有 <code>X-Bot-Api-Secret-Token</code> 头用于验证。</li>
+<li>Gateway 网关 HTTP 在 <code>channels.zalo.webhookPath</code> 处理 webhook 请求（默认为 webhook URL 路径）。</li>
+</ul>
+</li>
+</ul>
+<p><strong>注意：</strong> 根据 Zalo API 文档，getUpdates（轮询）和 webhook 是互斥的。</p>
+<h2 id="支持的消息类型">支持的消息类型<a hidden class="anchor" aria-hidden="true" href="#支持的消息类型">#</a></h2>
+<ul>
+<li><strong>文本消息</strong>：完全支持，2000 字符分块。</li>
+<li><strong>图片消息</strong>：下载和处理入站图片；通过 <code>sendPhoto</code> 发送图片。</li>
+<li><strong>贴纸</strong>：已记录但未完全处理（无智能体响应）。</li>
+<li><strong>不支持的类型</strong>：已记录（例如来自受保护用户的消息）。</li>
+</ul>
+<h2 id="功能">功能<a hidden class="anchor" aria-hidden="true" href="#功能">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>功能</th>
+          <th>状态</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>私信</td>
+          <td>✅ 支持</td>
+      </tr>
+      <tr>
+          <td>群组</td>
+          <td>❌ 即将推出（根据 Zalo 文档）</td>
+      </tr>
+      <tr>
+          <td>媒体（图片）</td>
+          <td>✅ 支持</td>
+      </tr>
+      <tr>
+          <td>表情回应</td>
+          <td>❌ 不支持</td>
+      </tr>
+      <tr>
+          <td>主题</td>
+          <td>❌ 不支持</td>
+      </tr>
+      <tr>
+          <td>投票</td>
+          <td>❌ 不支持</td>
+      </tr>
+      <tr>
+          <td>原生命令</td>
+          <td>❌ 不支持</td>
+      </tr>
+      <tr>
+          <td>流式传输</td>
+          <td>⚠️ 已阻止（2000 字符限制）</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="投递目标clicron">投递目标（CLI/cron）<a hidden class="anchor" aria-hidden="true" href="#投递目标clicron">#</a></h2>
+<ul>
+<li>使用聊天 id 作为目标。</li>
+<li>示例：<code>openclaw message send --channel zalo --target 123456789 --message &quot;hi&quot;</code>。</li>
+</ul>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<p><strong>Bot 不响应：</strong></p>
+<ul>
+<li>检查 token 是否有效：<code>openclaw channels status --probe</code></li>
+<li>验证发送者已被批准（配对或 allowFrom）</li>
+<li>检查 Gateway 网关日志：<code>openclaw logs --follow</code></li>
+</ul>
+<p><strong>Webhook 未收到事件：</strong></p>
+<ul>
+<li>确保 webhook URL 使用 HTTPS</li>
+<li>验证 secret token 为 8-256 个字符</li>
+<li>确认 Gateway 网关 HTTP 端点在配置的路径上可访问</li>
+<li>检查 getUpdates 轮询未在运行（它们是互斥的）</li>
+</ul>
+<h2 id="配置参考zalo">配置参考（Zalo）<a hidden class="anchor" aria-hidden="true" href="#配置参考zalo">#</a></h2>
+<p>完整配置：<a href="/gateway/configuration">配置</a></p>
+<p>提供商选项：</p>
+<ul>
+<li><code>channels.zalo.enabled</code>：启用/禁用渠道启动。</li>
+<li><code>channels.zalo.botToken</code>：来自 Zalo Bot 平台的 bot token。</li>
+<li><code>channels.zalo.tokenFile</code>：从文件路径读取 token。</li>
+<li><code>channels.zalo.dmPolicy</code>：<code>pairing | allowlist | open | disabled</code>（默认：pairing）。</li>
+<li><code>channels.zalo.allowFrom</code>：私信允许列表（用户 ID）。<code>open</code> 需要 <code>&quot;*&quot;</code>。向导会询问数字 ID。</li>
+<li><code>channels.zalo.mediaMaxMb</code>：入站/出站媒体上限（MB，默认 5）。</li>
+<li><code>channels.zalo.webhookUrl</code>：启用 webhook 模式（需要 HTTPS）。</li>
+<li><code>channels.zalo.webhookSecret</code>：webhook secret（8-256 字符）。</li>
+<li><code>channels.zalo.webhookPath</code>：Gateway 网关 HTTP 服务器上的 webhook 路径。</li>
+<li><code>channels.zalo.proxy</code>：API 请求的代理 URL。</li>
+</ul>
+<p>多账户选项：</p>
+<ul>
+<li><code>channels.zalo.accounts.&lt;id&gt;.botToken</code>：每账户 token。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.tokenFile</code>：每账户 token 文件。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.name</code>：显示名称。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.enabled</code>：启用/禁用账户。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.dmPolicy</code>：每账户私信策略。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.allowFrom</code>：每账户允许列表。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.webhookUrl</code>：每账户 webhook URL。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.webhookSecret</code>：每账户 webhook secret。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.webhookPath</code>：每账户 webhook 路径。</li>
+<li><code>channels.zalo.accounts.&lt;id&gt;.proxy</code>：每账户代理 URL。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/providers/zai/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Z.AI</span>
+  </a>
+  <a class="next" href="/openclaw/plugins/zalouser/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Zalo Personal（插件）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

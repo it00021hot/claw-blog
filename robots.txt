@@ -4,7 +4,7 @@ Allow: /
 User-agent: BaiduSpider
 Allow: /
 
-Sitemap: https://gen-code.top/sitemap.xml
+Sitemap: /sitemap.xml
 
 Disallow: /search/
 Disallow: /index.json

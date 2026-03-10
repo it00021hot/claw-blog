@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>斜杠命令</h2>
+    </header>
+    <div class="entry-content">
+      <p>命令由 Gateway 网关处理。大多数命令必须作为以 / 开头的独立消息发送。 仅主机的 bash 聊天命令使用 ! &lt;cmd&gt;（/bash &lt;cmd&gt; 是别名）。
+有两个相关系统：
+命令：独立的 /... 消息。 指令：/think、/verbose、/reasoning、/elevated、/exec、/model、/queue。 指令在模型看到消息之前被剥离。 在普通聊天消息中（不是仅指令消息），它们被视为&#34;内联提示&#34;，不会持久化会话设置。 在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。 指令仅对授权发送者生效（渠道白名单/配对加上 commands.useAccessGroups）。 未授权发送者的指令被视为纯文本。 还有一些内联快捷方式（仅限白名单/授权发送者）：/help、/commands、/status、/whoami（/id）。 它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。
+配置 { commands: { native: &#34;auto&#34;, nativeSkills: &#34;auto&#34;, text: true, bash: false, bashForegroundMs: 2000, config: false, debug: false, restart: false, useAccessGroups: true, }, } commands.text（默认 true）启用解析聊天消息中的 /...。 在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 false，文本命令仍然有效。 commands.native（默认 &#34;auto&#34;）注册原生命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。 设置 channels.discord.commands.native、channels.telegram.commands.native 或 channels.slack.commands.native 以按提供商覆盖（布尔值或 &#34;auto&#34;）。 false 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。 commands.nativeSkills（默认 &#34;auto&#34;）在支持时原生注册 Skill 命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。 设置 channels.discord.commands.nativeSkills、channels.telegram.commands.nativeSkills 或 channels.slack.commands.nativeSkills 以按提供商覆盖（布尔值或 &#34;auto&#34;）。 commands.bash（默认 false）启用 ! &lt;cmd&gt; 来运行主机 shell 命令（/bash &lt;cmd&gt; 是别名；需要 tools.elevated 白名单）。 commands.bashForegroundMs（默认 2000）控制 bash 切换到后台模式之前等待多长时间（0 立即后台运行）。 commands.config（默认 false）启用 /config（读写 openclaw.json）。 commands.debug（默认 false）启用 /debug（仅运行时覆盖）。 commands.useAccessGroups（默认 true）对命令强制执行白名单/策略。 命令列表 文本 &#43; 原生（启用时）：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 斜杠命令" href="/openclaw/tools/slash-commands/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>文档导航中心</h2>
+    </header>
+    <div class="entry-content">
+      <p>使用这些导航中心发现每一个页面，包括深入解析和参考文档——它们不一定出现在左侧导航栏中。
+从这里开始 索引 入门指南 快速开始 新手引导 向导 安装配置 仪表盘（本地 Gateway 网关） 帮助 文档目录 配置 配置示例 OpenClaw 助手 展示 背景故事 安装 &#43; 更新 Docker Nix 更新 / 回滚 Bun 工作流（实验性） 核心概念 架构 功能 网络中心 智能体运行时 智能体工作区 记忆 智能体循环 流式传输 &#43; 分块 多智能体路由 压缩 会话 会话修剪 会话工具 队列 斜杠命令 RPC 适配器 TypeBox 模式 时区处理 在线状态 设备发现 &#43; 传输协议 Bonjour 渠道路由 群组 群组消息 模型故障转移 OAuth 提供商 &#43; 入口 聊天渠道中心 模型提供商中心 WhatsApp Telegram Telegram（grammY 注意事项） Slack Discord Mattermost（插件） Signal BlueBubbles (iMessage) iMessage（旧版） 位置解析 WebChat Webhooks Gmail Pub/Sub Gateway 网关 &#43; 运维 Gateway 网关运维手册 网络模型 Gateway 网关配对 Gateway 网关锁 后台进程 健康检查 心跳 Doctor 日志 沙箱隔离 仪表盘 控制界面 远程访问 远程 Gateway 网关 README Tailscale 安全 故障排除 工具 &#43; 自动化 工具概览 OpenProse CLI 参考 Exec 工具 提权模式 定时任务 定时任务 vs 心跳 思考 &#43; 详细输出 模型 子智能体 Agent send CLI 终端界面 浏览器控制 浏览器（Linux 故障排除） 轮询 节点、媒体、语音 节点概览 摄像头 图片 音频 位置命令 语音唤醒 对话模式 平台 平台概览 macOS iOS Android Windows (WSL2) Linux Web 界面 macOS 配套应用（高级） macOS 开发环境配置 macOS 菜单栏 macOS 语音唤醒 macOS 语音悬浮窗 macOS WebChat macOS Canvas macOS 子进程 macOS 健康检查 macOS 图标 macOS 日志 macOS 权限 macOS 远程 macOS 签名 macOS 发布 macOS Gateway 网关 (launchd) macOS XPC macOS Skills macOS Peekaboo 工作区 &#43; 模板 Skills ClawHub Skills 配置 默认 AGENTS 模板：AGENTS 模板：BOOTSTRAP 模板：HEARTBEAT 模板：IDENTITY 模板：SOUL 模板：TOOLS 模板：USER 实验（探索性） 新手引导配置协议 定时任务加固笔记 群组策略加固笔记 研究：记忆 模型配置探索 项目 致谢 测试 &#43; 发布 测试 发布检查清单 设备型号 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 文档导航中心" href="/openclaw/start/hubs/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>文本转语音（TTS）</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 可以使用 ElevenLabs、OpenAI 或 Edge TTS 将出站回复转换为音频。它可以在任何 OpenClaw 能发送音频的地方工作；Telegram 会显示圆形语音消息气泡。
+支持的服务 ElevenLabs（主要或备用提供商） OpenAI（主要或备用提供商；也用于摘要） Edge TTS（主要或备用提供商；使用 node-edge-tts，无 API 密钥时为默认） Edge TTS 注意事项 Edge TTS 通过 node-edge-tts 库使用 Microsoft Edge 的在线神经网络 TTS 服务。它是托管服务（非本地），使用 Microsoft 的端点，不需要 API 密钥。node-edge-tts 公开了语音配置选项和输出格式，但并非所有选项都被 Edge 服务支持。citeturn2search0
+由于 Edge TTS 是一个没有公布 SLA 或配额的公共 Web 服务，请将其视为尽力而为。如果你需要有保证的限制和支持，请使用 OpenAI 或 ElevenLabs。Microsoft 的语音 REST API 记录了每个请求 10 分钟的音频限制；Edge TTS 没有公布限制，所以假设类似或更低的限制。citeturn0search3
+可选密钥 如果你想使用 OpenAI 或 ElevenLabs：
+ELEVENLABS_API_KEY（或 XI_API_KEY） OPENAI_API_KEY Edge TTS 不需要 API 密钥。如果没有找到 API 密钥，OpenClaw 默认使用 Edge TTS（除非通过 messages.tts.edge.enabled=false 禁用）。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 文本转语音（TTS）" href="/openclaw/tts/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>故障排除 🔧</h2>
+    </header>
+    <div class="entry-content">
+      <p>当 OpenClaw 出现异常时，以下是解决方法。
+如果你只想快速分类问题，请先查看常见问题的最初的六十秒。本页深入介绍运行时故障和诊断。
+特定提供商的快捷方式：/channels/troubleshooting
+状态与诊断 快速分类命令（按顺序）：
+命令 它告诉你什么 何时使用 openclaw status 本地摘要：操作系统 &#43; 更新、Gateway 网关可达性/模式、服务、智能体/会话、提供商配置状态 首次检查，快速概览 openclaw status --all 完整本地诊断（只读、可粘贴、相对安全）包括日志尾部 当你需要分享调试报告时 openclaw status --deep 运行 Gateway 网关健康检查（包括提供商探测；需要可达的 Gateway 网关） 当&#34;已配置&#34;不意味着&#34;正常工作&#34;时 openclaw gateway probe Gateway 网关发现 &#43; 可达性（本地 &#43; 远程目标） 当你怀疑正在探测错误的 Gateway 网关时 openclaw channels status --probe 向运行中的 Gateway 网关查询渠道状态（并可选探测） 当 Gateway 网关可达但渠道异常时 openclaw gateway status 监管程序状态（launchd/systemd/schtasks）、运行时 PID/退出、最后的 Gateway 网关错误 当服务&#34;看起来已加载&#34;但没有运行时 openclaw logs --follow 实时日志（运行时问题的最佳信号） 当你需要实际的故障原因时 分享输出： 优先使用 openclaw status --all（它会隐藏令牌）。如果你粘贴 openclaw status，考虑先设置 OPENCLAW_SHOW_SECRETS=0（令牌预览）。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 故障排除 🔧" href="/openclaw/gateway/troubleshooting/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>故障排除</h2>
+    </header>
+    <div class="entry-content">
+      <p>最初的六十秒 按顺序运行这些命令：
+openclaw status openclaw status --all openclaw gateway probe openclaw logs --follow openclaw doctor 如果 Gateway 网关可达，进行深度探测：
+openclaw status --deep 常见的“它坏了”情况 openclaw: command not found 几乎总是 Node/npm PATH 问题。从这里开始：
+安装（Node/npm PATH 安装完整性检查） 安装程序失败（或你需要完整日志） 以详细模式重新运行安装程序以查看完整跟踪和 npm 输出：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --verbose 对于 beta 安装：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta --verbose 你也可以设置 OPENCLAW_VERBOSE=1 代替标志。
+Gateway 网关“unauthorized”、无法连接或持续重连 Gateway 网关故障排除 Gateway 网关认证 控制 UI 在 HTTP 上失败（需要设备身份） Gateway 网关故障排除 控制 UI docs.openclaw.ai 显示 SSL 错误（Comcast/Xfinity） 一些 Comcast/Xfinity 连接通过 Xfinity Advanced Security 阻止 docs.openclaw.ai。 禁用 Advanced Security 或将 docs.openclaw.ai 添加到允许列表，然后重试。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 故障排除" href="/openclaw/help/troubleshooting/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>插件清单（openclaw.plugin.json）</h2>
+    </header>
+    <div class="entry-content">
+      <p>每个插件都必须在插件根目录下提供一个 openclaw.plugin.json 文件。OpenClaw 使用此清单来在不执行插件代码的情况下验证配置。缺失或无效的清单将被视为插件错误，并阻止配置验证。
+参阅完整的插件系统指南：插件。
+必填字段 { &#34;id&#34;: &#34;voice-call&#34;, &#34;configSchema&#34;: { &#34;type&#34;: &#34;object&#34;, &#34;additionalProperties&#34;: false, &#34;properties&#34;: {} } } 必填键：
+id（字符串）：插件的规范 id。 configSchema（对象）：插件配置的 JSON Schema（内联形式）。 可选键：
+kind（字符串）：插件类型（例如：&#34;memory&#34;）。 channels（数组）：此插件注册的渠道 id（例如：[&#34;matrix&#34;]）。 providers（数组）：此插件注册的提供商 id。 skills（数组）：要加载的 Skills 目录（相对于插件根目录）。 name（字符串）：插件的显示名称。 description（字符串）：插件简短描述。 uiHints（对象）：用于 UI 渲染的配置字段标签/占位符/敏感标志。 version（字符串）：插件版本（仅供参考）。 JSON Schema 要求 每个插件都必须提供 JSON Schema，即使不接受任何配置也是如此。 空 Schema 是可以接受的（例如 { &#34;type&#34;: &#34;object&#34;, &#34;additionalProperties&#34;: false }）。 Schema 在配置读取/写入时进行验证，而非在运行时。 验证行为 未知的 channels.* 键会被视为错误，除非该渠道 id 已在插件清单中声明。 plugins.entries.&lt;id&gt;、plugins.allow、plugins.deny 和 plugins.slots.* 必须引用可发现的插件 id。未知 id 会被视为错误。 如果插件已安装但清单或 Schema 损坏或缺失，验证将失败，Doctor 会报告插件错误。 如果插件配置存在但插件已禁用，配置会被保留，并在 Doctor 和日志中显示警告。 注意事项 清单对所有插件都是必需的，包括从本地文件系统加载的插件。 运行时仍然会单独加载插件模块；清单仅用于发现和验证。 如果你的插件依赖原生模块，请记录构建步骤以及所有包管理器允许列表要求（例如 pnpm 的 allow-build-scripts - pnpm rebuild &lt;package&gt;）。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 插件清单（openclaw.plugin.json）" href="/openclaw/plugins/manifest/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>插件智能体工具</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 插件可以注册智能体工具（JSON 模式函数），这些工具在智能体运行期间暴露给 LLM。工具可以是必需的（始终可用）或可选的（选择启用）。
+智能体工具在主配置的 tools 下配置，或在每个智能体的 agents.list[].tools 下配置。允许列表/拒绝列表策略控制智能体可以调用哪些工具。
+基本工具 import { Type } from &#34;@sinclair/typebox&#34;; export default function (api) { api.registerTool({ name: &#34;my_tool&#34;, description: &#34;Do a thing&#34;, parameters: Type.Object({ input: Type.String(), }), async execute(_id, params) { return { content: [{ type: &#34;text&#34;, text: params.input }] }; }, }); } 可选工具（选择启用） 可选工具永远不会自动启用。用户必须将它们添加到智能体允许列表中。
+export default function (api) { api.registerTool( { name: &#34;workflow_tool&#34;, description: &#34;Run a local workflow&#34;, parameters: { type: &#34;object&#34;, properties: { pipeline: { type: &#34;string&#34; }, }, required: [&#34;pipeline&#34;], }, async execute(_id, params) { return { content: [{ type: &#34;text&#34;, text: params.pipeline }] }; }, }, { optional: true }, ); } 在 agents.list[].tools.allow（或全局 tools.allow）中启用可选工具：
+{ agents: { list: [ { id: &#34;main&#34;, tools: { allow: [ &#34;workflow_tool&#34;, // 特定工具名称 &#34;workflow&#34;, // 插件 id（启用该插件的所有工具） &#34;group:plugins&#34;, // 所有插件工具 ], }, }, ], }, } 其他影响工具可用性的配置选项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 插件智能体工具" href="/openclaw/plugins/agent-tools/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>插件（扩展）</h2>
+    </header>
+    <div class="entry-content">
+      <p>快速开始（插件新手？） 插件只是一个小型代码模块，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。
+大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。
+快速路径：
+查看已加载的内容： openclaw plugins list 安装官方插件（例如：Voice Call）： openclaw plugins install @openclaw/voice-call 重启 Gateway 网关，然后在 plugins.entries.&lt;id&gt;.config 下配置。 参见 Voice Call 了解具体的插件示例。
+可用插件（官方） 从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 @openclaw/msteams。 Memory (Core) — 捆绑的记忆搜索插件（通过 plugins.slots.memory 默认启用） Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 plugins.slots.memory = &#34;memory-lancedb&#34;） Voice Call — @openclaw/voice-call Zalo Personal — @openclaw/zalouser Matrix — @openclaw/matrix Nostr — @openclaw/nostr Zalo — @openclaw/zalo Microsoft Teams — @openclaw/msteams Google Antigravity OAuth（提供商认证）— 作为 google-antigravity-auth 捆绑（默认禁用） Gemini CLI OAuth（提供商认证）— 作为 google-gemini-cli-auth 捆绑（默认禁用） Qwen OAuth（提供商认证）— 作为 qwen-portal-auth 捆绑（默认禁用） Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 github-copilot 设备登录不同（捆绑，默认禁用） OpenClaw 插件是通过 jiti 在运行时加载的 TypeScript 模块。配置验证不会执行插件代码；它使用插件清单和 JSON Schema。参见 插件清单。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 插件（扩展）" href="/openclaw/tools/plugin/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>插件 SDK &#43; 运行时重构计划</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标：每个消息连接器都是一个插件（内置或外部），使用统一稳定的 API。 插件不直接从 src/** 导入任何内容。所有依赖项均通过 SDK 或运行时获取。
+为什么现在做 当前连接器混用多种模式：直接导入核心模块、仅 dist 的桥接方式以及自定义辅助函数。 这使得升级变得脆弱，并阻碍了干净的外部插件接口。 目标架构（两层） 1）插件 SDK（编译时，稳定，可发布） 范围：类型、辅助函数和配置工具。无运行时状态，无副作用。
+内容（示例）：
+类型：ChannelPlugin、适配器、ChannelMeta、ChannelCapabilities、ChannelDirectoryEntry。 配置辅助函数：buildChannelConfigSchema、setAccountEnabledInConfigSection、deleteAccountFromConfigSection、 applyAccountNameToChannelSection。 配对辅助函数：PAIRING_APPROVED_MESSAGE、formatPairingApproveHint。 新手引导辅助函数：promptChannelAccessConfig、addWildcardAllowFrom、新手引导类型。 工具参数辅助函数：createActionGate、readStringParam、readNumberParam、readReactionParams、jsonResult。 文档链接辅助函数：formatDocsLink。 交付方式：
+以 openclaw/plugin-sdk 发布（或从核心以 openclaw/plugin-sdk 导出）。 使用语义化版本控制，提供明确的稳定性保证。 2）插件运行时（执行层，注入式） 范围：所有涉及核心运行时行为的内容。 通过 OpenClawPluginApi.runtime 访问，确保插件永远不会导入 src/**。
+建议的接口（最小但完整）：
+export type PluginRuntime = { channel: { text: { chunkMarkdownText(text: string, limit: number): string[]; resolveTextChunkLimit(cfg: OpenClawConfig, channel: string, accountId?: string): number; hasControlCommand(text: string, cfg: OpenClawConfig): boolean; }; reply: { dispatchReplyWithBufferedBlockDispatcher(params: { ctx: unknown; cfg: unknown; dispatcherOptions: { deliver: (payload: { text?: string; mediaUrls?: string[]; mediaUrl?: string; }) =&gt; void | Promise&lt;void&gt;; onError?: (err: unknown, info: { kind: string }) =&gt; void; }; }): Promise&lt;void&gt;; createReplyDispatcherWithTyping?: unknown; // adapter for Teams-style flows }; routing: { resolveAgentRoute(params: { cfg: unknown; channel: string; accountId: string; peer: { kind: RoutePeerKind; id: string }; }): { sessionKey: string; accountId: string }; }; pairing: { buildPairingReply(params: { channel: string; idLine: string; code: string }): string; readAllowFromStore(channel: string): Promise&lt;string[]&gt;; upsertPairingRequest(params: { channel: string; id: string; meta?: { name?: string }; }): Promise&lt;{ code: string; created: boolean }&gt;; }; media: { fetchRemoteMedia(params: { url: string }): Promise&lt;{ buffer: Buffer; contentType?: string }&gt;; saveMediaBuffer( buffer: Uint8Array, contentType: string | undefined, direction: &#34;inbound&#34; | &#34;outbound&#34;, maxBytes: number, ): Promise&lt;{ path: string; contentType?: string }&gt;; }; mentions: { buildMentionRegexes(cfg: OpenClawConfig, agentId?: string): RegExp[]; matchesMentionPatterns(text: string, regexes: RegExp[]): boolean; }; groups: { resolveGroupPolicy( cfg: OpenClawConfig, channel: string, accountId: string, groupId: string, ): { allowlistEnabled: boolean; allowed: boolean; groupConfig?: unknown; defaultConfig?: unknown; }; resolveRequireMention( cfg: OpenClawConfig, channel: string, accountId: string, groupId: string, override?: boolean, ): boolean; }; debounce: { createInboundDebouncer&lt;T&gt;(opts: { debounceMs: number; buildKey: (v: T) =&gt; string | null; shouldDebounce: (v: T) =&gt; boolean; onFlush: (entries: T[]) =&gt; Promise&lt;void&gt;; onError?: (err: unknown) =&gt; void; }): { push: (v: T) =&gt; void; flush: () =&gt; Promise&lt;void&gt; }; resolveInboundDebounceMs(cfg: OpenClawConfig, channel: string): number; }; commands: { resolveCommandAuthorizedFromAuthorizers(params: { useAccessGroups: boolean; authorizers: Array&lt;{ configured: boolean; allowed: boolean }&gt;; }): boolean; }; }; logging: { shouldLogVerbose(): boolean; getChildLogger(name: string): PluginLogger; }; state: { resolveStateDir(cfg: OpenClawConfig): string; }; }; 备注：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 插件 SDK &#43; 运行时重构计划" href="/openclaw/refactor/plugin-sdk/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>提升模式（/elevated 指令）</h2>
+    </header>
+    <div class="entry-content">
+      <p>功能说明 /elevated on 在 Gateway 网关主机上运行并保留 exec 审批（与 /elevated ask 相同）。 /elevated full 在 Gateway 网关主机上运行并自动批准 exec（跳过 exec 审批）。 /elevated ask 在 Gateway 网关主机上运行但保留 exec 审批（与 /elevated on 相同）。 on/ask 不会强制 exec.security=full；配置的安全/询问策略仍然适用。 仅在智能体被沙箱隔离时改变行为（否则 exec 已经在主机上运行）。 指令形式：/elevated on|off|ask|full、/elev on|off|ask|full。 仅接受 on|off|ask|full；其他任何内容返回提示且不改变状态。 它控制什么（以及不控制什么） 可用性门控：tools.elevated 是全局基线。agents.list[].tools.elevated 可以进一步限制每个智能体的提升（两者都必须允许）。 每会话状态：/elevated on|off|ask|full 为当前会话键设置提升级别。 内联指令：消息内的 /elevated on|ask|full 仅适用于该消息。 群组：在群聊中，仅当智能体被提及时才遵守提升指令。绕过提及要求的纯命令消息被视为已提及。 主机执行：elevated 强制 exec 到 Gateway 网关主机；full 还设置 security=full。 审批：full 跳过 exec 审批；on/ask 在允许列表/询问规则要求时遵守审批。 非沙箱隔离智能体：对位置无影响；仅影响门控、日志和状态。 工具策略仍然适用：如果 exec 被工具策略拒绝，则无法使用 elevated。 与 /exec 分开：/exec 为授权发送者调整每会话默认值，不需要 elevated。 解析顺序 消息上的内联指令（仅适用于该消息）。 会话覆盖（通过发送仅含指令的消息设置）。 全局默认值（配置中的 agents.defaults.elevatedDefault）。 设置会话默认值 发送一条仅包含指令的消息（允许空白），例如 /elevated full。 发送确认回复（Elevated mode set to full... / Elevated mode disabled.）。 如果 elevated 访问被禁用或发送者不在批准的允许列表中，指令会回复一个可操作的错误且不改变会话状态。 发送不带参数的 /elevated（或 /elevated:）以查看当前的 elevated 级别。 可用性 &#43; 允许列表 功能门控：tools.elevated.enabled（即使代码支持，也可以通过配置将默认值设为关闭）。 发送者允许列表：tools.elevated.allowFrom，带有每提供商允许列表（例如 discord、whatsapp）。 每智能体门控：agents.list[].tools.elevated.enabled（可选；只能进一步限制）。 每智能体允许列表：agents.list[].tools.elevated.allowFrom（可选；设置时，发送者必须同时匹配全局 &#43; 每智能体允许列表）。 Discord 回退：如果省略 tools.elevated.allowFrom.discord，则使用 channels.discord.dm.allowFrom 列表作为回退。设置 tools.elevated.allowFrom.discord（即使是 []）以覆盖。每智能体允许列表不使用回退。 所有门控都必须通过；否则 elevated 被视为不可用。 日志 &#43; 状态 Elevated exec 调用以 info 级别记录。 会话状态包括 elevated 模式（例如 elevated=ask、elevated=full）。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 提升模式（/elevated 指令）" href="/openclaw/tools/elevated/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/7/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/9/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

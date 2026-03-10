@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Ollama | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 OLLAMA_API_KEY（或认证配置）启用且未定义显式的 models.providers.ollama 条目时，可以自动发现支持工具调用的模型。
+快速开始
+
+
+安装 Ollama：https://ollama.ai
+
+
+拉取模型：
+
+
+ollama pull llama3.3
+# 或
+ollama pull qwen2.5-coder:32b
+# 或
+ollama pull deepseek-r1:32b
+
+为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）：
+
+# 设置环境变量
+export OLLAMA_API_KEY=&#34;ollama-local&#34;
+
+# 或在配置文件中设置
+openclaw config set models.providers.ollama.apiKey &#34;ollama-local&#34;
+
+使用 Ollama 模型：
+
+{
+  agents: {
+    defaults: {
+      model: { primary: &#34;ollama/llama3.3&#34; },
+    },
+  },
+}
+模型发现（隐式提供商）
+当你设置了 OLLAMA_API_KEY（或认证配置）且未定义 models.providers.ollama 时，OpenClaw 会从本地 Ollama 实例 http://127.0.0.1:11434 发现模型：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/providers/ollama/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/providers/ollama/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/providers/ollama/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Ollama">
+  <meta property="og:description" content="Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 OLLAMA_API_KEY（或认证配置）启用且未定义显式的 models.providers.ollama 条目时，可以自动发现支持工具调用的模型。
+快速开始 安装 Ollama：https://ollama.ai
+拉取模型：
+ollama pull llama3.3 # 或 ollama pull qwen2.5-coder:32b # 或 ollama pull deepseek-r1:32b 为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）： # 设置环境变量 export OLLAMA_API_KEY=&#34;ollama-local&#34; # 或在配置文件中设置 openclaw config set models.providers.ollama.apiKey &#34;ollama-local&#34; 使用 Ollama 模型： { agents: { defaults: { model: { primary: &#34;ollama/llama3.3&#34; }, }, }, } 模型发现（隐式提供商） 当你设置了 OLLAMA_API_KEY（或认证配置）且未定义 models.providers.ollama 时，OpenClaw 会从本地 Ollama 实例 http://127.0.0.1:11434 发现模型：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ollama">
+<meta name="twitter:description" content="Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 OLLAMA_API_KEY（或认证配置）启用且未定义显式的 models.providers.ollama 条目时，可以自动发现支持工具调用的模型。
+快速开始
+
+
+安装 Ollama：https://ollama.ai
+
+
+拉取模型：
+
+
+ollama pull llama3.3
+# 或
+ollama pull qwen2.5-coder:32b
+# 或
+ollama pull deepseek-r1:32b
+
+为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）：
+
+# 设置环境变量
+export OLLAMA_API_KEY=&#34;ollama-local&#34;
+
+# 或在配置文件中设置
+openclaw config set models.providers.ollama.apiKey &#34;ollama-local&#34;
+
+使用 Ollama 模型：
+
+{
+  agents: {
+    defaults: {
+      model: { primary: &#34;ollama/llama3.3&#34; },
+    },
+  },
+}
+模型发现（隐式提供商）
+当你设置了 OLLAMA_API_KEY（或认证配置）且未定义 models.providers.ollama 时，OpenClaw 会从本地 Ollama 实例 http://127.0.0.1:11434 发现模型：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Ollama",
+      "item": "/openclaw/providers/ollama/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Ollama",
+  "name": "Ollama",
+  "description": "Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 OLLAMA_API_KEY（或认证配置）启用且未定义显式的 models.providers.ollama 条目时，可以自动发现支持工具调用的模型。\n快速开始 安装 Ollama：https://ollama.ai\n拉取模型：\nollama pull llama3.3 # 或 ollama pull qwen2.5-coder:32b # 或 ollama pull deepseek-r1:32b 为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）： # 设置环境变量 export OLLAMA_API_KEY=\u0026#34;ollama-local\u0026#34; # 或在配置文件中设置 openclaw config set models.providers.ollama.apiKey \u0026#34;ollama-local\u0026#34; 使用 Ollama 模型： { agents: { defaults: { model: { primary: \u0026#34;ollama/llama3.3\u0026#34; }, }, }, } 模型发现（隐式提供商） 当你设置了 OLLAMA_API_KEY（或认证配置）且未定义 models.providers.ollama 时，OpenClaw 会从本地 Ollama 实例 http://127.0.0.1:11434 发现模型：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 OLLAMA_API_KEY（或认证配置）启用且未定义显式的 models.providers.ollama 条目时，可以自动发现支持工具调用的模型。\n快速开始 安装 Ollama：https://ollama.ai\n拉取模型：\nollama pull llama3.3 # 或 ollama pull qwen2.5-coder:32b # 或 ollama pull deepseek-r1:32b 为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）： # 设置环境变量 export OLLAMA_API_KEY=\"ollama-local\" # 或在配置文件中设置 openclaw config set models.providers.ollama.apiKey \"ollama-local\" 使用 Ollama 模型： { agents: { defaults: { model: { primary: \"ollama/llama3.3\" }, }, }, } 模型发现（隐式提供商） 当你设置了 OLLAMA_API_KEY（或认证配置）且未定义 models.providers.ollama 时，OpenClaw 会从本地 Ollama 实例 http://127.0.0.1:11434 发现模型：\n查询 /api/tags 和 /api/show 仅保留报告了 tools 能力的模型 当模型报告 thinking 时标记为 reasoning 在可用时从 model_info[\".context_length\"] 读取 contextWindow 将 maxTokens 设置为上下文窗口的 10 倍 所有费用设置为 0 这样无需手动配置模型条目，同时保持目录与 Ollama 的能力对齐。\n查看可用模型：\nollama list openclaw models list 要添加新模型，只需通过 Ollama 拉取：\nollama pull mistral 新模型将被自动发现并可供使用。\n如果你显式设置了 models.providers.ollama，自动发现将被跳过，你必须手动定义模型（见下文）。\n配置 基本设置（隐式发现） 启用 Ollama 最简单的方式是通过环境变量：\nexport OLLAMA_API_KEY=\"ollama-local\" 显式设置（手动模型） 在以下情况使用显式配置：\nOllama 运行在其他主机/端口上。 你想强制指定上下文窗口或模型列表。 你想包含未报告工具支持的模型。 { models: { providers: { ollama: { // 使用包含 /v1 的主机地址以兼容 OpenAI API baseUrl: \"http://ollama-host:11434/v1\", apiKey: \"ollama-local\", api: \"openai-completions\", models: [ { id: \"llama3.3\", name: \"Llama 3.3\", reasoning: false, input: [\"text\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 8192, maxTokens: 8192 * 10 } ] } } } } 如果设置了 OLLAMA_API_KEY，你可以在提供商条目中省略 apiKey，OpenClaw 会自动填充以进行可用性检查。\n自定义基础 URL（显式配置） 如果 Ollama 运行在不同的主机或端口上（显式配置会禁用自动发现，因此需要手动定义模型）：\n{ models: { providers: { ollama: { apiKey: \"ollama-local\", baseUrl: \"http://ollama-host:11434/v1\", }, }, }, } 模型选择 配置完成后，所有 Ollama 模型即可使用：\n{ agents: { defaults: { model: { primary: \"ollama/llama3.3\", fallbacks: [\"ollama/qwen2.5-coder:32b\"], }, }, }, } 高级用法 推理模型 当 Ollama 在 /api/show 中报告 thinking 时，OpenClaw 会将模型标记为具有推理能力：\nollama pull deepseek-r1:32b 模型费用 Ollama 免费且在本地运行，因此所有模型费用均设置为 $0。\n上下文窗口 对于自动发现的模型，OpenClaw 会使用 Ollama 报告的上下文窗口（如果可用），否则默认为 8192。你可以在显式提供商配置中覆盖 contextWindow 和 maxTokens。\n故障排除 Ollama 未被检测到 确保 Ollama 正在运行，且你已设置 OLLAMA_API_KEY（或认证配置），并且未定义显式的 models.providers.ollama 条目：\nollama serve 同时确认 API 可访问：\ncurl http://localhost:11434/api/tags 没有可用模型 OpenClaw 仅自动发现报告了工具支持的模型。如果你的模型未列出，可以：\n拉取一个支持工具调用的模型，或 在 models.providers.ollama 中显式定义该模型。 添加模型：\nollama list # 查看已安装的模型 ollama pull llama3.3 # 拉取模型 连接被拒绝 检查 Ollama 是否在正确的端口上运行：\n# 检查 Ollama 是否在运行 ps aux | grep ollama # 或重启 Ollama ollama serve 另请参阅 模型提供商 - 所有提供商概览 模型选择 - 如何选择模型 配置 - 完整配置参考 ",
+  "wordCount" : "310",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/providers/ollama/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Ollama
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b" aria-label="快速开始">快速开始</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e5%8f%91%e7%8e%b0%e9%9a%90%e5%bc%8f%e6%8f%90%e4%be%9b%e5%95%86" aria-label="模型发现（隐式提供商）">模型发现（隐式提供商）</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae" aria-label="配置">配置</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e8%ae%be%e7%bd%ae%e9%9a%90%e5%bc%8f%e5%8f%91%e7%8e%b0" aria-label="基本设置（隐式发现）">基本设置（隐式发现）</a></li>
+                <li>
+                    <a href="#%e6%98%be%e5%bc%8f%e8%ae%be%e7%bd%ae%e6%89%8b%e5%8a%a8%e6%a8%a1%e5%9e%8b" aria-label="显式设置（手动模型）">显式设置（手动模型）</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e5%9f%ba%e7%a1%80-url%e6%98%be%e5%bc%8f%e9%85%8d%e7%bd%ae" aria-label="自定义基础 URL（显式配置）">自定义基础 URL（显式配置）</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e9%80%89%e6%8b%a9" aria-label="模型选择">模型选择</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%ab%98%e7%ba%a7%e7%94%a8%e6%b3%95" aria-label="高级用法">高级用法</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8e%a8%e7%90%86%e6%a8%a1%e5%9e%8b" aria-label="推理模型">推理模型</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e8%b4%b9%e7%94%a8" aria-label="模型费用">模型费用</a></li>
+                <li>
+                    <a href="#%e4%b8%8a%e4%b8%8b%e6%96%87%e7%aa%97%e5%8f%a3" aria-label="上下文窗口">上下文窗口</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#ollama-%e6%9c%aa%e8%a2%ab%e6%a3%80%e6%b5%8b%e5%88%b0" aria-label="Ollama 未被检测到">Ollama 未被检测到</a></li>
+                <li>
+                    <a href="#%e6%b2%a1%e6%9c%89%e5%8f%af%e7%94%a8%e6%a8%a1%e5%9e%8b" aria-label="没有可用模型">没有可用模型</a></li>
+                <li>
+                    <a href="#%e8%bf%9e%e6%8e%a5%e8%a2%ab%e6%8b%92%e7%bb%9d" aria-label="连接被拒绝">连接被拒绝</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%a6%e8%af%b7%e5%8f%82%e9%98%85" aria-label="另请参阅">另请参阅</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 <code>OLLAMA_API_KEY</code>（或认证配置）启用且未定义显式的 <code>models.providers.ollama</code> 条目时，可以<strong>自动发现支持工具调用的模型</strong>。</p>
+<h2 id="快速开始">快速开始<a hidden class="anchor" aria-hidden="true" href="#快速开始">#</a></h2>
+<ol>
+<li>
+<p>安装 Ollama：https://ollama.ai</p>
+</li>
+<li>
+<p>拉取模型：</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama pull llama3.3
+</span></span><span class="line"><span class="cl"><span class="c1"># 或</span>
+</span></span><span class="line"><span class="cl">ollama pull qwen2.5-coder:32b
+</span></span><span class="line"><span class="cl"><span class="c1"># 或</span>
+</span></span><span class="line"><span class="cl">ollama pull deepseek-r1:32b
+</span></span></code></pre></div><ol start="3">
+<li>为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 设置环境变量</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">OLLAMA_API_KEY</span><span class="o">=</span><span class="s2">&#34;ollama-local&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 或在配置文件中设置</span>
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> models.providers.ollama.apiKey <span class="s2">&#34;ollama-local&#34;</span>
+</span></span></code></pre></div><ol start="4">
+<li>使用 Ollama 模型：</li>
+</ol>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      model: { primary: &#34;ollama/llama3.3&#34; },
+    },
+  },
+}
+</code></pre><h2 id="模型发现隐式提供商">模型发现（隐式提供商）<a hidden class="anchor" aria-hidden="true" href="#模型发现隐式提供商">#</a></h2>
+<p>当你设置了 <code>OLLAMA_API_KEY</code>（或认证配置）且<strong>未</strong>定义 <code>models.providers.ollama</code> 时，OpenClaw 会从本地 Ollama 实例 <code>http://127.0.0.1:11434</code> 发现模型：</p>
+<ul>
+<li>查询 <code>/api/tags</code> 和 <code>/api/show</code></li>
+<li>仅保留报告了 <code>tools</code> 能力的模型</li>
+<li>当模型报告 <code>thinking</code> 时标记为 <code>reasoning</code></li>
+<li>在可用时从 <code>model_info[&quot;&lt;arch&gt;.context_length&quot;]</code> 读取 <code>contextWindow</code></li>
+<li>将 <code>maxTokens</code> 设置为上下文窗口的 10 倍</li>
+<li>所有费用设置为 <code>0</code></li>
+</ul>
+<p>这样无需手动配置模型条目，同时保持目录与 Ollama 的能力对齐。</p>
+<p>查看可用模型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama list
+</span></span><span class="line"><span class="cl">openclaw models list
+</span></span></code></pre></div><p>要添加新模型，只需通过 Ollama 拉取：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama pull mistral
+</span></span></code></pre></div><p>新模型将被自动发现并可供使用。</p>
+<p>如果你显式设置了 <code>models.providers.ollama</code>，自动发现将被跳过，你必须手动定义模型（见下文）。</p>
+<h2 id="配置">配置<a hidden class="anchor" aria-hidden="true" href="#配置">#</a></h2>
+<h3 id="基本设置隐式发现">基本设置（隐式发现）<a hidden class="anchor" aria-hidden="true" href="#基本设置隐式发现">#</a></h3>
+<p>启用 Ollama 最简单的方式是通过环境变量：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">OLLAMA_API_KEY</span><span class="o">=</span><span class="s2">&#34;ollama-local&#34;</span>
+</span></span></code></pre></div><h3 id="显式设置手动模型">显式设置（手动模型）<a hidden class="anchor" aria-hidden="true" href="#显式设置手动模型">#</a></h3>
+<p>在以下情况使用显式配置：</p>
+<ul>
+<li>Ollama 运行在其他主机/端口上。</li>
+<li>你想强制指定上下文窗口或模型列表。</li>
+<li>你想包含未报告工具支持的模型。</li>
+</ul>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  models: {
+    providers: {
+      ollama: {
+        // 使用包含 /v1 的主机地址以兼容 OpenAI API
+        baseUrl: &#34;http://ollama-host:11434/v1&#34;,
+        apiKey: &#34;ollama-local&#34;,
+        api: &#34;openai-completions&#34;,
+        models: [
+          {
+            id: &#34;llama3.3&#34;,
+            name: &#34;Llama 3.3&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 8192,
+            maxTokens: 8192 * 10
+          }
+        ]
+      }
+    }
+  }
+}
+</code></pre><p>如果设置了 <code>OLLAMA_API_KEY</code>，你可以在提供商条目中省略 <code>apiKey</code>，OpenClaw 会自动填充以进行可用性检查。</p>
+<h3 id="自定义基础-url显式配置">自定义基础 URL（显式配置）<a hidden class="anchor" aria-hidden="true" href="#自定义基础-url显式配置">#</a></h3>
+<p>如果 Ollama 运行在不同的主机或端口上（显式配置会禁用自动发现，因此需要手动定义模型）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  models: {
+    providers: {
+      ollama: {
+        apiKey: &#34;ollama-local&#34;,
+        baseUrl: &#34;http://ollama-host:11434/v1&#34;,
+      },
+    },
+  },
+}
+</code></pre><h3 id="模型选择">模型选择<a hidden class="anchor" aria-hidden="true" href="#模型选择">#</a></h3>
+<p>配置完成后，所有 Ollama 模型即可使用：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      model: {
+        primary: &#34;ollama/llama3.3&#34;,
+        fallbacks: [&#34;ollama/qwen2.5-coder:32b&#34;],
+      },
+    },
+  },
+}
+</code></pre><h2 id="高级用法">高级用法<a hidden class="anchor" aria-hidden="true" href="#高级用法">#</a></h2>
+<h3 id="推理模型">推理模型<a hidden class="anchor" aria-hidden="true" href="#推理模型">#</a></h3>
+<p>当 Ollama 在 <code>/api/show</code> 中报告 <code>thinking</code> 时，OpenClaw 会将模型标记为具有推理能力：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama pull deepseek-r1:32b
+</span></span></code></pre></div><h3 id="模型费用">模型费用<a hidden class="anchor" aria-hidden="true" href="#模型费用">#</a></h3>
+<p>Ollama 免费且在本地运行，因此所有模型费用均设置为 $0。</p>
+<h3 id="上下文窗口">上下文窗口<a hidden class="anchor" aria-hidden="true" href="#上下文窗口">#</a></h3>
+<p>对于自动发现的模型，OpenClaw 会使用 Ollama 报告的上下文窗口（如果可用），否则默认为 <code>8192</code>。你可以在显式提供商配置中覆盖 <code>contextWindow</code> 和 <code>maxTokens</code>。</p>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="ollama-未被检测到">Ollama 未被检测到<a hidden class="anchor" aria-hidden="true" href="#ollama-未被检测到">#</a></h3>
+<p>确保 Ollama 正在运行，且你已设置 <code>OLLAMA_API_KEY</code>（或认证配置），并且<strong>未</strong>定义显式的 <code>models.providers.ollama</code> 条目：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama serve
+</span></span></code></pre></div><p>同时确认 API 可访问：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl http://localhost:11434/api/tags
+</span></span></code></pre></div><h3 id="没有可用模型">没有可用模型<a hidden class="anchor" aria-hidden="true" href="#没有可用模型">#</a></h3>
+<p>OpenClaw 仅自动发现报告了工具支持的模型。如果你的模型未列出，可以：</p>
+<ul>
+<li>拉取一个支持工具调用的模型，或</li>
+<li>在 <code>models.providers.ollama</code> 中显式定义该模型。</li>
+</ul>
+<p>添加模型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama list  <span class="c1"># 查看已安装的模型</span>
+</span></span><span class="line"><span class="cl">ollama pull llama3.3  <span class="c1"># 拉取模型</span>
+</span></span></code></pre></div><h3 id="连接被拒绝">连接被拒绝<a hidden class="anchor" aria-hidden="true" href="#连接被拒绝">#</a></h3>
+<p>检查 Ollama 是否在正确的端口上运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查 Ollama 是否在运行</span>
+</span></span><span class="line"><span class="cl">ps aux <span class="p">|</span> grep ollama
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 或重启 Ollama</span>
+</span></span><span class="line"><span class="cl">ollama serve
+</span></span></code></pre></div><h2 id="另请参阅">另请参阅<a hidden class="anchor" aria-hidden="true" href="#另请参阅">#</a></h2>
+<ul>
+<li><a href="/concepts/model-providers">模型提供商</a> - 所有提供商概览</li>
+<li><a href="/concepts/models">模型选择</a> - 如何选择模型</li>
+<li><a href="/gateway/configuration">配置</a> - 完整配置参考</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/concepts/oauth/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>OAuth</span>
+  </a>
+  <a class="next" href="/openclaw/providers/openai/">
+    <span class="title">Next »</span>
+    <br>
+    <span>OpenAI</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

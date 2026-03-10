@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>将 OpenClaw 迁移到新机器 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="本指南将 OpenClaw Gateway 网关从一台机器迁移到另一台，无需重新进行新手引导。
+迁移在概念上很简单：
+
+复制状态目录（$OPENCLAW_STATE_DIR，默认：~/.openclaw/）— 这包括配置、认证、会话和渠道状态。
+复制你的工作区（默认 ~/.openclaw/workspace/）— 这包括你的智能体文件（记忆、提示等）。
+
+但在配置文件、权限和部分复制方面有常见的陷阱。
+开始之前（你要迁移什么）
+1）确定你的状态目录
+大多数安装使用默认值：
+
+状态目录： ~/.openclaw/
+
+但如果你使用以下方式，可能会不同：
+
+--profile &lt;name&gt;（通常变成 ~/.openclaw-&lt;profile&gt;/）
+OPENCLAW_STATE_DIR=/some/path
+
+如果你不确定，在旧机器上运行：
+openclaw status
+在输出中查找 OPENCLAW_STATE_DIR / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。
+2）确定你的工作区
+常见默认值：
+
+~/.openclaw/workspace/（推荐的工作区）
+你创建的自定义文件夹
+
+你的工作区是 MEMORY.md、USER.md 和 memory/*.md 等文件所在的位置。
+3）了解你将保留什么
+如果你复制两者——状态目录和工作区，你将保留：
+
+Gateway 网关配置（openclaw.json）
+认证配置文件 / API 密钥 / OAuth 令牌
+会话历史 &#43; 智能体状态
+渠道状态（例如 WhatsApp 登录/会话）
+你的工作区文件（记忆、Skills 笔记等）
+
+如果你只复制工作区（例如通过 Git），你不会保留：
+
+会话
+凭证
+渠道登录
+
+这些存储在 $OPENCLAW_STATE_DIR 下。
+迁移步骤（推荐）
+步骤 0 — 备份（旧机器）
+在旧机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/install/migrating/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/install/migrating/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/install/migrating/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="将 OpenClaw 迁移到新机器">
+  <meta property="og:description" content="本指南将 OpenClaw Gateway 网关从一台机器迁移到另一台，无需重新进行新手引导。
+迁移在概念上很简单：
+复制状态目录（$OPENCLAW_STATE_DIR，默认：~/.openclaw/）— 这包括配置、认证、会话和渠道状态。 复制你的工作区（默认 ~/.openclaw/workspace/）— 这包括你的智能体文件（记忆、提示等）。 但在配置文件、权限和部分复制方面有常见的陷阱。
+开始之前（你要迁移什么） 1）确定你的状态目录 大多数安装使用默认值：
+状态目录： ~/.openclaw/ 但如果你使用以下方式，可能会不同：
+--profile &lt;name&gt;（通常变成 ~/.openclaw-&lt;profile&gt;/） OPENCLAW_STATE_DIR=/some/path 如果你不确定，在旧机器上运行：
+openclaw status 在输出中查找 OPENCLAW_STATE_DIR / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。
+2）确定你的工作区 常见默认值：
+~/.openclaw/workspace/（推荐的工作区） 你创建的自定义文件夹 你的工作区是 MEMORY.md、USER.md 和 memory/*.md 等文件所在的位置。
+3）了解你将保留什么 如果你复制两者——状态目录和工作区，你将保留：
+Gateway 网关配置（openclaw.json） 认证配置文件 / API 密钥 / OAuth 令牌 会话历史 &#43; 智能体状态 渠道状态（例如 WhatsApp 登录/会话） 你的工作区文件（记忆、Skills 笔记等） 如果你只复制工作区（例如通过 Git），你不会保留：
+会话 凭证 渠道登录 这些存储在 $OPENCLAW_STATE_DIR 下。
+迁移步骤（推荐） 步骤 0 — 备份（旧机器） 在旧机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="将 OpenClaw 迁移到新机器">
+<meta name="twitter:description" content="本指南将 OpenClaw Gateway 网关从一台机器迁移到另一台，无需重新进行新手引导。
+迁移在概念上很简单：
+
+复制状态目录（$OPENCLAW_STATE_DIR，默认：~/.openclaw/）— 这包括配置、认证、会话和渠道状态。
+复制你的工作区（默认 ~/.openclaw/workspace/）— 这包括你的智能体文件（记忆、提示等）。
+
+但在配置文件、权限和部分复制方面有常见的陷阱。
+开始之前（你要迁移什么）
+1）确定你的状态目录
+大多数安装使用默认值：
+
+状态目录： ~/.openclaw/
+
+但如果你使用以下方式，可能会不同：
+
+--profile &lt;name&gt;（通常变成 ~/.openclaw-&lt;profile&gt;/）
+OPENCLAW_STATE_DIR=/some/path
+
+如果你不确定，在旧机器上运行：
+openclaw status
+在输出中查找 OPENCLAW_STATE_DIR / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。
+2）确定你的工作区
+常见默认值：
+
+~/.openclaw/workspace/（推荐的工作区）
+你创建的自定义文件夹
+
+你的工作区是 MEMORY.md、USER.md 和 memory/*.md 等文件所在的位置。
+3）了解你将保留什么
+如果你复制两者——状态目录和工作区，你将保留：
+
+Gateway 网关配置（openclaw.json）
+认证配置文件 / API 密钥 / OAuth 令牌
+会话历史 &#43; 智能体状态
+渠道状态（例如 WhatsApp 登录/会话）
+你的工作区文件（记忆、Skills 笔记等）
+
+如果你只复制工作区（例如通过 Git），你不会保留：
+
+会话
+凭证
+渠道登录
+
+这些存储在 $OPENCLAW_STATE_DIR 下。
+迁移步骤（推荐）
+步骤 0 — 备份（旧机器）
+在旧机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "将 OpenClaw 迁移到新机器",
+      "item": "/openclaw/install/migrating/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "将 OpenClaw 迁移到新机器",
+  "name": "将 OpenClaw 迁移到新机器",
+  "description": "本指南将 OpenClaw Gateway 网关从一台机器迁移到另一台，无需重新进行新手引导。\n迁移在概念上很简单：\n复制状态目录（$OPENCLAW_STATE_DIR，默认：~/.openclaw/）— 这包括配置、认证、会话和渠道状态。 复制你的工作区（默认 ~/.openclaw/workspace/）— 这包括你的智能体文件（记忆、提示等）。 但在配置文件、权限和部分复制方面有常见的陷阱。\n开始之前（你要迁移什么） 1）确定你的状态目录 大多数安装使用默认值：\n状态目录： ~/.openclaw/ 但如果你使用以下方式，可能会不同：\n--profile \u0026lt;name\u0026gt;（通常变成 ~/.openclaw-\u0026lt;profile\u0026gt;/） OPENCLAW_STATE_DIR=/some/path 如果你不确定，在旧机器上运行：\nopenclaw status 在输出中查找 OPENCLAW_STATE_DIR / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。\n2）确定你的工作区 常见默认值：\n~/.openclaw/workspace/（推荐的工作区） 你创建的自定义文件夹 你的工作区是 MEMORY.md、USER.md 和 memory/*.md 等文件所在的位置。\n3）了解你将保留什么 如果你复制两者——状态目录和工作区，你将保留：\nGateway 网关配置（openclaw.json） 认证配置文件 / API 密钥 / OAuth 令牌 会话历史 + 智能体状态 渠道状态（例如 WhatsApp 登录/会话） 你的工作区文件（记忆、Skills 笔记等） 如果你只复制工作区（例如通过 Git），你不会保留：\n会话 凭证 渠道登录 这些存储在 $OPENCLAW_STATE_DIR 下。\n迁移步骤（推荐） 步骤 0 — 备份（旧机器） 在旧机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "本指南将 OpenClaw Gateway 网关从一台机器迁移到另一台，无需重新进行新手引导。\n迁移在概念上很简单：\n复制状态目录（$OPENCLAW_STATE_DIR，默认：~/.openclaw/）— 这包括配置、认证、会话和渠道状态。 复制你的工作区（默认 ~/.openclaw/workspace/）— 这包括你的智能体文件（记忆、提示等）。 但在配置文件、权限和部分复制方面有常见的陷阱。\n开始之前（你要迁移什么） 1）确定你的状态目录 大多数安装使用默认值：\n状态目录： ~/.openclaw/ 但如果你使用以下方式，可能会不同：\n--profile （通常变成 ~/.openclaw-/） OPENCLAW_STATE_DIR=/some/path 如果你不确定，在旧机器上运行：\nopenclaw status 在输出中查找 OPENCLAW_STATE_DIR / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。\n2）确定你的工作区 常见默认值：\n~/.openclaw/workspace/（推荐的工作区） 你创建的自定义文件夹 你的工作区是 MEMORY.md、USER.md 和 memory/*.md 等文件所在的位置。\n3）了解你将保留什么 如果你复制两者——状态目录和工作区，你将保留：\nGateway 网关配置（openclaw.json） 认证配置文件 / API 密钥 / OAuth 令牌 会话历史 + 智能体状态 渠道状态（例如 WhatsApp 登录/会话） 你的工作区文件（记忆、Skills 笔记等） 如果你只复制工作区（例如通过 Git），你不会保留：\n会话 凭证 渠道登录 这些存储在 $OPENCLAW_STATE_DIR 下。\n迁移步骤（推荐） 步骤 0 — 备份（旧机器） 在旧机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：\nopenclaw gateway stop （可选但推荐）归档状态目录和工作区：\n# 如果你使用配置文件或自定义位置，请调整路径 cd ~ tar -czf openclaw-state.tgz .openclaw tar -czf openclaw-workspace.tgz .openclaw/workspace 如果你有多个配置文件/状态目录（例如 ~/.openclaw-main、~/.openclaw-work），分别归档每个。\n步骤 1 — 在新机器上安装 OpenClaw 在新机器上，安装 CLI（如果需要还有 Node）：\n参见：安装 在这个阶段，如果新手引导创建了一个新的 ~/.openclaw/ 也没关系 — 你将在下一步覆盖它。\n步骤 2 — 将状态目录 + 工作区复制到新机器 复制两者：\n$OPENCLAW_STATE_DIR（默认 ~/.openclaw/） 你的工作区（默认 ~/.openclaw/workspace/） 常见方法：\nscp 压缩包并解压 通过 SSH 使用 rsync -a 外部驱动器 复制后，确保：\n包含了隐藏目录（例如 .openclaw/） 文件所有权对于运行 Gateway 网关的用户是正确的 步骤 3 — 运行 Doctor（迁移 + 服务修复） 在新机器上：\nopenclaw doctor Doctor 是\"安全可靠\"的命令。它修复服务、应用配置迁移，并警告不匹配问题。\n然后：\nopenclaw gateway restart openclaw status 常见陷阱（以及如何避免） 陷阱：配置文件/状态目录不匹配 如果你在旧 Gateway 网关上使用了配置文件（或 OPENCLAW_STATE_DIR），而新 Gateway 网关使用了不同的配置，你会看到如下症状：\n配置更改不生效 渠道丢失/已登出 会话历史为空 修复：使用你迁移的相同配置文件/状态目录运行 Gateway 网关/服务，然后重新运行：\nopenclaw doctor 陷阱：只复制 openclaw.json openclaw.json 是不够的。许多提供商在以下位置存储状态：\n$OPENCLAW_STATE_DIR/credentials/ $OPENCLAW_STATE_DIR/agents//... 始终迁移整个 $OPENCLAW_STATE_DIR 文件夹。\n陷阱：权限/所有权 如果你以 root 身份复制或更改了用户，Gateway 网关可能无法读取凭证/会话。\n修复：确保状态目录 + 工作区由运行 Gateway 网关的用户拥有。\n陷阱：在远程/本地模式之间迁移 如果你的 UI（WebUI/TUI）指向远程 Gateway 网关，远程主机拥有会话存储 + 工作区。 迁移你的笔记本电脑不会移动远程 Gateway 网关的状态。 如果你处于远程模式，请迁移 Gateway 网关主机。\n陷阱：备份中的密钥 $OPENCLAW_STATE_DIR 包含密钥（API 密钥、OAuth 令牌、WhatsApp 凭证）。将备份视为生产密钥：\n加密存储 避免通过不安全的渠道共享 如果怀疑泄露，轮换密钥 验证检查清单 在新机器上，确认：\nopenclaw status 显示 Gateway 网关正在运行 你的渠道仍然连接（例如 WhatsApp 不需要重新配对） 仪表板打开并显示现有会话 你的工作区文件（记忆、配置）存在 相关内容 Doctor Gateway 网关故障排除 OpenClaw 在哪里存储数据？ ",
+  "wordCount" : "226",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/install/migrating/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      将 OpenClaw 迁移到新机器
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bc%80%e5%a7%8b%e4%b9%8b%e5%89%8d%e4%bd%a0%e8%a6%81%e8%bf%81%e7%a7%bb%e4%bb%80%e4%b9%88" aria-label="开始之前（你要迁移什么）">开始之前（你要迁移什么）</a><ul>
+                        
+                <li>
+                    <a href="#1%e7%a1%ae%e5%ae%9a%e4%bd%a0%e7%9a%84%e7%8a%b6%e6%80%81%e7%9b%ae%e5%bd%95" aria-label="1）确定你的状态目录">1）确定你的状态目录</a></li>
+                <li>
+                    <a href="#2%e7%a1%ae%e5%ae%9a%e4%bd%a0%e7%9a%84%e5%b7%a5%e4%bd%9c%e5%8c%ba" aria-label="2）确定你的工作区">2）确定你的工作区</a></li>
+                <li>
+                    <a href="#3%e4%ba%86%e8%a7%a3%e4%bd%a0%e5%b0%86%e4%bf%9d%e7%95%99%e4%bb%80%e4%b9%88" aria-label="3）了解你将保留什么">3）了解你将保留什么</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%bf%81%e7%a7%bb%e6%ad%a5%e9%aa%a4%e6%8e%a8%e8%8d%90" aria-label="迁移步骤（推荐）">迁移步骤（推荐）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-0--%e5%a4%87%e4%bb%bd%e6%97%a7%e6%9c%ba%e5%99%a8" aria-label="步骤 0 — 备份（旧机器）">步骤 0 — 备份（旧机器）</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-1--%e5%9c%a8%e6%96%b0%e6%9c%ba%e5%99%a8%e4%b8%8a%e5%ae%89%e8%a3%85-openclaw" aria-label="步骤 1 — 在新机器上安装 OpenClaw">步骤 1 — 在新机器上安装 OpenClaw</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-2--%e5%b0%86%e7%8a%b6%e6%80%81%e7%9b%ae%e5%bd%95--%e5%b7%a5%e4%bd%9c%e5%8c%ba%e5%a4%8d%e5%88%b6%e5%88%b0%e6%96%b0%e6%9c%ba%e5%99%a8" aria-label="步骤 2 — 将状态目录 &#43; 工作区复制到新机器">步骤 2 — 将状态目录 + 工作区复制到新机器</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-3--%e8%bf%90%e8%a1%8c-doctor%e8%bf%81%e7%a7%bb--%e6%9c%8d%e5%8a%a1%e4%bf%ae%e5%a4%8d" aria-label="步骤 3 — 运行 Doctor（迁移 &#43; 服务修复）">步骤 3 — 运行 Doctor（迁移 + 服务修复）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e9%99%b7%e9%98%b1%e4%bb%a5%e5%8f%8a%e5%a6%82%e4%bd%95%e9%81%bf%e5%85%8d" aria-label="常见陷阱（以及如何避免）">常见陷阱（以及如何避免）</a><ul>
+                        
+                <li>
+                    <a href="#%e9%99%b7%e9%98%b1%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%8a%b6%e6%80%81%e7%9b%ae%e5%bd%95%e4%b8%8d%e5%8c%b9%e9%85%8d" aria-label="陷阱：配置文件/状态目录不匹配">陷阱：配置文件/状态目录不匹配</a></li>
+                <li>
+                    <a href="#%e9%99%b7%e9%98%b1%e5%8f%aa%e5%a4%8d%e5%88%b6-openclawjson" aria-label="陷阱：只复制 openclaw.json">陷阱：只复制 openclaw.json</a></li>
+                <li>
+                    <a href="#%e9%99%b7%e9%98%b1%e6%9d%83%e9%99%90%e6%89%80%e6%9c%89%e6%9d%83" aria-label="陷阱：权限/所有权">陷阱：权限/所有权</a></li>
+                <li>
+                    <a href="#%e9%99%b7%e9%98%b1%e5%9c%a8%e8%bf%9c%e7%a8%8b%e6%9c%ac%e5%9c%b0%e6%a8%a1%e5%bc%8f%e4%b9%8b%e9%97%b4%e8%bf%81%e7%a7%bb" aria-label="陷阱：在远程/本地模式之间迁移">陷阱：在远程/本地模式之间迁移</a></li>
+                <li>
+                    <a href="#%e9%99%b7%e9%98%b1%e5%a4%87%e4%bb%bd%e4%b8%ad%e7%9a%84%e5%af%86%e9%92%a5" aria-label="陷阱：备份中的密钥">陷阱：备份中的密钥</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%aa%8c%e8%af%81%e6%a3%80%e6%9f%a5%e6%b8%85%e5%8d%95" aria-label="验证检查清单">验证检查清单</a></li>
+                <li>
+                    <a href="#%e7%9b%b8%e5%85%b3%e5%86%85%e5%ae%b9" aria-label="相关内容">相关内容</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本指南将 OpenClaw Gateway 网关从一台机器迁移到另一台，<strong>无需重新进行新手引导</strong>。</p>
+<p>迁移在概念上很简单：</p>
+<ul>
+<li>复制<strong>状态目录</strong>（<code>$OPENCLAW_STATE_DIR</code>，默认：<code>~/.openclaw/</code>）— 这包括配置、认证、会话和渠道状态。</li>
+<li>复制你的<strong>工作区</strong>（默认 <code>~/.openclaw/workspace/</code>）— 这包括你的智能体文件（记忆、提示等）。</li>
+</ul>
+<p>但在<strong>配置文件</strong>、<strong>权限</strong>和<strong>部分复制</strong>方面有常见的陷阱。</p>
+<h2 id="开始之前你要迁移什么">开始之前（你要迁移什么）<a hidden class="anchor" aria-hidden="true" href="#开始之前你要迁移什么">#</a></h2>
+<h3 id="1确定你的状态目录">1）确定你的状态目录<a hidden class="anchor" aria-hidden="true" href="#1确定你的状态目录">#</a></h3>
+<p>大多数安装使用默认值：</p>
+<ul>
+<li><strong>状态目录：</strong> <code>~/.openclaw/</code></li>
+</ul>
+<p>但如果你使用以下方式，可能会不同：</p>
+<ul>
+<li><code>--profile &lt;name&gt;</code>（通常变成 <code>~/.openclaw-&lt;profile&gt;/</code>）</li>
+<li><code>OPENCLAW_STATE_DIR=/some/path</code></li>
+</ul>
+<p>如果你不确定，在<strong>旧</strong>机器上运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw status
+</span></span></code></pre></div><p>在输出中查找 <code>OPENCLAW_STATE_DIR</code> / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。</p>
+<h3 id="2确定你的工作区">2）确定你的工作区<a hidden class="anchor" aria-hidden="true" href="#2确定你的工作区">#</a></h3>
+<p>常见默认值：</p>
+<ul>
+<li><code>~/.openclaw/workspace/</code>（推荐的工作区）</li>
+<li>你创建的自定义文件夹</li>
+</ul>
+<p>你的工作区是 <code>MEMORY.md</code>、<code>USER.md</code> 和 <code>memory/*.md</code> 等文件所在的位置。</p>
+<h3 id="3了解你将保留什么">3）了解你将保留什么<a hidden class="anchor" aria-hidden="true" href="#3了解你将保留什么">#</a></h3>
+<p>如果你复制<strong>两者</strong>——状态目录和工作区，你将保留：</p>
+<ul>
+<li>Gateway 网关配置（<code>openclaw.json</code>）</li>
+<li>认证配置文件 / API 密钥 / OAuth 令牌</li>
+<li>会话历史 + 智能体状态</li>
+<li>渠道状态（例如 WhatsApp 登录/会话）</li>
+<li>你的工作区文件（记忆、Skills 笔记等）</li>
+</ul>
+<p>如果你<strong>只</strong>复制工作区（例如通过 Git），你<strong>不会</strong>保留：</p>
+<ul>
+<li>会话</li>
+<li>凭证</li>
+<li>渠道登录</li>
+</ul>
+<p>这些存储在 <code>$OPENCLAW_STATE_DIR</code> 下。</p>
+<h2 id="迁移步骤推荐">迁移步骤（推荐）<a hidden class="anchor" aria-hidden="true" href="#迁移步骤推荐">#</a></h2>
+<h3 id="步骤-0--备份旧机器">步骤 0 — 备份（旧机器）<a hidden class="anchor" aria-hidden="true" href="#步骤-0--备份旧机器">#</a></h3>
+<p>在<strong>旧</strong>机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway stop
+</span></span></code></pre></div><p>（可选但推荐）归档状态目录和工作区：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 如果你使用配置文件或自定义位置，请调整路径</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ~
+</span></span><span class="line"><span class="cl">tar -czf openclaw-state.tgz .openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">tar -czf openclaw-workspace.tgz .openclaw/workspace
+</span></span></code></pre></div><p>如果你有多个配置文件/状态目录（例如 <code>~/.openclaw-main</code>、<code>~/.openclaw-work</code>），分别归档每个。</p>
+<h3 id="步骤-1--在新机器上安装-openclaw">步骤 1 — 在新机器上安装 OpenClaw<a hidden class="anchor" aria-hidden="true" href="#步骤-1--在新机器上安装-openclaw">#</a></h3>
+<p>在<strong>新</strong>机器上，安装 CLI（如果需要还有 Node）：</p>
+<ul>
+<li>参见：<a href="/install">安装</a></li>
+</ul>
+<p>在这个阶段，如果新手引导创建了一个新的 <code>~/.openclaw/</code> 也没关系 — 你将在下一步覆盖它。</p>
+<h3 id="步骤-2--将状态目录--工作区复制到新机器">步骤 2 — 将状态目录 + 工作区复制到新机器<a hidden class="anchor" aria-hidden="true" href="#步骤-2--将状态目录--工作区复制到新机器">#</a></h3>
+<p>复制<strong>两者</strong>：</p>
+<ul>
+<li><code>$OPENCLAW_STATE_DIR</code>（默认 <code>~/.openclaw/</code>）</li>
+<li>你的工作区（默认 <code>~/.openclaw/workspace/</code>）</li>
+</ul>
+<p>常见方法：</p>
+<ul>
+<li><code>scp</code> 压缩包并解压</li>
+<li>通过 SSH 使用 <code>rsync -a</code></li>
+<li>外部驱动器</li>
+</ul>
+<p>复制后，确保：</p>
+<ul>
+<li>包含了隐藏目录（例如 <code>.openclaw/</code>）</li>
+<li>文件所有权对于运行 Gateway 网关的用户是正确的</li>
+</ul>
+<h3 id="步骤-3--运行-doctor迁移--服务修复">步骤 3 — 运行 Doctor（迁移 + 服务修复）<a hidden class="anchor" aria-hidden="true" href="#步骤-3--运行-doctor迁移--服务修复">#</a></h3>
+<p>在<strong>新</strong>机器上：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw doctor
+</span></span></code></pre></div><p>Doctor 是&quot;安全可靠&quot;的命令。它修复服务、应用配置迁移，并警告不匹配问题。</p>
+<p>然后：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway restart
+</span></span><span class="line"><span class="cl">openclaw status
+</span></span></code></pre></div><h2 id="常见陷阱以及如何避免">常见陷阱（以及如何避免）<a hidden class="anchor" aria-hidden="true" href="#常见陷阱以及如何避免">#</a></h2>
+<h3 id="陷阱配置文件状态目录不匹配">陷阱：配置文件/状态目录不匹配<a hidden class="anchor" aria-hidden="true" href="#陷阱配置文件状态目录不匹配">#</a></h3>
+<p>如果你在旧 Gateway 网关上使用了配置文件（或 <code>OPENCLAW_STATE_DIR</code>），而新 Gateway 网关使用了不同的配置，你会看到如下症状：</p>
+<ul>
+<li>配置更改不生效</li>
+<li>渠道丢失/已登出</li>
+<li>会话历史为空</li>
+</ul>
+<p>修复：使用你迁移的<strong>相同</strong>配置文件/状态目录运行 Gateway 网关/服务，然后重新运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw doctor
+</span></span></code></pre></div><h3 id="陷阱只复制-openclawjson">陷阱：只复制 <code>openclaw.json</code><a hidden class="anchor" aria-hidden="true" href="#陷阱只复制-openclawjson">#</a></h3>
+<p><code>openclaw.json</code> 是不够的。许多提供商在以下位置存储状态：</p>
+<ul>
+<li><code>$OPENCLAW_STATE_DIR/credentials/</code></li>
+<li><code>$OPENCLAW_STATE_DIR/agents/&lt;agentId&gt;/...</code></li>
+</ul>
+<p>始终迁移整个 <code>$OPENCLAW_STATE_DIR</code> 文件夹。</p>
+<h3 id="陷阱权限所有权">陷阱：权限/所有权<a hidden class="anchor" aria-hidden="true" href="#陷阱权限所有权">#</a></h3>
+<p>如果你以 root 身份复制或更改了用户，Gateway 网关可能无法读取凭证/会话。</p>
+<p>修复：确保状态目录 + 工作区由运行 Gateway 网关的用户拥有。</p>
+<h3 id="陷阱在远程本地模式之间迁移">陷阱：在远程/本地模式之间迁移<a hidden class="anchor" aria-hidden="true" href="#陷阱在远程本地模式之间迁移">#</a></h3>
+<ul>
+<li>如果你的 UI（WebUI/TUI）指向<strong>远程</strong> Gateway 网关，远程主机拥有会话存储 + 工作区。</li>
+<li>迁移你的笔记本电脑不会移动远程 Gateway 网关的状态。</li>
+</ul>
+<p>如果你处于远程模式，请迁移 <strong>Gateway 网关主机</strong>。</p>
+<h3 id="陷阱备份中的密钥">陷阱：备份中的密钥<a hidden class="anchor" aria-hidden="true" href="#陷阱备份中的密钥">#</a></h3>
+<p><code>$OPENCLAW_STATE_DIR</code> 包含密钥（API 密钥、OAuth 令牌、WhatsApp 凭证）。将备份视为生产密钥：</p>
+<ul>
+<li>加密存储</li>
+<li>避免通过不安全的渠道共享</li>
+<li>如果怀疑泄露，轮换密钥</li>
+</ul>
+<h2 id="验证检查清单">验证检查清单<a hidden class="anchor" aria-hidden="true" href="#验证检查清单">#</a></h2>
+<p>在新机器上，确认：</p>
+<ul>
+<li><code>openclaw status</code> 显示 Gateway 网关正在运行</li>
+<li>你的渠道仍然连接（例如 WhatsApp 不需要重新配对）</li>
+<li>仪表板打开并显示现有会话</li>
+<li>你的工作区文件（记忆、配置）存在</li>
+</ul>
+<h2 id="相关内容">相关内容<a hidden class="anchor" aria-hidden="true" href="#相关内容">#</a></h2>
+<ul>
+<li><a href="/gateway/doctor">Doctor</a></li>
+<li><a href="/gateway/troubleshooting">Gateway 网关故障排除</a></li>
+<li><a href="/help/faq#where-does-openclaw-store-its-data">OpenClaw 在哪里存储数据？</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/reference/transcript-hygiene/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>对话记录清理（提供商修正）</span>
+  </a>
+  <a class="next" href="/openclaw/experiments/research/memory/">
+    <span class="title">Next »</span>
+    <br>
+    <span>工作区记忆 v2（离线）：研究笔记</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

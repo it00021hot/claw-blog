@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>使用 OpenClaw 构建个人助手 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 是 Pi 智能体的 WhatsApp &#43; Telegram &#43; Discord &#43; iMessage Gateway 网关。插件可添加 Mattermost。本指南是&quot;个人助手&quot;设置：一个专用的 WhatsApp 号码，表现得像你的常驻智能体。
+⚠️ 安全第一
+你正在让智能体处于可以：
+
+在你的机器上运行命令（取决于你的 Pi 工具设置）
+在你的工作区读/写文件
+通过 WhatsApp/Telegram/Discord/Mattermost（插件）发送消息
+
+从保守开始：
+
+始终设置 channels.whatsapp.allowFrom（永远不要在你的个人 Mac 上对全世界开放）。
+为助手使用专用的 WhatsApp 号码。
+心跳现在默认每 30 分钟一次。在你信任设置之前，通过设置 agents.defaults.heartbeat.every: &quot;0m&quot; 来禁用。
+
+先决条件
+
+Node 22&#43;
+OpenClaw 在 PATH 中可用（推荐：全局安装）
+助手的第二个手机号码（SIM/eSIM/预付费）
+
+npm install -g openclaw@latest
+# 或：pnpm add -g openclaw@latest
+从源代码（开发）：
+git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+pnpm install
+pnpm ui:build # 首次运行时自动安装 UI 依赖
+pnpm build
+pnpm link --global
+双手机设置（推荐）
+你需要这样：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/start/openclaw/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/start/openclaw/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/start/openclaw/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="使用 OpenClaw 构建个人助手">
+  <meta property="og:description" content="OpenClaw 是 Pi 智能体的 WhatsApp &#43; Telegram &#43; Discord &#43; iMessage Gateway 网关。插件可添加 Mattermost。本指南是&#34;个人助手&#34;设置：一个专用的 WhatsApp 号码，表现得像你的常驻智能体。
+⚠️ 安全第一 你正在让智能体处于可以：
+在你的机器上运行命令（取决于你的 Pi 工具设置） 在你的工作区读/写文件 通过 WhatsApp/Telegram/Discord/Mattermost（插件）发送消息 从保守开始：
+始终设置 channels.whatsapp.allowFrom（永远不要在你的个人 Mac 上对全世界开放）。 为助手使用专用的 WhatsApp 号码。 心跳现在默认每 30 分钟一次。在你信任设置之前，通过设置 agents.defaults.heartbeat.every: &#34;0m&#34; 来禁用。 先决条件 Node 22&#43; OpenClaw 在 PATH 中可用（推荐：全局安装） 助手的第二个手机号码（SIM/eSIM/预付费） npm install -g openclaw@latest # 或：pnpm add -g openclaw@latest 从源代码（开发）：
+git clone https://github.com/openclaw/openclaw.git cd openclaw pnpm install pnpm ui:build # 首次运行时自动安装 UI 依赖 pnpm build pnpm link --global 双手机设置（推荐） 你需要这样：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 OpenClaw 构建个人助手">
+<meta name="twitter:description" content="OpenClaw 是 Pi 智能体的 WhatsApp &#43; Telegram &#43; Discord &#43; iMessage Gateway 网关。插件可添加 Mattermost。本指南是&quot;个人助手&quot;设置：一个专用的 WhatsApp 号码，表现得像你的常驻智能体。
+⚠️ 安全第一
+你正在让智能体处于可以：
+
+在你的机器上运行命令（取决于你的 Pi 工具设置）
+在你的工作区读/写文件
+通过 WhatsApp/Telegram/Discord/Mattermost（插件）发送消息
+
+从保守开始：
+
+始终设置 channels.whatsapp.allowFrom（永远不要在你的个人 Mac 上对全世界开放）。
+为助手使用专用的 WhatsApp 号码。
+心跳现在默认每 30 分钟一次。在你信任设置之前，通过设置 agents.defaults.heartbeat.every: &quot;0m&quot; 来禁用。
+
+先决条件
+
+Node 22&#43;
+OpenClaw 在 PATH 中可用（推荐：全局安装）
+助手的第二个手机号码（SIM/eSIM/预付费）
+
+npm install -g openclaw@latest
+# 或：pnpm add -g openclaw@latest
+从源代码（开发）：
+git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+pnpm install
+pnpm ui:build # 首次运行时自动安装 UI 依赖
+pnpm build
+pnpm link --global
+双手机设置（推荐）
+你需要这样：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "使用 OpenClaw 构建个人助手",
+      "item": "/openclaw/start/openclaw/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "使用 OpenClaw 构建个人助手",
+  "name": "使用 OpenClaw 构建个人助手",
+  "description": "OpenClaw 是 Pi 智能体的 WhatsApp + Telegram + Discord + iMessage Gateway 网关。插件可添加 Mattermost。本指南是\u0026quot;个人助手\u0026quot;设置：一个专用的 WhatsApp 号码，表现得像你的常驻智能体。\n⚠️ 安全第一 你正在让智能体处于可以：\n在你的机器上运行命令（取决于你的 Pi 工具设置） 在你的工作区读/写文件 通过 WhatsApp/Telegram/Discord/Mattermost（插件）发送消息 从保守开始：\n始终设置 channels.whatsapp.allowFrom（永远不要在你的个人 Mac 上对全世界开放）。 为助手使用专用的 WhatsApp 号码。 心跳现在默认每 30 分钟一次。在你信任设置之前，通过设置 agents.defaults.heartbeat.every: \u0026quot;0m\u0026quot; 来禁用。 先决条件 Node 22+ OpenClaw 在 PATH 中可用（推荐：全局安装） 助手的第二个手机号码（SIM/eSIM/预付费） npm install -g openclaw@latest # 或：pnpm add -g openclaw@latest 从源代码（开发）：\ngit clone https://github.com/openclaw/openclaw.git cd openclaw pnpm install pnpm ui:build # 首次运行时自动安装 UI 依赖 pnpm build pnpm link --global 双手机设置（推荐） 你需要这样：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 是 Pi 智能体的 WhatsApp + Telegram + Discord + iMessage Gateway 网关。插件可添加 Mattermost。本指南是\"个人助手\"设置：一个专用的 WhatsApp 号码，表现得像你的常驻智能体。\n⚠️ 安全第一 你正在让智能体处于可以：\n在你的机器上运行命令（取决于你的 Pi 工具设置） 在你的工作区读/写文件 通过 WhatsApp/Telegram/Discord/Mattermost（插件）发送消息 从保守开始：\n始终设置 channels.whatsapp.allowFrom（永远不要在你的个人 Mac 上对全世界开放）。 为助手使用专用的 WhatsApp 号码。 心跳现在默认每 30 分钟一次。在你信任设置之前，通过设置 agents.defaults.heartbeat.every: \"0m\" 来禁用。 先决条件 Node 22+ OpenClaw 在 PATH 中可用（推荐：全局安装） 助手的第二个手机号码（SIM/eSIM/预付费） npm install -g openclaw@latest # 或：pnpm add -g openclaw@latest 从源代码（开发）：\ngit clone https://github.com/openclaw/openclaw.git cd openclaw pnpm install pnpm ui:build # 首次运行时自动安装 UI 依赖 pnpm build pnpm link --global 双手机设置（推荐） 你需要这样：\n你的手机（个人） 第二部手机（助手） ┌─────────────────┐ ┌─────────────────┐ │ 你的 WhatsApp │ ──────▶ │ 助手 WA │ │ +1-555-YOU │ 消息 │ +1-555-ASSIST │ └─────────────────┘ └────────┬────────┘ │ 通过二维码关联 ▼ ┌─────────────────┐ │ 你的 Mac │ │ (openclaw) │ │ Pi 智能体 │ └─────────────────┘ 如果你将个人 WhatsApp 关联到 OpenClaw，发给你的每条消息都会变成\"智能体输入\"。这通常不是你想要的。\n5 分钟快速开始 配对 WhatsApp Web（显示二维码；用助手手机扫描）： openclaw channels login 启动 Gateway 网关（保持运行）： openclaw gateway --port 18789 在 ~/.openclaw/openclaw.json 中放置最小配置： { channels: { whatsapp: { allowFrom: [\"+15555550123\"] } }, } 现在从你允许列表中的手机向助手号码发消息。\n新手引导完成后，我们会自动打开带有 Gateway 网关令牌的仪表板并打印带令牌的链接。稍后重新打开：openclaw dashboard。\n给智能体一个工作区（AGENTS） OpenClaw 从其工作区目录读取操作指令和\"记忆\"。\n默认情况下，OpenClaw 使用 ~/.openclaw/workspace 作为智能体工作区，并会在设置/首次智能体运行时自动创建它（加上起始的 AGENTS.md、SOUL.md、TOOLS.md、IDENTITY.md、USER.md）。BOOTSTRAP.md 仅在工作区是全新的时候创建（删除后不应再出现）。\n提示：将此文件夹视为 OpenClaw 的\"记忆\"，并将其设为 git 仓库（最好是私有的），这样你的 AGENTS.md + 记忆文件就有了备份。如果安装了 git，全新的工作区会自动初始化。\nopenclaw setup 完整工作区布局 + 备份指南：智能体工作区 记忆工作流：记忆\n可选：使用 agents.defaults.workspace 选择不同的工作区（支持 ~）。\n{ agent: { workspace: \"~/.openclaw/workspace\", }, } 如果你已经从仓库提供了自己的工作区文件，可以完全禁用引导文件创建：\n{ agent: { skipBootstrap: true, }, } 将其变成\"助手\"的配置 OpenClaw 默认为良好的助手设置，但你通常需要调整：\nSOUL.md 中的人设/指令 思考默认值（如果需要） 心跳（一旦你信任它） 示例：\n{ logging: { level: \"info\" }, agent: { model: \"anthropic/claude-opus-4-5\", workspace: \"~/.openclaw/workspace\", thinkingDefault: \"high\", timeoutSeconds: 1800, // 从 0 开始；稍后启用。 heartbeat: { every: \"0m\" }, }, channels: { whatsapp: { allowFrom: [\"+15555550123\"], groups: { \"*\": { requireMention: true }, }, }, }, routing: { groupChat: { mentionPatterns: [\"@openclaw\", \"openclaw\"], }, }, session: { scope: \"per-sender\", resetTriggers: [\"/new\", \"/reset\"], reset: { mode: \"daily\", atHour: 4, idleMinutes: 10080, }, }, } 会话和记忆 会话文件：~/.openclaw/agents//sessions/{{SessionId}}.jsonl 会话元数据（token 使用量、最后路由等）：~/.openclaw/agents//sessions/sessions.json（旧版：~/.openclaw/sessions/sessions.json） /new 或 /reset 为该聊天启动新会话（可通过 resetTriggers 配置）。如果单独发送，智能体会回复一个简短的问候来确认重置。 /compact [instructions] 压缩会话上下文并报告剩余的上下文预算。 心跳（主动模式） 默认情况下，OpenClaw 每 30 分钟运行一次心跳，提示词为： Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK. 设置 agents.defaults.heartbeat.every: \"0m\" 来禁用。\n如果 HEARTBEAT.md 存在但实际上是空的（只有空行和 markdown 标题如 # Heading），OpenClaw 会跳过心跳运行以节省 API 调用。 如果文件不存在，心跳仍然运行，模型决定做什么。 如果智能体回复 HEARTBEAT_OK（可选带有短填充；参见 agents.defaults.heartbeat.ackMaxChars），OpenClaw 会为该心跳抑制出站投递。 心跳运行完整的智能体轮次 — 更短的间隔会消耗更多 token。 { agent: { heartbeat: { every: \"30m\" }, }, } 媒体输入和输出 入站附件（图片/音频/文档）可以通过模板暴露给你的命令：\n{{MediaPath}}（本地临时文件路径） {{MediaUrl}}（伪 URL） {{Transcript}}（如果启用了音频转录） 来自智能体的出站附件：在单独一行包含 MEDIA:（无空格）。示例：\n这是截图。 MEDIA:https://example.com/screenshot.png OpenClaw 会提取这些并将它们作为媒体与文本一起发送。\n运维检查清单 openclaw status # 本地状态（凭证、会话、排队事件） openclaw status --all # 完整诊断（只读，可粘贴） openclaw status --deep # 添加 Gateway 网关健康探测（Telegram + Discord） openclaw health --json # Gateway 网关健康快照（WS） 日志位于 /tmp/openclaw/（默认：openclaw-YYYY-MM-DD.log）。\n下一步 WebChat：WebChat Gateway 网关运维：Gateway 网关运行手册 定时任务 + 唤醒：定时任务 macOS 菜单栏配套应用：OpenClaw macOS 应用 iOS 节点应用：iOS 应用 Android 节点应用：Android 应用 Windows 状态：Windows (WSL2) Linux 状态：Linux 应用 安全：安全 ",
+  "wordCount" : "413",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/start/openclaw/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      使用 OpenClaw 构建个人助手
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#-%e5%ae%89%e5%85%a8%e7%ac%ac%e4%b8%80" aria-label="⚠️ 安全第一">⚠️ 安全第一</a></li>
+                <li>
+                    <a href="#%e5%85%88%e5%86%b3%e6%9d%a1%e4%bb%b6" aria-label="先决条件">先决条件</a></li>
+                <li>
+                    <a href="#%e5%8f%8c%e6%89%8b%e6%9c%ba%e8%ae%be%e7%bd%ae%e6%8e%a8%e8%8d%90" aria-label="双手机设置（推荐）">双手机设置（推荐）</a></li>
+                <li>
+                    <a href="#5-%e5%88%86%e9%92%9f%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b" aria-label="5 分钟快速开始">5 分钟快速开始</a></li>
+                <li>
+                    <a href="#%e7%bb%99%e6%99%ba%e8%83%bd%e4%bd%93%e4%b8%80%e4%b8%aa%e5%b7%a5%e4%bd%9c%e5%8c%baagents" aria-label="给智能体一个工作区（AGENTS）">给智能体一个工作区（AGENTS）</a></li>
+                <li>
+                    <a href="#%e5%b0%86%e5%85%b6%e5%8f%98%e6%88%90%e5%8a%a9%e6%89%8b%e7%9a%84%e9%85%8d%e7%bd%ae" aria-label="将其变成&quot;助手&quot;的配置">将其变成&quot;助手&quot;的配置</a></li>
+                <li>
+                    <a href="#%e4%bc%9a%e8%af%9d%e5%92%8c%e8%ae%b0%e5%bf%86" aria-label="会话和记忆">会话和记忆</a></li>
+                <li>
+                    <a href="#%e5%bf%83%e8%b7%b3%e4%b8%bb%e5%8a%a8%e6%a8%a1%e5%bc%8f" aria-label="心跳（主动模式）">心跳（主动模式）</a></li>
+                <li>
+                    <a href="#%e5%aa%92%e4%bd%93%e8%be%93%e5%85%a5%e5%92%8c%e8%be%93%e5%87%ba" aria-label="媒体输入和输出">媒体输入和输出</a></li>
+                <li>
+                    <a href="#%e8%bf%90%e7%bb%b4%e6%a3%80%e6%9f%a5%e6%b8%85%e5%8d%95" aria-label="运维检查清单">运维检查清单</a></li>
+                <li>
+                    <a href="#%e4%b8%8b%e4%b8%80%e6%ad%a5" aria-label="下一步">下一步</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 是 <strong>Pi</strong> 智能体的 WhatsApp + Telegram + Discord + iMessage Gateway 网关。插件可添加 Mattermost。本指南是&quot;个人助手&quot;设置：一个专用的 WhatsApp 号码，表现得像你的常驻智能体。</p>
+<h2 id="-安全第一">⚠️ 安全第一<a hidden class="anchor" aria-hidden="true" href="#-安全第一">#</a></h2>
+<p>你正在让智能体处于可以：</p>
+<ul>
+<li>在你的机器上运行命令（取决于你的 Pi 工具设置）</li>
+<li>在你的工作区读/写文件</li>
+<li>通过 WhatsApp/Telegram/Discord/Mattermost（插件）发送消息</li>
+</ul>
+<p>从保守开始：</p>
+<ul>
+<li>始终设置 <code>channels.whatsapp.allowFrom</code>（永远不要在你的个人 Mac 上对全世界开放）。</li>
+<li>为助手使用专用的 WhatsApp 号码。</li>
+<li>心跳现在默认每 30 分钟一次。在你信任设置之前，通过设置 <code>agents.defaults.heartbeat.every: &quot;0m&quot;</code> 来禁用。</li>
+</ul>
+<h2 id="先决条件">先决条件<a hidden class="anchor" aria-hidden="true" href="#先决条件">#</a></h2>
+<ul>
+<li>Node <strong>22+</strong></li>
+<li>OpenClaw 在 PATH 中可用（推荐：全局安装）</li>
+<li>助手的第二个手机号码（SIM/eSIM/预付费）</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g openclaw@latest
+</span></span><span class="line"><span class="cl"><span class="c1"># 或：pnpm add -g openclaw@latest</span>
+</span></span></code></pre></div><p>从源代码（开发）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/openclaw/openclaw.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> openclaw
+</span></span><span class="line"><span class="cl">pnpm install
+</span></span><span class="line"><span class="cl">pnpm ui:build <span class="c1"># 首次运行时自动安装 UI 依赖</span>
+</span></span><span class="line"><span class="cl">pnpm build
+</span></span><span class="line"><span class="cl">pnpm link --global
+</span></span></code></pre></div><h2 id="双手机设置推荐">双手机设置（推荐）<a hidden class="anchor" aria-hidden="true" href="#双手机设置推荐">#</a></h2>
+<p>你需要这样：</p>
+<pre tabindex="0"><code>你的手机（个人）               第二部手机（助手）
+┌─────────────────┐           ┌─────────────────┐
+│  你的 WhatsApp  │  ──────▶  │   助手 WA       │
+│  +1-555-YOU     │  消息     │  +1-555-ASSIST  │
+└─────────────────┘           └────────┬────────┘
+                                       │ 通过二维码关联
+                                       ▼
+                              ┌─────────────────┐
+                              │  你的 Mac       │
+                              │  (openclaw)     │
+                              │    Pi 智能体    │
+                              └─────────────────┘
+</code></pre><p>如果你将个人 WhatsApp 关联到 OpenClaw，发给你的每条消息都会变成&quot;智能体输入&quot;。这通常不是你想要的。</p>
+<h2 id="5-分钟快速开始">5 分钟快速开始<a hidden class="anchor" aria-hidden="true" href="#5-分钟快速开始">#</a></h2>
+<ol>
+<li>配对 WhatsApp Web（显示二维码；用助手手机扫描）：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw channels login
+</span></span></code></pre></div><ol start="2">
+<li>启动 Gateway 网关（保持运行）：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway --port <span class="m">18789</span>
+</span></span></code></pre></div><ol start="3">
+<li>在 <code>~/.openclaw/openclaw.json</code> 中放置最小配置：</li>
+</ol>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: { whatsapp: { allowFrom: [&#34;+15555550123&#34;] } },
+}
+</code></pre><p>现在从你允许列表中的手机向助手号码发消息。</p>
+<p>新手引导完成后，我们会自动打开带有 Gateway 网关令牌的仪表板并打印带令牌的链接。稍后重新打开：<code>openclaw dashboard</code>。</p>
+<h2 id="给智能体一个工作区agents">给智能体一个工作区（AGENTS）<a hidden class="anchor" aria-hidden="true" href="#给智能体一个工作区agents">#</a></h2>
+<p>OpenClaw 从其工作区目录读取操作指令和&quot;记忆&quot;。</p>
+<p>默认情况下，OpenClaw 使用 <code>~/.openclaw/workspace</code> 作为智能体工作区，并会在设置/首次智能体运行时自动创建它（加上起始的 <code>AGENTS.md</code>、<code>SOUL.md</code>、<code>TOOLS.md</code>、<code>IDENTITY.md</code>、<code>USER.md</code>）。<code>BOOTSTRAP.md</code> 仅在工作区是全新的时候创建（删除后不应再出现）。</p>
+<p>提示：将此文件夹视为 OpenClaw 的&quot;记忆&quot;，并将其设为 git 仓库（最好是私有的），这样你的 <code>AGENTS.md</code> + 记忆文件就有了备份。如果安装了 git，全新的工作区会自动初始化。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw setup
+</span></span></code></pre></div><p>完整工作区布局 + 备份指南：<a href="/concepts/agent-workspace">智能体工作区</a>
+记忆工作流：<a href="/concepts/memory">记忆</a></p>
+<p>可选：使用 <code>agents.defaults.workspace</code> 选择不同的工作区（支持 <code>~</code>）。</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+  },
+}
+</code></pre><p>如果你已经从仓库提供了自己的工作区文件，可以完全禁用引导文件创建：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    skipBootstrap: true,
+  },
+}
+</code></pre><h2 id="将其变成助手的配置">将其变成&quot;助手&quot;的配置<a hidden class="anchor" aria-hidden="true" href="#将其变成助手的配置">#</a></h2>
+<p>OpenClaw 默认为良好的助手设置，但你通常需要调整：</p>
+<ul>
+<li><code>SOUL.md</code> 中的人设/指令</li>
+<li>思考默认值（如果需要）</li>
+<li>心跳（一旦你信任它）</li>
+</ul>
+<p>示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  logging: { level: &#34;info&#34; },
+  agent: {
+    model: &#34;anthropic/claude-opus-4-5&#34;,
+    workspace: &#34;~/.openclaw/workspace&#34;,
+    thinkingDefault: &#34;high&#34;,
+    timeoutSeconds: 1800,
+    // 从 0 开始；稍后启用。
+    heartbeat: { every: &#34;0m&#34; },
+  },
+  channels: {
+    whatsapp: {
+      allowFrom: [&#34;+15555550123&#34;],
+      groups: {
+        &#34;*&#34;: { requireMention: true },
+      },
+    },
+  },
+  routing: {
+    groupChat: {
+      mentionPatterns: [&#34;@openclaw&#34;, &#34;openclaw&#34;],
+    },
+  },
+  session: {
+    scope: &#34;per-sender&#34;,
+    resetTriggers: [&#34;/new&#34;, &#34;/reset&#34;],
+    reset: {
+      mode: &#34;daily&#34;,
+      atHour: 4,
+      idleMinutes: 10080,
+    },
+  },
+}
+</code></pre><h2 id="会话和记忆">会话和记忆<a hidden class="anchor" aria-hidden="true" href="#会话和记忆">#</a></h2>
+<ul>
+<li>会话文件：<code>~/.openclaw/agents/&lt;agentId&gt;/sessions/{{SessionId}}.jsonl</code></li>
+<li>会话元数据（token 使用量、最后路由等）：<code>~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json</code>（旧版：<code>~/.openclaw/sessions/sessions.json</code>）</li>
+<li><code>/new</code> 或 <code>/reset</code> 为该聊天启动新会话（可通过 <code>resetTriggers</code> 配置）。如果单独发送，智能体会回复一个简短的问候来确认重置。</li>
+<li><code>/compact [instructions]</code> 压缩会话上下文并报告剩余的上下文预算。</li>
+</ul>
+<h2 id="心跳主动模式">心跳（主动模式）<a hidden class="anchor" aria-hidden="true" href="#心跳主动模式">#</a></h2>
+<p>默认情况下，OpenClaw 每 30 分钟运行一次心跳，提示词为：
+<code>Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.</code>
+设置 <code>agents.defaults.heartbeat.every: &quot;0m&quot;</code> 来禁用。</p>
+<ul>
+<li>如果 <code>HEARTBEAT.md</code> 存在但实际上是空的（只有空行和 markdown 标题如 <code># Heading</code>），OpenClaw 会跳过心跳运行以节省 API 调用。</li>
+<li>如果文件不存在，心跳仍然运行，模型决定做什么。</li>
+<li>如果智能体回复 <code>HEARTBEAT_OK</code>（可选带有短填充；参见 <code>agents.defaults.heartbeat.ackMaxChars</code>），OpenClaw 会为该心跳抑制出站投递。</li>
+<li>心跳运行完整的智能体轮次 — 更短的间隔会消耗更多 token。</li>
+</ul>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    heartbeat: { every: &#34;30m&#34; },
+  },
+}
+</code></pre><h2 id="媒体输入和输出">媒体输入和输出<a hidden class="anchor" aria-hidden="true" href="#媒体输入和输出">#</a></h2>
+<p>入站附件（图片/音频/文档）可以通过模板暴露给你的命令：</p>
+<ul>
+<li><code>{{MediaPath}}</code>（本地临时文件路径）</li>
+<li><code>{{MediaUrl}}</code>（伪 URL）</li>
+<li><code>{{Transcript}}</code>（如果启用了音频转录）</li>
+</ul>
+<p>来自智能体的出站附件：在单独一行包含 <code>MEDIA:&lt;path-or-url&gt;</code>（无空格）。示例：</p>
+<pre tabindex="0"><code>这是截图。
+MEDIA:https://example.com/screenshot.png
+</code></pre><p>OpenClaw 会提取这些并将它们作为媒体与文本一起发送。</p>
+<h2 id="运维检查清单">运维检查清单<a hidden class="anchor" aria-hidden="true" href="#运维检查清单">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw status          <span class="c1"># 本地状态（凭证、会话、排队事件）</span>
+</span></span><span class="line"><span class="cl">openclaw status --all    <span class="c1"># 完整诊断（只读，可粘贴）</span>
+</span></span><span class="line"><span class="cl">openclaw status --deep   <span class="c1"># 添加 Gateway 网关健康探测（Telegram + Discord）</span>
+</span></span><span class="line"><span class="cl">openclaw health --json   <span class="c1"># Gateway 网关健康快照（WS）</span>
+</span></span></code></pre></div><p>日志位于 <code>/tmp/openclaw/</code>（默认：<code>openclaw-YYYY-MM-DD.log</code>）。</p>
+<h2 id="下一步">下一步<a hidden class="anchor" aria-hidden="true" href="#下一步">#</a></h2>
+<ul>
+<li>WebChat：<a href="/web/webchat">WebChat</a></li>
+<li>Gateway 网关运维：<a href="/gateway">Gateway 网关运行手册</a></li>
+<li>定时任务 + 唤醒：<a href="/automation/cron-jobs">定时任务</a></li>
+<li>macOS 菜单栏配套应用：<a href="/platforms/macos">OpenClaw macOS 应用</a></li>
+<li>iOS 节点应用：<a href="/platforms/ios">iOS 应用</a></li>
+<li>Android 节点应用：<a href="/platforms/android">Android 应用</a></li>
+<li>Windows 状态：<a href="/platforms/windows">Windows (WSL2)</a></li>
+<li>Linux 状态：<a href="/platforms/linux">Linux 应用</a></li>
+<li>安全：<a href="/gateway/security">安全</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/nodes/location-command/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>位置命令（节点）</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/remote-gateway-readme/">
+    <span class="title">Next »</span>
+    <br>
+    <span>使用远程 Gateway 网关运行 OpenClaw.app</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

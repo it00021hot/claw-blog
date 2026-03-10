@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>音频 / 语音消息 — 2026-01-17 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="已支持的功能
+
+媒体理解（音频）：如果音频理解已启用（或自动检测），OpenClaw 会：
+
+找到第一个音频附件（本地路径或 URL），如有需要则下载。
+在发送给每个模型条目之前执行 maxBytes 限制。
+按顺序运行第一个符合条件的模型条目（提供商或 CLI）。
+如果失败或跳过（大小/超时），则尝试下一个条目。
+成功后，将 Body 替换为 [Audio] 块并设置 {{Transcript}}。
+
+
+命令解析：转录成功时，CommandBody/RawBody 会设置为转录文本，因此斜杠命令仍然有效。
+详细日志：在 --verbose 模式下，我们会在转录运行和替换正文时记录日志。
+
+自动检测（默认）
+如果你未配置模型且 tools.media.audio.enabled 未设置为 false，OpenClaw 会按以下顺序自动检测，并在找到第一个可用选项时停止：
+
+本地 CLI（如已安装）
+
+sherpa-onnx-offline（需要 SHERPA_ONNX_MODEL_DIR 包含 encoder/decoder/joiner/tokens）
+whisper-cli（来自 whisper-cpp；使用 WHISPER_CPP_MODEL 或内置的 tiny 模型）
+whisper（Python CLI；自动下载模型）
+
+
+Gemini CLI（gemini）使用 read_many_files
+提供商密钥（OpenAI → Groq → Deepgram → Google）
+
+要禁用自动检测，请设置 tools.media.audio.enabled: false。
+要自定义，请设置 tools.media.audio.models。
+注意：二进制检测在 macOS/Linux/Windows 上采用尽力而为的方式；请确保 CLI 在 PATH 中（我们会展开 ~），或通过完整命令路径设置显式 CLI 模型。
+配置示例
+提供商 &#43; CLI 回退（OpenAI &#43; Whisper CLI）
+{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        maxBytes: 20971520,
+        models: [
+          { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; },
+          {
+            type: &#34;cli&#34;,
+            command: &#34;whisper&#34;,
+            args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;],
+            timeoutSeconds: 45,
+          },
+        ],
+      },
+    },
+  },
+}
+仅提供商 &#43; 作用域控制
+{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        scope: {
+          default: &#34;allow&#34;,
+          rules: [{ action: &#34;deny&#34;, match: { chatType: &#34;group&#34; } }],
+        },
+        models: [{ provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }],
+      },
+    },
+  },
+}
+仅提供商（Deepgram）
+{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        models: [{ provider: &#34;deepgram&#34;, model: &#34;nova-3&#34; }],
+      },
+    },
+  },
+}
+注意事项与限制
+
+提供商认证遵循标准的模型认证顺序（认证配置文件、环境变量、models.providers.*.apiKey）。
+当使用 provider: &quot;deepgram&quot; 时，Deepgram 会读取 DEEPGRAM_API_KEY。
+Deepgram 设置详情：Deepgram（音频转录）。
+音频提供商可以通过 tools.media.audio 覆盖 baseUrl、headers 和 providerOptions。
+默认大小限制为 20MB（tools.media.audio.maxBytes）。超大音频会跳过该模型并尝试下一个条目。
+音频的默认 maxChars 未设置（完整转录文本）。设置 tools.media.audio.maxChars 或每个条目的 maxChars 来裁剪输出。
+OpenAI 自动检测默认使用 gpt-4o-mini-transcribe；设置 model: &quot;gpt-4o-transcribe&quot; 可获得更高准确度。
+使用 tools.media.audio.attachments 处理多条语音消息（mode: &quot;all&quot; &#43; maxAttachments）。
+转录文本可在模板中通过 {{Transcript}} 使用。
+CLI 标准输出有上限（5MB）；请保持 CLI 输出简洁。
+
+常见陷阱
+
+作用域规则采用首次匹配优先。chatType 会被规范化为 direct、group 或 room。
+确保你的 CLI 以退出码 0 退出并输出纯文本；JSON 格式需要通过 jq -r .text 进行转换。
+保持合理的超时时间（timeoutSeconds，默认 60 秒），以避免阻塞回复队列。
+">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/nodes/audio/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/nodes/audio/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/nodes/audio/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="音频 / 语音消息 — 2026-01-17">
+  <meta property="og:description" content="已支持的功能 媒体理解（音频）：如果音频理解已启用（或自动检测），OpenClaw 会： 找到第一个音频附件（本地路径或 URL），如有需要则下载。 在发送给每个模型条目之前执行 maxBytes 限制。 按顺序运行第一个符合条件的模型条目（提供商或 CLI）。 如果失败或跳过（大小/超时），则尝试下一个条目。 成功后，将 Body 替换为 [Audio] 块并设置 {{Transcript}}。 命令解析：转录成功时，CommandBody/RawBody 会设置为转录文本，因此斜杠命令仍然有效。 详细日志：在 --verbose 模式下，我们会在转录运行和替换正文时记录日志。 自动检测（默认） 如果你未配置模型且 tools.media.audio.enabled 未设置为 false，OpenClaw 会按以下顺序自动检测，并在找到第一个可用选项时停止：
+本地 CLI（如已安装） sherpa-onnx-offline（需要 SHERPA_ONNX_MODEL_DIR 包含 encoder/decoder/joiner/tokens） whisper-cli（来自 whisper-cpp；使用 WHISPER_CPP_MODEL 或内置的 tiny 模型） whisper（Python CLI；自动下载模型） Gemini CLI（gemini）使用 read_many_files 提供商密钥（OpenAI → Groq → Deepgram → Google） 要禁用自动检测，请设置 tools.media.audio.enabled: false。 要自定义，请设置 tools.media.audio.models。 注意：二进制检测在 macOS/Linux/Windows 上采用尽力而为的方式；请确保 CLI 在 PATH 中（我们会展开 ~），或通过完整命令路径设置显式 CLI 模型。
+配置示例 提供商 &#43; CLI 回退（OpenAI &#43; Whisper CLI） { tools: { media: { audio: { enabled: true, maxBytes: 20971520, models: [ { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }, { type: &#34;cli&#34;, command: &#34;whisper&#34;, args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;], timeoutSeconds: 45, }, ], }, }, }, } 仅提供商 &#43; 作用域控制 { tools: { media: { audio: { enabled: true, scope: { default: &#34;allow&#34;, rules: [{ action: &#34;deny&#34;, match: { chatType: &#34;group&#34; } }], }, models: [{ provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }], }, }, }, } 仅提供商（Deepgram） { tools: { media: { audio: { enabled: true, models: [{ provider: &#34;deepgram&#34;, model: &#34;nova-3&#34; }], }, }, }, } 注意事项与限制 提供商认证遵循标准的模型认证顺序（认证配置文件、环境变量、models.providers.*.apiKey）。 当使用 provider: &#34;deepgram&#34; 时，Deepgram 会读取 DEEPGRAM_API_KEY。 Deepgram 设置详情：Deepgram（音频转录）。 音频提供商可以通过 tools.media.audio 覆盖 baseUrl、headers 和 providerOptions。 默认大小限制为 20MB（tools.media.audio.maxBytes）。超大音频会跳过该模型并尝试下一个条目。 音频的默认 maxChars 未设置（完整转录文本）。设置 tools.media.audio.maxChars 或每个条目的 maxChars 来裁剪输出。 OpenAI 自动检测默认使用 gpt-4o-mini-transcribe；设置 model: &#34;gpt-4o-transcribe&#34; 可获得更高准确度。 使用 tools.media.audio.attachments 处理多条语音消息（mode: &#34;all&#34; &#43; maxAttachments）。 转录文本可在模板中通过 {{Transcript}} 使用。 CLI 标准输出有上限（5MB）；请保持 CLI 输出简洁。 常见陷阱 作用域规则采用首次匹配优先。chatType 会被规范化为 direct、group 或 room。 确保你的 CLI 以退出码 0 退出并输出纯文本；JSON 格式需要通过 jq -r .text 进行转换。 保持合理的超时时间（timeoutSeconds，默认 60 秒），以避免阻塞回复队列。 ">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="音频 / 语音消息 — 2026-01-17">
+<meta name="twitter:description" content="已支持的功能
+
+媒体理解（音频）：如果音频理解已启用（或自动检测），OpenClaw 会：
+
+找到第一个音频附件（本地路径或 URL），如有需要则下载。
+在发送给每个模型条目之前执行 maxBytes 限制。
+按顺序运行第一个符合条件的模型条目（提供商或 CLI）。
+如果失败或跳过（大小/超时），则尝试下一个条目。
+成功后，将 Body 替换为 [Audio] 块并设置 {{Transcript}}。
+
+
+命令解析：转录成功时，CommandBody/RawBody 会设置为转录文本，因此斜杠命令仍然有效。
+详细日志：在 --verbose 模式下，我们会在转录运行和替换正文时记录日志。
+
+自动检测（默认）
+如果你未配置模型且 tools.media.audio.enabled 未设置为 false，OpenClaw 会按以下顺序自动检测，并在找到第一个可用选项时停止：
+
+本地 CLI（如已安装）
+
+sherpa-onnx-offline（需要 SHERPA_ONNX_MODEL_DIR 包含 encoder/decoder/joiner/tokens）
+whisper-cli（来自 whisper-cpp；使用 WHISPER_CPP_MODEL 或内置的 tiny 模型）
+whisper（Python CLI；自动下载模型）
+
+
+Gemini CLI（gemini）使用 read_many_files
+提供商密钥（OpenAI → Groq → Deepgram → Google）
+
+要禁用自动检测，请设置 tools.media.audio.enabled: false。
+要自定义，请设置 tools.media.audio.models。
+注意：二进制检测在 macOS/Linux/Windows 上采用尽力而为的方式；请确保 CLI 在 PATH 中（我们会展开 ~），或通过完整命令路径设置显式 CLI 模型。
+配置示例
+提供商 &#43; CLI 回退（OpenAI &#43; Whisper CLI）
+{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        maxBytes: 20971520,
+        models: [
+          { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; },
+          {
+            type: &#34;cli&#34;,
+            command: &#34;whisper&#34;,
+            args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;],
+            timeoutSeconds: 45,
+          },
+        ],
+      },
+    },
+  },
+}
+仅提供商 &#43; 作用域控制
+{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        scope: {
+          default: &#34;allow&#34;,
+          rules: [{ action: &#34;deny&#34;, match: { chatType: &#34;group&#34; } }],
+        },
+        models: [{ provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }],
+      },
+    },
+  },
+}
+仅提供商（Deepgram）
+{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        models: [{ provider: &#34;deepgram&#34;, model: &#34;nova-3&#34; }],
+      },
+    },
+  },
+}
+注意事项与限制
+
+提供商认证遵循标准的模型认证顺序（认证配置文件、环境变量、models.providers.*.apiKey）。
+当使用 provider: &quot;deepgram&quot; 时，Deepgram 会读取 DEEPGRAM_API_KEY。
+Deepgram 设置详情：Deepgram（音频转录）。
+音频提供商可以通过 tools.media.audio 覆盖 baseUrl、headers 和 providerOptions。
+默认大小限制为 20MB（tools.media.audio.maxBytes）。超大音频会跳过该模型并尝试下一个条目。
+音频的默认 maxChars 未设置（完整转录文本）。设置 tools.media.audio.maxChars 或每个条目的 maxChars 来裁剪输出。
+OpenAI 自动检测默认使用 gpt-4o-mini-transcribe；设置 model: &quot;gpt-4o-transcribe&quot; 可获得更高准确度。
+使用 tools.media.audio.attachments 处理多条语音消息（mode: &quot;all&quot; &#43; maxAttachments）。
+转录文本可在模板中通过 {{Transcript}} 使用。
+CLI 标准输出有上限（5MB）；请保持 CLI 输出简洁。
+
+常见陷阱
+
+作用域规则采用首次匹配优先。chatType 会被规范化为 direct、group 或 room。
+确保你的 CLI 以退出码 0 退出并输出纯文本；JSON 格式需要通过 jq -r .text 进行转换。
+保持合理的超时时间（timeoutSeconds，默认 60 秒），以避免阻塞回复队列。
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "音频 / 语音消息 — 2026-01-17",
+      "item": "/openclaw/nodes/audio/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "音频 / 语音消息 — 2026-01-17",
+  "name": "音频 \/ 语音消息 — 2026-01-17",
+  "description": "已支持的功能 媒体理解（音频）：如果音频理解已启用（或自动检测），OpenClaw 会： 找到第一个音频附件（本地路径或 URL），如有需要则下载。 在发送给每个模型条目之前执行 maxBytes 限制。 按顺序运行第一个符合条件的模型条目（提供商或 CLI）。 如果失败或跳过（大小/超时），则尝试下一个条目。 成功后，将 Body 替换为 [Audio] 块并设置 {{Transcript}}。 命令解析：转录成功时，CommandBody/RawBody 会设置为转录文本，因此斜杠命令仍然有效。 详细日志：在 --verbose 模式下，我们会在转录运行和替换正文时记录日志。 自动检测（默认） 如果你未配置模型且 tools.media.audio.enabled 未设置为 false，OpenClaw 会按以下顺序自动检测，并在找到第一个可用选项时停止：\n本地 CLI（如已安装） sherpa-onnx-offline（需要 SHERPA_ONNX_MODEL_DIR 包含 encoder/decoder/joiner/tokens） whisper-cli（来自 whisper-cpp；使用 WHISPER_CPP_MODEL 或内置的 tiny 模型） whisper（Python CLI；自动下载模型） Gemini CLI（gemini）使用 read_many_files 提供商密钥（OpenAI → Groq → Deepgram → Google） 要禁用自动检测，请设置 tools.media.audio.enabled: false。 要自定义，请设置 tools.media.audio.models。 注意：二进制检测在 macOS/Linux/Windows 上采用尽力而为的方式；请确保 CLI 在 PATH 中（我们会展开 ~），或通过完整命令路径设置显式 CLI 模型。\n配置示例 提供商 + CLI 回退（OpenAI + Whisper CLI） { tools: { media: { audio: { enabled: true, maxBytes: 20971520, models: [ { provider: \u0026#34;openai\u0026#34;, model: \u0026#34;gpt-4o-mini-transcribe\u0026#34; }, { type: \u0026#34;cli\u0026#34;, command: \u0026#34;whisper\u0026#34;, args: [\u0026#34;--model\u0026#34;, \u0026#34;base\u0026#34;, \u0026#34;{{MediaPath}}\u0026#34;], timeoutSeconds: 45, }, ], }, }, }, } 仅提供商 + 作用域控制 { tools: { media: { audio: { enabled: true, scope: { default: \u0026#34;allow\u0026#34;, rules: [{ action: \u0026#34;deny\u0026#34;, match: { chatType: \u0026#34;group\u0026#34; } }], }, models: [{ provider: \u0026#34;openai\u0026#34;, model: \u0026#34;gpt-4o-mini-transcribe\u0026#34; }], }, }, }, } 仅提供商（Deepgram） { tools: { media: { audio: { enabled: true, models: [{ provider: \u0026#34;deepgram\u0026#34;, model: \u0026#34;nova-3\u0026#34; }], }, }, }, } 注意事项与限制 提供商认证遵循标准的模型认证顺序（认证配置文件、环境变量、models.providers.*.apiKey）。 当使用 provider: \u0026quot;deepgram\u0026quot; 时，Deepgram 会读取 DEEPGRAM_API_KEY。 Deepgram 设置详情：Deepgram（音频转录）。 音频提供商可以通过 tools.media.audio 覆盖 baseUrl、headers 和 providerOptions。 默认大小限制为 20MB（tools.media.audio.maxBytes）。超大音频会跳过该模型并尝试下一个条目。 音频的默认 maxChars 未设置（完整转录文本）。设置 tools.media.audio.maxChars 或每个条目的 maxChars 来裁剪输出。 OpenAI 自动检测默认使用 gpt-4o-mini-transcribe；设置 model: \u0026quot;gpt-4o-transcribe\u0026quot; 可获得更高准确度。 使用 tools.media.audio.attachments 处理多条语音消息（mode: \u0026quot;all\u0026quot; + maxAttachments）。 转录文本可在模板中通过 {{Transcript}} 使用。 CLI 标准输出有上限（5MB）；请保持 CLI 输出简洁。 常见陷阱 作用域规则采用首次匹配优先。chatType 会被规范化为 direct、group 或 room。 确保你的 CLI 以退出码 0 退出并输出纯文本；JSON 格式需要通过 jq -r .text 进行转换。 保持合理的超时时间（timeoutSeconds，默认 60 秒），以避免阻塞回复队列。 ",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "已支持的功能 媒体理解（音频）：如果音频理解已启用（或自动检测），OpenClaw 会： 找到第一个音频附件（本地路径或 URL），如有需要则下载。 在发送给每个模型条目之前执行 maxBytes 限制。 按顺序运行第一个符合条件的模型条目（提供商或 CLI）。 如果失败或跳过（大小/超时），则尝试下一个条目。 成功后，将 Body 替换为 [Audio] 块并设置 {{Transcript}}。 命令解析：转录成功时，CommandBody/RawBody 会设置为转录文本，因此斜杠命令仍然有效。 详细日志：在 --verbose 模式下，我们会在转录运行和替换正文时记录日志。 自动检测（默认） 如果你未配置模型且 tools.media.audio.enabled 未设置为 false，OpenClaw 会按以下顺序自动检测，并在找到第一个可用选项时停止：\n本地 CLI（如已安装） sherpa-onnx-offline（需要 SHERPA_ONNX_MODEL_DIR 包含 encoder/decoder/joiner/tokens） whisper-cli（来自 whisper-cpp；使用 WHISPER_CPP_MODEL 或内置的 tiny 模型） whisper（Python CLI；自动下载模型） Gemini CLI（gemini）使用 read_many_files 提供商密钥（OpenAI → Groq → Deepgram → Google） 要禁用自动检测，请设置 tools.media.audio.enabled: false。 要自定义，请设置 tools.media.audio.models。 注意：二进制检测在 macOS/Linux/Windows 上采用尽力而为的方式；请确保 CLI 在 PATH 中（我们会展开 ~），或通过完整命令路径设置显式 CLI 模型。\n配置示例 提供商 + CLI 回退（OpenAI + Whisper CLI） { tools: { media: { audio: { enabled: true, maxBytes: 20971520, models: [ { provider: \"openai\", model: \"gpt-4o-mini-transcribe\" }, { type: \"cli\", command: \"whisper\", args: [\"--model\", \"base\", \"{{MediaPath}}\"], timeoutSeconds: 45, }, ], }, }, }, } 仅提供商 + 作用域控制 { tools: { media: { audio: { enabled: true, scope: { default: \"allow\", rules: [{ action: \"deny\", match: { chatType: \"group\" } }], }, models: [{ provider: \"openai\", model: \"gpt-4o-mini-transcribe\" }], }, }, }, } 仅提供商（Deepgram） { tools: { media: { audio: { enabled: true, models: [{ provider: \"deepgram\", model: \"nova-3\" }], }, }, }, } 注意事项与限制 提供商认证遵循标准的模型认证顺序（认证配置文件、环境变量、models.providers.*.apiKey）。 当使用 provider: \"deepgram\" 时，Deepgram 会读取 DEEPGRAM_API_KEY。 Deepgram 设置详情：Deepgram（音频转录）。 音频提供商可以通过 tools.media.audio 覆盖 baseUrl、headers 和 providerOptions。 默认大小限制为 20MB（tools.media.audio.maxBytes）。超大音频会跳过该模型并尝试下一个条目。 音频的默认 maxChars 未设置（完整转录文本）。设置 tools.media.audio.maxChars 或每个条目的 maxChars 来裁剪输出。 OpenAI 自动检测默认使用 gpt-4o-mini-transcribe；设置 model: \"gpt-4o-transcribe\" 可获得更高准确度。 使用 tools.media.audio.attachments 处理多条语音消息（mode: \"all\" + maxAttachments）。 转录文本可在模板中通过 {{Transcript}} 使用。 CLI 标准输出有上限（5MB）；请保持 CLI 输出简洁。 常见陷阱 作用域规则采用首次匹配优先。chatType 会被规范化为 direct、group 或 room。 确保你的 CLI 以退出码 0 退出并输出纯文本；JSON 格式需要通过 jq -r .text 进行转换。 保持合理的超时时间（timeoutSeconds，默认 60 秒），以避免阻塞回复队列。 ",
+  "wordCount" : "233",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/nodes/audio/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      音频 / 语音消息 — 2026-01-17
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%b7%b2%e6%94%af%e6%8c%81%e7%9a%84%e5%8a%9f%e8%83%bd" aria-label="已支持的功能">已支持的功能</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%8a%a8%e6%a3%80%e6%b5%8b%e9%bb%98%e8%ae%a4" aria-label="自动检测（默认）">自动检测（默认）</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e7%a4%ba%e4%be%8b" aria-label="配置示例">配置示例</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8f%90%e4%be%9b%e5%95%86--cli-%e5%9b%9e%e9%80%80openai--whisper-cli" aria-label="提供商 &#43; CLI 回退（OpenAI &#43; Whisper CLI）">提供商 + CLI 回退（OpenAI + Whisper CLI）</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e6%8f%90%e4%be%9b%e5%95%86--%e4%bd%9c%e7%94%a8%e5%9f%9f%e6%8e%a7%e5%88%b6" aria-label="仅提供商 &#43; 作用域控制">仅提供商 + 作用域控制</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e6%8f%90%e4%be%9b%e5%95%86deepgram" aria-label="仅提供商（Deepgram）">仅提供商（Deepgram）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9%e4%b8%8e%e9%99%90%e5%88%b6" aria-label="注意事项与限制">注意事项与限制</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e9%99%b7%e9%98%b1" aria-label="常见陷阱">常见陷阱</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="已支持的功能">已支持的功能<a hidden class="anchor" aria-hidden="true" href="#已支持的功能">#</a></h2>
+<ul>
+<li><strong>媒体理解（音频）</strong>：如果音频理解已启用（或自动检测），OpenClaw 会：
+<ol>
+<li>找到第一个音频附件（本地路径或 URL），如有需要则下载。</li>
+<li>在发送给每个模型条目之前执行 <code>maxBytes</code> 限制。</li>
+<li>按顺序运行第一个符合条件的模型条目（提供商或 CLI）。</li>
+<li>如果失败或跳过（大小/超时），则尝试下一个条目。</li>
+<li>成功后，将 <code>Body</code> 替换为 <code>[Audio]</code> 块并设置 <code>{{Transcript}}</code>。</li>
+</ol>
+</li>
+<li><strong>命令解析</strong>：转录成功时，<code>CommandBody</code>/<code>RawBody</code> 会设置为转录文本，因此斜杠命令仍然有效。</li>
+<li><strong>详细日志</strong>：在 <code>--verbose</code> 模式下，我们会在转录运行和替换正文时记录日志。</li>
+</ul>
+<h2 id="自动检测默认">自动检测（默认）<a hidden class="anchor" aria-hidden="true" href="#自动检测默认">#</a></h2>
+<p>如果你<strong>未配置模型</strong>且 <code>tools.media.audio.enabled</code> <strong>未</strong>设置为 <code>false</code>，OpenClaw 会按以下顺序自动检测，并在找到第一个可用选项时停止：</p>
+<ol>
+<li><strong>本地 CLI</strong>（如已安装）
+<ul>
+<li><code>sherpa-onnx-offline</code>（需要 <code>SHERPA_ONNX_MODEL_DIR</code> 包含 encoder/decoder/joiner/tokens）</li>
+<li><code>whisper-cli</code>（来自 <code>whisper-cpp</code>；使用 <code>WHISPER_CPP_MODEL</code> 或内置的 tiny 模型）</li>
+<li><code>whisper</code>（Python CLI；自动下载模型）</li>
+</ul>
+</li>
+<li><strong>Gemini CLI</strong>（<code>gemini</code>）使用 <code>read_many_files</code></li>
+<li><strong>提供商密钥</strong>（OpenAI → Groq → Deepgram → Google）</li>
+</ol>
+<p>要禁用自动检测，请设置 <code>tools.media.audio.enabled: false</code>。
+要自定义，请设置 <code>tools.media.audio.models</code>。
+注意：二进制检测在 macOS/Linux/Windows 上采用尽力而为的方式；请确保 CLI 在 <code>PATH</code> 中（我们会展开 <code>~</code>），或通过完整命令路径设置显式 CLI 模型。</p>
+<h2 id="配置示例">配置示例<a hidden class="anchor" aria-hidden="true" href="#配置示例">#</a></h2>
+<h3 id="提供商--cli-回退openai--whisper-cli">提供商 + CLI 回退（OpenAI + Whisper CLI）<a hidden class="anchor" aria-hidden="true" href="#提供商--cli-回退openai--whisper-cli">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        maxBytes: 20971520,
+        models: [
+          { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; },
+          {
+            type: &#34;cli&#34;,
+            command: &#34;whisper&#34;,
+            args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;],
+            timeoutSeconds: 45,
+          },
+        ],
+      },
+    },
+  },
+}
+</code></pre><h3 id="仅提供商--作用域控制">仅提供商 + 作用域控制<a hidden class="anchor" aria-hidden="true" href="#仅提供商--作用域控制">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        scope: {
+          default: &#34;allow&#34;,
+          rules: [{ action: &#34;deny&#34;, match: { chatType: &#34;group&#34; } }],
+        },
+        models: [{ provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }],
+      },
+    },
+  },
+}
+</code></pre><h3 id="仅提供商deepgram">仅提供商（Deepgram）<a hidden class="anchor" aria-hidden="true" href="#仅提供商deepgram">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  tools: {
+    media: {
+      audio: {
+        enabled: true,
+        models: [{ provider: &#34;deepgram&#34;, model: &#34;nova-3&#34; }],
+      },
+    },
+  },
+}
+</code></pre><h2 id="注意事项与限制">注意事项与限制<a hidden class="anchor" aria-hidden="true" href="#注意事项与限制">#</a></h2>
+<ul>
+<li>提供商认证遵循标准的模型认证顺序（认证配置文件、环境变量、<code>models.providers.*.apiKey</code>）。</li>
+<li>当使用 <code>provider: &quot;deepgram&quot;</code> 时，Deepgram 会读取 <code>DEEPGRAM_API_KEY</code>。</li>
+<li>Deepgram 设置详情：<a href="/providers/deepgram">Deepgram（音频转录）</a>。</li>
+<li>音频提供商可以通过 <code>tools.media.audio</code> 覆盖 <code>baseUrl</code>、<code>headers</code> 和 <code>providerOptions</code>。</li>
+<li>默认大小限制为 20MB（<code>tools.media.audio.maxBytes</code>）。超大音频会跳过该模型并尝试下一个条目。</li>
+<li>音频的默认 <code>maxChars</code> <strong>未设置</strong>（完整转录文本）。设置 <code>tools.media.audio.maxChars</code> 或每个条目的 <code>maxChars</code> 来裁剪输出。</li>
+<li>OpenAI 自动检测默认使用 <code>gpt-4o-mini-transcribe</code>；设置 <code>model: &quot;gpt-4o-transcribe&quot;</code> 可获得更高准确度。</li>
+<li>使用 <code>tools.media.audio.attachments</code> 处理多条语音消息（<code>mode: &quot;all&quot;</code> + <code>maxAttachments</code>）。</li>
+<li>转录文本可在模板中通过 <code>{{Transcript}}</code> 使用。</li>
+<li>CLI 标准输出有上限（5MB）；请保持 CLI 输出简洁。</li>
+</ul>
+<h2 id="常见陷阱">常见陷阱<a hidden class="anchor" aria-hidden="true" href="#常见陷阱">#</a></h2>
+<ul>
+<li>作用域规则采用首次匹配优先。<code>chatType</code> 会被规范化为 <code>direct</code>、<code>group</code> 或 <code>room</code>。</li>
+<li>确保你的 CLI 以退出码 0 退出并输出纯文本；JSON 格式需要通过 <code>jq -r .text</code> 进行转换。</li>
+<li>保持合理的超时时间（<code>timeoutSeconds</code>，默认 60 秒），以避免阻塞回复队列。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/concepts/retry/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>重试策略</span>
+  </a>
+  <a class="next" href="/openclaw/channels/feishu/">
+    <span class="title">Next »</span>
+    <br>
+    <span>飞书机器人</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

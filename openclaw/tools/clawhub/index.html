@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>ClawHub | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="ClawHub 是 OpenClaw 的公共 Skills 注册中心。它是一项免费服务：所有 Skills 都是公开的、开放的，所有人都可以查看、共享和复用。Skills 就是一个包含 SKILL.md 文件（以及辅助文本文件）的文件夹。你可以在网页应用中浏览 Skills，也可以使用 CLI 来搜索、安装、更新和发布 Skills。
+网站：clawhub.com
+适用人群（新手友好）
+如果你想为 OpenClaw 智能体添加新功能，ClawHub 是查找和安装 Skills 的最简单方式。你不需要了解后端的工作原理。你可以：
+
+使用自然语言搜索 Skills。
+将 Skills 安装到你的工作区。
+之后使用一条命令更新 Skills。
+通过发布 Skills 来备份你自己的 Skills。
+
+快速入门（非技术人员）
+
+安装 CLI（参见下一节）。
+搜索你需要的内容：
+
+clawhub search &quot;calendar&quot;
+
+
+安装一个 Skills：
+
+clawhub install &lt;skill-slug&gt;
+
+
+启动一个新的 OpenClaw 会话，以加载新 Skills。
+
+安装 CLI
+任选其一：
+npm i -g clawhub
+pnpm add -g clawhub
+在 OpenClaw 中的定位
+默认情况下，CLI 会将 Skills 安装到当前工作目录下的 ./skills。如果已配置 OpenClaw 工作区，clawhub 会回退到该工作区，除非你通过 --workdir（或 CLAWHUB_WORKDIR）进行覆盖。OpenClaw 从 &lt;workspace&gt;/skills 加载工作区 Skills，并会在下一个会话中生效。如果你已经在使用 ~/.openclaw/skills 或内置 Skills，工作区 Skills 优先级更高。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tools/clawhub/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tools/clawhub/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tools/clawhub/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="ClawHub">
+  <meta property="og:description" content="ClawHub 是 OpenClaw 的公共 Skills 注册中心。它是一项免费服务：所有 Skills 都是公开的、开放的，所有人都可以查看、共享和复用。Skills 就是一个包含 SKILL.md 文件（以及辅助文本文件）的文件夹。你可以在网页应用中浏览 Skills，也可以使用 CLI 来搜索、安装、更新和发布 Skills。
+网站：clawhub.com
+适用人群（新手友好） 如果你想为 OpenClaw 智能体添加新功能，ClawHub 是查找和安装 Skills 的最简单方式。你不需要了解后端的工作原理。你可以：
+使用自然语言搜索 Skills。 将 Skills 安装到你的工作区。 之后使用一条命令更新 Skills。 通过发布 Skills 来备份你自己的 Skills。 快速入门（非技术人员） 安装 CLI（参见下一节）。 搜索你需要的内容： clawhub search &#34;calendar&#34; 安装一个 Skills： clawhub install &lt;skill-slug&gt; 启动一个新的 OpenClaw 会话，以加载新 Skills。 安装 CLI 任选其一：
+npm i -g clawhub pnpm add -g clawhub 在 OpenClaw 中的定位 默认情况下，CLI 会将 Skills 安装到当前工作目录下的 ./skills。如果已配置 OpenClaw 工作区，clawhub 会回退到该工作区，除非你通过 --workdir（或 CLAWHUB_WORKDIR）进行覆盖。OpenClaw 从 &lt;workspace&gt;/skills 加载工作区 Skills，并会在下一个会话中生效。如果你已经在使用 ~/.openclaw/skills 或内置 Skills，工作区 Skills 优先级更高。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ClawHub">
+<meta name="twitter:description" content="ClawHub 是 OpenClaw 的公共 Skills 注册中心。它是一项免费服务：所有 Skills 都是公开的、开放的，所有人都可以查看、共享和复用。Skills 就是一个包含 SKILL.md 文件（以及辅助文本文件）的文件夹。你可以在网页应用中浏览 Skills，也可以使用 CLI 来搜索、安装、更新和发布 Skills。
+网站：clawhub.com
+适用人群（新手友好）
+如果你想为 OpenClaw 智能体添加新功能，ClawHub 是查找和安装 Skills 的最简单方式。你不需要了解后端的工作原理。你可以：
+
+使用自然语言搜索 Skills。
+将 Skills 安装到你的工作区。
+之后使用一条命令更新 Skills。
+通过发布 Skills 来备份你自己的 Skills。
+
+快速入门（非技术人员）
+
+安装 CLI（参见下一节）。
+搜索你需要的内容：
+
+clawhub search &quot;calendar&quot;
+
+
+安装一个 Skills：
+
+clawhub install &lt;skill-slug&gt;
+
+
+启动一个新的 OpenClaw 会话，以加载新 Skills。
+
+安装 CLI
+任选其一：
+npm i -g clawhub
+pnpm add -g clawhub
+在 OpenClaw 中的定位
+默认情况下，CLI 会将 Skills 安装到当前工作目录下的 ./skills。如果已配置 OpenClaw 工作区，clawhub 会回退到该工作区，除非你通过 --workdir（或 CLAWHUB_WORKDIR）进行覆盖。OpenClaw 从 &lt;workspace&gt;/skills 加载工作区 Skills，并会在下一个会话中生效。如果你已经在使用 ~/.openclaw/skills 或内置 Skills，工作区 Skills 优先级更高。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "ClawHub",
+      "item": "/openclaw/tools/clawhub/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ClawHub",
+  "name": "ClawHub",
+  "description": "ClawHub 是 OpenClaw 的公共 Skills 注册中心。它是一项免费服务：所有 Skills 都是公开的、开放的，所有人都可以查看、共享和复用。Skills 就是一个包含 SKILL.md 文件（以及辅助文本文件）的文件夹。你可以在网页应用中浏览 Skills，也可以使用 CLI 来搜索、安装、更新和发布 Skills。\n网站：clawhub.com\n适用人群（新手友好） 如果你想为 OpenClaw 智能体添加新功能，ClawHub 是查找和安装 Skills 的最简单方式。你不需要了解后端的工作原理。你可以：\n使用自然语言搜索 Skills。 将 Skills 安装到你的工作区。 之后使用一条命令更新 Skills。 通过发布 Skills 来备份你自己的 Skills。 快速入门（非技术人员） 安装 CLI（参见下一节）。 搜索你需要的内容： clawhub search \u0026quot;calendar\u0026quot; 安装一个 Skills： clawhub install \u0026lt;skill-slug\u0026gt; 启动一个新的 OpenClaw 会话，以加载新 Skills。 安装 CLI 任选其一：\nnpm i -g clawhub pnpm add -g clawhub 在 OpenClaw 中的定位 默认情况下，CLI 会将 Skills 安装到当前工作目录下的 ./skills。如果已配置 OpenClaw 工作区，clawhub 会回退到该工作区，除非你通过 --workdir（或 CLAWHUB_WORKDIR）进行覆盖。OpenClaw 从 \u0026lt;workspace\u0026gt;/skills 加载工作区 Skills，并会在下一个会话中生效。如果你已经在使用 ~/.openclaw/skills 或内置 Skills，工作区 Skills 优先级更高。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "ClawHub 是 OpenClaw 的公共 Skills 注册中心。它是一项免费服务：所有 Skills 都是公开的、开放的，所有人都可以查看、共享和复用。Skills 就是一个包含 SKILL.md 文件（以及辅助文本文件）的文件夹。你可以在网页应用中浏览 Skills，也可以使用 CLI 来搜索、安装、更新和发布 Skills。\n网站：clawhub.com\n适用人群（新手友好） 如果你想为 OpenClaw 智能体添加新功能，ClawHub 是查找和安装 Skills 的最简单方式。你不需要了解后端的工作原理。你可以：\n使用自然语言搜索 Skills。 将 Skills 安装到你的工作区。 之后使用一条命令更新 Skills。 通过发布 Skills 来备份你自己的 Skills。 快速入门（非技术人员） 安装 CLI（参见下一节）。 搜索你需要的内容： clawhub search \"calendar\" 安装一个 Skills： clawhub install 启动一个新的 OpenClaw 会话，以加载新 Skills。 安装 CLI 任选其一：\nnpm i -g clawhub pnpm add -g clawhub 在 OpenClaw 中的定位 默认情况下，CLI 会将 Skills 安装到当前工作目录下的 ./skills。如果已配置 OpenClaw 工作区，clawhub 会回退到该工作区，除非你通过 --workdir（或 CLAWHUB_WORKDIR）进行覆盖。OpenClaw 从 /skills 加载工作区 Skills，并会在下一个会话中生效。如果你已经在使用 ~/.openclaw/skills 或内置 Skills，工作区 Skills 优先级更高。\n有关 Skills 加载、共享和权限控制的更多详情，请参阅 Skills。\n服务功能 公开浏览Skills 及其 SKILL.md 内容。 基于嵌入向量（向量搜索）的搜索，而不仅仅是关键词匹配。 支持语义化版本号、变更日志和标签（包括 latest）的版本管理。 每个版本以 zip 格式下载。 星标和评论，支持社区反馈。 审核钩子，用于审批和审计。 CLI 友好的 API，支持自动化和脚本编写。 CLI 命令和参数 全局选项（适用于所有命令）：\n--workdir ：工作目录（默认：当前目录；回退到 OpenClaw 工作区）。 --dir ：Skills 目录，相对于工作目录（默认：skills）。 --site ：网站基础 URL（浏览器登录）。 --registry ：注册中心 API 基础 URL。 --no-input：禁用提示（非交互模式）。 -V, --cli-version：打印 CLI 版本。 认证：\nclawhub login（浏览器流程）或 clawhub login --token clawhub logout clawhub whoami 选项：\n--token ：粘贴 API 令牌。 --label ：为浏览器登录令牌存储的标签（默认：CLI token）。 --no-browser：不打开浏览器（需要 --token）。 搜索：\nclawhub search \"query\" --limit ：最大结果数。 安装：\nclawhub install --version ：安装指定版本。 --force：如果文件夹已存在则覆盖。 更新：\nclawhub update clawhub update --all --version ：更新到指定版本（仅限单个 slug）。 --force：当本地文件与任何已发布版本不匹配时强制覆盖。 列表：\nclawhub list（读取 .clawhub/lock.json） 发布：\nclawhub publish --slug ：Skills 标识符。 --name ：显示名称。 --version ：语义化版本号。 --changelog ：变更日志文本（可以为空）。 --tags ：逗号分隔的标签（默认：latest）。 删除/恢复（仅所有者/管理员）：\nclawhub delete --yes clawhub undelete --yes 同步（扫描本地 Skills + 发布新增/更新的 Skills）：\nclawhub sync --root ：额外的扫描根目录。 --all：无提示上传所有内容。 --dry-run：显示将要上传的内容。 --bump ：更新的版本号递增类型 patch|minor|major（默认：patch）。 --changelog ：非交互更新的变更日志。 --tags ：逗号分隔的标签（默认：latest）。 --concurrency ：注册中心检查并发数（默认：4）。 智能体常用工作流 搜索 Skills clawhub search \"postgres backups\" 下载新 Skills clawhub install my-skill-pack 更新已安装的 Skills clawhub update --all 备份你的 Skills（发布或同步） 对于单个 Skills 文件夹：\nclawhub publish ./my-skill --slug my-skill --name \"My Skill\" --version 1.0.0 --tags latest 一次扫描并备份多个 Skills：\nclawhub sync --all 高级详情（技术性） 版本管理和标签 每次发布都会创建一个新的语义化版本 SkillVersion。 标签（如 latest）指向某个版本；移动标签可以实现回滚。 变更日志附加在每个版本上，在同步或发布更新时可以为空。 本地更改与注册中心版本 更新时会使用内容哈希将本地 Skills 内容与注册中心版本进行比较。如果本地文件与任何已发布版本不匹配，CLI 会在覆盖前询问确认（或在非交互模式下需要 --force）。\n同步扫描和回退根目录 clawhub sync 首先扫描当前工作目录。如果未找到 Skills，它会回退到已知的旧版位置（例如 ~/openclaw/skills 和 ~/.openclaw/skills）。这样设计是为了在不需要额外标志的情况下找到旧版 Skills 安装。\n存储和锁文件 已安装的 Skills 记录在工作目录下的 .clawhub/lock.json 中。 认证令牌存储在 ClawHub CLI 配置文件中（可通过 CLAWHUB_CONFIG_PATH 覆盖）。 遥测（安装计数） 当你在登录状态下运行 clawhub sync 时，CLI 会发送一个最小快照用于计算安装次数。你可以完全禁用此功能：\nexport CLAWHUB_DISABLE_TELEMETRY=1 环境变量 CLAWHUB_SITE：覆盖网站 URL。 CLAWHUB_REGISTRY：覆盖注册中心 API URL。 CLAWHUB_CONFIG_PATH：覆盖 CLI 存储令牌/配置的位置。 CLAWHUB_WORKDIR：覆盖默认工作目录。 CLAWHUB_DISABLE_TELEMETRY=1：禁用 sync 的遥测功能。 ",
+  "wordCount" : "314",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/tools/clawhub/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      ClawHub
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%80%82%e7%94%a8%e4%ba%ba%e7%be%a4%e6%96%b0%e6%89%8b%e5%8f%8b%e5%a5%bd" aria-label="适用人群（新手友好）">适用人群（新手友好）</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%85%a5%e9%97%a8%e9%9d%9e%e6%8a%80%e6%9c%af%e4%ba%ba%e5%91%98" aria-label="快速入门（非技术人员）">快速入门（非技术人员）</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85-cli" aria-label="安装 CLI">安装 CLI</a></li>
+                <li>
+                    <a href="#%e5%9c%a8-openclaw-%e4%b8%ad%e7%9a%84%e5%ae%9a%e4%bd%8d" aria-label="在 OpenClaw 中的定位">在 OpenClaw 中的定位</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e5%8a%9f%e8%83%bd" aria-label="服务功能">服务功能</a></li>
+                <li>
+                    <a href="#cli-%e5%91%bd%e4%bb%a4%e5%92%8c%e5%8f%82%e6%95%b0" aria-label="CLI 命令和参数">CLI 命令和参数</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e5%b8%b8%e7%94%a8%e5%b7%a5%e4%bd%9c%e6%b5%81" aria-label="智能体常用工作流">智能体常用工作流</a><ul>
+                        
+                <li>
+                    <a href="#%e6%90%9c%e7%b4%a2-skills" aria-label="搜索 Skills">搜索 Skills</a></li>
+                <li>
+                    <a href="#%e4%b8%8b%e8%bd%bd%e6%96%b0-skills" aria-label="下载新 Skills">下载新 Skills</a></li>
+                <li>
+                    <a href="#%e6%9b%b4%e6%96%b0%e5%b7%b2%e5%ae%89%e8%a3%85%e7%9a%84-skills" aria-label="更新已安装的 Skills">更新已安装的 Skills</a></li>
+                <li>
+                    <a href="#%e5%a4%87%e4%bb%bd%e4%bd%a0%e7%9a%84-skills%e5%8f%91%e5%b8%83%e6%88%96%e5%90%8c%e6%ad%a5" aria-label="备份你的 Skills（发布或同步）">备份你的 Skills（发布或同步）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%ab%98%e7%ba%a7%e8%af%a6%e6%83%85%e6%8a%80%e6%9c%af%e6%80%a7" aria-label="高级详情（技术性）">高级详情（技术性）</a><ul>
+                        
+                <li>
+                    <a href="#%e7%89%88%e6%9c%ac%e7%ae%a1%e7%90%86%e5%92%8c%e6%a0%87%e7%ad%be" aria-label="版本管理和标签">版本管理和标签</a></li>
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e6%9b%b4%e6%94%b9%e4%b8%8e%e6%b3%a8%e5%86%8c%e4%b8%ad%e5%bf%83%e7%89%88%e6%9c%ac" aria-label="本地更改与注册中心版本">本地更改与注册中心版本</a></li>
+                <li>
+                    <a href="#%e5%90%8c%e6%ad%a5%e6%89%ab%e6%8f%8f%e5%92%8c%e5%9b%9e%e9%80%80%e6%a0%b9%e7%9b%ae%e5%bd%95" aria-label="同步扫描和回退根目录">同步扫描和回退根目录</a></li>
+                <li>
+                    <a href="#%e5%ad%98%e5%82%a8%e5%92%8c%e9%94%81%e6%96%87%e4%bb%b6" aria-label="存储和锁文件">存储和锁文件</a></li>
+                <li>
+                    <a href="#%e9%81%a5%e6%b5%8b%e5%ae%89%e8%a3%85%e8%ae%a1%e6%95%b0" aria-label="遥测（安装计数）">遥测（安装计数）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" aria-label="环境变量">环境变量</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>ClawHub 是 <strong>OpenClaw 的公共 Skills 注册中心</strong>。它是一项免费服务：所有 Skills 都是公开的、开放的，所有人都可以查看、共享和复用。Skills 就是一个包含 <code>SKILL.md</code> 文件（以及辅助文本文件）的文件夹。你可以在网页应用中浏览 Skills，也可以使用 CLI 来搜索、安装、更新和发布 Skills。</p>
+<p>网站：<a href="https://clawhub.com">clawhub.com</a></p>
+<h2 id="适用人群新手友好">适用人群（新手友好）<a hidden class="anchor" aria-hidden="true" href="#适用人群新手友好">#</a></h2>
+<p>如果你想为 OpenClaw 智能体添加新功能，ClawHub 是查找和安装 Skills 的最简单方式。你不需要了解后端的工作原理。你可以：</p>
+<ul>
+<li>使用自然语言搜索 Skills。</li>
+<li>将 Skills 安装到你的工作区。</li>
+<li>之后使用一条命令更新 Skills。</li>
+<li>通过发布 Skills 来备份你自己的 Skills。</li>
+</ul>
+<h2 id="快速入门非技术人员">快速入门（非技术人员）<a hidden class="anchor" aria-hidden="true" href="#快速入门非技术人员">#</a></h2>
+<ol>
+<li>安装 CLI（参见下一节）。</li>
+<li>搜索你需要的内容：
+<ul>
+<li><code>clawhub search &quot;calendar&quot;</code></li>
+</ul>
+</li>
+<li>安装一个 Skills：
+<ul>
+<li><code>clawhub install &lt;skill-slug&gt;</code></li>
+</ul>
+</li>
+<li>启动一个新的 OpenClaw 会话，以加载新 Skills。</li>
+</ol>
+<h2 id="安装-cli">安装 CLI<a hidden class="anchor" aria-hidden="true" href="#安装-cli">#</a></h2>
+<p>任选其一：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i -g clawhub
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm add -g clawhub
+</span></span></code></pre></div><h2 id="在-openclaw-中的定位">在 OpenClaw 中的定位<a hidden class="anchor" aria-hidden="true" href="#在-openclaw-中的定位">#</a></h2>
+<p>默认情况下，CLI 会将 Skills 安装到当前工作目录下的 <code>./skills</code>。如果已配置 OpenClaw 工作区，<code>clawhub</code> 会回退到该工作区，除非你通过 <code>--workdir</code>（或 <code>CLAWHUB_WORKDIR</code>）进行覆盖。OpenClaw 从 <code>&lt;workspace&gt;/skills</code> 加载工作区 Skills，并会在<strong>下一个</strong>会话中生效。如果你已经在使用 <code>~/.openclaw/skills</code> 或内置 Skills，工作区 Skills 优先级更高。</p>
+<p>有关 Skills 加载、共享和权限控制的更多详情，请参阅
+<a href="/tools/skills">Skills</a>。</p>
+<h2 id="服务功能">服务功能<a hidden class="anchor" aria-hidden="true" href="#服务功能">#</a></h2>
+<ul>
+<li><strong>公开浏览</strong>Skills 及其 <code>SKILL.md</code> 内容。</li>
+<li>基于嵌入向量（向量搜索）的<strong>搜索</strong>，而不仅仅是关键词匹配。</li>
+<li>支持语义化版本号、变更日志和标签（包括 <code>latest</code>）的<strong>版本管理</strong>。</li>
+<li>每个版本以 zip 格式<strong>下载</strong>。</li>
+<li><strong>星标和评论</strong>，支持社区反馈。</li>
+<li><strong>审核</strong>钩子，用于审批和审计。</li>
+<li><strong>CLI 友好的 API</strong>，支持自动化和脚本编写。</li>
+</ul>
+<h2 id="cli-命令和参数">CLI 命令和参数<a hidden class="anchor" aria-hidden="true" href="#cli-命令和参数">#</a></h2>
+<p>全局选项（适用于所有命令）：</p>
+<ul>
+<li><code>--workdir &lt;dir&gt;</code>：工作目录（默认：当前目录；回退到 OpenClaw 工作区）。</li>
+<li><code>--dir &lt;dir&gt;</code>：Skills 目录，相对于工作目录（默认：<code>skills</code>）。</li>
+<li><code>--site &lt;url&gt;</code>：网站基础 URL（浏览器登录）。</li>
+<li><code>--registry &lt;url&gt;</code>：注册中心 API 基础 URL。</li>
+<li><code>--no-input</code>：禁用提示（非交互模式）。</li>
+<li><code>-V, --cli-version</code>：打印 CLI 版本。</li>
+</ul>
+<p>认证：</p>
+<ul>
+<li><code>clawhub login</code>（浏览器流程）或 <code>clawhub login --token &lt;token&gt;</code></li>
+<li><code>clawhub logout</code></li>
+<li><code>clawhub whoami</code></li>
+</ul>
+<p>选项：</p>
+<ul>
+<li><code>--token &lt;token&gt;</code>：粘贴 API 令牌。</li>
+<li><code>--label &lt;label&gt;</code>：为浏览器登录令牌存储的标签（默认：<code>CLI token</code>）。</li>
+<li><code>--no-browser</code>：不打开浏览器（需要 <code>--token</code>）。</li>
+</ul>
+<p>搜索：</p>
+<ul>
+<li><code>clawhub search &quot;query&quot;</code></li>
+<li><code>--limit &lt;n&gt;</code>：最大结果数。</li>
+</ul>
+<p>安装：</p>
+<ul>
+<li><code>clawhub install &lt;slug&gt;</code></li>
+<li><code>--version &lt;version&gt;</code>：安装指定版本。</li>
+<li><code>--force</code>：如果文件夹已存在则覆盖。</li>
+</ul>
+<p>更新：</p>
+<ul>
+<li><code>clawhub update &lt;slug&gt;</code></li>
+<li><code>clawhub update --all</code></li>
+<li><code>--version &lt;version&gt;</code>：更新到指定版本（仅限单个 slug）。</li>
+<li><code>--force</code>：当本地文件与任何已发布版本不匹配时强制覆盖。</li>
+</ul>
+<p>列表：</p>
+<ul>
+<li><code>clawhub list</code>（读取 <code>.clawhub/lock.json</code>）</li>
+</ul>
+<p>发布：</p>
+<ul>
+<li><code>clawhub publish &lt;path&gt;</code></li>
+<li><code>--slug &lt;slug&gt;</code>：Skills 标识符。</li>
+<li><code>--name &lt;name&gt;</code>：显示名称。</li>
+<li><code>--version &lt;version&gt;</code>：语义化版本号。</li>
+<li><code>--changelog &lt;text&gt;</code>：变更日志文本（可以为空）。</li>
+<li><code>--tags &lt;tags&gt;</code>：逗号分隔的标签（默认：<code>latest</code>）。</li>
+</ul>
+<p>删除/恢复（仅所有者/管理员）：</p>
+<ul>
+<li><code>clawhub delete &lt;slug&gt; --yes</code></li>
+<li><code>clawhub undelete &lt;slug&gt; --yes</code></li>
+</ul>
+<p>同步（扫描本地 Skills + 发布新增/更新的 Skills）：</p>
+<ul>
+<li><code>clawhub sync</code></li>
+<li><code>--root &lt;dir...&gt;</code>：额外的扫描根目录。</li>
+<li><code>--all</code>：无提示上传所有内容。</li>
+<li><code>--dry-run</code>：显示将要上传的内容。</li>
+<li><code>--bump &lt;type&gt;</code>：更新的版本号递增类型 <code>patch|minor|major</code>（默认：<code>patch</code>）。</li>
+<li><code>--changelog &lt;text&gt;</code>：非交互更新的变更日志。</li>
+<li><code>--tags &lt;tags&gt;</code>：逗号分隔的标签（默认：<code>latest</code>）。</li>
+<li><code>--concurrency &lt;n&gt;</code>：注册中心检查并发数（默认：4）。</li>
+</ul>
+<h2 id="智能体常用工作流">智能体常用工作流<a hidden class="anchor" aria-hidden="true" href="#智能体常用工作流">#</a></h2>
+<h3 id="搜索-skills">搜索 Skills<a hidden class="anchor" aria-hidden="true" href="#搜索-skills">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">clawhub search <span class="s2">&#34;postgres backups&#34;</span>
+</span></span></code></pre></div><h3 id="下载新-skills">下载新 Skills<a hidden class="anchor" aria-hidden="true" href="#下载新-skills">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">clawhub install my-skill-pack
+</span></span></code></pre></div><h3 id="更新已安装的-skills">更新已安装的 Skills<a hidden class="anchor" aria-hidden="true" href="#更新已安装的-skills">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">clawhub update --all
+</span></span></code></pre></div><h3 id="备份你的-skills发布或同步">备份你的 Skills（发布或同步）<a hidden class="anchor" aria-hidden="true" href="#备份你的-skills发布或同步">#</a></h3>
+<p>对于单个 Skills 文件夹：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">clawhub publish ./my-skill --slug my-skill --name <span class="s2">&#34;My Skill&#34;</span> --version 1.0.0 --tags latest
+</span></span></code></pre></div><p>一次扫描并备份多个 Skills：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">clawhub sync --all
+</span></span></code></pre></div><h2 id="高级详情技术性">高级详情（技术性）<a hidden class="anchor" aria-hidden="true" href="#高级详情技术性">#</a></h2>
+<h3 id="版本管理和标签">版本管理和标签<a hidden class="anchor" aria-hidden="true" href="#版本管理和标签">#</a></h3>
+<ul>
+<li>每次发布都会创建一个新的<strong>语义化版本</strong> <code>SkillVersion</code>。</li>
+<li>标签（如 <code>latest</code>）指向某个版本；移动标签可以实现回滚。</li>
+<li>变更日志附加在每个版本上，在同步或发布更新时可以为空。</li>
+</ul>
+<h3 id="本地更改与注册中心版本">本地更改与注册中心版本<a hidden class="anchor" aria-hidden="true" href="#本地更改与注册中心版本">#</a></h3>
+<p>更新时会使用内容哈希将本地 Skills 内容与注册中心版本进行比较。如果本地文件与任何已发布版本不匹配，CLI 会在覆盖前询问确认（或在非交互模式下需要 <code>--force</code>）。</p>
+<h3 id="同步扫描和回退根目录">同步扫描和回退根目录<a hidden class="anchor" aria-hidden="true" href="#同步扫描和回退根目录">#</a></h3>
+<p><code>clawhub sync</code> 首先扫描当前工作目录。如果未找到 Skills，它会回退到已知的旧版位置（例如 <code>~/openclaw/skills</code> 和 <code>~/.openclaw/skills</code>）。这样设计是为了在不需要额外标志的情况下找到旧版 Skills 安装。</p>
+<h3 id="存储和锁文件">存储和锁文件<a hidden class="anchor" aria-hidden="true" href="#存储和锁文件">#</a></h3>
+<ul>
+<li>已安装的 Skills 记录在工作目录下的 <code>.clawhub/lock.json</code> 中。</li>
+<li>认证令牌存储在 ClawHub CLI 配置文件中（可通过 <code>CLAWHUB_CONFIG_PATH</code> 覆盖）。</li>
+</ul>
+<h3 id="遥测安装计数">遥测（安装计数）<a hidden class="anchor" aria-hidden="true" href="#遥测安装计数">#</a></h3>
+<p>当你在登录状态下运行 <code>clawhub sync</code> 时，CLI 会发送一个最小快照用于计算安装次数。你可以完全禁用此功能：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">CLAWHUB_DISABLE_TELEMETRY</span><span class="o">=</span><span class="m">1</span>
+</span></span></code></pre></div><h2 id="环境变量">环境变量<a hidden class="anchor" aria-hidden="true" href="#环境变量">#</a></h2>
+<ul>
+<li><code>CLAWHUB_SITE</code>：覆盖网站 URL。</li>
+<li><code>CLAWHUB_REGISTRY</code>：覆盖注册中心 API URL。</li>
+<li><code>CLAWHUB_CONFIG_PATH</code>：覆盖 CLI 存储令牌/配置的位置。</li>
+<li><code>CLAWHUB_WORKDIR</code>：覆盖默认工作目录。</li>
+<li><code>CLAWHUB_DISABLE_TELEMETRY=1</code>：禁用 <code>sync</code> 的遥测功能。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/providers/claude-max-api-proxy/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Claude Max API 代理</span>
+  </a>
+  <a class="next" href="/openclaw/refactor/clawnet/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Clawnet 重构（协议 &#43; 认证统一）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

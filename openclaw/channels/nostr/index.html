@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Nostr | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态： 可选插件（默认禁用）。
+Nostr 是一个去中心化的社交网络协议。此渠道使 OpenClaw 能够通过 NIP-04 接收和回复加密私信（DMs）。
+安装（按需）
+新手引导（推荐）
+
+新手引导向导（openclaw onboard）和 openclaw channels add 会列出可选的渠道插件。
+选择 Nostr 会提示你按需安装插件。
+
+安装默认值：
+
+Dev 渠道 &#43; git checkout 可用： 使用本地插件路径。
+Stable/Beta： 从 npm 下载。
+
+你可以随时在提示中覆盖选择。
+手动安装
+openclaw plugins install @openclaw/nostr
+使用本地 checkout（开发工作流）：
+openclaw plugins install --link &lt;path-to-openclaw&gt;/extensions/nostr
+安装或启用插件后重启 Gateway 网关。
+快速设置
+
+生成 Nostr 密钥对（如需要）：
+
+# 使用 nak
+nak key generate
+
+添加到配置：
+
+{
+  &#34;channels&#34;: {
+    &#34;nostr&#34;: {
+      &#34;privateKey&#34;: &#34;${NOSTR_PRIVATE_KEY}&#34;
+    }
+  }
+}
+
+导出密钥：
+
+export NOSTR_PRIVATE_KEY=&#34;nsec1...&#34;
+
+重启 Gateway 网关。
+
+配置参考
+
+  
+      
+          键
+          类型
+          默认值
+          描述
+      
+  
+  
+      
+          privateKey
+          string
+          必填
+          nsec 或十六进制格式的私钥
+      
+      
+          relays
+          string[]
+          [&#39;wss://relay.damus.io&#39;, &#39;wss://nos.lol&#39;]
+          中继 URL（WebSocket）
+      
+      
+          dmPolicy
+          string
+          pairing
+          私信访问策略
+      
+      
+          allowFrom
+          string[]
+          []
+          允许的发送者公钥
+      
+      
+          enabled
+          boolean
+          true
+          启用/禁用渠道
+      
+      
+          name
+          string
+          -
+          显示名称
+      
+      
+          profile
+          object
+          -
+          NIP-01 个人资料元数据
+      
+  
+
+个人资料元数据
+个人资料数据作为 NIP-01 kind:0 事件发布。你可以从控制界面（Channels -&gt; Nostr -&gt; Profile）管理它，或直接在配置中设置。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/nostr/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/nostr/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/nostr/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Nostr">
+  <meta property="og:description" content="状态： 可选插件（默认禁用）。
+Nostr 是一个去中心化的社交网络协议。此渠道使 OpenClaw 能够通过 NIP-04 接收和回复加密私信（DMs）。
+安装（按需） 新手引导（推荐） 新手引导向导（openclaw onboard）和 openclaw channels add 会列出可选的渠道插件。 选择 Nostr 会提示你按需安装插件。 安装默认值：
+Dev 渠道 &#43; git checkout 可用： 使用本地插件路径。 Stable/Beta： 从 npm 下载。 你可以随时在提示中覆盖选择。
+手动安装 openclaw plugins install @openclaw/nostr 使用本地 checkout（开发工作流）：
+openclaw plugins install --link &lt;path-to-openclaw&gt;/extensions/nostr 安装或启用插件后重启 Gateway 网关。
+快速设置 生成 Nostr 密钥对（如需要）： # 使用 nak nak key generate 添加到配置： { &#34;channels&#34;: { &#34;nostr&#34;: { &#34;privateKey&#34;: &#34;${NOSTR_PRIVATE_KEY}&#34; } } } 导出密钥： export NOSTR_PRIVATE_KEY=&#34;nsec1...&#34; 重启 Gateway 网关。 配置参考 键 类型 默认值 描述 privateKey string 必填 nsec 或十六进制格式的私钥 relays string[] [&#39;wss://relay.damus.io&#39;, &#39;wss://nos.lol&#39;] 中继 URL（WebSocket） dmPolicy string pairing 私信访问策略 allowFrom string[] [] 允许的发送者公钥 enabled boolean true 启用/禁用渠道 name string - 显示名称 profile object - NIP-01 个人资料元数据 个人资料元数据 个人资料数据作为 NIP-01 kind:0 事件发布。你可以从控制界面（Channels -&gt; Nostr -&gt; Profile）管理它，或直接在配置中设置。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nostr">
+<meta name="twitter:description" content="状态： 可选插件（默认禁用）。
+Nostr 是一个去中心化的社交网络协议。此渠道使 OpenClaw 能够通过 NIP-04 接收和回复加密私信（DMs）。
+安装（按需）
+新手引导（推荐）
+
+新手引导向导（openclaw onboard）和 openclaw channels add 会列出可选的渠道插件。
+选择 Nostr 会提示你按需安装插件。
+
+安装默认值：
+
+Dev 渠道 &#43; git checkout 可用： 使用本地插件路径。
+Stable/Beta： 从 npm 下载。
+
+你可以随时在提示中覆盖选择。
+手动安装
+openclaw plugins install @openclaw/nostr
+使用本地 checkout（开发工作流）：
+openclaw plugins install --link &lt;path-to-openclaw&gt;/extensions/nostr
+安装或启用插件后重启 Gateway 网关。
+快速设置
+
+生成 Nostr 密钥对（如需要）：
+
+# 使用 nak
+nak key generate
+
+添加到配置：
+
+{
+  &#34;channels&#34;: {
+    &#34;nostr&#34;: {
+      &#34;privateKey&#34;: &#34;${NOSTR_PRIVATE_KEY}&#34;
+    }
+  }
+}
+
+导出密钥：
+
+export NOSTR_PRIVATE_KEY=&#34;nsec1...&#34;
+
+重启 Gateway 网关。
+
+配置参考
+
+  
+      
+          键
+          类型
+          默认值
+          描述
+      
+  
+  
+      
+          privateKey
+          string
+          必填
+          nsec 或十六进制格式的私钥
+      
+      
+          relays
+          string[]
+          [&#39;wss://relay.damus.io&#39;, &#39;wss://nos.lol&#39;]
+          中继 URL（WebSocket）
+      
+      
+          dmPolicy
+          string
+          pairing
+          私信访问策略
+      
+      
+          allowFrom
+          string[]
+          []
+          允许的发送者公钥
+      
+      
+          enabled
+          boolean
+          true
+          启用/禁用渠道
+      
+      
+          name
+          string
+          -
+          显示名称
+      
+      
+          profile
+          object
+          -
+          NIP-01 个人资料元数据
+      
+  
+
+个人资料元数据
+个人资料数据作为 NIP-01 kind:0 事件发布。你可以从控制界面（Channels -&gt; Nostr -&gt; Profile）管理它，或直接在配置中设置。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Nostr",
+      "item": "/openclaw/channels/nostr/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Nostr",
+  "name": "Nostr",
+  "description": "状态： 可选插件（默认禁用）。\nNostr 是一个去中心化的社交网络协议。此渠道使 OpenClaw 能够通过 NIP-04 接收和回复加密私信（DMs）。\n安装（按需） 新手引导（推荐） 新手引导向导（openclaw onboard）和 openclaw channels add 会列出可选的渠道插件。 选择 Nostr 会提示你按需安装插件。 安装默认值：\nDev 渠道 + git checkout 可用： 使用本地插件路径。 Stable/Beta： 从 npm 下载。 你可以随时在提示中覆盖选择。\n手动安装 openclaw plugins install @openclaw/nostr 使用本地 checkout（开发工作流）：\nopenclaw plugins install --link \u0026lt;path-to-openclaw\u0026gt;/extensions/nostr 安装或启用插件后重启 Gateway 网关。\n快速设置 生成 Nostr 密钥对（如需要）： # 使用 nak nak key generate 添加到配置： { \u0026#34;channels\u0026#34;: { \u0026#34;nostr\u0026#34;: { \u0026#34;privateKey\u0026#34;: \u0026#34;${NOSTR_PRIVATE_KEY}\u0026#34; } } } 导出密钥： export NOSTR_PRIVATE_KEY=\u0026#34;nsec1...\u0026#34; 重启 Gateway 网关。 配置参考 键 类型 默认值 描述 privateKey string 必填 nsec 或十六进制格式的私钥 relays string[] ['wss://relay.damus.io', 'wss://nos.lol'] 中继 URL（WebSocket） dmPolicy string pairing 私信访问策略 allowFrom string[] [] 允许的发送者公钥 enabled boolean true 启用/禁用渠道 name string - 显示名称 profile object - NIP-01 个人资料元数据 个人资料元数据 个人资料数据作为 NIP-01 kind:0 事件发布。你可以从控制界面（Channels -\u0026gt; Nostr -\u0026gt; Profile）管理它，或直接在配置中设置。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态： 可选插件（默认禁用）。\nNostr 是一个去中心化的社交网络协议。此渠道使 OpenClaw 能够通过 NIP-04 接收和回复加密私信（DMs）。\n安装（按需） 新手引导（推荐） 新手引导向导（openclaw onboard）和 openclaw channels add 会列出可选的渠道插件。 选择 Nostr 会提示你按需安装插件。 安装默认值：\nDev 渠道 + git checkout 可用： 使用本地插件路径。 Stable/Beta： 从 npm 下载。 你可以随时在提示中覆盖选择。\n手动安装 openclaw plugins install @openclaw/nostr 使用本地 checkout（开发工作流）：\nopenclaw plugins install --link /extensions/nostr 安装或启用插件后重启 Gateway 网关。\n快速设置 生成 Nostr 密钥对（如需要）： # 使用 nak nak key generate 添加到配置： { \"channels\": { \"nostr\": { \"privateKey\": \"${NOSTR_PRIVATE_KEY}\" } } } 导出密钥： export NOSTR_PRIVATE_KEY=\"nsec1...\" 重启 Gateway 网关。 配置参考 键 类型 默认值 描述 privateKey string 必填 nsec 或十六进制格式的私钥 relays string[] ['wss://relay.damus.io', 'wss://nos.lol'] 中继 URL（WebSocket） dmPolicy string pairing 私信访问策略 allowFrom string[] [] 允许的发送者公钥 enabled boolean true 启用/禁用渠道 name string - 显示名称 profile object - NIP-01 个人资料元数据 个人资料元数据 个人资料数据作为 NIP-01 kind:0 事件发布。你可以从控制界面（Channels -\u003e Nostr -\u003e Profile）管理它，或直接在配置中设置。\n示例：\n{ \"channels\": { \"nostr\": { \"privateKey\": \"${NOSTR_PRIVATE_KEY}\", \"profile\": { \"name\": \"openclaw\", \"displayName\": \"OpenClaw\", \"about\": \"Personal assistant DM bot\", \"picture\": \"https://example.com/avatar.png\", \"banner\": \"https://example.com/banner.png\", \"website\": \"https://example.com\", \"nip05\": \"openclaw@example.com\", \"lud16\": \"openclaw@example.com\" } } } } 注意事项：\n个人资料 URL 必须使用 https://。 从中继导入会合并字段并保留本地覆盖。 访问控制 私信策略 pairing（默认）：未知发送者会收到配对码。 allowlist：只有 allowFrom 中的公钥可以发送私信。 open：公开接收私信（需要 allowFrom: [\"*\"]）。 disabled：忽略接收的私信。 允许列表示例 { \"channels\": { \"nostr\": { \"privateKey\": \"${NOSTR_PRIVATE_KEY}\", \"dmPolicy\": \"allowlist\", \"allowFrom\": [\"npub1abc...\", \"npub1xyz...\"] } } } 密钥格式 接受的格式：\n私钥： nsec... 或 64 字符十六进制 公钥（allowFrom）： npub... 或十六进制 中继 默认值：relay.damus.io 和 nos.lol。\n{ \"channels\": { \"nostr\": { \"privateKey\": \"${NOSTR_PRIVATE_KEY}\", \"relays\": [\"wss://relay.damus.io\", \"wss://relay.primal.net\", \"wss://nostr.wine\"] } } } 提示：\n使用 2-3 个中继以实现冗余。 避免使用过多中继（延迟、重复）。 付费中继可以提高可靠性。 本地中继适合测试（ws://localhost:7777）。 协议支持 NIP 状态 描述 NIP-01 已支持 基本事件格式 + 个人资料元数据 NIP-04 已支持 加密私信（kind:4） NIP-17 计划中 礼物包装私信 NIP-44 计划中 版本化加密 测试 本地中继 # 启动 strfry docker run -p 7777:7777 ghcr.io/hoytech/strfry { \"channels\": { \"nostr\": { \"privateKey\": \"${NOSTR_PRIVATE_KEY}\", \"relays\": [\"ws://localhost:7777\"] } } } 手动测试 从日志中记下机器人公钥（npub）。 打开 Nostr 客户端（Damus、Amethyst 等）。 向机器人公钥发送私信。 验证响应。 故障排除 未收到消息 验证私钥是否有效。 确保中继 URL 可访问并使用 wss://（本地使用 ws://）。 确认 enabled 不是 false。 检查 Gateway 网关日志中的中继连接错误。 未发送响应 检查中继是否接受写入。 验证出站连接。 注意中继速率限制。 重复响应 使用多个中继时属于正常现象。 消息按事件 ID 去重；只有首次投递会触发响应。 安全 切勿提交私钥。 使用环境变量存储密钥。 生产环境机器人考虑使用 allowlist。 限制（MVP） 仅支持私信（不支持群聊）。 不支持媒体附件。 仅支持 NIP-04（计划支持 NIP-17 礼物包装）。 ",
+  "wordCount" : "304",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/nostr/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Nostr
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e6%8c%89%e9%9c%80" aria-label="安装（按需）">安装（按需）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%b0%e6%89%8b%e5%bc%95%e5%af%bc%e6%8e%a8%e8%8d%90" aria-label="新手引导（推荐）">新手引导（推荐）</a></li>
+                <li>
+                    <a href="#%e6%89%8b%e5%8a%a8%e5%ae%89%e8%a3%85" aria-label="手动安装">手动安装</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%ae%be%e7%bd%ae" aria-label="快速设置">快速设置</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83" aria-label="配置参考">配置参考</a></li>
+                <li>
+                    <a href="#%e4%b8%aa%e4%ba%ba%e8%b5%84%e6%96%99%e5%85%83%e6%95%b0%e6%8d%ae" aria-label="个人资料元数据">个人资料元数据</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6" aria-label="访问控制">访问控制</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a7%81%e4%bf%a1%e7%ad%96%e7%95%a5" aria-label="私信策略">私信策略</a></li>
+                <li>
+                    <a href="#%e5%85%81%e8%ae%b8%e5%88%97%e8%a1%a8%e7%a4%ba%e4%be%8b" aria-label="允许列表示例">允许列表示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%af%86%e9%92%a5%e6%a0%bc%e5%bc%8f" aria-label="密钥格式">密钥格式</a></li>
+                <li>
+                    <a href="#%e4%b8%ad%e7%bb%a7" aria-label="中继">中继</a></li>
+                <li>
+                    <a href="#%e5%8d%8f%e8%ae%ae%e6%94%af%e6%8c%81" aria-label="协议支持">协议支持</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95" aria-label="测试">测试</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e4%b8%ad%e7%bb%a7" aria-label="本地中继">本地中继</a></li>
+                <li>
+                    <a href="#%e6%89%8b%e5%8a%a8%e6%b5%8b%e8%af%95" aria-label="手动测试">手动测试</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%aa%e6%94%b6%e5%88%b0%e6%b6%88%e6%81%af" aria-label="未收到消息">未收到消息</a></li>
+                <li>
+                    <a href="#%e6%9c%aa%e5%8f%91%e9%80%81%e5%93%8d%e5%ba%94" aria-label="未发送响应">未发送响应</a></li>
+                <li>
+                    <a href="#%e9%87%8d%e5%a4%8d%e5%93%8d%e5%ba%94" aria-label="重复响应">重复响应</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8" aria-label="安全">安全</a></li>
+                <li>
+                    <a href="#%e9%99%90%e5%88%b6mvp" aria-label="限制（MVP）">限制（MVP）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>状态：</strong> 可选插件（默认禁用）。</p>
+<p>Nostr 是一个去中心化的社交网络协议。此渠道使 OpenClaw 能够通过 NIP-04 接收和回复加密私信（DMs）。</p>
+<h2 id="安装按需">安装（按需）<a hidden class="anchor" aria-hidden="true" href="#安装按需">#</a></h2>
+<h3 id="新手引导推荐">新手引导（推荐）<a hidden class="anchor" aria-hidden="true" href="#新手引导推荐">#</a></h3>
+<ul>
+<li>新手引导向导（<code>openclaw onboard</code>）和 <code>openclaw channels add</code> 会列出可选的渠道插件。</li>
+<li>选择 Nostr 会提示你按需安装插件。</li>
+</ul>
+<p>安装默认值：</p>
+<ul>
+<li><strong>Dev 渠道 + git checkout 可用：</strong> 使用本地插件路径。</li>
+<li><strong>Stable/Beta：</strong> 从 npm 下载。</li>
+</ul>
+<p>你可以随时在提示中覆盖选择。</p>
+<h3 id="手动安装">手动安装<a hidden class="anchor" aria-hidden="true" href="#手动安装">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install @openclaw/nostr
+</span></span></code></pre></div><p>使用本地 checkout（开发工作流）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install --link &lt;path-to-openclaw&gt;/extensions/nostr
+</span></span></code></pre></div><p>安装或启用插件后重启 Gateway 网关。</p>
+<h2 id="快速设置">快速设置<a hidden class="anchor" aria-hidden="true" href="#快速设置">#</a></h2>
+<ol>
+<li>生成 Nostr 密钥对（如需要）：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 使用 nak</span>
+</span></span><span class="line"><span class="cl">nak key generate
+</span></span></code></pre></div><ol start="2">
+<li>添加到配置：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;channels&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nostr&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;privateKey&#34;</span><span class="p">:</span> <span class="s2">&#34;${NOSTR_PRIVATE_KEY}&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><ol start="3">
+<li>导出密钥：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">NOSTR_PRIVATE_KEY</span><span class="o">=</span><span class="s2">&#34;nsec1...&#34;</span>
+</span></span></code></pre></div><ol start="4">
+<li>重启 Gateway 网关。</li>
+</ol>
+<h2 id="配置参考">配置参考<a hidden class="anchor" aria-hidden="true" href="#配置参考">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>键</th>
+          <th>类型</th>
+          <th>默认值</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>privateKey</code></td>
+          <td>string</td>
+          <td>必填</td>
+          <td><code>nsec</code> 或十六进制格式的私钥</td>
+      </tr>
+      <tr>
+          <td><code>relays</code></td>
+          <td>string[]</td>
+          <td><code>['wss://relay.damus.io', 'wss://nos.lol']</code></td>
+          <td>中继 URL（WebSocket）</td>
+      </tr>
+      <tr>
+          <td><code>dmPolicy</code></td>
+          <td>string</td>
+          <td><code>pairing</code></td>
+          <td>私信访问策略</td>
+      </tr>
+      <tr>
+          <td><code>allowFrom</code></td>
+          <td>string[]</td>
+          <td><code>[]</code></td>
+          <td>允许的发送者公钥</td>
+      </tr>
+      <tr>
+          <td><code>enabled</code></td>
+          <td>boolean</td>
+          <td><code>true</code></td>
+          <td>启用/禁用渠道</td>
+      </tr>
+      <tr>
+          <td><code>name</code></td>
+          <td>string</td>
+          <td>-</td>
+          <td>显示名称</td>
+      </tr>
+      <tr>
+          <td><code>profile</code></td>
+          <td>object</td>
+          <td>-</td>
+          <td>NIP-01 个人资料元数据</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="个人资料元数据">个人资料元数据<a hidden class="anchor" aria-hidden="true" href="#个人资料元数据">#</a></h2>
+<p>个人资料数据作为 NIP-01 <code>kind:0</code> 事件发布。你可以从控制界面（Channels -&gt; Nostr -&gt; Profile）管理它，或直接在配置中设置。</p>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;channels&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nostr&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;privateKey&#34;</span><span class="p">:</span> <span class="s2">&#34;${NOSTR_PRIVATE_KEY}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;profile&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;openclaw&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;displayName&#34;</span><span class="p">:</span> <span class="s2">&#34;OpenClaw&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;about&#34;</span><span class="p">:</span> <span class="s2">&#34;Personal assistant DM bot&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;picture&#34;</span><span class="p">:</span> <span class="s2">&#34;https://example.com/avatar.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;banner&#34;</span><span class="p">:</span> <span class="s2">&#34;https://example.com/banner.png&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;website&#34;</span><span class="p">:</span> <span class="s2">&#34;https://example.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;nip05&#34;</span><span class="p">:</span> <span class="s2">&#34;openclaw@example.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;lud16&#34;</span><span class="p">:</span> <span class="s2">&#34;openclaw@example.com&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>个人资料 URL 必须使用 <code>https://</code>。</li>
+<li>从中继导入会合并字段并保留本地覆盖。</li>
+</ul>
+<h2 id="访问控制">访问控制<a hidden class="anchor" aria-hidden="true" href="#访问控制">#</a></h2>
+<h3 id="私信策略">私信策略<a hidden class="anchor" aria-hidden="true" href="#私信策略">#</a></h3>
+<ul>
+<li><strong>pairing</strong>（默认）：未知发送者会收到配对码。</li>
+<li><strong>allowlist</strong>：只有 <code>allowFrom</code> 中的公钥可以发送私信。</li>
+<li><strong>open</strong>：公开接收私信（需要 <code>allowFrom: [&quot;*&quot;]</code>）。</li>
+<li><strong>disabled</strong>：忽略接收的私信。</li>
+</ul>
+<h3 id="允许列表示例">允许列表示例<a hidden class="anchor" aria-hidden="true" href="#允许列表示例">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;channels&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nostr&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;privateKey&#34;</span><span class="p">:</span> <span class="s2">&#34;${NOSTR_PRIVATE_KEY}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;dmPolicy&#34;</span><span class="p">:</span> <span class="s2">&#34;allowlist&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;allowFrom&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;npub1abc...&#34;</span><span class="p">,</span> <span class="s2">&#34;npub1xyz...&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="密钥格式">密钥格式<a hidden class="anchor" aria-hidden="true" href="#密钥格式">#</a></h2>
+<p>接受的格式：</p>
+<ul>
+<li><strong>私钥：</strong> <code>nsec...</code> 或 64 字符十六进制</li>
+<li><strong>公钥（<code>allowFrom</code>）：</strong> <code>npub...</code> 或十六进制</li>
+</ul>
+<h2 id="中继">中继<a hidden class="anchor" aria-hidden="true" href="#中继">#</a></h2>
+<p>默认值：<code>relay.damus.io</code> 和 <code>nos.lol</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;channels&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nostr&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;privateKey&#34;</span><span class="p">:</span> <span class="s2">&#34;${NOSTR_PRIVATE_KEY}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;relays&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;wss://relay.damus.io&#34;</span><span class="p">,</span> <span class="s2">&#34;wss://relay.primal.net&#34;</span><span class="p">,</span> <span class="s2">&#34;wss://nostr.wine&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>提示：</p>
+<ul>
+<li>使用 2-3 个中继以实现冗余。</li>
+<li>避免使用过多中继（延迟、重复）。</li>
+<li>付费中继可以提高可靠性。</li>
+<li>本地中继适合测试（<code>ws://localhost:7777</code>）。</li>
+</ul>
+<h2 id="协议支持">协议支持<a hidden class="anchor" aria-hidden="true" href="#协议支持">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>NIP</th>
+          <th>状态</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>NIP-01</td>
+          <td>已支持</td>
+          <td>基本事件格式 + 个人资料元数据</td>
+      </tr>
+      <tr>
+          <td>NIP-04</td>
+          <td>已支持</td>
+          <td>加密私信（<code>kind:4</code>）</td>
+      </tr>
+      <tr>
+          <td>NIP-17</td>
+          <td>计划中</td>
+          <td>礼物包装私信</td>
+      </tr>
+      <tr>
+          <td>NIP-44</td>
+          <td>计划中</td>
+          <td>版本化加密</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="测试">测试<a hidden class="anchor" aria-hidden="true" href="#测试">#</a></h2>
+<h3 id="本地中继">本地中继<a hidden class="anchor" aria-hidden="true" href="#本地中继">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 启动 strfry</span>
+</span></span><span class="line"><span class="cl">docker run -p 7777:7777 ghcr.io/hoytech/strfry
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;channels&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nostr&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;privateKey&#34;</span><span class="p">:</span> <span class="s2">&#34;${NOSTR_PRIVATE_KEY}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;relays&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;ws://localhost:7777&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="手动测试">手动测试<a hidden class="anchor" aria-hidden="true" href="#手动测试">#</a></h3>
+<ol>
+<li>从日志中记下机器人公钥（npub）。</li>
+<li>打开 Nostr 客户端（Damus、Amethyst 等）。</li>
+<li>向机器人公钥发送私信。</li>
+<li>验证响应。</li>
+</ol>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="未收到消息">未收到消息<a hidden class="anchor" aria-hidden="true" href="#未收到消息">#</a></h3>
+<ul>
+<li>验证私钥是否有效。</li>
+<li>确保中继 URL 可访问并使用 <code>wss://</code>（本地使用 <code>ws://</code>）。</li>
+<li>确认 <code>enabled</code> 不是 <code>false</code>。</li>
+<li>检查 Gateway 网关日志中的中继连接错误。</li>
+</ul>
+<h3 id="未发送响应">未发送响应<a hidden class="anchor" aria-hidden="true" href="#未发送响应">#</a></h3>
+<ul>
+<li>检查中继是否接受写入。</li>
+<li>验证出站连接。</li>
+<li>注意中继速率限制。</li>
+</ul>
+<h3 id="重复响应">重复响应<a hidden class="anchor" aria-hidden="true" href="#重复响应">#</a></h3>
+<ul>
+<li>使用多个中继时属于正常现象。</li>
+<li>消息按事件 ID 去重；只有首次投递会触发响应。</li>
+</ul>
+<h2 id="安全">安全<a hidden class="anchor" aria-hidden="true" href="#安全">#</a></h2>
+<ul>
+<li>切勿提交私钥。</li>
+<li>使用环境变量存储密钥。</li>
+<li>生产环境机器人考虑使用 <code>allowlist</code>。</li>
+</ul>
+<h2 id="限制mvp">限制（MVP）<a hidden class="anchor" aria-hidden="true" href="#限制mvp">#</a></h2>
+<ul>
+<li>仅支持私信（不支持群聊）。</li>
+<li>不支持媒体附件。</li>
+<li>仅支持 NIP-04（计划支持 NIP-17 礼物包装）。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/install/node/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Node.js</span>
+  </a>
+  <a class="next" href="/openclaw/concepts/oauth/">
+    <span class="title">Next »</span>
+    <br>
+    <span>OAuth</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

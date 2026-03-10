@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>模型 CLI | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="参见 /concepts/model-failover 了解认证配置文件轮换、冷却时间及其与回退的交互。
+快速提供商概述 &#43; 示例：/concepts/model-providers。
+模型选择工作原理
+OpenClaw 按以下顺序选择模型：
+
+主要模型（agents.defaults.model.primary 或 agents.defaults.model）。
+agents.defaults.model.fallbacks 中的回退（按顺序）。
+提供商认证故障转移在移动到下一个模型之前在提供商内部发生。
+
+相关：
+
+agents.defaults.models 是 OpenClaw 可使用的模型白名单/目录（加上别名）。
+agents.defaults.imageModel 仅在主要模型无法接受图像时使用。
+每个智能体的默认值可以通过 agents.list[].model 加绑定覆盖 agents.defaults.model（参见 /concepts/multi-agent）。
+
+快速模型推荐（经验之谈）
+
+GLM：在编程/工具调用方面稍好。
+MiniMax：在写作和氛围方面更好。
+
+设置向导（推荐）
+如果你不想手动编辑配置，请运行新手引导向导：
+openclaw onboard
+它可以为常见提供商设置模型 &#43; 认证，包括 OpenAI Code（Codex）订阅（OAuth）和 Anthropic（推荐使用 API 密钥；也支持 claude setup-token）。
+配置键（概述）
+
+agents.defaults.model.primary 和 agents.defaults.model.fallbacks
+agents.defaults.imageModel.primary 和 agents.defaults.imageModel.fallbacks
+agents.defaults.models（白名单 &#43; 别名 &#43; 提供商参数）
+models.providers（写入 models.json 的自定义提供商）
+
+模型引用会规范化为小写。提供商别名如 z.ai/* 会规范化为 zai/*。
+提供商配置示例（包括 OpenCode Zen）在 /gateway/configuration。
+&ldquo;Model is not allowed&rdquo;（以及为什么回复停止）
+如果设置了 agents.defaults.models，它将成为 /model 和会话覆盖的白名单。当用户选择不在该白名单中的模型时，OpenClaw 返回：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/models/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/models/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/models/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="模型 CLI">
+  <meta property="og:description" content="参见 /concepts/model-failover 了解认证配置文件轮换、冷却时间及其与回退的交互。 快速提供商概述 &#43; 示例：/concepts/model-providers。
+模型选择工作原理 OpenClaw 按以下顺序选择模型：
+主要模型（agents.defaults.model.primary 或 agents.defaults.model）。 agents.defaults.model.fallbacks 中的回退（按顺序）。 提供商认证故障转移在移动到下一个模型之前在提供商内部发生。 相关：
+agents.defaults.models 是 OpenClaw 可使用的模型白名单/目录（加上别名）。 agents.defaults.imageModel 仅在主要模型无法接受图像时使用。 每个智能体的默认值可以通过 agents.list[].model 加绑定覆盖 agents.defaults.model（参见 /concepts/multi-agent）。 快速模型推荐（经验之谈） GLM：在编程/工具调用方面稍好。 MiniMax：在写作和氛围方面更好。 设置向导（推荐） 如果你不想手动编辑配置，请运行新手引导向导：
+openclaw onboard 它可以为常见提供商设置模型 &#43; 认证，包括 OpenAI Code（Codex）订阅（OAuth）和 Anthropic（推荐使用 API 密钥；也支持 claude setup-token）。
+配置键（概述） agents.defaults.model.primary 和 agents.defaults.model.fallbacks agents.defaults.imageModel.primary 和 agents.defaults.imageModel.fallbacks agents.defaults.models（白名单 &#43; 别名 &#43; 提供商参数） models.providers（写入 models.json 的自定义提供商） 模型引用会规范化为小写。提供商别名如 z.ai/* 会规范化为 zai/*。
+提供商配置示例（包括 OpenCode Zen）在 /gateway/configuration。
+“Model is not allowed”（以及为什么回复停止） 如果设置了 agents.defaults.models，它将成为 /model 和会话覆盖的白名单。当用户选择不在该白名单中的模型时，OpenClaw 返回：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模型 CLI">
+<meta name="twitter:description" content="参见 /concepts/model-failover 了解认证配置文件轮换、冷却时间及其与回退的交互。
+快速提供商概述 &#43; 示例：/concepts/model-providers。
+模型选择工作原理
+OpenClaw 按以下顺序选择模型：
+
+主要模型（agents.defaults.model.primary 或 agents.defaults.model）。
+agents.defaults.model.fallbacks 中的回退（按顺序）。
+提供商认证故障转移在移动到下一个模型之前在提供商内部发生。
+
+相关：
+
+agents.defaults.models 是 OpenClaw 可使用的模型白名单/目录（加上别名）。
+agents.defaults.imageModel 仅在主要模型无法接受图像时使用。
+每个智能体的默认值可以通过 agents.list[].model 加绑定覆盖 agents.defaults.model（参见 /concepts/multi-agent）。
+
+快速模型推荐（经验之谈）
+
+GLM：在编程/工具调用方面稍好。
+MiniMax：在写作和氛围方面更好。
+
+设置向导（推荐）
+如果你不想手动编辑配置，请运行新手引导向导：
+openclaw onboard
+它可以为常见提供商设置模型 &#43; 认证，包括 OpenAI Code（Codex）订阅（OAuth）和 Anthropic（推荐使用 API 密钥；也支持 claude setup-token）。
+配置键（概述）
+
+agents.defaults.model.primary 和 agents.defaults.model.fallbacks
+agents.defaults.imageModel.primary 和 agents.defaults.imageModel.fallbacks
+agents.defaults.models（白名单 &#43; 别名 &#43; 提供商参数）
+models.providers（写入 models.json 的自定义提供商）
+
+模型引用会规范化为小写。提供商别名如 z.ai/* 会规范化为 zai/*。
+提供商配置示例（包括 OpenCode Zen）在 /gateway/configuration。
+&ldquo;Model is not allowed&rdquo;（以及为什么回复停止）
+如果设置了 agents.defaults.models，它将成为 /model 和会话覆盖的白名单。当用户选择不在该白名单中的模型时，OpenClaw 返回：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "模型 CLI",
+      "item": "/openclaw/concepts/models/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "模型 CLI",
+  "name": "模型 CLI",
+  "description": "参见 /concepts/model-failover 了解认证配置文件轮换、冷却时间及其与回退的交互。 快速提供商概述 + 示例：/concepts/model-providers。\n模型选择工作原理 OpenClaw 按以下顺序选择模型：\n主要模型（agents.defaults.model.primary 或 agents.defaults.model）。 agents.defaults.model.fallbacks 中的回退（按顺序）。 提供商认证故障转移在移动到下一个模型之前在提供商内部发生。 相关：\nagents.defaults.models 是 OpenClaw 可使用的模型白名单/目录（加上别名）。 agents.defaults.imageModel 仅在主要模型无法接受图像时使用。 每个智能体的默认值可以通过 agents.list[].model 加绑定覆盖 agents.defaults.model（参见 /concepts/multi-agent）。 快速模型推荐（经验之谈） GLM：在编程/工具调用方面稍好。 MiniMax：在写作和氛围方面更好。 设置向导（推荐） 如果你不想手动编辑配置，请运行新手引导向导：\nopenclaw onboard 它可以为常见提供商设置模型 + 认证，包括 OpenAI Code（Codex）订阅（OAuth）和 Anthropic（推荐使用 API 密钥；也支持 claude setup-token）。\n配置键（概述） agents.defaults.model.primary 和 agents.defaults.model.fallbacks agents.defaults.imageModel.primary 和 agents.defaults.imageModel.fallbacks agents.defaults.models（白名单 + 别名 + 提供商参数） models.providers（写入 models.json 的自定义提供商） 模型引用会规范化为小写。提供商别名如 z.ai/* 会规范化为 zai/*。\n提供商配置示例（包括 OpenCode Zen）在 /gateway/configuration。\n\u0026ldquo;Model is not allowed\u0026rdquo;（以及为什么回复停止） 如果设置了 agents.defaults.models，它将成为 /model 和会话覆盖的白名单。当用户选择不在该白名单中的模型时，OpenClaw 返回：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "参见 /concepts/model-failover 了解认证配置文件轮换、冷却时间及其与回退的交互。 快速提供商概述 + 示例：/concepts/model-providers。\n模型选择工作原理 OpenClaw 按以下顺序选择模型：\n主要模型（agents.defaults.model.primary 或 agents.defaults.model）。 agents.defaults.model.fallbacks 中的回退（按顺序）。 提供商认证故障转移在移动到下一个模型之前在提供商内部发生。 相关：\nagents.defaults.models 是 OpenClaw 可使用的模型白名单/目录（加上别名）。 agents.defaults.imageModel 仅在主要模型无法接受图像时使用。 每个智能体的默认值可以通过 agents.list[].model 加绑定覆盖 agents.defaults.model（参见 /concepts/multi-agent）。 快速模型推荐（经验之谈） GLM：在编程/工具调用方面稍好。 MiniMax：在写作和氛围方面更好。 设置向导（推荐） 如果你不想手动编辑配置，请运行新手引导向导：\nopenclaw onboard 它可以为常见提供商设置模型 + 认证，包括 OpenAI Code（Codex）订阅（OAuth）和 Anthropic（推荐使用 API 密钥；也支持 claude setup-token）。\n配置键（概述） agents.defaults.model.primary 和 agents.defaults.model.fallbacks agents.defaults.imageModel.primary 和 agents.defaults.imageModel.fallbacks agents.defaults.models（白名单 + 别名 + 提供商参数） models.providers（写入 models.json 的自定义提供商） 模型引用会规范化为小写。提供商别名如 z.ai/* 会规范化为 zai/*。\n提供商配置示例（包括 OpenCode Zen）在 /gateway/configuration。\n“Model is not allowed”（以及为什么回复停止） 如果设置了 agents.defaults.models，它将成为 /model 和会话覆盖的白名单。当用户选择不在该白名单中的模型时，OpenClaw 返回：\nModel \"provider/model\" is not allowed. Use /model to list available models. 这发生在正常回复生成之前，所以消息可能感觉像\"没有响应\"。修复方法是：\n将模型添加到 agents.defaults.models，或 清除白名单（删除 agents.defaults.models），或 从 /model list 中选择一个模型。 白名单配置示例：\n{ agent: { model: { primary: \"anthropic/claude-sonnet-4-5\" }, models: { \"anthropic/claude-sonnet-4-5\": { alias: \"Sonnet\" }, \"anthropic/claude-opus-4-5\": { alias: \"Opus\" }, }, }, } 在聊天中切换模型（/model） 你可以在不重启的情况下切换当前会话的模型：\n/model /model list /model 3 /model openai/gpt-5.2 /model status 注意事项：\n/model（和 /model list）是紧凑的编号选择器（模型系列 + 可用提供商）。 /model \u003c#\u003e 从该选择器中选择。 /model status 是详细视图（认证候选项，以及配置时的提供商端点 baseUrl + api 模式）。 模型引用通过在第一个 / 处分割来解析。输入 /model 时使用 provider/model。 如果模型 ID 本身包含 /（OpenRouter 风格），你必须包含提供商前缀（例如：/model openrouter/moonshotai/kimi-k2）。 如果省略提供商，OpenClaw 将输入视为别名或默认提供商的模型（仅在模型 ID 中没有 / 时有效）。 完整命令行为/配置：斜杠命令。\nCLI 命令 openclaw models list openclaw models status openclaw models set openclaw models set-image openclaw models aliases list openclaw models aliases add openclaw models aliases remove openclaw models fallbacks list openclaw models fallbacks add openclaw models fallbacks remove openclaw models fallbacks clear openclaw models image-fallbacks list openclaw models image-fallbacks add openclaw models image-fallbacks remove openclaw models image-fallbacks clear openclaw models（无子命令）是 models status 的快捷方式。\nmodels list 默认显示已配置的模型。有用的标志：\n--all：完整目录 --local：仅本地提供商 --provider ：按提供商筛选 --plain：每行一个模型 --json：机器可读输出 models status 显示已解析的主要模型、回退、图像模型，以及已配置提供商的认证概述。它还显示认证存储中找到的配置文件的 OAuth 过期状态（默认在 24 小时内警告）。--plain 仅打印已解析的主要模型。 OAuth 状态始终显示（并包含在 --json 输出中）。如果已配置的提供商没有凭证，models status 会打印 Missing auth 部分。 JSON 包括 auth.oauth（警告窗口 + 配置文件）和 auth.providers（每个提供商的有效认证）。 使用 --check 进行自动化（缺失/过期时退出 1，即将过期时退出 2）。\n首选的 Anthropic 认证是 Claude Code CLI setup-token（在任何地方运行；如需要在 Gateway 网关主机上粘贴）：\nclaude setup-token openclaw models status 扫描（OpenRouter 免费模型） openclaw models scan 检查 OpenRouter 的免费模型目录，并可选择性地探测模型的工具和图像支持。\n关键标志：\n--no-probe：跳过实时探测（仅元数据） --min-params ：最小参数量（十亿） --max-age-days ：跳过较旧的模型 --provider ：提供商前缀筛选 --max-candidates ：回退列表大小 --set-default：将 agents.defaults.model.primary 设置为第一个选择 --set-image：将 agents.defaults.imageModel.primary 设置为第一个图像选择 探测需要 OpenRouter API 密钥（来自认证配置文件或 OPENROUTER_API_KEY）。没有密钥时，使用 --no-probe 仅列出候选项。\n扫描结果按以下顺序排名：\n图像支持 工具延迟 上下文大小 参数数量 输入\nOpenRouter /models 列表（筛选 :free） 需要来自认证配置文件或 OPENROUTER_API_KEY 的 OpenRouter API 密钥（参见 /environment） 可选筛选器：--max-age-days、--min-params、--provider、--max-candidates 探测控制：--timeout、--concurrency 在 TTY 中运行时，你可以交互式选择回退。在非交互模式下，传递 --yes 接受默认值。\n模型注册表（models.json） models.providers 中的自定义提供商会写入智能体目录下的 models.json（默认 ~/.openclaw/agents//models.json）。除非 models.mode 设置为 replace，否则此文件默认会被合并。\n",
+  "wordCount" : "353",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/models/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      模型 CLI
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e9%80%89%e6%8b%a9%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86" aria-label="模型选择工作原理">模型选择工作原理</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e6%a8%a1%e5%9e%8b%e6%8e%a8%e8%8d%90%e7%bb%8f%e9%aa%8c%e4%b9%8b%e8%b0%88" aria-label="快速模型推荐（经验之谈）">快速模型推荐（经验之谈）</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae%e5%90%91%e5%af%bc%e6%8e%a8%e8%8d%90" aria-label="设置向导（推荐）">设置向导（推荐）</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e9%94%ae%e6%a6%82%e8%bf%b0" aria-label="配置键（概述）">配置键（概述）</a></li>
+                <li>
+                    <a href="#model-is-not-allowed%e4%bb%a5%e5%8f%8a%e4%b8%ba%e4%bb%80%e4%b9%88%e5%9b%9e%e5%a4%8d%e5%81%9c%e6%ad%a2" aria-label="&ldquo;Model is not allowed&rdquo;（以及为什么回复停止）">&ldquo;Model is not allowed&rdquo;（以及为什么回复停止）</a></li>
+                <li>
+                    <a href="#%e5%9c%a8%e8%81%8a%e5%a4%a9%e4%b8%ad%e5%88%87%e6%8d%a2%e6%a8%a1%e5%9e%8bmodel" aria-label="在聊天中切换模型（/model）">在聊天中切换模型（/model）</a></li>
+                <li>
+                    <a href="#cli-%e5%91%bd%e4%bb%a4" aria-label="CLI 命令">CLI 命令</a><ul>
+                        
+                <li>
+                    <a href="#models-list" aria-label="models list">models list</a></li>
+                <li>
+                    <a href="#models-status" aria-label="models status">models status</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%89%ab%e6%8f%8fopenrouter-%e5%85%8d%e8%b4%b9%e6%a8%a1%e5%9e%8b" aria-label="扫描（OpenRouter 免费模型）">扫描（OpenRouter 免费模型）</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e6%b3%a8%e5%86%8c%e8%a1%a8modelsjson" aria-label="模型注册表（models.json）">模型注册表（models.json）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>参见 <a href="/concepts/model-failover">/concepts/model-failover</a> 了解认证配置文件轮换、冷却时间及其与回退的交互。
+快速提供商概述 + 示例：<a href="/concepts/model-providers">/concepts/model-providers</a>。</p>
+<h2 id="模型选择工作原理">模型选择工作原理<a hidden class="anchor" aria-hidden="true" href="#模型选择工作原理">#</a></h2>
+<p>OpenClaw 按以下顺序选择模型：</p>
+<ol>
+<li><strong>主要</strong>模型（<code>agents.defaults.model.primary</code> 或 <code>agents.defaults.model</code>）。</li>
+<li><code>agents.defaults.model.fallbacks</code> 中的<strong>回退</strong>（按顺序）。</li>
+<li><strong>提供商认证故障转移</strong>在移动到下一个模型之前在提供商内部发生。</li>
+</ol>
+<p>相关：</p>
+<ul>
+<li><code>agents.defaults.models</code> 是 OpenClaw 可使用的模型白名单/目录（加上别名）。</li>
+<li><code>agents.defaults.imageModel</code> <strong>仅在</strong>主要模型无法接受图像时使用。</li>
+<li>每个智能体的默认值可以通过 <code>agents.list[].model</code> 加绑定覆盖 <code>agents.defaults.model</code>（参见 <a href="/concepts/multi-agent">/concepts/multi-agent</a>）。</li>
+</ul>
+<h2 id="快速模型推荐经验之谈">快速模型推荐（经验之谈）<a hidden class="anchor" aria-hidden="true" href="#快速模型推荐经验之谈">#</a></h2>
+<ul>
+<li><strong>GLM</strong>：在编程/工具调用方面稍好。</li>
+<li><strong>MiniMax</strong>：在写作和氛围方面更好。</li>
+</ul>
+<h2 id="设置向导推荐">设置向导（推荐）<a hidden class="anchor" aria-hidden="true" href="#设置向导推荐">#</a></h2>
+<p>如果你不想手动编辑配置，请运行新手引导向导：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard
+</span></span></code></pre></div><p>它可以为常见提供商设置模型 + 认证，包括 <strong>OpenAI Code（Codex）订阅</strong>（OAuth）和 <strong>Anthropic</strong>（推荐使用 API 密钥；也支持 <code>claude setup-token</code>）。</p>
+<h2 id="配置键概述">配置键（概述）<a hidden class="anchor" aria-hidden="true" href="#配置键概述">#</a></h2>
+<ul>
+<li><code>agents.defaults.model.primary</code> 和 <code>agents.defaults.model.fallbacks</code></li>
+<li><code>agents.defaults.imageModel.primary</code> 和 <code>agents.defaults.imageModel.fallbacks</code></li>
+<li><code>agents.defaults.models</code>（白名单 + 别名 + 提供商参数）</li>
+<li><code>models.providers</code>（写入 <code>models.json</code> 的自定义提供商）</li>
+</ul>
+<p>模型引用会规范化为小写。提供商别名如 <code>z.ai/*</code> 会规范化为 <code>zai/*</code>。</p>
+<p>提供商配置示例（包括 OpenCode Zen）在 <a href="/gateway/configuration#opencode-zen-multi-model-proxy">/gateway/configuration</a>。</p>
+<h2 id="model-is-not-allowed以及为什么回复停止">&ldquo;Model is not allowed&rdquo;（以及为什么回复停止）<a hidden class="anchor" aria-hidden="true" href="#model-is-not-allowed以及为什么回复停止">#</a></h2>
+<p>如果设置了 <code>agents.defaults.models</code>，它将成为 <code>/model</code> 和会话覆盖的<strong>白名单</strong>。当用户选择不在该白名单中的模型时，OpenClaw 返回：</p>
+<pre tabindex="0"><code>Model &#34;provider/model&#34; is not allowed. Use /model to list available models.
+</code></pre><p>这发生在正常回复生成<strong>之前</strong>，所以消息可能感觉像&quot;没有响应&quot;。修复方法是：</p>
+<ul>
+<li>将模型添加到 <code>agents.defaults.models</code>，或</li>
+<li>清除白名单（删除 <code>agents.defaults.models</code>），或</li>
+<li>从 <code>/model list</code> 中选择一个模型。</li>
+</ul>
+<p>白名单配置示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    model: { primary: &#34;anthropic/claude-sonnet-4-5&#34; },
+    models: {
+      &#34;anthropic/claude-sonnet-4-5&#34;: { alias: &#34;Sonnet&#34; },
+      &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+    },
+  },
+}
+</code></pre><h2 id="在聊天中切换模型model">在聊天中切换模型（<code>/model</code>）<a hidden class="anchor" aria-hidden="true" href="#在聊天中切换模型model">#</a></h2>
+<p>你可以在不重启的情况下切换当前会话的模型：</p>
+<pre tabindex="0"><code>/model
+/model list
+/model 3
+/model openai/gpt-5.2
+/model status
+</code></pre><p>注意事项：</p>
+<ul>
+<li><code>/model</code>（和 <code>/model list</code>）是紧凑的编号选择器（模型系列 + 可用提供商）。</li>
+<li><code>/model &lt;#&gt;</code> 从该选择器中选择。</li>
+<li><code>/model status</code> 是详细视图（认证候选项，以及配置时的提供商端点 <code>baseUrl</code> + <code>api</code> 模式）。</li>
+<li>模型引用通过在<strong>第一个</strong> <code>/</code> 处分割来解析。输入 <code>/model &lt;ref&gt;</code> 时使用 <code>provider/model</code>。</li>
+<li>如果模型 ID 本身包含 <code>/</code>（OpenRouter 风格），你必须包含提供商前缀（例如：<code>/model openrouter/moonshotai/kimi-k2</code>）。</li>
+<li>如果省略提供商，OpenClaw 将输入视为别名或<strong>默认提供商</strong>的模型（仅在模型 ID 中没有 <code>/</code> 时有效）。</li>
+</ul>
+<p>完整命令行为/配置：<a href="/tools/slash-commands">斜杠命令</a>。</p>
+<h2 id="cli-命令">CLI 命令<a hidden class="anchor" aria-hidden="true" href="#cli-命令">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw models list
+</span></span><span class="line"><span class="cl">openclaw models status
+</span></span><span class="line"><span class="cl">openclaw models <span class="nb">set</span> &lt;provider/model&gt;
+</span></span><span class="line"><span class="cl">openclaw models set-image &lt;provider/model&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">openclaw models aliases list
+</span></span><span class="line"><span class="cl">openclaw models aliases add &lt;alias&gt; &lt;provider/model&gt;
+</span></span><span class="line"><span class="cl">openclaw models aliases remove &lt;alias&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">openclaw models fallbacks list
+</span></span><span class="line"><span class="cl">openclaw models fallbacks add &lt;provider/model&gt;
+</span></span><span class="line"><span class="cl">openclaw models fallbacks remove &lt;provider/model&gt;
+</span></span><span class="line"><span class="cl">openclaw models fallbacks clear
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">openclaw models image-fallbacks list
+</span></span><span class="line"><span class="cl">openclaw models image-fallbacks add &lt;provider/model&gt;
+</span></span><span class="line"><span class="cl">openclaw models image-fallbacks remove &lt;provider/model&gt;
+</span></span><span class="line"><span class="cl">openclaw models image-fallbacks clear
+</span></span></code></pre></div><p><code>openclaw models</code>（无子命令）是 <code>models status</code> 的快捷方式。</p>
+<h3 id="models-list"><code>models list</code><a hidden class="anchor" aria-hidden="true" href="#models-list">#</a></h3>
+<p>默认显示已配置的模型。有用的标志：</p>
+<ul>
+<li><code>--all</code>：完整目录</li>
+<li><code>--local</code>：仅本地提供商</li>
+<li><code>--provider &lt;name&gt;</code>：按提供商筛选</li>
+<li><code>--plain</code>：每行一个模型</li>
+<li><code>--json</code>：机器可读输出</li>
+</ul>
+<h3 id="models-status"><code>models status</code><a hidden class="anchor" aria-hidden="true" href="#models-status">#</a></h3>
+<p>显示已解析的主要模型、回退、图像模型，以及已配置提供商的认证概述。它还显示认证存储中找到的配置文件的 OAuth 过期状态（默认在 24 小时内警告）。<code>--plain</code> 仅打印已解析的主要模型。
+OAuth 状态始终显示（并包含在 <code>--json</code> 输出中）。如果已配置的提供商没有凭证，<code>models status</code> 会打印 <strong>Missing auth</strong> 部分。
+JSON 包括 <code>auth.oauth</code>（警告窗口 + 配置文件）和 <code>auth.providers</code>（每个提供商的有效认证）。
+使用 <code>--check</code> 进行自动化（缺失/过期时退出 <code>1</code>，即将过期时退出 <code>2</code>）。</p>
+<p>首选的 Anthropic 认证是 Claude Code CLI setup-token（在任何地方运行；如需要在 Gateway 网关主机上粘贴）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">claude setup-token
+</span></span><span class="line"><span class="cl">openclaw models status
+</span></span></code></pre></div><h2 id="扫描openrouter-免费模型">扫描（OpenRouter 免费模型）<a hidden class="anchor" aria-hidden="true" href="#扫描openrouter-免费模型">#</a></h2>
+<p><code>openclaw models scan</code> 检查 OpenRouter 的<strong>免费模型目录</strong>，并可选择性地探测模型的工具和图像支持。</p>
+<p>关键标志：</p>
+<ul>
+<li><code>--no-probe</code>：跳过实时探测（仅元数据）</li>
+<li><code>--min-params &lt;b&gt;</code>：最小参数量（十亿）</li>
+<li><code>--max-age-days &lt;days&gt;</code>：跳过较旧的模型</li>
+<li><code>--provider &lt;name&gt;</code>：提供商前缀筛选</li>
+<li><code>--max-candidates &lt;n&gt;</code>：回退列表大小</li>
+<li><code>--set-default</code>：将 <code>agents.defaults.model.primary</code> 设置为第一个选择</li>
+<li><code>--set-image</code>：将 <code>agents.defaults.imageModel.primary</code> 设置为第一个图像选择</li>
+</ul>
+<p>探测需要 OpenRouter API 密钥（来自认证配置文件或 <code>OPENROUTER_API_KEY</code>）。没有密钥时，使用 <code>--no-probe</code> 仅列出候选项。</p>
+<p>扫描结果按以下顺序排名：</p>
+<ol>
+<li>图像支持</li>
+<li>工具延迟</li>
+<li>上下文大小</li>
+<li>参数数量</li>
+</ol>
+<p>输入</p>
+<ul>
+<li>OpenRouter <code>/models</code> 列表（筛选 <code>:free</code>）</li>
+<li>需要来自认证配置文件或 <code>OPENROUTER_API_KEY</code> 的 OpenRouter API 密钥（参见 <a href="/help/environment">/environment</a>）</li>
+<li>可选筛选器：<code>--max-age-days</code>、<code>--min-params</code>、<code>--provider</code>、<code>--max-candidates</code></li>
+<li>探测控制：<code>--timeout</code>、<code>--concurrency</code></li>
+</ul>
+<p>在 TTY 中运行时，你可以交互式选择回退。在非交互模式下，传递 <code>--yes</code> 接受默认值。</p>
+<h2 id="模型注册表modelsjson">模型注册表（<code>models.json</code>）<a hidden class="anchor" aria-hidden="true" href="#模型注册表modelsjson">#</a></h2>
+<p><code>models.providers</code> 中的自定义提供商会写入智能体目录下的 <code>models.json</code>（默认 <code>~/.openclaw/agents/&lt;agentId&gt;/models.json</code>）。除非 <code>models.mode</code> 设置为 <code>replace</code>，否则此文件默认会被合并。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/start/showcase/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>案例展示</span>
+  </a>
+  <a class="next" href="/openclaw/concepts/model-providers/">
+    <span class="title">Next »</span>
+    <br>
+    <span>模型提供商</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

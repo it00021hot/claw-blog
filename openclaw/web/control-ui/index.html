@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>控制 UI（浏览器） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="控制 UI 是一个由 Gateway 网关提供服务的小型 Vite &#43; Lit 单页应用：
+
+默认：http://&lt;host&gt;:18789/
+可选前缀：设置 gateway.controlUi.basePath（例如 /openclaw）
+
+它直接与同一端口上的 Gateway 网关 WebSocket 通信。
+快速打开（本地）
+如果 Gateway 网关在同一台计算机上运行，打开：
+
+http://127.0.0.1:18789/（或 http://localhost:18789/）
+
+如果页面加载失败，请先启动 Gateway 网关：openclaw gateway。
+认证在 WebSocket 握手期间通过以下方式提供：
+
+connect.params.auth.token
+connect.params.auth.password
+仪表板设置面板允许你存储 token；密码不会被持久化。
+新手引导向导默认生成一个 Gateway 网关 token，所以在首次连接时将其粘贴到这里。
+
+设备配对（首次连接）
+当你从新浏览器或设备连接到控制 UI 时，Gateway 网关需要一次性配对批准 — 即使你在同一个 Tailnet 上且 gateway.auth.allowTailscale: true。这是防止未授权访问的安全措施。
+你会看到： &ldquo;disconnected (1008): pairing required&rdquo;
+批准设备：
+# 列出待处理的请求
+openclaw devices list
+
+# 按请求 ID 批准
+openclaw devices approve &lt;requestId&gt;
+一旦批准，设备会被记住，除非你使用 openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt; 撤销它，否则不需要重新批准。参见 Devices CLI 了解 token 轮换和撤销。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/web/control-ui/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/web/control-ui/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/web/control-ui/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="控制 UI（浏览器）">
+  <meta property="og:description" content="控制 UI 是一个由 Gateway 网关提供服务的小型 Vite &#43; Lit 单页应用：
+默认：http://&lt;host&gt;:18789/ 可选前缀：设置 gateway.controlUi.basePath（例如 /openclaw） 它直接与同一端口上的 Gateway 网关 WebSocket 通信。
+快速打开（本地） 如果 Gateway 网关在同一台计算机上运行，打开：
+http://127.0.0.1:18789/（或 http://localhost:18789/） 如果页面加载失败，请先启动 Gateway 网关：openclaw gateway。
+认证在 WebSocket 握手期间通过以下方式提供：
+connect.params.auth.token connect.params.auth.password 仪表板设置面板允许你存储 token；密码不会被持久化。 新手引导向导默认生成一个 Gateway 网关 token，所以在首次连接时将其粘贴到这里。 设备配对（首次连接） 当你从新浏览器或设备连接到控制 UI 时，Gateway 网关需要一次性配对批准 — 即使你在同一个 Tailnet 上且 gateway.auth.allowTailscale: true。这是防止未授权访问的安全措施。
+你会看到： “disconnected (1008): pairing required”
+批准设备：
+# 列出待处理的请求 openclaw devices list # 按请求 ID 批准 openclaw devices approve &lt;requestId&gt; 一旦批准，设备会被记住，除非你使用 openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt; 撤销它，否则不需要重新批准。参见 Devices CLI 了解 token 轮换和撤销。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="控制 UI（浏览器）">
+<meta name="twitter:description" content="控制 UI 是一个由 Gateway 网关提供服务的小型 Vite &#43; Lit 单页应用：
+
+默认：http://&lt;host&gt;:18789/
+可选前缀：设置 gateway.controlUi.basePath（例如 /openclaw）
+
+它直接与同一端口上的 Gateway 网关 WebSocket 通信。
+快速打开（本地）
+如果 Gateway 网关在同一台计算机上运行，打开：
+
+http://127.0.0.1:18789/（或 http://localhost:18789/）
+
+如果页面加载失败，请先启动 Gateway 网关：openclaw gateway。
+认证在 WebSocket 握手期间通过以下方式提供：
+
+connect.params.auth.token
+connect.params.auth.password
+仪表板设置面板允许你存储 token；密码不会被持久化。
+新手引导向导默认生成一个 Gateway 网关 token，所以在首次连接时将其粘贴到这里。
+
+设备配对（首次连接）
+当你从新浏览器或设备连接到控制 UI 时，Gateway 网关需要一次性配对批准 — 即使你在同一个 Tailnet 上且 gateway.auth.allowTailscale: true。这是防止未授权访问的安全措施。
+你会看到： &ldquo;disconnected (1008): pairing required&rdquo;
+批准设备：
+# 列出待处理的请求
+openclaw devices list
+
+# 按请求 ID 批准
+openclaw devices approve &lt;requestId&gt;
+一旦批准，设备会被记住，除非你使用 openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt; 撤销它，否则不需要重新批准。参见 Devices CLI 了解 token 轮换和撤销。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "控制 UI（浏览器）",
+      "item": "/openclaw/web/control-ui/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "控制 UI（浏览器）",
+  "name": "控制 UI（浏览器）",
+  "description": "控制 UI 是一个由 Gateway 网关提供服务的小型 Vite + Lit 单页应用：\n默认：http://\u0026lt;host\u0026gt;:18789/ 可选前缀：设置 gateway.controlUi.basePath（例如 /openclaw） 它直接与同一端口上的 Gateway 网关 WebSocket 通信。\n快速打开（本地） 如果 Gateway 网关在同一台计算机上运行，打开：\nhttp://127.0.0.1:18789/（或 http://localhost:18789/） 如果页面加载失败，请先启动 Gateway 网关：openclaw gateway。\n认证在 WebSocket 握手期间通过以下方式提供：\nconnect.params.auth.token connect.params.auth.password 仪表板设置面板允许你存储 token；密码不会被持久化。 新手引导向导默认生成一个 Gateway 网关 token，所以在首次连接时将其粘贴到这里。 设备配对（首次连接） 当你从新浏览器或设备连接到控制 UI 时，Gateway 网关需要一次性配对批准 — 即使你在同一个 Tailnet 上且 gateway.auth.allowTailscale: true。这是防止未授权访问的安全措施。\n你会看到： \u0026ldquo;disconnected (1008): pairing required\u0026rdquo;\n批准设备：\n# 列出待处理的请求 openclaw devices list # 按请求 ID 批准 openclaw devices approve \u0026lt;requestId\u0026gt; 一旦批准，设备会被记住，除非你使用 openclaw devices revoke --device \u0026lt;id\u0026gt; --role \u0026lt;role\u0026gt; 撤销它，否则不需要重新批准。参见 Devices CLI 了解 token 轮换和撤销。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "控制 UI 是一个由 Gateway 网关提供服务的小型 Vite + Lit 单页应用：\n默认：http://:18789/ 可选前缀：设置 gateway.controlUi.basePath（例如 /openclaw） 它直接与同一端口上的 Gateway 网关 WebSocket 通信。\n快速打开（本地） 如果 Gateway 网关在同一台计算机上运行，打开：\nhttp://127.0.0.1:18789/（或 http://localhost:18789/） 如果页面加载失败，请先启动 Gateway 网关：openclaw gateway。\n认证在 WebSocket 握手期间通过以下方式提供：\nconnect.params.auth.token connect.params.auth.password 仪表板设置面板允许你存储 token；密码不会被持久化。 新手引导向导默认生成一个 Gateway 网关 token，所以在首次连接时将其粘贴到这里。 设备配对（首次连接） 当你从新浏览器或设备连接到控制 UI 时，Gateway 网关需要一次性配对批准 — 即使你在同一个 Tailnet 上且 gateway.auth.allowTailscale: true。这是防止未授权访问的安全措施。\n你会看到： “disconnected (1008): pairing required”\n批准设备：\n# 列出待处理的请求 openclaw devices list # 按请求 ID 批准 openclaw devices approve 一旦批准，设备会被记住，除非你使用 openclaw devices revoke --device --role 撤销它，否则不需要重新批准。参见 Devices CLI 了解 token 轮换和撤销。\n注意：\n本地连接（127.0.0.1）会自动批准。 远程连接（LAN、Tailnet 等）需要显式批准。 每个浏览器配置文件生成唯一的设备 ID，因此切换浏览器或清除浏览器数据将需要重新配对。 目前可以做什么 通过 Gateway 网关 WS 与模型聊天（chat.history、chat.send、chat.abort、chat.inject） 在聊天中流式传输工具调用 + 实时工具输出卡片（智能体事件） 渠道：WhatsApp/Telegram/Discord/Slack + 插件渠道（Mattermost 等）状态 + QR 登录 + 每渠道配置（channels.status、web.login.*、config.patch） 实例：在线列表 + 刷新（system-presence） 会话：列表 + 每会话思考/详细覆盖（sessions.list、sessions.patch） 定时任务：列出/添加/运行/启用/禁用 + 运行历史（cron.*） Skills：状态、启用/禁用、安装、API 密钥更新（skills.*） 节点：列表 + 能力（node.list） 执行批准：编辑 Gateway 网关或节点允许列表 + exec host=gateway/node 的询问策略（exec.approvals.*） 配置：查看/编辑 ~/.openclaw/openclaw.json（config.get、config.set） 配置：应用 + 带验证的重启（config.apply）并唤醒上次活动的会话 配置写入包含基础哈希保护，以防止覆盖并发编辑 配置 schema + 表单渲染（config.schema，包括插件 + 渠道 schema）；原始 JSON 编辑器仍然可用 调试：状态/健康/模型快照 + 事件日志 + 手动 RPC 调用（status、health、models.list） 日志：Gateway 网关文件日志的实时尾部跟踪，带过滤/导出（logs.tail） 更新：运行包/git 更新 + 重启（update.run）并显示重启报告 聊天行为 chat.send 是非阻塞的：它立即以 { runId, status: \"started\" } 确认，响应通过 chat 事件流式传输。 使用相同的 idempotencyKey 重新发送在运行时返回 { status: \"in_flight\" }，完成后返回 { status: \"ok\" }。 chat.inject 将助手备注附加到会话转录，并为仅 UI 更新广播 chat 事件（无智能体运行，无渠道投递）。 停止： 点击停止（调用 chat.abort） 输入 /stop（或 stop|esc|abort|wait|exit|interrupt）以带外中止 chat.abort 支持 { sessionKey }（无 runId）以中止该会话的所有活动运行 Tailnet 访问（推荐） 集成 Tailscale Serve（首选） 保持 Gateway 网关在 loopback 上，让 Tailscale Serve 用 HTTPS 代理它：\nopenclaw gateway --tailscale serve 打开：\nhttps:///（或你配置的 gateway.controlUi.basePath） 默认情况下，当 gateway.auth.allowTailscale 为 true 时，Serve 请求可以通过 Tailscale 身份头（tailscale-user-login）进行认证。OpenClaw 通过使用 tailscale whois 解析 x-forwarded-for 地址并与头匹配来验证身份，并且只在请求通过 Tailscale 的 x-forwarded-* 头到达 loopback 时接受这些。如果你想即使对于 Serve 流量也要求 token/密码，请设置 gateway.auth.allowTailscale: false（或强制 gateway.auth.mode: \"password\"）。\n绑定到 tailnet + token openclaw gateway --bind tailnet --token \"$(openssl rand -hex 32)\" 然后打开：\nhttp://:18789/（或你配置的 gateway.controlUi.basePath） 将 token 粘贴到 UI 设置中（作为 connect.params.auth.token 发送）。\n不安全的 HTTP 如果你通过普通 HTTP 打开仪表板（http:// 或 http://），浏览器在非安全上下文中运行并阻止 WebCrypto。默认情况下，OpenClaw 阻止没有设备身份的控制 UI 连接。\n推荐修复： 使用 HTTPS（Tailscale Serve）或在本地打开 UI：\nhttps:///（Serve） http://127.0.0.1:18789/（在 Gateway 网关主机上） 降级示例（仅通过 HTTP 使用 token）：\n{ gateway: { controlUi: { allowInsecureAuth: true }, bind: \"tailnet\", auth: { mode: \"token\", token: \"replace-me\" }, }, } 这会为控制 UI 禁用设备身份 + 配对（即使在 HTTPS 上）。仅在你信任网络时使用。\n参见 Tailscale 了解 HTTPS 设置指南。\n构建 UI Gateway 网关从 dist/control-ui 提供静态文件。使用以下命令构建：\npnpm ui:build # 首次运行时自动安装 UI 依赖 可选的绝对基础路径（当你想要固定的资源 URL 时）：\nOPENCLAW_CONTROL_UI_BASE_PATH=/openclaw/ pnpm ui:build 用于本地开发（单独的开发服务器）：\npnpm ui:dev # 首次运行时自动安装 UI 依赖 然后将 UI 指向你的 Gateway 网关 WS URL（例如 ws://127.0.0.1:18789）。\n调试/测试：开发服务器 + 远程 Gateway 网关 控制 UI 是静态文件；WebSocket 目标是可配置的，可以与 HTTP 源不同。当你想要在本地使用 Vite 开发服务器但 Gateway 网关在其他地方运行时，这很方便。\n启动 UI 开发服务器：pnpm ui:dev 打开类似以下的 URL： http://localhost:5173/?gatewayUrl=ws://:18789 可选的一次性认证（如需要）：\nhttp://localhost:5173/?gatewayUrl=wss://:18789\u0026token= 注意：\ngatewayUrl 在加载后存储在 localStorage 中并从 URL 中移除。 token 存储在 localStorage 中；password 仅保留在内存中。 当 Gateway 网关在 TLS 后面时（Tailscale Serve、HTTPS 代理等），使用 wss://。 远程访问设置详情：远程访问。\n",
+  "wordCount" : "401",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/web/control-ui/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      控制 UI（浏览器）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e6%89%93%e5%bc%80%e6%9c%ac%e5%9c%b0" aria-label="快速打开（本地）">快速打开（本地）</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e5%a4%87%e9%85%8d%e5%af%b9%e9%a6%96%e6%ac%a1%e8%bf%9e%e6%8e%a5" aria-label="设备配对（首次连接）">设备配对（首次连接）</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e5%89%8d%e5%8f%af%e4%bb%a5%e5%81%9a%e4%bb%80%e4%b9%88" aria-label="目前可以做什么">目前可以做什么</a></li>
+                <li>
+                    <a href="#%e8%81%8a%e5%a4%a9%e8%a1%8c%e4%b8%ba" aria-label="聊天行为">聊天行为</a></li>
+                <li>
+                    <a href="#tailnet-%e8%ae%bf%e9%97%ae%e6%8e%a8%e8%8d%90" aria-label="Tailnet 访问（推荐）">Tailnet 访问（推荐）</a><ul>
+                        
+                <li>
+                    <a href="#%e9%9b%86%e6%88%90-tailscale-serve%e9%a6%96%e9%80%89" aria-label="集成 Tailscale Serve（首选）">集成 Tailscale Serve（首选）</a></li>
+                <li>
+                    <a href="#%e7%bb%91%e5%ae%9a%e5%88%b0-tailnet--token" aria-label="绑定到 tailnet &#43; token">绑定到 tailnet + token</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%8d%e5%ae%89%e5%85%a8%e7%9a%84-http" aria-label="不安全的 HTTP">不安全的 HTTP</a></li>
+                <li>
+                    <a href="#%e6%9e%84%e5%bb%ba-ui" aria-label="构建 UI">构建 UI</a></li>
+                <li>
+                    <a href="#%e8%b0%83%e8%af%95%e6%b5%8b%e8%af%95%e5%bc%80%e5%8f%91%e6%9c%8d%e5%8a%a1%e5%99%a8--%e8%bf%9c%e7%a8%8b-gateway-%e7%bd%91%e5%85%b3" aria-label="调试/测试：开发服务器 &#43; 远程 Gateway 网关">调试/测试：开发服务器 + 远程 Gateway 网关</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>控制 UI 是一个由 Gateway 网关提供服务的小型 <strong>Vite + Lit</strong> 单页应用：</p>
+<ul>
+<li>默认：<code>http://&lt;host&gt;:18789/</code></li>
+<li>可选前缀：设置 <code>gateway.controlUi.basePath</code>（例如 <code>/openclaw</code>）</li>
+</ul>
+<p>它<strong>直接与同一端口上的 Gateway 网关 WebSocket</strong> 通信。</p>
+<h2 id="快速打开本地">快速打开（本地）<a hidden class="anchor" aria-hidden="true" href="#快速打开本地">#</a></h2>
+<p>如果 Gateway 网关在同一台计算机上运行，打开：</p>
+<ul>
+<li>http://127.0.0.1:18789/（或 http://localhost:18789/）</li>
+</ul>
+<p>如果页面加载失败，请先启动 Gateway 网关：<code>openclaw gateway</code>。</p>
+<p>认证在 WebSocket 握手期间通过以下方式提供：</p>
+<ul>
+<li><code>connect.params.auth.token</code></li>
+<li><code>connect.params.auth.password</code>
+仪表板设置面板允许你存储 token；密码不会被持久化。
+新手引导向导默认生成一个 Gateway 网关 token，所以在首次连接时将其粘贴到这里。</li>
+</ul>
+<h2 id="设备配对首次连接">设备配对（首次连接）<a hidden class="anchor" aria-hidden="true" href="#设备配对首次连接">#</a></h2>
+<p>当你从新浏览器或设备连接到控制 UI 时，Gateway 网关需要<strong>一次性配对批准</strong> — 即使你在同一个 Tailnet 上且 <code>gateway.auth.allowTailscale: true</code>。这是防止未授权访问的安全措施。</p>
+<p><strong>你会看到：</strong> &ldquo;disconnected (1008): pairing required&rdquo;</p>
+<p><strong>批准设备：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 列出待处理的请求</span>
+</span></span><span class="line"><span class="cl">openclaw devices list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 按请求 ID 批准</span>
+</span></span><span class="line"><span class="cl">openclaw devices approve &lt;requestId&gt;
+</span></span></code></pre></div><p>一旦批准，设备会被记住，除非你使用 <code>openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt;</code> 撤销它，否则不需要重新批准。参见 <a href="/cli/devices">Devices CLI</a> 了解 token 轮换和撤销。</p>
+<p><strong>注意：</strong></p>
+<ul>
+<li>本地连接（<code>127.0.0.1</code>）会自动批准。</li>
+<li>远程连接（LAN、Tailnet 等）需要显式批准。</li>
+<li>每个浏览器配置文件生成唯一的设备 ID，因此切换浏览器或清除浏览器数据将需要重新配对。</li>
+</ul>
+<h2 id="目前可以做什么">目前可以做什么<a hidden class="anchor" aria-hidden="true" href="#目前可以做什么">#</a></h2>
+<ul>
+<li>通过 Gateway 网关 WS 与模型聊天（<code>chat.history</code>、<code>chat.send</code>、<code>chat.abort</code>、<code>chat.inject</code>）</li>
+<li>在聊天中流式传输工具调用 + 实时工具输出卡片（智能体事件）</li>
+<li>渠道：WhatsApp/Telegram/Discord/Slack + 插件渠道（Mattermost 等）状态 + QR 登录 + 每渠道配置（<code>channels.status</code>、<code>web.login.*</code>、<code>config.patch</code>）</li>
+<li>实例：在线列表 + 刷新（<code>system-presence</code>）</li>
+<li>会话：列表 + 每会话思考/详细覆盖（<code>sessions.list</code>、<code>sessions.patch</code>）</li>
+<li>定时任务：列出/添加/运行/启用/禁用 + 运行历史（<code>cron.*</code>）</li>
+<li>Skills：状态、启用/禁用、安装、API 密钥更新（<code>skills.*</code>）</li>
+<li>节点：列表 + 能力（<code>node.list</code>）</li>
+<li>执行批准：编辑 Gateway 网关或节点允许列表 + <code>exec host=gateway/node</code> 的询问策略（<code>exec.approvals.*</code>）</li>
+<li>配置：查看/编辑 <code>~/.openclaw/openclaw.json</code>（<code>config.get</code>、<code>config.set</code>）</li>
+<li>配置：应用 + 带验证的重启（<code>config.apply</code>）并唤醒上次活动的会话</li>
+<li>配置写入包含基础哈希保护，以防止覆盖并发编辑</li>
+<li>配置 schema + 表单渲染（<code>config.schema</code>，包括插件 + 渠道 schema）；原始 JSON 编辑器仍然可用</li>
+<li>调试：状态/健康/模型快照 + 事件日志 + 手动 RPC 调用（<code>status</code>、<code>health</code>、<code>models.list</code>）</li>
+<li>日志：Gateway 网关文件日志的实时尾部跟踪，带过滤/导出（<code>logs.tail</code>）</li>
+<li>更新：运行包/git 更新 + 重启（<code>update.run</code>）并显示重启报告</li>
+</ul>
+<h2 id="聊天行为">聊天行为<a hidden class="anchor" aria-hidden="true" href="#聊天行为">#</a></h2>
+<ul>
+<li><code>chat.send</code> 是<strong>非阻塞的</strong>：它立即以 <code>{ runId, status: &quot;started&quot; }</code> 确认，响应通过 <code>chat</code> 事件流式传输。</li>
+<li>使用相同的 <code>idempotencyKey</code> 重新发送在运行时返回 <code>{ status: &quot;in_flight&quot; }</code>，完成后返回 <code>{ status: &quot;ok&quot; }</code>。</li>
+<li><code>chat.inject</code> 将助手备注附加到会话转录，并为仅 UI 更新广播 <code>chat</code> 事件（无智能体运行，无渠道投递）。</li>
+<li>停止：
+<ul>
+<li>点击<strong>停止</strong>（调用 <code>chat.abort</code>）</li>
+<li>输入 <code>/stop</code>（或 <code>stop|esc|abort|wait|exit|interrupt</code>）以带外中止</li>
+<li><code>chat.abort</code> 支持 <code>{ sessionKey }</code>（无 <code>runId</code>）以中止该会话的所有活动运行</li>
+</ul>
+</li>
+</ul>
+<h2 id="tailnet-访问推荐">Tailnet 访问（推荐）<a hidden class="anchor" aria-hidden="true" href="#tailnet-访问推荐">#</a></h2>
+<h3 id="集成-tailscale-serve首选">集成 Tailscale Serve（首选）<a hidden class="anchor" aria-hidden="true" href="#集成-tailscale-serve首选">#</a></h3>
+<p>保持 Gateway 网关在 loopback 上，让 Tailscale Serve 用 HTTPS 代理它：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway --tailscale serve
+</span></span></code></pre></div><p>打开：</p>
+<ul>
+<li><code>https://&lt;magicdns&gt;/</code>（或你配置的 <code>gateway.controlUi.basePath</code>）</li>
+</ul>
+<p>默认情况下，当 <code>gateway.auth.allowTailscale</code> 为 <code>true</code> 时，Serve 请求可以通过 Tailscale 身份头（<code>tailscale-user-login</code>）进行认证。OpenClaw 通过使用 <code>tailscale whois</code> 解析 <code>x-forwarded-for</code> 地址并与头匹配来验证身份，并且只在请求通过 Tailscale 的 <code>x-forwarded-*</code> 头到达 loopback 时接受这些。如果你想即使对于 Serve 流量也要求 token/密码，请设置 <code>gateway.auth.allowTailscale: false</code>（或强制 <code>gateway.auth.mode: &quot;password&quot;</code>）。</p>
+<h3 id="绑定到-tailnet--token">绑定到 tailnet + token<a hidden class="anchor" aria-hidden="true" href="#绑定到-tailnet--token">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway --bind tailnet --token <span class="s2">&#34;</span><span class="k">$(</span>openssl rand -hex 32<span class="k">)</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p>然后打开：</p>
+<ul>
+<li><code>http://&lt;tailscale-ip&gt;:18789/</code>（或你配置的 <code>gateway.controlUi.basePath</code>）</li>
+</ul>
+<p>将 token 粘贴到 UI 设置中（作为 <code>connect.params.auth.token</code> 发送）。</p>
+<h2 id="不安全的-http">不安全的 HTTP<a hidden class="anchor" aria-hidden="true" href="#不安全的-http">#</a></h2>
+<p>如果你通过普通 HTTP 打开仪表板（<code>http://&lt;lan-ip&gt;</code> 或 <code>http://&lt;tailscale-ip&gt;</code>），浏览器在<strong>非安全上下文</strong>中运行并阻止 WebCrypto。默认情况下，OpenClaw <strong>阻止</strong>没有设备身份的控制 UI 连接。</p>
+<p><strong>推荐修复：</strong> 使用 HTTPS（Tailscale Serve）或在本地打开 UI：</p>
+<ul>
+<li><code>https://&lt;magicdns&gt;/</code>（Serve）</li>
+<li><code>http://127.0.0.1:18789/</code>（在 Gateway 网关主机上）</li>
+</ul>
+<p><strong>降级示例（仅通过 HTTP 使用 token）：</strong></p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  gateway: {
+    controlUi: { allowInsecureAuth: true },
+    bind: &#34;tailnet&#34;,
+    auth: { mode: &#34;token&#34;, token: &#34;replace-me&#34; },
+  },
+}
+</code></pre><p>这会为控制 UI 禁用设备身份 + 配对（即使在 HTTPS 上）。仅在你信任网络时使用。</p>
+<p>参见 <a href="/gateway/tailscale">Tailscale</a> 了解 HTTPS 设置指南。</p>
+<h2 id="构建-ui">构建 UI<a hidden class="anchor" aria-hidden="true" href="#构建-ui">#</a></h2>
+<p>Gateway 网关从 <code>dist/control-ui</code> 提供静态文件。使用以下命令构建：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm ui:build <span class="c1"># 首次运行时自动安装 UI 依赖</span>
+</span></span></code></pre></div><p>可选的绝对基础路径（当你想要固定的资源 URL 时）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">OPENCLAW_CONTROL_UI_BASE_PATH</span><span class="o">=</span>/openclaw/ pnpm ui:build
+</span></span></code></pre></div><p>用于本地开发（单独的开发服务器）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm ui:dev <span class="c1"># 首次运行时自动安装 UI 依赖</span>
+</span></span></code></pre></div><p>然后将 UI 指向你的 Gateway 网关 WS URL（例如 <code>ws://127.0.0.1:18789</code>）。</p>
+<h2 id="调试测试开发服务器--远程-gateway-网关">调试/测试：开发服务器 + 远程 Gateway 网关<a hidden class="anchor" aria-hidden="true" href="#调试测试开发服务器--远程-gateway-网关">#</a></h2>
+<p>控制 UI 是静态文件；WebSocket 目标是可配置的，可以与 HTTP 源不同。当你想要在本地使用 Vite 开发服务器但 Gateway 网关在其他地方运行时，这很方便。</p>
+<ol>
+<li>启动 UI 开发服务器：<code>pnpm ui:dev</code></li>
+<li>打开类似以下的 URL：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">http://localhost:5173/?gatewayUrl=ws://&lt;gateway-host&gt;:18789
+</span></span></code></pre></div><p>可选的一次性认证（如需要）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">http://localhost:5173/?gatewayUrl=wss://&lt;gateway-host&gt;:18789&amp;token=&lt;gateway-token&gt;
+</span></span></code></pre></div><p>注意：</p>
+<ul>
+<li><code>gatewayUrl</code> 在加载后存储在 localStorage 中并从 URL 中移除。</li>
+<li><code>token</code> 存储在 localStorage 中；<code>password</code> 仅保留在内存中。</li>
+<li>当 Gateway 网关在 TLS 后面时（Tailscale Serve、HTTPS 代理等），使用 <code>wss://</code>。</li>
+</ul>
+<p>远程访问设置详情：<a href="/gateway/remote">远程访问</a>。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/automation/poll/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>投票</span>
+  </a>
+  <a class="next" href="/openclaw/tools/elevated/">
+    <span class="title">Next »</span>
+    <br>
+    <span>提升模式（/elevated 指令）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

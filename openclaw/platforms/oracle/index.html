@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>在 Oracle Cloud（OCI）上运行 OpenClaw | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标
+在 Oracle Cloud 的 Always Free ARM 层上运行持久化的 OpenClaw Gateway 网关。
+Oracle 的免费层非常适合 OpenClaw（特别是如果你已经有 OCI 账户），但有一些权衡：
+
+ARM 架构（大多数东西都能工作，但某些二进制文件可能仅支持 x86）
+容量和注册可能比较麻烦
+
+成本比较（2026）
+
+  
+      
+          提供商
+          方案
+          配置
+          价格/月
+          说明
+      
+  
+  
+      
+          Oracle Cloud
+          Always Free ARM
+          最多 4 OCPU，24GB RAM
+          $0
+          ARM，容量有限
+      
+      
+          Hetzner
+          CX22
+          2 vCPU，4GB RAM
+          ~ $4
+          最便宜的付费选项
+      
+      
+          DigitalOcean
+          Basic
+          1 vCPU，1GB RAM
+          $6
+          易用的 UI，文档完善
+      
+      
+          Vultr
+          Cloud Compute
+          1 vCPU，1GB RAM
+          $6
+          多个地区
+      
+      
+          Linode
+          Nanode
+          1 vCPU，1GB RAM
+          $5
+          现为 Akamai 的一部分
+      
+  
+
+
+先决条件
+
+Oracle Cloud 账户（注册）——如果遇到问题请参阅社区注册指南
+Tailscale 账户（在 tailscale.com 免费）
+约 30 分钟
+
+1) 创建 OCI 实例
+
+登录 Oracle Cloud Console
+导航到 Compute → Instances → Create Instance
+配置：
+
+Name: openclaw
+Image: Ubuntu 24.04 (aarch64)
+Shape: VM.Standard.A1.Flex（Ampere ARM）
+OCPUs: 2（或最多 4）
+Memory: 12 GB（或最多 24 GB）
+Boot volume: 50 GB（最多 200 GB 免费）
+SSH key: 添加你的公钥
+
+
+点击 Create
+记录公网 IP 地址
+
+提示： 如果实例创建失败并显示&quot;Out of capacity&quot;，尝试不同的可用性域或稍后重试。免费层容量有限。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/platforms/oracle/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/platforms/oracle/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/platforms/oracle/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="在 Oracle Cloud（OCI）上运行 OpenClaw">
+  <meta property="og:description" content="目标 在 Oracle Cloud 的 Always Free ARM 层上运行持久化的 OpenClaw Gateway 网关。
+Oracle 的免费层非常适合 OpenClaw（特别是如果你已经有 OCI 账户），但有一些权衡：
+ARM 架构（大多数东西都能工作，但某些二进制文件可能仅支持 x86） 容量和注册可能比较麻烦 成本比较（2026） 提供商 方案 配置 价格/月 说明 Oracle Cloud Always Free ARM 最多 4 OCPU，24GB RAM $0 ARM，容量有限 Hetzner CX22 2 vCPU，4GB RAM ~ $4 最便宜的付费选项 DigitalOcean Basic 1 vCPU，1GB RAM $6 易用的 UI，文档完善 Vultr Cloud Compute 1 vCPU，1GB RAM $6 多个地区 Linode Nanode 1 vCPU，1GB RAM $5 现为 Akamai 的一部分 先决条件 Oracle Cloud 账户（注册）——如果遇到问题请参阅社区注册指南 Tailscale 账户（在 tailscale.com 免费） 约 30 分钟 1) 创建 OCI 实例 登录 Oracle Cloud Console 导航到 Compute → Instances → Create Instance 配置： Name: openclaw Image: Ubuntu 24.04 (aarch64) Shape: VM.Standard.A1.Flex（Ampere ARM） OCPUs: 2（或最多 4） Memory: 12 GB（或最多 24 GB） Boot volume: 50 GB（最多 200 GB 免费） SSH key: 添加你的公钥 点击 Create 记录公网 IP 地址 提示： 如果实例创建失败并显示&#34;Out of capacity&#34;，尝试不同的可用性域或稍后重试。免费层容量有限。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在 Oracle Cloud（OCI）上运行 OpenClaw">
+<meta name="twitter:description" content="目标
+在 Oracle Cloud 的 Always Free ARM 层上运行持久化的 OpenClaw Gateway 网关。
+Oracle 的免费层非常适合 OpenClaw（特别是如果你已经有 OCI 账户），但有一些权衡：
+
+ARM 架构（大多数东西都能工作，但某些二进制文件可能仅支持 x86）
+容量和注册可能比较麻烦
+
+成本比较（2026）
+
+  
+      
+          提供商
+          方案
+          配置
+          价格/月
+          说明
+      
+  
+  
+      
+          Oracle Cloud
+          Always Free ARM
+          最多 4 OCPU，24GB RAM
+          $0
+          ARM，容量有限
+      
+      
+          Hetzner
+          CX22
+          2 vCPU，4GB RAM
+          ~ $4
+          最便宜的付费选项
+      
+      
+          DigitalOcean
+          Basic
+          1 vCPU，1GB RAM
+          $6
+          易用的 UI，文档完善
+      
+      
+          Vultr
+          Cloud Compute
+          1 vCPU，1GB RAM
+          $6
+          多个地区
+      
+      
+          Linode
+          Nanode
+          1 vCPU，1GB RAM
+          $5
+          现为 Akamai 的一部分
+      
+  
+
+
+先决条件
+
+Oracle Cloud 账户（注册）——如果遇到问题请参阅社区注册指南
+Tailscale 账户（在 tailscale.com 免费）
+约 30 分钟
+
+1) 创建 OCI 实例
+
+登录 Oracle Cloud Console
+导航到 Compute → Instances → Create Instance
+配置：
+
+Name: openclaw
+Image: Ubuntu 24.04 (aarch64)
+Shape: VM.Standard.A1.Flex（Ampere ARM）
+OCPUs: 2（或最多 4）
+Memory: 12 GB（或最多 24 GB）
+Boot volume: 50 GB（最多 200 GB 免费）
+SSH key: 添加你的公钥
+
+
+点击 Create
+记录公网 IP 地址
+
+提示： 如果实例创建失败并显示&quot;Out of capacity&quot;，尝试不同的可用性域或稍后重试。免费层容量有限。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "在 Oracle Cloud（OCI）上运行 OpenClaw",
+      "item": "/openclaw/platforms/oracle/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "在 Oracle Cloud（OCI）上运行 OpenClaw",
+  "name": "在 Oracle Cloud（OCI）上运行 OpenClaw",
+  "description": "目标 在 Oracle Cloud 的 Always Free ARM 层上运行持久化的 OpenClaw Gateway 网关。\nOracle 的免费层非常适合 OpenClaw（特别是如果你已经有 OCI 账户），但有一些权衡：\nARM 架构（大多数东西都能工作，但某些二进制文件可能仅支持 x86） 容量和注册可能比较麻烦 成本比较（2026） 提供商 方案 配置 价格/月 说明 Oracle Cloud Always Free ARM 最多 4 OCPU，24GB RAM $0 ARM，容量有限 Hetzner CX22 2 vCPU，4GB RAM ~ $4 最便宜的付费选项 DigitalOcean Basic 1 vCPU，1GB RAM $6 易用的 UI，文档完善 Vultr Cloud Compute 1 vCPU，1GB RAM $6 多个地区 Linode Nanode 1 vCPU，1GB RAM $5 现为 Akamai 的一部分 先决条件 Oracle Cloud 账户（注册）——如果遇到问题请参阅社区注册指南 Tailscale 账户（在 tailscale.com 免费） 约 30 分钟 1) 创建 OCI 实例 登录 Oracle Cloud Console 导航到 Compute → Instances → Create Instance 配置： Name: openclaw Image: Ubuntu 24.04 (aarch64) Shape: VM.Standard.A1.Flex（Ampere ARM） OCPUs: 2（或最多 4） Memory: 12 GB（或最多 24 GB） Boot volume: 50 GB（最多 200 GB 免费） SSH key: 添加你的公钥 点击 Create 记录公网 IP 地址 提示： 如果实例创建失败并显示\u0026quot;Out of capacity\u0026quot;，尝试不同的可用性域或稍后重试。免费层容量有限。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标 在 Oracle Cloud 的 Always Free ARM 层上运行持久化的 OpenClaw Gateway 网关。\nOracle 的免费层非常适合 OpenClaw（特别是如果你已经有 OCI 账户），但有一些权衡：\nARM 架构（大多数东西都能工作，但某些二进制文件可能仅支持 x86） 容量和注册可能比较麻烦 成本比较（2026） 提供商 方案 配置 价格/月 说明 Oracle Cloud Always Free ARM 最多 4 OCPU，24GB RAM $0 ARM，容量有限 Hetzner CX22 2 vCPU，4GB RAM ~ $4 最便宜的付费选项 DigitalOcean Basic 1 vCPU，1GB RAM $6 易用的 UI，文档完善 Vultr Cloud Compute 1 vCPU，1GB RAM $6 多个地区 Linode Nanode 1 vCPU，1GB RAM $5 现为 Akamai 的一部分 先决条件 Oracle Cloud 账户（注册）——如果遇到问题请参阅社区注册指南 Tailscale 账户（在 tailscale.com 免费） 约 30 分钟 1) 创建 OCI 实例 登录 Oracle Cloud Console 导航到 Compute → Instances → Create Instance 配置： Name: openclaw Image: Ubuntu 24.04 (aarch64) Shape: VM.Standard.A1.Flex（Ampere ARM） OCPUs: 2（或最多 4） Memory: 12 GB（或最多 24 GB） Boot volume: 50 GB（最多 200 GB 免费） SSH key: 添加你的公钥 点击 Create 记录公网 IP 地址 提示： 如果实例创建失败并显示\"Out of capacity\"，尝试不同的可用性域或稍后重试。免费层容量有限。\n2) 连接并更新 # 通过公网 IP 连接 ssh ubuntu@YOUR_PUBLIC_IP # 更新系统 sudo apt update \u0026\u0026 sudo apt upgrade -y sudo apt install -y build-essential 注意： build-essential 是某些依赖项 ARM 编译所必需的。\n3) 配置用户和主机名 # 设置主机名 sudo hostnamectl set-hostname openclaw # 为 ubuntu 用户设置密码 sudo passwd ubuntu # 启用 lingering（注销后保持用户服务运行） sudo loginctl enable-linger ubuntu 4) 安装 Tailscale curl -fsSL https://tailscale.com/install.sh | sh sudo tailscale up --ssh --hostname=openclaw 这会启用 Tailscale SSH，所以你可以从 tailnet 上的任何设备通过 ssh openclaw 连接——不需要公网 IP。\n验证：\ntailscale status 从现在开始，通过 Tailscale 连接： ssh ubuntu@openclaw（或使用 Tailscale IP）。\n5) 安装 OpenClaw curl -fsSL https://openclaw.ai/install.sh | bash source ~/.bashrc 当提示\"How do you want to hatch your bot?“时，选择 “Do this later”。\n注意：如果你遇到 ARM 原生构建问题，在使用 Homebrew 之前先从系统包开始（例如 sudo apt install -y build-essential）。\n6) 配置 Gateway 网关（loopback + 令牌认证）并启用 Tailscale Serve 使用令牌认证作为默认值。它是可预测的，避免需要任何\"不安全认证\"的控制 UI 标志。\n# 在 VM 上保持 Gateway 网关私有 openclaw config set gateway.bind loopback # 要求 Gateway 网关 + 控制 UI 的认证 openclaw config set gateway.auth.mode token openclaw doctor --generate-gateway-token # 通过 Tailscale Serve 暴露（HTTPS + tailnet 访问） openclaw config set gateway.tailscale.mode serve openclaw config set gateway.trustedProxies '[\"127.0.0.1\"]' systemctl --user restart openclaw-gateway 7) 验证 # 检查版本 openclaw --version # 检查守护进程状态 systemctl --user status openclaw-gateway # 检查 Tailscale Serve tailscale serve status # 测试本地响应 curl http://localhost:18789 8) 锁定 VCN 安全 现在一切正常工作了，锁定 VCN 以阻止除 Tailscale 之外的所有流量。OCI 的虚拟云网络充当网络边缘的防火墙——流量在到达你的实例之前就被阻止。\n在 OCI Console 中转到 Networking → Virtual Cloud Networks 点击你的 VCN → Security Lists → Default Security List 移除除以下之外的所有入站规则： 0.0.0.0/0 UDP 41641（Tailscale） 保留默认出站规则（允许所有出站） 这会在网络边缘阻止端口 22 上的 SSH、HTTP、HTTPS 和其他所有内容。从现在开始，你只能通过 Tailscale 连接。\n访问控制 UI 从你 Tailscale 网络上的任何设备：\nhttps://openclaw..ts.net/ 将 替换为你的 tailnet 名称（在 tailscale status 中可见）。\n不需要 SSH 隧道。Tailscale 提供：\nHTTPS 加密（自动证书） 通过 Tailscale 身份认证 从 tailnet 上的任何设备（笔记本电脑、手机等）访问 安全：VCN + Tailscale（推荐基线） 通过锁定 VCN（仅开放 UDP 41641）并将 Gateway 网关绑定到 loopback，你获得了强大的纵深防御：公共流量在网络边缘被阻止，管理访问通过你的 tailnet 进行。\n此设置通常消除了纯粹为了阻止互联网范围的 SSH 暴力破解而需要额外的基于主机的防火墙规则的需求——但你仍应保持操作系统更新，运行 openclaw security audit，并验证你没有意外地在公共接口上监听。\n已经受保护的内容 传统步骤 是否需要？ 原因 UFW 防火墙 否 VCN 在流量到达实例之前就阻止了 fail2ban 否 如果端口 22 在 VCN 被阻止则无暴力破解 sshd 加固 否 Tailscale SSH 不使用 sshd 禁用 root 登录 否 Tailscale 使用 Tailscale 身份，而不是系统用户 仅 SSH 密钥认证 否 Tailscale 通过你的 tailnet 认证 IPv6 加固 通常不需要 取决于你的 VCN/子网设置；验证实际分配/暴露的内容 仍然推荐 凭证权限： chmod 700 ~/.openclaw 安全审计： openclaw security audit 系统更新： 定期 sudo apt update \u0026\u0026 sudo apt upgrade 监控 Tailscale： 在 Tailscale 管理控制台 中查看设备 验证安全态势 # 确认没有公共端口在监听 sudo ss -tlnp | grep -v '127.0.0.1\\|::1' # 验证 Tailscale SSH 处于活动状态 tailscale status | grep -q 'offers: ssh' \u0026\u0026 echo \"Tailscale SSH active\" # 可选：完全禁用 sshd sudo systemctl disable --now ssh 备用方案：SSH 隧道 如果 Tailscale Serve 不工作，使用 SSH 隧道：\n# 从你的本地机器（通过 Tailscale） ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw 然后打开 http://localhost:18789。\n故障排除 实例创建失败（“Out of capacity”） 免费层 ARM 实例很受欢迎。尝试：\n不同的可用性域 在非高峰时段（清晨）重试 选择 shape 时使用\"Always Free\"过滤器 Tailscale 无法连接 # 检查状态 sudo tailscale status # 重新认证 sudo tailscale up --ssh --hostname=openclaw --reset Gateway 网关无法启动 openclaw gateway status openclaw doctor --non-interactive journalctl --user -u openclaw-gateway -n 50 无法访问控制 UI # 验证 Tailscale Serve 正在运行 tailscale serve status # 检查 Gateway 网关是否在监听 curl http://localhost:18789 # 如需要则重启 systemctl --user restart openclaw-gateway ARM 二进制文件问题 某些工具可能没有 ARM 构建。检查：\nuname -m # 应该显示 aarch64 大多数 npm 包工作正常。对于二进制文件，寻找 linux-arm64 或 aarch64 版本。\n持久化 所有状态存储在：\n~/.openclaw/ — 配置、凭证、会话数据 ~/.openclaw/workspace/ — 工作区（SOUL.md、记忆、产物） 定期备份：\ntar -czvf openclaw-backup.tar.gz ~/.openclaw ~/.openclaw/workspace 另请参阅 Gateway 网关远程访问 — 其他远程访问模式 Tailscale 集成 — 完整的 Tailscale 文档 Gateway 网关配置 — 所有配置选项 DigitalOcean 指南 — 如果你想要付费 + 更容易注册 Hetzner 指南 — 基于 Docker 的替代方案 ",
+  "wordCount" : "656",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/platforms/oracle/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      在 Oracle Cloud（OCI）上运行 OpenClaw
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87" aria-label="目标">目标</a></li>
+                <li>
+                    <a href="#%e6%88%90%e6%9c%ac%e6%af%94%e8%be%832026" aria-label="成本比较（2026）">成本比较（2026）</a></li>
+                <li>
+                    <a href="#%e5%85%88%e5%86%b3%e6%9d%a1%e4%bb%b6" aria-label="先决条件">先决条件</a></li>
+                <li>
+                    <a href="#1-%e5%88%9b%e5%bb%ba-oci-%e5%ae%9e%e4%be%8b" aria-label="1) 创建 OCI 实例">1) 创建 OCI 实例</a></li>
+                <li>
+                    <a href="#2-%e8%bf%9e%e6%8e%a5%e5%b9%b6%e6%9b%b4%e6%96%b0" aria-label="2) 连接并更新">2) 连接并更新</a></li>
+                <li>
+                    <a href="#3-%e9%85%8d%e7%bd%ae%e7%94%a8%e6%88%b7%e5%92%8c%e4%b8%bb%e6%9c%ba%e5%90%8d" aria-label="3) 配置用户和主机名">3) 配置用户和主机名</a></li>
+                <li>
+                    <a href="#4-%e5%ae%89%e8%a3%85-tailscale" aria-label="4) 安装 Tailscale">4) 安装 Tailscale</a></li>
+                <li>
+                    <a href="#5-%e5%ae%89%e8%a3%85-openclaw" aria-label="5) 安装 OpenClaw">5) 安装 OpenClaw</a></li>
+                <li>
+                    <a href="#6-%e9%85%8d%e7%bd%ae-gateway-%e7%bd%91%e5%85%b3loopback--%e4%bb%a4%e7%89%8c%e8%ae%a4%e8%af%81%e5%b9%b6%e5%90%af%e7%94%a8-tailscale-serve" aria-label="6) 配置 Gateway 网关（loopback &#43; 令牌认证）并启用 Tailscale Serve">6) 配置 Gateway 网关（loopback + 令牌认证）并启用 Tailscale Serve</a></li>
+                <li>
+                    <a href="#7-%e9%aa%8c%e8%af%81" aria-label="7) 验证">7) 验证</a></li>
+                <li>
+                    <a href="#8-%e9%94%81%e5%ae%9a-vcn-%e5%ae%89%e5%85%a8" aria-label="8) 锁定 VCN 安全">8) 锁定 VCN 安全</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6-ui" aria-label="访问控制 UI">访问控制 UI</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8vcn--tailscale%e6%8e%a8%e8%8d%90%e5%9f%ba%e7%ba%bf" aria-label="安全：VCN &#43; Tailscale（推荐基线）">安全：VCN + Tailscale（推荐基线）</a><ul>
+                        
+                <li>
+                    <a href="#%e5%b7%b2%e7%bb%8f%e5%8f%97%e4%bf%9d%e6%8a%a4%e7%9a%84%e5%86%85%e5%ae%b9" aria-label="已经受保护的内容">已经受保护的内容</a></li>
+                <li>
+                    <a href="#%e4%bb%8d%e7%84%b6%e6%8e%a8%e8%8d%90" aria-label="仍然推荐">仍然推荐</a></li>
+                <li>
+                    <a href="#%e9%aa%8c%e8%af%81%e5%ae%89%e5%85%a8%e6%80%81%e5%8a%bf" aria-label="验证安全态势">验证安全态势</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%a4%87%e7%94%a8%e6%96%b9%e6%a1%88ssh-%e9%9a%a7%e9%81%93" aria-label="备用方案：SSH 隧道">备用方案：SSH 隧道</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%9e%e4%be%8b%e5%88%9b%e5%bb%ba%e5%a4%b1%e8%b4%a5out-of-capacity" aria-label="实例创建失败（&ldquo;Out of capacity&rdquo;）">实例创建失败（&ldquo;Out of capacity&rdquo;）</a></li>
+                <li>
+                    <a href="#tailscale-%e6%97%a0%e6%b3%95%e8%bf%9e%e6%8e%a5" aria-label="Tailscale 无法连接">Tailscale 无法连接</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e6%97%a0%e6%b3%95%e5%90%af%e5%8a%a8" aria-label="Gateway 网关无法启动">Gateway 网关无法启动</a></li>
+                <li>
+                    <a href="#%e6%97%a0%e6%b3%95%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6-ui" aria-label="无法访问控制 UI">无法访问控制 UI</a></li>
+                <li>
+                    <a href="#arm-%e4%ba%8c%e8%bf%9b%e5%88%b6%e6%96%87%e4%bb%b6%e9%97%ae%e9%a2%98" aria-label="ARM 二进制文件问题">ARM 二进制文件问题</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8c%81%e4%b9%85%e5%8c%96" aria-label="持久化">持久化</a></li>
+                <li>
+                    <a href="#%e5%8f%a6%e8%af%b7%e5%8f%82%e9%98%85" aria-label="另请参阅">另请参阅</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="目标">目标<a hidden class="anchor" aria-hidden="true" href="#目标">#</a></h2>
+<p>在 Oracle Cloud 的 <strong>Always Free</strong> ARM 层上运行持久化的 OpenClaw Gateway 网关。</p>
+<p>Oracle 的免费层非常适合 OpenClaw（特别是如果你已经有 OCI 账户），但有一些权衡：</p>
+<ul>
+<li>ARM 架构（大多数东西都能工作，但某些二进制文件可能仅支持 x86）</li>
+<li>容量和注册可能比较麻烦</li>
+</ul>
+<h2 id="成本比较2026">成本比较（2026）<a hidden class="anchor" aria-hidden="true" href="#成本比较2026">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>提供商</th>
+          <th>方案</th>
+          <th>配置</th>
+          <th>价格/月</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Oracle Cloud</td>
+          <td>Always Free ARM</td>
+          <td>最多 4 OCPU，24GB RAM</td>
+          <td>$0</td>
+          <td>ARM，容量有限</td>
+      </tr>
+      <tr>
+          <td>Hetzner</td>
+          <td>CX22</td>
+          <td>2 vCPU，4GB RAM</td>
+          <td>~ $4</td>
+          <td>最便宜的付费选项</td>
+      </tr>
+      <tr>
+          <td>DigitalOcean</td>
+          <td>Basic</td>
+          <td>1 vCPU，1GB RAM</td>
+          <td>$6</td>
+          <td>易用的 UI，文档完善</td>
+      </tr>
+      <tr>
+          <td>Vultr</td>
+          <td>Cloud Compute</td>
+          <td>1 vCPU，1GB RAM</td>
+          <td>$6</td>
+          <td>多个地区</td>
+      </tr>
+      <tr>
+          <td>Linode</td>
+          <td>Nanode</td>
+          <td>1 vCPU，1GB RAM</td>
+          <td>$5</td>
+          <td>现为 Akamai 的一部分</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="先决条件">先决条件<a hidden class="anchor" aria-hidden="true" href="#先决条件">#</a></h2>
+<ul>
+<li>Oracle Cloud 账户（<a href="https://www.oracle.com/cloud/free/">注册</a>）——如果遇到问题请参阅<a href="https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd">社区注册指南</a></li>
+<li>Tailscale 账户（在 <a href="https://tailscale.com">tailscale.com</a> 免费）</li>
+<li>约 30 分钟</li>
+</ul>
+<h2 id="1-创建-oci-实例">1) 创建 OCI 实例<a hidden class="anchor" aria-hidden="true" href="#1-创建-oci-实例">#</a></h2>
+<ol>
+<li>登录 <a href="https://cloud.oracle.com/">Oracle Cloud Console</a></li>
+<li>导航到 <strong>Compute → Instances → Create Instance</strong></li>
+<li>配置：
+<ul>
+<li><strong>Name:</strong> <code>openclaw</code></li>
+<li><strong>Image:</strong> Ubuntu 24.04 (aarch64)</li>
+<li><strong>Shape:</strong> <code>VM.Standard.A1.Flex</code>（Ampere ARM）</li>
+<li><strong>OCPUs:</strong> 2（或最多 4）</li>
+<li><strong>Memory:</strong> 12 GB（或最多 24 GB）</li>
+<li><strong>Boot volume:</strong> 50 GB（最多 200 GB 免费）</li>
+<li><strong>SSH key:</strong> 添加你的公钥</li>
+</ul>
+</li>
+<li>点击 <strong>Create</strong></li>
+<li>记录公网 IP 地址</li>
+</ol>
+<p><strong>提示：</strong> 如果实例创建失败并显示&quot;Out of capacity&quot;，尝试不同的可用性域或稍后重试。免费层容量有限。</p>
+<h2 id="2-连接并更新">2) 连接并更新<a hidden class="anchor" aria-hidden="true" href="#2-连接并更新">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 通过公网 IP 连接</span>
+</span></span><span class="line"><span class="cl">ssh ubuntu@YOUR_PUBLIC_IP
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 更新系统</span>
+</span></span><span class="line"><span class="cl">sudo apt update <span class="o">&amp;&amp;</span> sudo apt upgrade -y
+</span></span><span class="line"><span class="cl">sudo apt install -y build-essential
+</span></span></code></pre></div><p><strong>注意：</strong> <code>build-essential</code> 是某些依赖项 ARM 编译所必需的。</p>
+<h2 id="3-配置用户和主机名">3) 配置用户和主机名<a hidden class="anchor" aria-hidden="true" href="#3-配置用户和主机名">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 设置主机名</span>
+</span></span><span class="line"><span class="cl">sudo hostnamectl set-hostname openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 为 ubuntu 用户设置密码</span>
+</span></span><span class="line"><span class="cl">sudo passwd ubuntu
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启用 lingering（注销后保持用户服务运行）</span>
+</span></span><span class="line"><span class="cl">sudo loginctl enable-linger ubuntu
+</span></span></code></pre></div><h2 id="4-安装-tailscale">4) 安装 Tailscale<a hidden class="anchor" aria-hidden="true" href="#4-安装-tailscale">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://tailscale.com/install.sh <span class="p">|</span> sh
+</span></span><span class="line"><span class="cl">sudo tailscale up --ssh --hostname<span class="o">=</span>openclaw
+</span></span></code></pre></div><p>这会启用 Tailscale SSH，所以你可以从 tailnet 上的任何设备通过 <code>ssh openclaw</code> 连接——不需要公网 IP。</p>
+<p>验证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tailscale status
+</span></span></code></pre></div><p><strong>从现在开始，通过 Tailscale 连接：</strong> <code>ssh ubuntu@openclaw</code>（或使用 Tailscale IP）。</p>
+<h2 id="5-安装-openclaw">5) 安装 OpenClaw<a hidden class="anchor" aria-hidden="true" href="#5-安装-openclaw">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://openclaw.ai/install.sh <span class="p">|</span> bash
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> ~/.bashrc
+</span></span></code></pre></div><p>当提示&quot;How do you want to hatch your bot?&ldquo;时，选择 <strong>&ldquo;Do this later&rdquo;</strong>。</p>
+<blockquote>
+<p>注意：如果你遇到 ARM 原生构建问题，在使用 Homebrew 之前先从系统包开始（例如 <code>sudo apt install -y build-essential</code>）。</p>
+</blockquote>
+<h2 id="6-配置-gateway-网关loopback--令牌认证并启用-tailscale-serve">6) 配置 Gateway 网关（loopback + 令牌认证）并启用 Tailscale Serve<a hidden class="anchor" aria-hidden="true" href="#6-配置-gateway-网关loopback--令牌认证并启用-tailscale-serve">#</a></h2>
+<p>使用令牌认证作为默认值。它是可预测的，避免需要任何&quot;不安全认证&quot;的控制 UI 标志。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在 VM 上保持 Gateway 网关私有</span>
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.bind loopback
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 要求 Gateway 网关 + 控制 UI 的认证</span>
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.auth.mode token
+</span></span><span class="line"><span class="cl">openclaw doctor --generate-gateway-token
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 通过 Tailscale Serve 暴露（HTTPS + tailnet 访问）</span>
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.tailscale.mode serve
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.trustedProxies <span class="s1">&#39;[&#34;127.0.0.1&#34;]&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">systemctl --user restart openclaw-gateway
+</span></span></code></pre></div><h2 id="7-验证">7) 验证<a hidden class="anchor" aria-hidden="true" href="#7-验证">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查版本</span>
+</span></span><span class="line"><span class="cl">openclaw --version
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查守护进程状态</span>
+</span></span><span class="line"><span class="cl">systemctl --user status openclaw-gateway
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查 Tailscale Serve</span>
+</span></span><span class="line"><span class="cl">tailscale serve status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 测试本地响应</span>
+</span></span><span class="line"><span class="cl">curl http://localhost:18789
+</span></span></code></pre></div><h2 id="8-锁定-vcn-安全">8) 锁定 VCN 安全<a hidden class="anchor" aria-hidden="true" href="#8-锁定-vcn-安全">#</a></h2>
+<p>现在一切正常工作了，锁定 VCN 以阻止除 Tailscale 之外的所有流量。OCI 的虚拟云网络充当网络边缘的防火墙——流量在到达你的实例之前就被阻止。</p>
+<ol>
+<li>在 OCI Console 中转到 <strong>Networking → Virtual Cloud Networks</strong></li>
+<li>点击你的 VCN → <strong>Security Lists</strong> → Default Security List</li>
+<li><strong>移除</strong>除以下之外的所有入站规则：
+<ul>
+<li><code>0.0.0.0/0 UDP 41641</code>（Tailscale）</li>
+</ul>
+</li>
+<li>保留默认出站规则（允许所有出站）</li>
+</ol>
+<p>这会在网络边缘阻止端口 22 上的 SSH、HTTP、HTTPS 和其他所有内容。从现在开始，你只能通过 Tailscale 连接。</p>
+<hr>
+<h2 id="访问控制-ui">访问控制 UI<a hidden class="anchor" aria-hidden="true" href="#访问控制-ui">#</a></h2>
+<p>从你 Tailscale 网络上的任何设备：</p>
+<pre tabindex="0"><code>https://openclaw.&lt;tailnet-name&gt;.ts.net/
+</code></pre><p>将 <code>&lt;tailnet-name&gt;</code> 替换为你的 tailnet 名称（在 <code>tailscale status</code> 中可见）。</p>
+<p>不需要 SSH 隧道。Tailscale 提供：</p>
+<ul>
+<li>HTTPS 加密（自动证书）</li>
+<li>通过 Tailscale 身份认证</li>
+<li>从 tailnet 上的任何设备（笔记本电脑、手机等）访问</li>
+</ul>
+<hr>
+<h2 id="安全vcn--tailscale推荐基线">安全：VCN + Tailscale（推荐基线）<a hidden class="anchor" aria-hidden="true" href="#安全vcn--tailscale推荐基线">#</a></h2>
+<p>通过锁定 VCN（仅开放 UDP 41641）并将 Gateway 网关绑定到 loopback，你获得了强大的纵深防御：公共流量在网络边缘被阻止，管理访问通过你的 tailnet 进行。</p>
+<p>此设置通常消除了纯粹为了阻止互联网范围的 SSH 暴力破解而需要额外的基于主机的防火墙规则的<em>需求</em>——但你仍应保持操作系统更新，运行 <code>openclaw security audit</code>，并验证你没有意外地在公共接口上监听。</p>
+<h3 id="已经受保护的内容">已经受保护的内容<a hidden class="anchor" aria-hidden="true" href="#已经受保护的内容">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th>传统步骤</th>
+          <th>是否需要？</th>
+          <th>原因</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>UFW 防火墙</td>
+          <td>否</td>
+          <td>VCN 在流量到达实例之前就阻止了</td>
+      </tr>
+      <tr>
+          <td>fail2ban</td>
+          <td>否</td>
+          <td>如果端口 22 在 VCN 被阻止则无暴力破解</td>
+      </tr>
+      <tr>
+          <td>sshd 加固</td>
+          <td>否</td>
+          <td>Tailscale SSH 不使用 sshd</td>
+      </tr>
+      <tr>
+          <td>禁用 root 登录</td>
+          <td>否</td>
+          <td>Tailscale 使用 Tailscale 身份，而不是系统用户</td>
+      </tr>
+      <tr>
+          <td>仅 SSH 密钥认证</td>
+          <td>否</td>
+          <td>Tailscale 通过你的 tailnet 认证</td>
+      </tr>
+      <tr>
+          <td>IPv6 加固</td>
+          <td>通常不需要</td>
+          <td>取决于你的 VCN/子网设置；验证实际分配/暴露的内容</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="仍然推荐">仍然推荐<a hidden class="anchor" aria-hidden="true" href="#仍然推荐">#</a></h3>
+<ul>
+<li><strong>凭证权限：</strong> <code>chmod 700 ~/.openclaw</code></li>
+<li><strong>安全审计：</strong> <code>openclaw security audit</code></li>
+<li><strong>系统更新：</strong> 定期 <code>sudo apt update &amp;&amp; sudo apt upgrade</code></li>
+<li><strong>监控 Tailscale：</strong> 在 <a href="https://login.tailscale.com/admin">Tailscale 管理控制台</a> 中查看设备</li>
+</ul>
+<h3 id="验证安全态势">验证安全态势<a hidden class="anchor" aria-hidden="true" href="#验证安全态势">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 确认没有公共端口在监听</span>
+</span></span><span class="line"><span class="cl">sudo ss -tlnp <span class="p">|</span> grep -v <span class="s1">&#39;127.0.0.1\|::1&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 验证 Tailscale SSH 处于活动状态</span>
+</span></span><span class="line"><span class="cl">tailscale status <span class="p">|</span> grep -q <span class="s1">&#39;offers: ssh&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;Tailscale SSH active&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 可选：完全禁用 sshd</span>
+</span></span><span class="line"><span class="cl">sudo systemctl disable --now ssh
+</span></span></code></pre></div><hr>
+<h2 id="备用方案ssh-隧道">备用方案：SSH 隧道<a hidden class="anchor" aria-hidden="true" href="#备用方案ssh-隧道">#</a></h2>
+<p>如果 Tailscale Serve 不工作，使用 SSH 隧道：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 从你的本地机器（通过 Tailscale）</span>
+</span></span><span class="line"><span class="cl">ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
+</span></span></code></pre></div><p>然后打开 <code>http://localhost:18789</code>。</p>
+<hr>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="实例创建失败out-of-capacity">实例创建失败（&ldquo;Out of capacity&rdquo;）<a hidden class="anchor" aria-hidden="true" href="#实例创建失败out-of-capacity">#</a></h3>
+<p>免费层 ARM 实例很受欢迎。尝试：</p>
+<ul>
+<li>不同的可用性域</li>
+<li>在非高峰时段（清晨）重试</li>
+<li>选择 shape 时使用&quot;Always Free&quot;过滤器</li>
+</ul>
+<h3 id="tailscale-无法连接">Tailscale 无法连接<a hidden class="anchor" aria-hidden="true" href="#tailscale-无法连接">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查状态</span>
+</span></span><span class="line"><span class="cl">sudo tailscale status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 重新认证</span>
+</span></span><span class="line"><span class="cl">sudo tailscale up --ssh --hostname<span class="o">=</span>openclaw --reset
+</span></span></code></pre></div><h3 id="gateway-网关无法启动">Gateway 网关无法启动<a hidden class="anchor" aria-hidden="true" href="#gateway-网关无法启动">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway status
+</span></span><span class="line"><span class="cl">openclaw doctor --non-interactive
+</span></span><span class="line"><span class="cl">journalctl --user -u openclaw-gateway -n <span class="m">50</span>
+</span></span></code></pre></div><h3 id="无法访问控制-ui">无法访问控制 UI<a hidden class="anchor" aria-hidden="true" href="#无法访问控制-ui">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 验证 Tailscale Serve 正在运行</span>
+</span></span><span class="line"><span class="cl">tailscale serve status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查 Gateway 网关是否在监听</span>
+</span></span><span class="line"><span class="cl">curl http://localhost:18789
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 如需要则重启</span>
+</span></span><span class="line"><span class="cl">systemctl --user restart openclaw-gateway
+</span></span></code></pre></div><h3 id="arm-二进制文件问题">ARM 二进制文件问题<a hidden class="anchor" aria-hidden="true" href="#arm-二进制文件问题">#</a></h3>
+<p>某些工具可能没有 ARM 构建。检查：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">uname -m  <span class="c1"># 应该显示 aarch64</span>
+</span></span></code></pre></div><p>大多数 npm 包工作正常。对于二进制文件，寻找 <code>linux-arm64</code> 或 <code>aarch64</code> 版本。</p>
+<hr>
+<h2 id="持久化">持久化<a hidden class="anchor" aria-hidden="true" href="#持久化">#</a></h2>
+<p>所有状态存储在：</p>
+<ul>
+<li><code>~/.openclaw/</code> — 配置、凭证、会话数据</li>
+<li><code>~/.openclaw/workspace/</code> — 工作区（SOUL.md、记忆、产物）</li>
+</ul>
+<p>定期备份：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tar -czvf openclaw-backup.tar.gz ~/.openclaw ~/.openclaw/workspace
+</span></span></code></pre></div><hr>
+<h2 id="另请参阅">另请参阅<a hidden class="anchor" aria-hidden="true" href="#另请参阅">#</a></h2>
+<ul>
+<li><a href="/gateway/remote">Gateway 网关远程访问</a> — 其他远程访问模式</li>
+<li><a href="/gateway/tailscale">Tailscale 集成</a> — 完整的 Tailscale 文档</li>
+<li><a href="/gateway/configuration">Gateway 网关配置</a> — 所有配置选项</li>
+<li><a href="/platforms/digitalocean">DigitalOcean 指南</a> — 如果你想要付费 + 更容易注册</li>
+<li><a href="/install/hetzner">Hetzner 指南</a> — 基于 Docker 的替代方案</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/install/macos-vm/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>在 macOS 虚拟机上运行 OpenClaw（沙箱隔离）</span>
+  </a>
+  <a class="next" href="/openclaw/platforms/raspberry-pi/">
+    <span class="title">Next »</span>
+    <br>
+    <span>在 Raspberry Pi 上运行 OpenClaw</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

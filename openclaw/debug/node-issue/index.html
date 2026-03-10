@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Node &#43; tsx &#34;  name is not a function&#34; 崩溃 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="概述
+通过 Node 使用 tsx 运行 OpenClaw 时，启动阶段报错：
+[openclaw] Failed to start CLI: TypeError: __name is not a function
+    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
+    at .../src/agents/auth-profiles/constants.ts:25:20
+此问题在开发脚本从 Bun 切换到 tsx 后出现（提交 2871657e，2026-01-06）。相同的运行路径在 Bun 下正常工作。
+环境
+
+Node: v25.x（在 v25.3.0 上观察到）
+tsx: 4.21.0
+操作系统: macOS（其他运行 Node 25 的平台也可能复现）
+
+复现步骤（仅 Node）
+# 在仓库根目录
+node --version
+pnpm install
+node --import tsx src/entry.ts status
+仓库内最小复现
+node --import tsx scripts/repro/tsx-name-repro.ts
+Node 版本检查
+
+Node 25.3.0：失败
+Node 22.22.0（Homebrew node@22）：失败
+Node 24：尚未安装，需要验证
+
+说明 / 假设
+
+tsx 使用 esbuild 转换 TS/ESM。esbuild 的 keepNames 会生成一个 __name 辅助函数，并用 __name(...) 包裹函数定义。
+崩溃表明 __name 存在但在运行时不是函数，这意味着在 Node 25 的加载器路径中该辅助函数缺失或被覆盖。
+其他 esbuild 使用者也报告过类似的 __name 辅助函数缺失或被重写的问题。
+
+回归历史
+
+2871657e（2026-01-06）：脚本从 Bun 改为 tsx，使 Bun 成为可选项。
+在此之前（Bun 路径），openclaw status 和 gateway:watch 均正常工作。
+
+解决方法
+
+开发脚本使用 Bun（当前临时回退方案）。
+使用 Node &#43; tsc watch，然后运行编译产物：
+pnpm exec tsc --watch --preserveWatchOutput
+node --watch openclaw.mjs status
+
+已在本地确认：pnpm exec tsc -p tsconfig.json &#43; node openclaw.mjs status 在 Node 25 上可正常运行。
+如果可能，在 TS 加载器中禁用 esbuild 的 keepNames（防止插入 __name 辅助函数）；tsx 目前不提供此配置项。
+在 Node LTS（22/24）上测试 tsx，确认该问题是否为 Node 25 特有。
+
+参考资料
+
+https://opennext.js.org/cloudflare/howtos/keep_names
+https://esbuild.github.io/api/#keep-names
+https://github.com/evanw/esbuild/issues/1031
+
+后续步骤
+
+在 Node 22/24 上复现，确认是否为 Node 25 回归问题。
+测试 tsx nightly 版本，或在存在已知回归时固定到早期版本。
+如果在 Node LTS 上也能复现，则向上游提交包含 __name 堆栈跟踪的最小复现。
+">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/debug/node-issue/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/debug/node-issue/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/debug/node-issue/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Node &#43; tsx &#34;  name is not a function&#34; 崩溃">
+  <meta property="og:description" content="概述 通过 Node 使用 tsx 运行 OpenClaw 时，启动阶段报错：
+[openclaw] Failed to start CLI: TypeError: __name is not a function at createSubsystemLogger (.../src/logging/subsystem.ts:203:25) at .../src/agents/auth-profiles/constants.ts:25:20 此问题在开发脚本从 Bun 切换到 tsx 后出现（提交 2871657e，2026-01-06）。相同的运行路径在 Bun 下正常工作。
+环境 Node: v25.x（在 v25.3.0 上观察到） tsx: 4.21.0 操作系统: macOS（其他运行 Node 25 的平台也可能复现） 复现步骤（仅 Node） # 在仓库根目录 node --version pnpm install node --import tsx src/entry.ts status 仓库内最小复现 node --import tsx scripts/repro/tsx-name-repro.ts Node 版本检查 Node 25.3.0：失败 Node 22.22.0（Homebrew node@22）：失败 Node 24：尚未安装，需要验证 说明 / 假设 tsx 使用 esbuild 转换 TS/ESM。esbuild 的 keepNames 会生成一个 __name 辅助函数，并用 __name(...) 包裹函数定义。 崩溃表明 __name 存在但在运行时不是函数，这意味着在 Node 25 的加载器路径中该辅助函数缺失或被覆盖。 其他 esbuild 使用者也报告过类似的 __name 辅助函数缺失或被重写的问题。 回归历史 2871657e（2026-01-06）：脚本从 Bun 改为 tsx，使 Bun 成为可选项。 在此之前（Bun 路径），openclaw status 和 gateway:watch 均正常工作。 解决方法 开发脚本使用 Bun（当前临时回退方案）。 使用 Node &#43; tsc watch，然后运行编译产物： pnpm exec tsc --watch --preserveWatchOutput node --watch openclaw.mjs status 已在本地确认：pnpm exec tsc -p tsconfig.json &#43; node openclaw.mjs status 在 Node 25 上可正常运行。 如果可能，在 TS 加载器中禁用 esbuild 的 keepNames（防止插入 __name 辅助函数）；tsx 目前不提供此配置项。 在 Node LTS（22/24）上测试 tsx，确认该问题是否为 Node 25 特有。 参考资料 https://opennext.js.org/cloudflare/howtos/keep_names https://esbuild.github.io/api/#keep-names https://github.com/evanw/esbuild/issues/1031 后续步骤 在 Node 22/24 上复现，确认是否为 Node 25 回归问题。 测试 tsx nightly 版本，或在存在已知回归时固定到早期版本。 如果在 Node LTS 上也能复现，则向上游提交包含 __name 堆栈跟踪的最小复现。 ">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node &#43; tsx &#34;  name is not a function&#34; 崩溃">
+<meta name="twitter:description" content="概述
+通过 Node 使用 tsx 运行 OpenClaw 时，启动阶段报错：
+[openclaw] Failed to start CLI: TypeError: __name is not a function
+    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
+    at .../src/agents/auth-profiles/constants.ts:25:20
+此问题在开发脚本从 Bun 切换到 tsx 后出现（提交 2871657e，2026-01-06）。相同的运行路径在 Bun 下正常工作。
+环境
+
+Node: v25.x（在 v25.3.0 上观察到）
+tsx: 4.21.0
+操作系统: macOS（其他运行 Node 25 的平台也可能复现）
+
+复现步骤（仅 Node）
+# 在仓库根目录
+node --version
+pnpm install
+node --import tsx src/entry.ts status
+仓库内最小复现
+node --import tsx scripts/repro/tsx-name-repro.ts
+Node 版本检查
+
+Node 25.3.0：失败
+Node 22.22.0（Homebrew node@22）：失败
+Node 24：尚未安装，需要验证
+
+说明 / 假设
+
+tsx 使用 esbuild 转换 TS/ESM。esbuild 的 keepNames 会生成一个 __name 辅助函数，并用 __name(...) 包裹函数定义。
+崩溃表明 __name 存在但在运行时不是函数，这意味着在 Node 25 的加载器路径中该辅助函数缺失或被覆盖。
+其他 esbuild 使用者也报告过类似的 __name 辅助函数缺失或被重写的问题。
+
+回归历史
+
+2871657e（2026-01-06）：脚本从 Bun 改为 tsx，使 Bun 成为可选项。
+在此之前（Bun 路径），openclaw status 和 gateway:watch 均正常工作。
+
+解决方法
+
+开发脚本使用 Bun（当前临时回退方案）。
+使用 Node &#43; tsc watch，然后运行编译产物：
+pnpm exec tsc --watch --preserveWatchOutput
+node --watch openclaw.mjs status
+
+已在本地确认：pnpm exec tsc -p tsconfig.json &#43; node openclaw.mjs status 在 Node 25 上可正常运行。
+如果可能，在 TS 加载器中禁用 esbuild 的 keepNames（防止插入 __name 辅助函数）；tsx 目前不提供此配置项。
+在 Node LTS（22/24）上测试 tsx，确认该问题是否为 Node 25 特有。
+
+参考资料
+
+https://opennext.js.org/cloudflare/howtos/keep_names
+https://esbuild.github.io/api/#keep-names
+https://github.com/evanw/esbuild/issues/1031
+
+后续步骤
+
+在 Node 22/24 上复现，确认是否为 Node 25 回归问题。
+测试 tsx nightly 版本，或在存在已知回归时固定到早期版本。
+如果在 Node LTS 上也能复现，则向上游提交包含 __name 堆栈跟踪的最小复现。
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Node + tsx \"  name is not a function\" 崩溃",
+      "item": "/openclaw/debug/node-issue/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Node + tsx \"  name is not a function\" 崩溃",
+  "name": "Node \u002b tsx \u0022  name is not a function\u0022 崩溃",
+  "description": "概述 通过 Node 使用 tsx 运行 OpenClaw 时，启动阶段报错：\n[openclaw] Failed to start CLI: TypeError: __name is not a function at createSubsystemLogger (.../src/logging/subsystem.ts:203:25) at .../src/agents/auth-profiles/constants.ts:25:20 此问题在开发脚本从 Bun 切换到 tsx 后出现（提交 2871657e，2026-01-06）。相同的运行路径在 Bun 下正常工作。\n环境 Node: v25.x（在 v25.3.0 上观察到） tsx: 4.21.0 操作系统: macOS（其他运行 Node 25 的平台也可能复现） 复现步骤（仅 Node） # 在仓库根目录 node --version pnpm install node --import tsx src/entry.ts status 仓库内最小复现 node --import tsx scripts/repro/tsx-name-repro.ts Node 版本检查 Node 25.3.0：失败 Node 22.22.0（Homebrew node@22）：失败 Node 24：尚未安装，需要验证 说明 / 假设 tsx 使用 esbuild 转换 TS/ESM。esbuild 的 keepNames 会生成一个 __name 辅助函数，并用 __name(...) 包裹函数定义。 崩溃表明 __name 存在但在运行时不是函数，这意味着在 Node 25 的加载器路径中该辅助函数缺失或被覆盖。 其他 esbuild 使用者也报告过类似的 __name 辅助函数缺失或被重写的问题。 回归历史 2871657e（2026-01-06）：脚本从 Bun 改为 tsx，使 Bun 成为可选项。 在此之前（Bun 路径），openclaw status 和 gateway:watch 均正常工作。 解决方法 开发脚本使用 Bun（当前临时回退方案）。 使用 Node + tsc watch，然后运行编译产物： pnpm exec tsc --watch --preserveWatchOutput node --watch openclaw.mjs status 已在本地确认：pnpm exec tsc -p tsconfig.json + node openclaw.mjs status 在 Node 25 上可正常运行。 如果可能，在 TS 加载器中禁用 esbuild 的 keepNames（防止插入 __name 辅助函数）；tsx 目前不提供此配置项。 在 Node LTS（22/24）上测试 tsx，确认该问题是否为 Node 25 特有。 参考资料 https://opennext.js.org/cloudflare/howtos/keep_names https://esbuild.github.io/api/#keep-names https://github.com/evanw/esbuild/issues/1031 后续步骤 在 Node 22/24 上复现，确认是否为 Node 25 回归问题。 测试 tsx nightly 版本，或在存在已知回归时固定到早期版本。 如果在 Node LTS 上也能复现，则向上游提交包含 __name 堆栈跟踪的最小复现。 ",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "概述 通过 Node 使用 tsx 运行 OpenClaw 时，启动阶段报错：\n[openclaw] Failed to start CLI: TypeError: __name is not a function at createSubsystemLogger (.../src/logging/subsystem.ts:203:25) at .../src/agents/auth-profiles/constants.ts:25:20 此问题在开发脚本从 Bun 切换到 tsx 后出现（提交 2871657e，2026-01-06）。相同的运行路径在 Bun 下正常工作。\n环境 Node: v25.x（在 v25.3.0 上观察到） tsx: 4.21.0 操作系统: macOS（其他运行 Node 25 的平台也可能复现） 复现步骤（仅 Node） # 在仓库根目录 node --version pnpm install node --import tsx src/entry.ts status 仓库内最小复现 node --import tsx scripts/repro/tsx-name-repro.ts Node 版本检查 Node 25.3.0：失败 Node 22.22.0（Homebrew node@22）：失败 Node 24：尚未安装，需要验证 说明 / 假设 tsx 使用 esbuild 转换 TS/ESM。esbuild 的 keepNames 会生成一个 __name 辅助函数，并用 __name(...) 包裹函数定义。 崩溃表明 __name 存在但在运行时不是函数，这意味着在 Node 25 的加载器路径中该辅助函数缺失或被覆盖。 其他 esbuild 使用者也报告过类似的 __name 辅助函数缺失或被重写的问题。 回归历史 2871657e（2026-01-06）：脚本从 Bun 改为 tsx，使 Bun 成为可选项。 在此之前（Bun 路径），openclaw status 和 gateway:watch 均正常工作。 解决方法 开发脚本使用 Bun（当前临时回退方案）。 使用 Node + tsc watch，然后运行编译产物： pnpm exec tsc --watch --preserveWatchOutput node --watch openclaw.mjs status 已在本地确认：pnpm exec tsc -p tsconfig.json + node openclaw.mjs status 在 Node 25 上可正常运行。 如果可能，在 TS 加载器中禁用 esbuild 的 keepNames（防止插入 __name 辅助函数）；tsx 目前不提供此配置项。 在 Node LTS（22/24）上测试 tsx，确认该问题是否为 Node 25 特有。 参考资料 https://opennext.js.org/cloudflare/howtos/keep_names https://esbuild.github.io/api/#keep-names https://github.com/evanw/esbuild/issues/1031 后续步骤 在 Node 22/24 上复现，确认是否为 Node 25 回归问题。 测试 tsx nightly 版本，或在存在已知回归时固定到早期版本。 如果在 Node LTS 上也能复现，则向上游提交包含 __name 堆栈跟踪的最小复现。 ",
+  "wordCount" : "178",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/debug/node-issue/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Node &#43; tsx &#34;  name is not a function&#34; 崩溃
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%a6%82%e8%bf%b0" aria-label="概述">概述</a></li>
+                <li>
+                    <a href="#%e7%8e%af%e5%a2%83" aria-label="环境">环境</a></li>
+                <li>
+                    <a href="#%e5%a4%8d%e7%8e%b0%e6%ad%a5%e9%aa%a4%e4%bb%85-node" aria-label="复现步骤（仅 Node）">复现步骤（仅 Node）</a></li>
+                <li>
+                    <a href="#%e4%bb%93%e5%ba%93%e5%86%85%e6%9c%80%e5%b0%8f%e5%a4%8d%e7%8e%b0" aria-label="仓库内最小复现">仓库内最小复现</a></li>
+                <li>
+                    <a href="#node-%e7%89%88%e6%9c%ac%e6%a3%80%e6%9f%a5" aria-label="Node 版本检查">Node 版本检查</a></li>
+                <li>
+                    <a href="#%e8%af%b4%e6%98%8e--%e5%81%87%e8%ae%be" aria-label="说明 / 假设">说明 / 假设</a></li>
+                <li>
+                    <a href="#%e5%9b%9e%e5%bd%92%e5%8e%86%e5%8f%b2" aria-label="回归历史">回归历史</a></li>
+                <li>
+                    <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95" aria-label="解决方法">解决方法</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" aria-label="参考资料">参考资料</a></li>
+                <li>
+                    <a href="#%e5%90%8e%e7%bb%ad%e6%ad%a5%e9%aa%a4" aria-label="后续步骤">后续步骤</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="概述">概述<a hidden class="anchor" aria-hidden="true" href="#概述">#</a></h2>
+<p>通过 Node 使用 <code>tsx</code> 运行 OpenClaw 时，启动阶段报错：</p>
+<pre tabindex="0"><code>[openclaw] Failed to start CLI: TypeError: __name is not a function
+    at createSubsystemLogger (.../src/logging/subsystem.ts:203:25)
+    at .../src/agents/auth-profiles/constants.ts:25:20
+</code></pre><p>此问题在开发脚本从 Bun 切换到 <code>tsx</code> 后出现（提交 <code>2871657e</code>，2026-01-06）。相同的运行路径在 Bun 下正常工作。</p>
+<h2 id="环境">环境<a hidden class="anchor" aria-hidden="true" href="#环境">#</a></h2>
+<ul>
+<li>Node: v25.x（在 v25.3.0 上观察到）</li>
+<li>tsx: 4.21.0</li>
+<li>操作系统: macOS（其他运行 Node 25 的平台也可能复现）</li>
+</ul>
+<h2 id="复现步骤仅-node">复现步骤（仅 Node）<a hidden class="anchor" aria-hidden="true" href="#复现步骤仅-node">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在仓库根目录</span>
+</span></span><span class="line"><span class="cl">node --version
+</span></span><span class="line"><span class="cl">pnpm install
+</span></span><span class="line"><span class="cl">node --import tsx src/entry.ts status
+</span></span></code></pre></div><h2 id="仓库内最小复现">仓库内最小复现<a hidden class="anchor" aria-hidden="true" href="#仓库内最小复现">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">node --import tsx scripts/repro/tsx-name-repro.ts
+</span></span></code></pre></div><h2 id="node-版本检查">Node 版本检查<a hidden class="anchor" aria-hidden="true" href="#node-版本检查">#</a></h2>
+<ul>
+<li>Node 25.3.0：失败</li>
+<li>Node 22.22.0（Homebrew <code>node@22</code>）：失败</li>
+<li>Node 24：尚未安装，需要验证</li>
+</ul>
+<h2 id="说明--假设">说明 / 假设<a hidden class="anchor" aria-hidden="true" href="#说明--假设">#</a></h2>
+<ul>
+<li><code>tsx</code> 使用 esbuild 转换 TS/ESM。esbuild 的 <code>keepNames</code> 会生成一个 <code>__name</code> 辅助函数，并用 <code>__name(...)</code> 包裹函数定义。</li>
+<li>崩溃表明 <code>__name</code> 存在但在运行时不是函数，这意味着在 Node 25 的加载器路径中该辅助函数缺失或被覆盖。</li>
+<li>其他 esbuild 使用者也报告过类似的 <code>__name</code> 辅助函数缺失或被重写的问题。</li>
+</ul>
+<h2 id="回归历史">回归历史<a hidden class="anchor" aria-hidden="true" href="#回归历史">#</a></h2>
+<ul>
+<li><code>2871657e</code>（2026-01-06）：脚本从 Bun 改为 tsx，使 Bun 成为可选项。</li>
+<li>在此之前（Bun 路径），<code>openclaw status</code> 和 <code>gateway:watch</code> 均正常工作。</li>
+</ul>
+<h2 id="解决方法">解决方法<a hidden class="anchor" aria-hidden="true" href="#解决方法">#</a></h2>
+<ul>
+<li>开发脚本使用 Bun（当前临时回退方案）。</li>
+<li>使用 Node + tsc watch，然后运行编译产物：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm <span class="nb">exec</span> tsc --watch --preserveWatchOutput
+</span></span><span class="line"><span class="cl">node --watch openclaw.mjs status
+</span></span></code></pre></div></li>
+<li>已在本地确认：<code>pnpm exec tsc -p tsconfig.json</code> + <code>node openclaw.mjs status</code> 在 Node 25 上可正常运行。</li>
+<li>如果可能，在 TS 加载器中禁用 esbuild 的 keepNames（防止插入 <code>__name</code> 辅助函数）；tsx 目前不提供此配置项。</li>
+<li>在 Node LTS（22/24）上测试 <code>tsx</code>，确认该问题是否为 Node 25 特有。</li>
+</ul>
+<h2 id="参考资料">参考资料<a hidden class="anchor" aria-hidden="true" href="#参考资料">#</a></h2>
+<ul>
+<li><a href="https://opennext.js.org/cloudflare/howtos/keep_names">https://opennext.js.org/cloudflare/howtos/keep_names</a></li>
+<li><a href="https://esbuild.github.io/api/#keep-names">https://esbuild.github.io/api/#keep-names</a></li>
+<li><a href="https://github.com/evanw/esbuild/issues/1031">https://github.com/evanw/esbuild/issues/1031</a></li>
+</ul>
+<h2 id="后续步骤">后续步骤<a hidden class="anchor" aria-hidden="true" href="#后续步骤">#</a></h2>
+<ul>
+<li>在 Node 22/24 上复现，确认是否为 Node 25 回归问题。</li>
+<li>测试 <code>tsx</code> nightly 版本，或在存在已知回归时固定到早期版本。</li>
+<li>如果在 Node LTS 上也能复现，则向上游提交包含 <code>__name</code> 堆栈跟踪的最小复现。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/install/nix/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Nix 安装</span>
+  </a>
+  <a class="next" href="/openclaw/install/node/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Node.js</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

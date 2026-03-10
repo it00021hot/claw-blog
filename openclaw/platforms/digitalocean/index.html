@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>在 DigitalOcean 上运行 OpenClaw | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标
+以 $6/月（或使用预留定价 $4/月）在 DigitalOcean 上运行持久的 OpenClaw Gateway 网关。
+如果你想要 $0/月的选项且不介意 ARM &#43; 特定提供商的设置，请参阅 Oracle Cloud 指南。
+成本比较（2026）
+
+  
+      
+          提供商
+          方案
+          配置
+          价格/月
+          备注
+      
+  
+  
+      
+          Oracle Cloud
+          Always Free ARM
+          最高 4 OCPU、24GB RAM
+          $0
+          ARM，容量有限 / 注册有坑
+      
+      
+          Hetzner
+          CX22
+          2 vCPU、4GB RAM
+          €3.79 (~$4)
+          最便宜的付费选项
+      
+      
+          DigitalOcean
+          Basic
+          1 vCPU、1GB RAM
+          $6
+          界面简单，文档完善
+      
+      
+          Vultr
+          Cloud Compute
+          1 vCPU、1GB RAM
+          $6
+          多地区可选
+      
+      
+          Linode
+          Nanode
+          1 vCPU、1GB RAM
+          $5
+          现为 Akamai 旗下
+      
+  
+
+选择提供商：
+
+DigitalOcean：最简单的用户体验 &#43; 可预测的设置（本指南）
+Hetzner：性价比高（参见 Hetzner 指南）
+Oracle Cloud：可以 $0/月，但更麻烦且仅限 ARM（参见 Oracle 指南）
+
+
+前提条件
+
+DigitalOcean 账户（注册可获 $200 免费额度）
+SSH 密钥对（或愿意使用密码认证）
+约 20 分钟
+
+1) 创建 Droplet
+
+登录 DigitalOcean
+点击 Create → Droplets
+选择：
+
+Region： 离你（或你的用户）最近的地区
+Image： Ubuntu 24.04 LTS
+Size： Basic → Regular → $6/mo（1 vCPU、1GB RAM、25GB SSD）
+Authentication： SSH 密钥（推荐）或密码
+
+
+点击 Create Droplet
+记下 IP 地址
+
+2) 通过 SSH 连接
+ssh root@YOUR_DROPLET_IP
+3) 安装 OpenClaw
+# Update system
+apt update &amp;&amp; apt upgrade -y
+
+# Install Node.js 22
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+apt install -y nodejs
+
+# Install OpenClaw
+curl -fsSL https://openclaw.ai/install.sh | bash
+
+# Verify
+openclaw --version
+4) 运行新手引导
+openclaw onboard --install-daemon
+向导将引导你完成：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/platforms/digitalocean/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/platforms/digitalocean/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/platforms/digitalocean/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="在 DigitalOcean 上运行 OpenClaw">
+  <meta property="og:description" content="目标 以 $6/月（或使用预留定价 $4/月）在 DigitalOcean 上运行持久的 OpenClaw Gateway 网关。
+如果你想要 $0/月的选项且不介意 ARM &#43; 特定提供商的设置，请参阅 Oracle Cloud 指南。
+成本比较（2026） 提供商 方案 配置 价格/月 备注 Oracle Cloud Always Free ARM 最高 4 OCPU、24GB RAM $0 ARM，容量有限 / 注册有坑 Hetzner CX22 2 vCPU、4GB RAM €3.79 (~$4) 最便宜的付费选项 DigitalOcean Basic 1 vCPU、1GB RAM $6 界面简单，文档完善 Vultr Cloud Compute 1 vCPU、1GB RAM $6 多地区可选 Linode Nanode 1 vCPU、1GB RAM $5 现为 Akamai 旗下 选择提供商：
+DigitalOcean：最简单的用户体验 &#43; 可预测的设置（本指南） Hetzner：性价比高（参见 Hetzner 指南） Oracle Cloud：可以 $0/月，但更麻烦且仅限 ARM（参见 Oracle 指南） 前提条件 DigitalOcean 账户（注册可获 $200 免费额度） SSH 密钥对（或愿意使用密码认证） 约 20 分钟 1) 创建 Droplet 登录 DigitalOcean 点击 Create → Droplets 选择： Region： 离你（或你的用户）最近的地区 Image： Ubuntu 24.04 LTS Size： Basic → Regular → $6/mo（1 vCPU、1GB RAM、25GB SSD） Authentication： SSH 密钥（推荐）或密码 点击 Create Droplet 记下 IP 地址 2) 通过 SSH 连接 ssh root@YOUR_DROPLET_IP 3) 安装 OpenClaw # Update system apt update &amp;&amp; apt upgrade -y # Install Node.js 22 curl -fsSL https://deb.nodesource.com/setup_22.x | bash - apt install -y nodejs # Install OpenClaw curl -fsSL https://openclaw.ai/install.sh | bash # Verify openclaw --version 4) 运行新手引导 openclaw onboard --install-daemon 向导将引导你完成：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在 DigitalOcean 上运行 OpenClaw">
+<meta name="twitter:description" content="目标
+以 $6/月（或使用预留定价 $4/月）在 DigitalOcean 上运行持久的 OpenClaw Gateway 网关。
+如果你想要 $0/月的选项且不介意 ARM &#43; 特定提供商的设置，请参阅 Oracle Cloud 指南。
+成本比较（2026）
+
+  
+      
+          提供商
+          方案
+          配置
+          价格/月
+          备注
+      
+  
+  
+      
+          Oracle Cloud
+          Always Free ARM
+          最高 4 OCPU、24GB RAM
+          $0
+          ARM，容量有限 / 注册有坑
+      
+      
+          Hetzner
+          CX22
+          2 vCPU、4GB RAM
+          €3.79 (~$4)
+          最便宜的付费选项
+      
+      
+          DigitalOcean
+          Basic
+          1 vCPU、1GB RAM
+          $6
+          界面简单，文档完善
+      
+      
+          Vultr
+          Cloud Compute
+          1 vCPU、1GB RAM
+          $6
+          多地区可选
+      
+      
+          Linode
+          Nanode
+          1 vCPU、1GB RAM
+          $5
+          现为 Akamai 旗下
+      
+  
+
+选择提供商：
+
+DigitalOcean：最简单的用户体验 &#43; 可预测的设置（本指南）
+Hetzner：性价比高（参见 Hetzner 指南）
+Oracle Cloud：可以 $0/月，但更麻烦且仅限 ARM（参见 Oracle 指南）
+
+
+前提条件
+
+DigitalOcean 账户（注册可获 $200 免费额度）
+SSH 密钥对（或愿意使用密码认证）
+约 20 分钟
+
+1) 创建 Droplet
+
+登录 DigitalOcean
+点击 Create → Droplets
+选择：
+
+Region： 离你（或你的用户）最近的地区
+Image： Ubuntu 24.04 LTS
+Size： Basic → Regular → $6/mo（1 vCPU、1GB RAM、25GB SSD）
+Authentication： SSH 密钥（推荐）或密码
+
+
+点击 Create Droplet
+记下 IP 地址
+
+2) 通过 SSH 连接
+ssh root@YOUR_DROPLET_IP
+3) 安装 OpenClaw
+# Update system
+apt update &amp;&amp; apt upgrade -y
+
+# Install Node.js 22
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+apt install -y nodejs
+
+# Install OpenClaw
+curl -fsSL https://openclaw.ai/install.sh | bash
+
+# Verify
+openclaw --version
+4) 运行新手引导
+openclaw onboard --install-daemon
+向导将引导你完成：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "在 DigitalOcean 上运行 OpenClaw",
+      "item": "/openclaw/platforms/digitalocean/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "在 DigitalOcean 上运行 OpenClaw",
+  "name": "在 DigitalOcean 上运行 OpenClaw",
+  "description": "目标 以 $6/月（或使用预留定价 $4/月）在 DigitalOcean 上运行持久的 OpenClaw Gateway 网关。\n如果你想要 $0/月的选项且不介意 ARM + 特定提供商的设置，请参阅 Oracle Cloud 指南。\n成本比较（2026） 提供商 方案 配置 价格/月 备注 Oracle Cloud Always Free ARM 最高 4 OCPU、24GB RAM $0 ARM，容量有限 / 注册有坑 Hetzner CX22 2 vCPU、4GB RAM €3.79 (~$4) 最便宜的付费选项 DigitalOcean Basic 1 vCPU、1GB RAM $6 界面简单，文档完善 Vultr Cloud Compute 1 vCPU、1GB RAM $6 多地区可选 Linode Nanode 1 vCPU、1GB RAM $5 现为 Akamai 旗下 选择提供商：\nDigitalOcean：最简单的用户体验 + 可预测的设置（本指南） Hetzner：性价比高（参见 Hetzner 指南） Oracle Cloud：可以 $0/月，但更麻烦且仅限 ARM（参见 Oracle 指南） 前提条件 DigitalOcean 账户（注册可获 $200 免费额度） SSH 密钥对（或愿意使用密码认证） 约 20 分钟 1) 创建 Droplet 登录 DigitalOcean 点击 Create → Droplets 选择： Region： 离你（或你的用户）最近的地区 Image： Ubuntu 24.04 LTS Size： Basic → Regular → $6/mo（1 vCPU、1GB RAM、25GB SSD） Authentication： SSH 密钥（推荐）或密码 点击 Create Droplet 记下 IP 地址 2) 通过 SSH 连接 ssh root@YOUR_DROPLET_IP 3) 安装 OpenClaw # Update system apt update \u0026amp;\u0026amp; apt upgrade -y # Install Node.js 22 curl -fsSL https://deb.nodesource.com/setup_22.x | bash - apt install -y nodejs # Install OpenClaw curl -fsSL https://openclaw.ai/install.sh | bash # Verify openclaw --version 4) 运行新手引导 openclaw onboard --install-daemon 向导将引导你完成：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标 以 $6/月（或使用预留定价 $4/月）在 DigitalOcean 上运行持久的 OpenClaw Gateway 网关。\n如果你想要 $0/月的选项且不介意 ARM + 特定提供商的设置，请参阅 Oracle Cloud 指南。\n成本比较（2026） 提供商 方案 配置 价格/月 备注 Oracle Cloud Always Free ARM 最高 4 OCPU、24GB RAM $0 ARM，容量有限 / 注册有坑 Hetzner CX22 2 vCPU、4GB RAM €3.79 (~$4) 最便宜的付费选项 DigitalOcean Basic 1 vCPU、1GB RAM $6 界面简单，文档完善 Vultr Cloud Compute 1 vCPU、1GB RAM $6 多地区可选 Linode Nanode 1 vCPU、1GB RAM $5 现为 Akamai 旗下 选择提供商：\nDigitalOcean：最简单的用户体验 + 可预测的设置（本指南） Hetzner：性价比高（参见 Hetzner 指南） Oracle Cloud：可以 $0/月，但更麻烦且仅限 ARM（参见 Oracle 指南） 前提条件 DigitalOcean 账户（注册可获 $200 免费额度） SSH 密钥对（或愿意使用密码认证） 约 20 分钟 1) 创建 Droplet 登录 DigitalOcean 点击 Create → Droplets 选择： Region： 离你（或你的用户）最近的地区 Image： Ubuntu 24.04 LTS Size： Basic → Regular → $6/mo（1 vCPU、1GB RAM、25GB SSD） Authentication： SSH 密钥（推荐）或密码 点击 Create Droplet 记下 IP 地址 2) 通过 SSH 连接 ssh root@YOUR_DROPLET_IP 3) 安装 OpenClaw # Update system apt update \u0026\u0026 apt upgrade -y # Install Node.js 22 curl -fsSL https://deb.nodesource.com/setup_22.x | bash - apt install -y nodejs # Install OpenClaw curl -fsSL https://openclaw.ai/install.sh | bash # Verify openclaw --version 4) 运行新手引导 openclaw onboard --install-daemon 向导将引导你完成：\n模型认证（API 密钥或 OAuth） 渠道设置（Telegram、WhatsApp、Discord 等） Gateway 网关令牌（自动生成） 守护进程安装（systemd） 5) 验证 Gateway 网关 # Check status openclaw status # Check service systemctl --user status openclaw-gateway.service # View logs journalctl --user -u openclaw-gateway.service -f 6) 访问控制面板 Gateway 网关默认绑定到 loopback。要访问控制界面：\n选项 A：SSH 隧道（推荐）\n# From your local machine ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP # Then open: http://localhost:18789 选项 B：Tailscale Serve（HTTPS，仅 loopback）\n# On the droplet curl -fsSL https://tailscale.com/install.sh | sh tailscale up # Configure Gateway to use Tailscale Serve openclaw config set gateway.tailscale.mode serve openclaw gateway restart 打开：https:///\n注意事项：\nServe 保持 Gateway 网关仅 loopback 并通过 Tailscale 身份头进行认证。 要改为需要令牌/密码，请设置 gateway.auth.allowTailscale: false 或使用 gateway.auth.mode: \"password\"。 选项 C：Tailnet 绑定（不使用 Serve）\nopenclaw config set gateway.bind tailnet openclaw gateway restart 打开：http://:18789（需要令牌）。\n7) 连接你的渠道 Telegram openclaw pairing list telegram openclaw pairing approve telegram WhatsApp openclaw channels login whatsapp # Scan QR code 参见渠道了解其他提供商。\n1GB RAM 的优化 $6 的 droplet 只有 1GB RAM。为了保持运行流畅：\n添加 swap（推荐） fallocate -l 2G /swapfile chmod 600 /swapfile mkswap /swapfile swapon /swapfile echo '/swapfile none swap sw 0 0' \u003e\u003e /etc/fstab 使用更轻量的模型 如果遇到 OOM，考虑：\n使用基于 API 的模型（Claude、GPT）而不是本地模型 将 agents.defaults.model.primary 设置为更小的模型 监控内存 free -h htop 持久化 所有状态存储在：\n~/.openclaw/ — 配置、凭证、会话数据 ~/.openclaw/workspace/ — 工作区（SOUL.md、记忆等） 这些在重启后保留。定期备份：\ntar -czvf openclaw-backup.tar.gz ~/.openclaw ~/.openclaw/workspace Oracle Cloud 免费替代方案 Oracle Cloud 提供 Always Free ARM 实例，比这里任何付费选项都强大得多 — 每月 $0。\n你将获得 配置 4 OCPUs ARM Ampere A1 24GB RAM 绰绰有余 200GB 存储 块存储卷 永久免费 不收取信用卡费用 注意事项：\n注册可能有点麻烦（失败了就重试） ARM 架构 — 大多数东西都能工作，但有些二进制文件需要 ARM 构建 完整设置指南请参阅 Oracle Cloud。关于注册技巧和注册流程故障排除，请参阅此社区指南。\n故障排除 Gateway 网关无法启动 openclaw gateway status openclaw doctor --non-interactive journalctl -u openclaw --no-pager -n 50 端口已被使用 lsof -i :18789 kill 内存不足 # Check memory free -h # Add more swap # Or upgrade to $12/mo droplet (2GB RAM) 另请参阅 Hetzner 指南 — 更便宜、更强大 Docker 安装 — 容器化设置 Tailscale — 安全远程访问 配置 — 完整配置参考 ",
+  "wordCount" : "460",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/platforms/digitalocean/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      在 DigitalOcean 上运行 OpenClaw
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87" aria-label="目标">目标</a></li>
+                <li>
+                    <a href="#%e6%88%90%e6%9c%ac%e6%af%94%e8%be%832026" aria-label="成本比较（2026）">成本比较（2026）</a></li>
+                <li>
+                    <a href="#%e5%89%8d%e6%8f%90%e6%9d%a1%e4%bb%b6" aria-label="前提条件">前提条件</a></li>
+                <li>
+                    <a href="#1-%e5%88%9b%e5%bb%ba-droplet" aria-label="1) 创建 Droplet">1) 创建 Droplet</a></li>
+                <li>
+                    <a href="#2-%e9%80%9a%e8%bf%87-ssh-%e8%bf%9e%e6%8e%a5" aria-label="2) 通过 SSH 连接">2) 通过 SSH 连接</a></li>
+                <li>
+                    <a href="#3-%e5%ae%89%e8%a3%85-openclaw" aria-label="3) 安装 OpenClaw">3) 安装 OpenClaw</a></li>
+                <li>
+                    <a href="#4-%e8%bf%90%e8%a1%8c%e6%96%b0%e6%89%8b%e5%bc%95%e5%af%bc" aria-label="4) 运行新手引导">4) 运行新手引导</a></li>
+                <li>
+                    <a href="#5-%e9%aa%8c%e8%af%81-gateway-%e7%bd%91%e5%85%b3" aria-label="5) 验证 Gateway 网关">5) 验证 Gateway 网关</a></li>
+                <li>
+                    <a href="#6-%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6%e9%9d%a2%e6%9d%bf" aria-label="6) 访问控制面板">6) 访问控制面板</a></li>
+                <li>
+                    <a href="#7-%e8%bf%9e%e6%8e%a5%e4%bd%a0%e7%9a%84%e6%b8%a0%e9%81%93" aria-label="7) 连接你的渠道">7) 连接你的渠道</a><ul>
+                        
+                <li>
+                    <a href="#telegram" aria-label="Telegram">Telegram</a></li>
+                <li>
+                    <a href="#whatsapp" aria-label="WhatsApp">WhatsApp</a></li></ul>
+                </li>
+                <li>
+                    <a href="#1gb-ram-%e7%9a%84%e4%bc%98%e5%8c%96" aria-label="1GB RAM 的优化">1GB RAM 的优化</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b7%bb%e5%8a%a0-swap%e6%8e%a8%e8%8d%90" aria-label="添加 swap（推荐）">添加 swap（推荐）</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e6%9b%b4%e8%bd%bb%e9%87%8f%e7%9a%84%e6%a8%a1%e5%9e%8b" aria-label="使用更轻量的模型">使用更轻量的模型</a></li>
+                <li>
+                    <a href="#%e7%9b%91%e6%8e%a7%e5%86%85%e5%ad%98" aria-label="监控内存">监控内存</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8c%81%e4%b9%85%e5%8c%96" aria-label="持久化">持久化</a></li>
+                <li>
+                    <a href="#oracle-cloud-%e5%85%8d%e8%b4%b9%e6%9b%bf%e4%bb%a3%e6%96%b9%e6%a1%88" aria-label="Oracle Cloud 免费替代方案">Oracle Cloud 免费替代方案</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e6%97%a0%e6%b3%95%e5%90%af%e5%8a%a8" aria-label="Gateway 网关无法启动">Gateway 网关无法启动</a></li>
+                <li>
+                    <a href="#%e7%ab%af%e5%8f%a3%e5%b7%b2%e8%a2%ab%e4%bd%bf%e7%94%a8" aria-label="端口已被使用">端口已被使用</a></li>
+                <li>
+                    <a href="#%e5%86%85%e5%ad%98%e4%b8%8d%e8%b6%b3" aria-label="内存不足">内存不足</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%a6%e8%af%b7%e5%8f%82%e9%98%85" aria-label="另请参阅">另请参阅</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="目标">目标<a hidden class="anchor" aria-hidden="true" href="#目标">#</a></h2>
+<p>以 <strong>$6/月</strong>（或使用预留定价 $4/月）在 DigitalOcean 上运行持久的 OpenClaw Gateway 网关。</p>
+<p>如果你想要 $0/月的选项且不介意 ARM + 特定提供商的设置，请参阅 <a href="/platforms/oracle">Oracle Cloud 指南</a>。</p>
+<h2 id="成本比较2026">成本比较（2026）<a hidden class="anchor" aria-hidden="true" href="#成本比较2026">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>提供商</th>
+          <th>方案</th>
+          <th>配置</th>
+          <th>价格/月</th>
+          <th>备注</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Oracle Cloud</td>
+          <td>Always Free ARM</td>
+          <td>最高 4 OCPU、24GB RAM</td>
+          <td>$0</td>
+          <td>ARM，容量有限 / 注册有坑</td>
+      </tr>
+      <tr>
+          <td>Hetzner</td>
+          <td>CX22</td>
+          <td>2 vCPU、4GB RAM</td>
+          <td>€3.79 (~$4)</td>
+          <td>最便宜的付费选项</td>
+      </tr>
+      <tr>
+          <td>DigitalOcean</td>
+          <td>Basic</td>
+          <td>1 vCPU、1GB RAM</td>
+          <td>$6</td>
+          <td>界面简单，文档完善</td>
+      </tr>
+      <tr>
+          <td>Vultr</td>
+          <td>Cloud Compute</td>
+          <td>1 vCPU、1GB RAM</td>
+          <td>$6</td>
+          <td>多地区可选</td>
+      </tr>
+      <tr>
+          <td>Linode</td>
+          <td>Nanode</td>
+          <td>1 vCPU、1GB RAM</td>
+          <td>$5</td>
+          <td>现为 Akamai 旗下</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>选择提供商：</strong></p>
+<ul>
+<li>DigitalOcean：最简单的用户体验 + 可预测的设置（本指南）</li>
+<li>Hetzner：性价比高（参见 <a href="/install/hetzner">Hetzner 指南</a>）</li>
+<li>Oracle Cloud：可以 $0/月，但更麻烦且仅限 ARM（参见 <a href="/platforms/oracle">Oracle 指南</a>）</li>
+</ul>
+<hr>
+<h2 id="前提条件">前提条件<a hidden class="anchor" aria-hidden="true" href="#前提条件">#</a></h2>
+<ul>
+<li>DigitalOcean 账户（<a href="https://m.do.co/c/signup">注册可获 $200 免费额度</a>）</li>
+<li>SSH 密钥对（或愿意使用密码认证）</li>
+<li>约 20 分钟</li>
+</ul>
+<h2 id="1-创建-droplet">1) 创建 Droplet<a hidden class="anchor" aria-hidden="true" href="#1-创建-droplet">#</a></h2>
+<ol>
+<li>登录 <a href="https://cloud.digitalocean.com/">DigitalOcean</a></li>
+<li>点击 <strong>Create → Droplets</strong></li>
+<li>选择：
+<ul>
+<li><strong>Region：</strong> 离你（或你的用户）最近的地区</li>
+<li><strong>Image：</strong> Ubuntu 24.04 LTS</li>
+<li><strong>Size：</strong> Basic → Regular → <strong>$6/mo</strong>（1 vCPU、1GB RAM、25GB SSD）</li>
+<li><strong>Authentication：</strong> SSH 密钥（推荐）或密码</li>
+</ul>
+</li>
+<li>点击 <strong>Create Droplet</strong></li>
+<li>记下 IP 地址</li>
+</ol>
+<h2 id="2-通过-ssh-连接">2) 通过 SSH 连接<a hidden class="anchor" aria-hidden="true" href="#2-通过-ssh-连接">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh root@YOUR_DROPLET_IP
+</span></span></code></pre></div><h2 id="3-安装-openclaw">3) 安装 OpenClaw<a hidden class="anchor" aria-hidden="true" href="#3-安装-openclaw">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Update system</span>
+</span></span><span class="line"><span class="cl">apt update <span class="o">&amp;&amp;</span> apt upgrade -y
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install Node.js 22</span>
+</span></span><span class="line"><span class="cl">curl -fsSL https://deb.nodesource.com/setup_22.x <span class="p">|</span> bash -
+</span></span><span class="line"><span class="cl">apt install -y nodejs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install OpenClaw</span>
+</span></span><span class="line"><span class="cl">curl -fsSL https://openclaw.ai/install.sh <span class="p">|</span> bash
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Verify</span>
+</span></span><span class="line"><span class="cl">openclaw --version
+</span></span></code></pre></div><h2 id="4-运行新手引导">4) 运行新手引导<a hidden class="anchor" aria-hidden="true" href="#4-运行新手引导">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --install-daemon
+</span></span></code></pre></div><p>向导将引导你完成：</p>
+<ul>
+<li>模型认证（API 密钥或 OAuth）</li>
+<li>渠道设置（Telegram、WhatsApp、Discord 等）</li>
+<li>Gateway 网关令牌（自动生成）</li>
+<li>守护进程安装（systemd）</li>
+</ul>
+<h2 id="5-验证-gateway-网关">5) 验证 Gateway 网关<a hidden class="anchor" aria-hidden="true" href="#5-验证-gateway-网关">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Check status</span>
+</span></span><span class="line"><span class="cl">openclaw status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Check service</span>
+</span></span><span class="line"><span class="cl">systemctl --user status openclaw-gateway.service
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># View logs</span>
+</span></span><span class="line"><span class="cl">journalctl --user -u openclaw-gateway.service -f
+</span></span></code></pre></div><h2 id="6-访问控制面板">6) 访问控制面板<a hidden class="anchor" aria-hidden="true" href="#6-访问控制面板">#</a></h2>
+<p>Gateway 网关默认绑定到 loopback。要访问控制界面：</p>
+<p><strong>选项 A：SSH 隧道（推荐）</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># From your local machine</span>
+</span></span><span class="line"><span class="cl">ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Then open: http://localhost:18789</span>
+</span></span></code></pre></div><p><strong>选项 B：Tailscale Serve（HTTPS，仅 loopback）</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># On the droplet</span>
+</span></span><span class="line"><span class="cl">curl -fsSL https://tailscale.com/install.sh <span class="p">|</span> sh
+</span></span><span class="line"><span class="cl">tailscale up
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Configure Gateway to use Tailscale Serve</span>
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.tailscale.mode serve
+</span></span><span class="line"><span class="cl">openclaw gateway restart
+</span></span></code></pre></div><p>打开：<code>https://&lt;magicdns&gt;/</code></p>
+<p>注意事项：</p>
+<ul>
+<li>Serve 保持 Gateway 网关仅 loopback 并通过 Tailscale 身份头进行认证。</li>
+<li>要改为需要令牌/密码，请设置 <code>gateway.auth.allowTailscale: false</code> 或使用 <code>gateway.auth.mode: &quot;password&quot;</code>。</li>
+</ul>
+<p><strong>选项 C：Tailnet 绑定（不使用 Serve）</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.bind tailnet
+</span></span><span class="line"><span class="cl">openclaw gateway restart
+</span></span></code></pre></div><p>打开：<code>http://&lt;tailscale-ip&gt;:18789</code>（需要令牌）。</p>
+<h2 id="7-连接你的渠道">7) 连接你的渠道<a hidden class="anchor" aria-hidden="true" href="#7-连接你的渠道">#</a></h2>
+<h3 id="telegram">Telegram<a hidden class="anchor" aria-hidden="true" href="#telegram">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw pairing list telegram
+</span></span><span class="line"><span class="cl">openclaw pairing approve telegram &lt;CODE&gt;
+</span></span></code></pre></div><h3 id="whatsapp">WhatsApp<a hidden class="anchor" aria-hidden="true" href="#whatsapp">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw channels login whatsapp
+</span></span><span class="line"><span class="cl"><span class="c1"># Scan QR code</span>
+</span></span></code></pre></div><p>参见<a href="/channels">渠道</a>了解其他提供商。</p>
+<hr>
+<h2 id="1gb-ram-的优化">1GB RAM 的优化<a hidden class="anchor" aria-hidden="true" href="#1gb-ram-的优化">#</a></h2>
+<p>$6 的 droplet 只有 1GB RAM。为了保持运行流畅：</p>
+<h3 id="添加-swap推荐">添加 swap（推荐）<a hidden class="anchor" aria-hidden="true" href="#添加-swap推荐">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fallocate -l 2G /swapfile
+</span></span><span class="line"><span class="cl">chmod <span class="m">600</span> /swapfile
+</span></span><span class="line"><span class="cl">mkswap /swapfile
+</span></span><span class="line"><span class="cl">swapon /swapfile
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;/swapfile none swap sw 0 0&#39;</span> &gt;&gt; /etc/fstab
+</span></span></code></pre></div><h3 id="使用更轻量的模型">使用更轻量的模型<a hidden class="anchor" aria-hidden="true" href="#使用更轻量的模型">#</a></h3>
+<p>如果遇到 OOM，考虑：</p>
+<ul>
+<li>使用基于 API 的模型（Claude、GPT）而不是本地模型</li>
+<li>将 <code>agents.defaults.model.primary</code> 设置为更小的模型</li>
+</ul>
+<h3 id="监控内存">监控内存<a hidden class="anchor" aria-hidden="true" href="#监控内存">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">free -h
+</span></span><span class="line"><span class="cl">htop
+</span></span></code></pre></div><hr>
+<h2 id="持久化">持久化<a hidden class="anchor" aria-hidden="true" href="#持久化">#</a></h2>
+<p>所有状态存储在：</p>
+<ul>
+<li><code>~/.openclaw/</code> — 配置、凭证、会话数据</li>
+<li><code>~/.openclaw/workspace/</code> — 工作区（SOUL.md、记忆等）</li>
+</ul>
+<p>这些在重启后保留。定期备份：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tar -czvf openclaw-backup.tar.gz ~/.openclaw ~/.openclaw/workspace
+</span></span></code></pre></div><hr>
+<h2 id="oracle-cloud-免费替代方案">Oracle Cloud 免费替代方案<a hidden class="anchor" aria-hidden="true" href="#oracle-cloud-免费替代方案">#</a></h2>
+<p>Oracle Cloud 提供 <strong>Always Free</strong> ARM 实例，比这里任何付费选项都强大得多 — 每月 $0。</p>
+<table>
+  <thead>
+      <tr>
+          <th>你将获得</th>
+          <th>配置</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>4 OCPUs</strong></td>
+          <td>ARM Ampere A1</td>
+      </tr>
+      <tr>
+          <td><strong>24GB RAM</strong></td>
+          <td>绰绰有余</td>
+      </tr>
+      <tr>
+          <td><strong>200GB 存储</strong></td>
+          <td>块存储卷</td>
+      </tr>
+      <tr>
+          <td><strong>永久免费</strong></td>
+          <td>不收取信用卡费用</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li>注册可能有点麻烦（失败了就重试）</li>
+<li>ARM 架构 — 大多数东西都能工作，但有些二进制文件需要 ARM 构建</li>
+</ul>
+<p>完整设置指南请参阅 <a href="/platforms/oracle">Oracle Cloud</a>。关于注册技巧和注册流程故障排除，请参阅此<a href="https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd">社区指南</a>。</p>
+<hr>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="gateway-网关无法启动">Gateway 网关无法启动<a hidden class="anchor" aria-hidden="true" href="#gateway-网关无法启动">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway status
+</span></span><span class="line"><span class="cl">openclaw doctor --non-interactive
+</span></span><span class="line"><span class="cl">journalctl -u openclaw --no-pager -n <span class="m">50</span>
+</span></span></code></pre></div><h3 id="端口已被使用">端口已被使用<a hidden class="anchor" aria-hidden="true" href="#端口已被使用">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">lsof -i :18789
+</span></span><span class="line"><span class="cl"><span class="nb">kill</span> &lt;PID&gt;
+</span></span></code></pre></div><h3 id="内存不足">内存不足<a hidden class="anchor" aria-hidden="true" href="#内存不足">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Check memory</span>
+</span></span><span class="line"><span class="cl">free -h
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Add more swap</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Or upgrade to $12/mo droplet (2GB RAM)</span>
+</span></span></code></pre></div><hr>
+<h2 id="另请参阅">另请参阅<a hidden class="anchor" aria-hidden="true" href="#另请参阅">#</a></h2>
+<ul>
+<li><a href="/install/hetzner">Hetzner 指南</a> — 更便宜、更强大</li>
+<li><a href="/install/docker">Docker 安装</a> — 容器化设置</li>
+<li><a href="/gateway/tailscale">Tailscale</a> — 安全远程访问</li>
+<li><a href="/gateway/configuration">配置</a> — 完整配置参考</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/nodes/images/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>图像与媒体支持 — 2025-12-05</span>
+  </a>
+  <a class="next" href="/openclaw/install/gcp/">
+    <span class="title">Next »</span>
+    <br>
+    <span>在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

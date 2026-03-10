@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>命令队列（2026-01-16）</h2>
+    </header>
+    <div class="entry-content">
+      <p>我们通过一个小型进程内队列序列化入站自动回复运行（所有渠道），以防止多个智能体运行发生冲突，同时仍允许跨会话的安全并行。
+为什么需要 自动回复运行可能开销很大（LLM 调用），当多条入站消息接近同时到达时可能发生冲突。 序列化可以避免竞争共享资源（会话文件、日志、CLI stdin），并降低上游速率限制的可能性。 工作原理 一个支持通道感知的 FIFO 队列以可配置的并发上限排空每个通道（未配置的通道默认为 1；main 默认为 4，subagent 为 8）。 runEmbeddedPiAgent 按会话键入队（通道 session:&lt;key&gt;），以保证每个会话只有一个活动运行。 然后每个会话运行被排入全局通道（默认为 main），因此整体并行度受 agents.defaults.maxConcurrent 限制。 启用详细日志时，如果排队运行在开始前等待超过约 2 秒，会发出简短通知。 输入指示器仍在入队时立即触发（当渠道支持时），因此在等待轮次时用户体验不受影响。 队列模式（按渠道） 入站消息可以引导当前运行、等待后续轮次，或两者兼顾：
+steer：立即注入当前运行（在下一个工具边界后取消待处理的工具调用）。如果未在流式传输，则回退到 followup。 followup：在当前运行结束后为下一个智能体轮次入队。 collect：将所有排队消息合并为单个后续轮次（默认）。如果消息针对不同的渠道/线程，它们会单独排空以保留路由。 steer-backlog（又名 steer&#43;backlog）：现在引导并保留消息用于后续轮次。 interrupt（旧版）：中止该会话的活动运行，然后运行最新消息。 queue（旧版别名）：与 steer 相同。 steer-backlog 意味着你可以在被引导的运行之后获得后续响应，因此流式传输界面可能看起来像重复。如果你希望每条入站消息只有一个响应，请优先使用 collect/steer。 发送 /queue collect 作为独立命令（按会话）或设置 messages.queue.byChannel.discord: &#34;collect&#34;。
+默认值（配置中未设置时）：
+所有界面 → collect 通过 messages.queue 全局或按渠道配置：
+{ messages: { queue: { mode: &#34;collect&#34;, debounceMs: 1000, cap: 20, drop: &#34;summarize&#34;, byChannel: { discord: &#34;collect&#34; }, }, }, } 队列选项 选项适用于 followup、collect 和 steer-backlog（以及当 steer 回退到 followup 时）：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 命令队列（2026-01-16）" href="/openclaw/concepts/queue/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>向导参考</h2>
+    </header>
+    <div class="entry-content">
+      <p>该页面是英文文档的中文占位版本，完整内容请先参考英文版：Onboarding Wizard Reference。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 向导参考" href="/openclaw/reference/wizard/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>后台 Exec &#43; Process 工具</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 通过 exec 工具运行 shell 命令，并将长时间运行的任务保存在内存中。process 工具管理这些后台会话。
+exec 工具 关键参数：
+command（必填） yieldMs（默认 10000）：在此延迟后自动转为后台运行 background（布尔值）：立即转为后台运行 timeout（秒，默认 1800）：在此超时后终止进程 elevated（布尔值）：如果启用/允许提权模式，则在宿主机上运行 需要真实 TTY？设置 pty: true。 workdir、env 行为：
+前台运行直接返回输出。 当转为后台运行（显式或超时）时，工具返回 status: &#34;running&#34; &#43; sessionId 和一小段尾部输出。 输出保存在内存中，直到会话被轮询或清除。 如果 process 工具被禁用，exec 将同步运行并忽略 yieldMs/background。 子进程桥接 当在 exec/process 工具之外生成长时间运行的子进程时（例如 CLI 重新生成或 Gateway 网关辅助程序），请附加子进程桥接辅助程序，以便终止信号被转发，监听器在退出/错误时被分离。这可以避免在 systemd 上产生孤立进程，并保持跨平台的关闭行为一致。
+环境变量覆盖：
+PI_BASH_YIELD_MS：默认 yield 时间（毫秒） PI_BASH_MAX_OUTPUT_CHARS：内存输出上限（字符） OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS：每个流的待处理 stdout/stderr 上限（字符） PI_BASH_JOB_TTL_MS：已完成会话的 TTL（毫秒，限制在 1 分钟至 3 小时之间） 配置（推荐）：
+tools.exec.backgroundMs（默认 10000） tools.exec.timeoutSec（默认 1800） tools.exec.cleanupMs（默认 1800000） tools.exec.notifyOnExit（默认 true）：当后台 exec 退出时，将系统事件加入队列并请求心跳。 process 工具 操作：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 后台 Exec &#43; Process 工具" href="/openclaw/gateway/background-process/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>发布清单（npm &#43; macOS）</h2>
+    </header>
+    <div class="entry-content">
+      <p>从仓库根目录使用 pnpm（Node 22&#43;）。在打标签/发布前保持工作树干净。
+操作员触发 当操作员说&#34;release&#34;时，立即执行此预检（除非遇到阻碍否则不要额外提问）：
+阅读本文档和 docs/platforms/mac/release.md。 从 ~/.profile 加载环境变量并确认 SPARKLE_PRIVATE_KEY_FILE &#43; App Store Connect 变量已设置（SPARKLE_PRIVATE_KEY_FILE 应位于 ~/.profile 中）。 如需要，使用 ~/Library/CloudStorage/Dropbox/Backup/Sparkle 中的 Sparkle 密钥。 版本和元数据 更新 package.json 版本（例如 2026.1.29）。 运行 pnpm plugins:sync 以对齐扩展包版本和变更日志。 更新 CLI/版本字符串：src/cli/program.ts 和 src/provider-web.ts 中的 Baileys user agent。 确认包元数据（name、description、repository、keywords、license）以及 bin 映射指向 openclaw.mjs 作为 openclaw。 如果依赖项有变化，运行 pnpm install 确保 pnpm-lock.yaml 是最新的。 构建和产物 如果 A2UI 输入有变化，运行 pnpm canvas:a2ui:bundle 并提交更新后的 src/canvas-host/a2ui/a2ui.bundle.js。 pnpm run build（重新生成 dist/）。 验证 npm 包的 files 包含所有必需的 dist/* 文件夹（特别是用于 headless node &#43; ACP CLI 的 dist/node-host/** 和 dist/acp/**）。 确认 dist/build-info.json 存在并包含预期的 commit 哈希（CLI 横幅在 npm 安装时使用此信息）。 可选：构建后运行 npm pack --pack-destination /tmp；检查 tarball 内容并保留以备 GitHub 发布使用（不要提交它）。 变更日志和文档 更新 CHANGELOG.md，添加面向用户的亮点（如果文件不存在则创建）；按版本严格降序排列条目。 确保 README 示例/标志与当前 CLI 行为匹配（特别是新命令或选项）。 验证 pnpm build pnpm check pnpm test（如需覆盖率输出则使用 pnpm test:coverage） pnpm release:check（验证 npm pack 内容） OPENCLAW_INSTALL_SMOKE_SKIP_NONROOT=1 pnpm test:install:smoke（Docker 安装冒烟测试，快速路径；发布前必需） 如果已知上一个 npm 发布版本有问题，为预安装步骤设置 OPENCLAW_INSTALL_SMOKE_PREVIOUS=&lt;last-good-version&gt; 或 OPENCLAW_INSTALL_SMOKE_SKIP_PREVIOUS=1。 （可选）完整安装程序冒烟测试（添加非 root &#43; CLI 覆盖）：pnpm test:install:smoke （可选）安装程序 E2E（Docker，运行 curl -fsSL https://openclaw.ai/install.sh | bash，新手引导，然后运行真实工具调用）： pnpm test:install:e2e:openai（需要 OPENAI_API_KEY） pnpm test:install:e2e:anthropic（需要 ANTHROPIC_API_KEY） pnpm test:install:e2e（需要两个密钥；运行两个提供商） （可选）如果你的更改影响发送/接收路径，抽查 Web Gateway 网关。 macOS 应用（Sparkle） 构建并签名 macOS 应用，然后压缩以供分发。 生成 Sparkle appcast（通过 scripts/make_appcast.sh 生成 HTML 注释）并更新 appcast.xml。 保留应用 zip（和可选的 dSYM zip）以便附加到 GitHub 发布。 按照 macOS 发布 获取确切命令和所需环境变量。 APP_BUILD 必须是数字且单调递增（不带 -beta），以便 Sparkle 正确比较版本。 如果进行公证，使用从 App Store Connect API 环境变量创建的 openclaw-notary 钥匙串配置文件（参见 macOS 发布）。 发布（npm） 确认 git 状态干净；根据需要提交并推送。 如需要，npm login（验证 2FA）。 npm publish --access public（预发布版本使用 --tag beta）。 验证注册表：npm view openclaw version、npm view openclaw dist-tags 和 npx -y openclaw@X.Y.Z --version（或 --help）。 故障排除（来自 2.0.0-beta2 发布的笔记） npm pack/publish 挂起或产生巨大 tarball：dist/OpenClaw.app 中的 macOS 应用包（和发布 zip）被扫入包中。通过 package.json 的 files 白名单发布内容来修复（包含 dist 子目录、docs、skills；排除应用包）。用 npm pack --dry-run 确认 dist/OpenClaw.app 未列出。 npm auth dist-tags 的 Web 循环：使用旧版认证以获取 OTP 提示： NPM_CONFIG_AUTH_TYPE=legacy npm dist-tag add openclaw@X.Y.Z latest npx 验证失败并显示 ECOMPROMISED: Lock compromised：使用新缓存重试： NPM_CONFIG_CACHE=/tmp/npm-cache-$(date &#43;%s) npx -y openclaw@X.Y.Z --version 延迟修复后需要重新指向标签：强制更新并推送标签，然后确保 GitHub 发布资产仍然匹配： git tag -f vX.Y.Z &amp;&amp; git push -f origin vX.Y.Z GitHub 发布 &#43; appcast 打标签并推送：git tag vX.Y.Z &amp;&amp; git push origin vX.Y.Z（或 git push --tags）。 为 vX.Y.Z 创建/刷新 GitHub 发布，标题为 openclaw X.Y.Z（不仅仅是标签）；正文应包含该版本的完整变更日志部分（亮点 &#43; 更改 &#43; 修复），内联显示（无裸链接），且不得在正文中重复标题。 附加产物：npm pack tarball（可选）、OpenClaw-X.Y.Z.zip 和 OpenClaw-X.Y.Z.dSYM.zip（如果生成）。 提交更新后的 appcast.xml 并推送（Sparkle 从 main 获取源）。 从干净的临时目录（无 package.json），运行 npx -y openclaw@X.Y.Z send --help 确认安装/CLI 入口点正常工作。 宣布/分享发布说明。 插件发布范围（npm） 我们只发布 @openclaw/* 范围下的现有 npm 插件。不在 npm 上的内置插件保持仅磁盘树（仍在 extensions/** 中发布）。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 发布清单（npm &#43; macOS）" href="/openclaw/reference/releasing/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>卸载</h2>
+    </header>
+    <div class="entry-content">
+      <p>两种方式：
+如果 openclaw 仍已安装，使用简单方式。 如果 CLI 已删除但服务仍在运行，使用手动服务移除。 简单方式（CLI 仍已安装） 推荐：使用内置卸载程序：
+openclaw uninstall 非交互式（自动化 / npx）：
+openclaw uninstall --all --yes --non-interactive npx -y openclaw uninstall --all --yes --non-interactive 手动步骤（效果相同）：
+停止 Gateway 网关服务： openclaw gateway stop 卸载 Gateway 网关服务（launchd/systemd/schtasks）： openclaw gateway uninstall 删除状态 &#43; 配置： rm -rf &#34;${OPENCLAW_STATE_DIR:-$HOME/.openclaw}&#34; 如果你将 OPENCLAW_CONFIG_PATH 设置为状态目录外的自定义位置，也请删除该文件。
+删除你的工作区（可选，移除智能体文件）： rm -rf ~/.openclaw/workspace 移除 CLI 安装（选择你使用的那个）： npm rm -g openclaw pnpm remove -g openclaw bun remove -g openclaw 如果你安装了 macOS 应用： rm -rf /Applications/OpenClaw.app 注意事项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 卸载" href="/openclaw/install/uninstall/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>千帆（Qianfan）</h2>
+    </header>
+    <div class="entry-content">
+      <p>该页面是英文文档的中文占位版本，完整内容请先参考英文版：Qianfan。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 千帆（Qianfan）" href="/openclaw/providers/qianfan/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>创建自定义 Skills 🛠</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 被设计为易于扩展。“Skills&#34;是为你的助手添加新功能的主要方式。
+什么是 Skill？ Skill 是一个包含 SKILL.md 文件（为 LLM 提供指令和工具定义）的目录，可选包含一些脚本或资源。
+分步指南：你的第一个 Skill 1. 创建目录 Skills 位于你的工作区中，通常是 ~/.openclaw/workspace/skills/。为你的 Skill 创建一个新文件夹：
+mkdir -p ~/.openclaw/workspace/skills/hello-world 2. 定义 SKILL.md 在该目录中创建一个 SKILL.md 文件。此文件使用 YAML frontmatter 作为元数据，使用 Markdown 作为指令。
+--- name: hello_world description: A simple skill that says hello. --- # Hello World Skill When the user asks for a greeting, use the `echo` tool to say &#34;Hello from your custom skill!&#34;. 3. 添加工具（可选） 你可以在 frontmatter 中定义自定义工具，或指示智能体使用现有的系统工具（如 bash 或 browser）。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 创建自定义 Skills 🛠" href="/openclaw/tools/creating-skills/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>出站会话镜像重构（Issue #1520）</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态 进行中。 核心 &#43; 插件渠道路由已更新以支持出站镜像。 Gateway 网关发送现在在省略 sessionKey 时派生目标会话。 背景 出站发送被镜像到当前智能体会话（工具会话键）而不是目标渠道会话。入站路由使用渠道/对等方会话键，因此出站响应落在错误的会话中，首次联系的目标通常缺少会话条目。
+目标 将出站消息镜像到目标渠道会话键。 在缺失时为出站创建会话条目。 保持线程/话题作用域与入站会话键对齐。 涵盖核心渠道加内置扩展。 实现摘要 新的出站会话路由辅助器： src/infra/outbound/outbound-session.ts resolveOutboundSessionRoute 使用 buildAgentSessionKey（dmScope &#43; identityLinks）构建目标 sessionKey。 ensureOutboundSessionEntry 通过 recordSessionMetaFromInbound 写入最小的 MsgContext。 runMessageAction（发送）派生目标 sessionKey 并将其传递给 executeSendAction 进行镜像。 message-tool 不再直接镜像；它只从当前会话键解析 agentId。 插件发送路径使用派生的 sessionKey 通过 appendAssistantMessageToSessionTranscript 进行镜像。 Gateway 网关发送在未提供时派生目标会话键（默认智能体），并确保会话条目。 线程/话题处理 Slack：replyTo/threadId -&gt; resolveThreadSessionKeys（后缀）。 Discord：threadId/replyTo -&gt; resolveThreadSessionKeys，useSuffix=false 以匹配入站（线程频道 id 已经作用域会话）。 Telegram：话题 ID 通过 buildTelegramGroupPeerId 映射到 chatId:topic:&lt;id&gt;。 涵盖的扩展 Matrix、MS Teams、Mattermost、BlueBubbles、Nextcloud Talk、Zalo、Zalo Personal、Nostr、Tlon。 注意： Mattermost 目标现在为私信会话键路由去除 @。 Zalo Personal 对 1:1 目标使用私信对等方类型（仅当存在 group: 时才使用群组）。 BlueBubbles 群组目标去除 chat_* 前缀以匹配入站会话键。 Slack 自动线程镜像不区分大小写地匹配频道 id。 Gateway 网关发送在镜像前将提供的会话键转换为小写。 决策 Gateway 网关发送会话派生：如果提供了 sessionKey，则使用它。如果省略，从目标 &#43; 默认智能体派生 sessionKey 并镜像到那里。 会话条目创建：始终使用 recordSessionMetaFromInbound，Provider/From/To/ChatType/AccountId/Originating* 与入站格式对齐。 目标规范化：出站路由在可用时使用解析后的目标（resolveChannelTarget 之后）。 会话键大小写：在写入和迁移期间将会话键规范化为小写。 添加/更新的测试 src/infra/outbound/outbound-session.test.ts Slack 线程会话键。 Telegram 话题会话键。 dmScope identityLinks 与 Discord。 src/agents/tools/message-tool.test.ts 从会话键派生 agentId（不传递 sessionKey）。 src/gateway/server-methods/send.test.ts 在省略时派生会话键并创建会话条目。 待处理项目 / 后续跟进 语音通话插件使用自定义的 voice:&lt;phone&gt; 会话键。出站映射在这里没有标准化；如果 message-tool 应该支持语音通话发送，请添加显式映射。 确认是否有任何外部插件使用内置集之外的非标准 From/To 格式。 涉及的文件 src/infra/outbound/outbound-session.ts src/infra/outbound/outbound-send-service.ts src/infra/outbound/message-action-runner.ts src/agents/tools/message-tool.ts src/gateway/server-methods/send.ts 测试： src/infra/outbound/outbound-session.test.ts src/agents/tools/message-tool.test.ts src/gateway/server-methods/send.test.ts </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 出站会话镜像重构（Issue #1520）" href="/openclaw/refactor/outbound-session-mirroring/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>入门指南</h2>
+    </header>
+    <div class="entry-content">
+      <p>什么是 OpenClaw OpenClaw 是一款运行在你自己设备上的个人 AI 助理，由 Peter Steinberger 及社区共同开发，完全开源免费。它可以在你日常使用的所有通讯渠道上响应你的需求，支持语音交互，还能渲染可交互的实时画布，是真正属于你的、完全可控的 AI 生产力工具。
+核心特性 本地优先的 Gateway 控制平面：所有数据默认保存在本地，最大程度保证数据隐私和安全 全渠道消息支持：WhatsApp、Telegram、Discord、Slack、飞书、钉钉等 20&#43; 平台 多智能体架构：支持多个独立智能体，每个拥有独立的工作区和权限配置 Skills 技能系统：通过安装技能扩展功能，如邮件管理、日历、浏览器控制等 目标：尽快从零到第一个可用聊天（使用合理的默认值）。
+最快聊天：打开 Control UI（无需渠道设置）。运行 openclaw dashboard 并在浏览器中聊天，或在 Gateway 网关主机上打开 http://127.0.0.1:18789/。文档：Dashboard 和 Control UI。
+推荐路径：使用 CLI 新手引导向导（openclaw onboard）。它设置：
+模型/认证（推荐 OAuth） Gateway 网关设置 渠道（WhatsApp/Telegram/Discord/Mattermost（插件）/…） 配对默认值（安全私信） 工作区引导 &#43; Skills 可选的后台服务 如果你想要更深入的参考页面，跳转到：向导、设置、配对、安全。
+沙箱注意事项：agents.defaults.sandbox.mode: &#34;non-main&#34; 使用 session.mainKey（默认 &#34;main&#34;），因此群组/渠道会话会被沙箱隔离。如果你想要主智能体始终在主机上运行，设置显式的每智能体覆盖：
+{ &#34;routing&#34;: { &#34;agents&#34;: { &#34;main&#34;: { &#34;workspace&#34;: &#34;~/.openclaw/workspace&#34;, &#34;sandbox&#34;: { &#34;mode&#34;: &#34;off&#34; } } } } } 0) 前置条件 Node &gt;=22 pnpm（可选；如果从源代码构建则推荐） **推荐：**Brave Search API 密钥用于网页搜索。最简单的方式：openclaw configure --section web（存储 tools.web.search.apiKey）。参见 Web 工具。 macOS：如果你计划构建应用，安装 Xcode / CLT。仅用于 CLI &#43; Gateway 网关的话，Node 就足够了。 Windows：使用 WSL2（推荐 Ubuntu）。强烈推荐 WSL2；原生 Windows 未经测试，问题更多，工具兼容性更差。先安装 WSL2，然后在 WSL 内运行 Linux 步骤。参见 Windows (WSL2)。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 入门指南" href="/openclaw/start/getting-started/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>健康检查（CLI）</h2>
+    </header>
+    <div class="entry-content">
+      <p>验证渠道连接的简短指南，无需猜测。
+快速检查 openclaw status — 本地摘要：Gateway 网关可达性/模式、更新提示、已链接渠道认证时长、会话 &#43; 最近活动。 openclaw status --all — 完整本地诊断（只读、彩色、可安全粘贴用于调试）。 openclaw status --deep — 还会探测运行中的 Gateway 网关（支持时进行每渠道探测）。 openclaw health --json — 向运行中的 Gateway 网关请求完整健康快照（仅 WS；不直接访问 Baileys 套接字）。 在 WhatsApp/WebChat 中单独发送 /status 消息可获取状态回复，而不调用智能体。 日志：跟踪 /tmp/openclaw/openclaw-*.log 并过滤 web-heartbeat、web-reconnect、web-auto-reply、web-inbound。 深度诊断 磁盘上的凭证：ls -l ~/.openclaw/credentials/whatsapp/&lt;accountId&gt;/creds.json（mtime 应该是最近的）。 会话存储：ls -l ~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json（路径可在配置中覆盖）。计数和最近收件人通过 status 显示。 重新链接流程：当日志中出现状态码 409–515 或 loggedOut 时，执行 openclaw channels logout &amp;&amp; openclaw channels login --verbose。（注意：配对后状态 515 时 QR 登录流程会自动重启一次。） 当出现故障时 logged out 或状态 409–515 → 使用 openclaw channels logout 然后 openclaw channels login 重新链接。 Gateway 网关不可达 → 启动它：openclaw gateway --port 18789（如果端口被占用则使用 --force）。 没有入站消息 → 确认已链接的手机在线且发送者被允许（channels.whatsapp.allowFrom）；对于群聊，确保允许列表 &#43; 提及规则匹配（channels.whatsapp.groups、agents.list[].groupChat.mentionPatterns）。 专用&#34;health&#34;命令 openclaw health --json 向运行中的 Gateway 网关请求其健康快照（CLI 不直接访问渠道套接字）。它报告已链接凭证/认证时长（如可用）、每渠道探测摘要、会话存储摘要和探测持续时间。如果 Gateway 网关不可达或探测失败/超时，它以非零退出。使用 --timeout &lt;ms&gt; 覆盖默认的 10 秒。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 健康检查（CLI）" href="/openclaw/gateway/health/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/11/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/13/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Synthetic | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="Synthetic 提供兼容 Anthropic 的端点。OpenClaw 将其注册为 synthetic 提供商，并使用 Anthropic Messages API。
+快速设置
+
+设置 SYNTHETIC_API_KEY（或运行以下向导）。
+运行新手引导：
+
+openclaw onboard --auth-choice synthetic-api-key
+默认模型设置为：
+synthetic/hf:MiniMaxAI/MiniMax-M2.1
+配置示例
+{
+  env: { SYNTHETIC_API_KEY: &#34;sk-...&#34; },
+  agents: {
+    defaults: {
+      model: { primary: &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34; },
+      models: { &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34;: { alias: &#34;MiniMax M2.1&#34; } },
+    },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      synthetic: {
+        baseUrl: &#34;https://api.synthetic.new/anthropic&#34;,
+        apiKey: &#34;${SYNTHETIC_API_KEY}&#34;,
+        api: &#34;anthropic-messages&#34;,
+        models: [
+          {
+            id: &#34;hf:MiniMaxAI/MiniMax-M2.1&#34;,
+            name: &#34;MiniMax M2.1&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 192000,
+            maxTokens: 65536,
+          },
+        ],
+      },
+    },
+  },
+}
+注意：OpenClaw 的 Anthropic 客户端会自动在 base URL 后追加 /v1，因此请使用 https://api.synthetic.new/anthropic（而非 /anthropic/v1）。如果 Synthetic 更改了其 base URL，请覆盖 models.providers.synthetic.baseUrl。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/providers/synthetic/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/providers/synthetic/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/providers/synthetic/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Synthetic">
+  <meta property="og:description" content="Synthetic 提供兼容 Anthropic 的端点。OpenClaw 将其注册为 synthetic 提供商，并使用 Anthropic Messages API。
+快速设置 设置 SYNTHETIC_API_KEY（或运行以下向导）。 运行新手引导： openclaw onboard --auth-choice synthetic-api-key 默认模型设置为：
+synthetic/hf:MiniMaxAI/MiniMax-M2.1 配置示例 { env: { SYNTHETIC_API_KEY: &#34;sk-...&#34; }, agents: { defaults: { model: { primary: &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34; }, models: { &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34;: { alias: &#34;MiniMax M2.1&#34; } }, }, }, models: { mode: &#34;merge&#34;, providers: { synthetic: { baseUrl: &#34;https://api.synthetic.new/anthropic&#34;, apiKey: &#34;${SYNTHETIC_API_KEY}&#34;, api: &#34;anthropic-messages&#34;, models: [ { id: &#34;hf:MiniMaxAI/MiniMax-M2.1&#34;, name: &#34;MiniMax M2.1&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 192000, maxTokens: 65536, }, ], }, }, }, } 注意：OpenClaw 的 Anthropic 客户端会自动在 base URL 后追加 /v1，因此请使用 https://api.synthetic.new/anthropic（而非 /anthropic/v1）。如果 Synthetic 更改了其 base URL，请覆盖 models.providers.synthetic.baseUrl。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Synthetic">
+<meta name="twitter:description" content="Synthetic 提供兼容 Anthropic 的端点。OpenClaw 将其注册为 synthetic 提供商，并使用 Anthropic Messages API。
+快速设置
+
+设置 SYNTHETIC_API_KEY（或运行以下向导）。
+运行新手引导：
+
+openclaw onboard --auth-choice synthetic-api-key
+默认模型设置为：
+synthetic/hf:MiniMaxAI/MiniMax-M2.1
+配置示例
+{
+  env: { SYNTHETIC_API_KEY: &#34;sk-...&#34; },
+  agents: {
+    defaults: {
+      model: { primary: &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34; },
+      models: { &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34;: { alias: &#34;MiniMax M2.1&#34; } },
+    },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      synthetic: {
+        baseUrl: &#34;https://api.synthetic.new/anthropic&#34;,
+        apiKey: &#34;${SYNTHETIC_API_KEY}&#34;,
+        api: &#34;anthropic-messages&#34;,
+        models: [
+          {
+            id: &#34;hf:MiniMaxAI/MiniMax-M2.1&#34;,
+            name: &#34;MiniMax M2.1&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 192000,
+            maxTokens: 65536,
+          },
+        ],
+      },
+    },
+  },
+}
+注意：OpenClaw 的 Anthropic 客户端会自动在 base URL 后追加 /v1，因此请使用 https://api.synthetic.new/anthropic（而非 /anthropic/v1）。如果 Synthetic 更改了其 base URL，请覆盖 models.providers.synthetic.baseUrl。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Synthetic",
+      "item": "/openclaw/providers/synthetic/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Synthetic",
+  "name": "Synthetic",
+  "description": "Synthetic 提供兼容 Anthropic 的端点。OpenClaw 将其注册为 synthetic 提供商，并使用 Anthropic Messages API。\n快速设置 设置 SYNTHETIC_API_KEY（或运行以下向导）。 运行新手引导： openclaw onboard --auth-choice synthetic-api-key 默认模型设置为：\nsynthetic/hf:MiniMaxAI/MiniMax-M2.1 配置示例 { env: { SYNTHETIC_API_KEY: \u0026#34;sk-...\u0026#34; }, agents: { defaults: { model: { primary: \u0026#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1\u0026#34; }, models: { \u0026#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1\u0026#34;: { alias: \u0026#34;MiniMax M2.1\u0026#34; } }, }, }, models: { mode: \u0026#34;merge\u0026#34;, providers: { synthetic: { baseUrl: \u0026#34;https://api.synthetic.new/anthropic\u0026#34;, apiKey: \u0026#34;${SYNTHETIC_API_KEY}\u0026#34;, api: \u0026#34;anthropic-messages\u0026#34;, models: [ { id: \u0026#34;hf:MiniMaxAI/MiniMax-M2.1\u0026#34;, name: \u0026#34;MiniMax M2.1\u0026#34;, reasoning: false, input: [\u0026#34;text\u0026#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 192000, maxTokens: 65536, }, ], }, }, }, } 注意：OpenClaw 的 Anthropic 客户端会自动在 base URL 后追加 /v1，因此请使用 https://api.synthetic.new/anthropic（而非 /anthropic/v1）。如果 Synthetic 更改了其 base URL，请覆盖 models.providers.synthetic.baseUrl。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "Synthetic 提供兼容 Anthropic 的端点。OpenClaw 将其注册为 synthetic 提供商，并使用 Anthropic Messages API。\n快速设置 设置 SYNTHETIC_API_KEY（或运行以下向导）。 运行新手引导： openclaw onboard --auth-choice synthetic-api-key 默认模型设置为：\nsynthetic/hf:MiniMaxAI/MiniMax-M2.1 配置示例 { env: { SYNTHETIC_API_KEY: \"sk-...\" }, agents: { defaults: { model: { primary: \"synthetic/hf:MiniMaxAI/MiniMax-M2.1\" }, models: { \"synthetic/hf:MiniMaxAI/MiniMax-M2.1\": { alias: \"MiniMax M2.1\" } }, }, }, models: { mode: \"merge\", providers: { synthetic: { baseUrl: \"https://api.synthetic.new/anthropic\", apiKey: \"${SYNTHETIC_API_KEY}\", api: \"anthropic-messages\", models: [ { id: \"hf:MiniMaxAI/MiniMax-M2.1\", name: \"MiniMax M2.1\", reasoning: false, input: [\"text\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 192000, maxTokens: 65536, }, ], }, }, }, } 注意：OpenClaw 的 Anthropic 客户端会自动在 base URL 后追加 /v1，因此请使用 https://api.synthetic.new/anthropic（而非 /anthropic/v1）。如果 Synthetic 更改了其 base URL，请覆盖 models.providers.synthetic.baseUrl。\n模型目录 以下所有模型的费用均为 0（输入/输出/缓存）。\n模型 ID 上下文窗口 最大令牌数 推理 输入 hf:MiniMaxAI/MiniMax-M2.1 192000 65536 false text hf:moonshotai/Kimi-K2-Thinking 256000 8192 true text hf:zai-org/GLM-4.7 198000 128000 false text hf:deepseek-ai/DeepSeek-R1-0528 128000 8192 false text hf:deepseek-ai/DeepSeek-V3-0324 128000 8192 false text hf:deepseek-ai/DeepSeek-V3.1 128000 8192 false text hf:deepseek-ai/DeepSeek-V3.1-Terminus 128000 8192 false text hf:deepseek-ai/DeepSeek-V3.2 159000 8192 false text hf:meta-llama/Llama-3.3-70B-Instruct 128000 8192 false text hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 524000 8192 false text hf:moonshotai/Kimi-K2-Instruct-0905 256000 8192 false text hf:openai/gpt-oss-120b 128000 8192 false text hf:Qwen/Qwen3-235B-A22B-Instruct-2507 256000 8192 false text hf:Qwen/Qwen3-Coder-480B-A35B-Instruct 256000 8192 false text hf:Qwen/Qwen3-VL-235B-A22B-Instruct 250000 8192 false text + image hf:zai-org/GLM-4.5 128000 128000 false text hf:zai-org/GLM-4.6 198000 128000 false text hf:deepseek-ai/DeepSeek-V3 128000 8192 false text hf:Qwen/Qwen3-235B-A22B-Thinking-2507 256000 8192 true text 注意事项 模型引用格式为 synthetic/。 如果启用了模型允许列表（agents.defaults.models），请添加你计划使用的所有模型。 参阅模型提供商了解提供商规则。 ",
+  "wordCount" : "220",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/providers/synthetic/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Synthetic
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%ae%be%e7%bd%ae" aria-label="快速设置">快速设置</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e7%a4%ba%e4%be%8b" aria-label="配置示例">配置示例</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e7%9b%ae%e5%bd%95" aria-label="模型目录">模型目录</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Synthetic 提供兼容 Anthropic 的端点。OpenClaw 将其注册为 <code>synthetic</code> 提供商，并使用 Anthropic Messages API。</p>
+<h2 id="快速设置">快速设置<a hidden class="anchor" aria-hidden="true" href="#快速设置">#</a></h2>
+<ol>
+<li>设置 <code>SYNTHETIC_API_KEY</code>（或运行以下向导）。</li>
+<li>运行新手引导：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard --auth-choice synthetic-api-key
+</span></span></code></pre></div><p>默认模型设置为：</p>
+<pre tabindex="0"><code>synthetic/hf:MiniMaxAI/MiniMax-M2.1
+</code></pre><h2 id="配置示例">配置示例<a hidden class="anchor" aria-hidden="true" href="#配置示例">#</a></h2>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  env: { SYNTHETIC_API_KEY: &#34;sk-...&#34; },
+  agents: {
+    defaults: {
+      model: { primary: &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34; },
+      models: { &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34;: { alias: &#34;MiniMax M2.1&#34; } },
+    },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      synthetic: {
+        baseUrl: &#34;https://api.synthetic.new/anthropic&#34;,
+        apiKey: &#34;${SYNTHETIC_API_KEY}&#34;,
+        api: &#34;anthropic-messages&#34;,
+        models: [
+          {
+            id: &#34;hf:MiniMaxAI/MiniMax-M2.1&#34;,
+            name: &#34;MiniMax M2.1&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 192000,
+            maxTokens: 65536,
+          },
+        ],
+      },
+    },
+  },
+}
+</code></pre><p>注意：OpenClaw 的 Anthropic 客户端会自动在 base URL 后追加 <code>/v1</code>，因此请使用 <code>https://api.synthetic.new/anthropic</code>（而非 <code>/anthropic/v1</code>）。如果 Synthetic 更改了其 base URL，请覆盖 <code>models.providers.synthetic.baseUrl</code>。</p>
+<h2 id="模型目录">模型目录<a hidden class="anchor" aria-hidden="true" href="#模型目录">#</a></h2>
+<p>以下所有模型的费用均为 <code>0</code>（输入/输出/缓存）。</p>
+<table>
+  <thead>
+      <tr>
+          <th>模型 ID</th>
+          <th>上下文窗口</th>
+          <th>最大令牌数</th>
+          <th>推理</th>
+          <th>输入</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>hf:MiniMaxAI/MiniMax-M2.1</code></td>
+          <td>192000</td>
+          <td>65536</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:moonshotai/Kimi-K2-Thinking</code></td>
+          <td>256000</td>
+          <td>8192</td>
+          <td>true</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:zai-org/GLM-4.7</code></td>
+          <td>198000</td>
+          <td>128000</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:deepseek-ai/DeepSeek-R1-0528</code></td>
+          <td>128000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:deepseek-ai/DeepSeek-V3-0324</code></td>
+          <td>128000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:deepseek-ai/DeepSeek-V3.1</code></td>
+          <td>128000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:deepseek-ai/DeepSeek-V3.1-Terminus</code></td>
+          <td>128000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:deepseek-ai/DeepSeek-V3.2</code></td>
+          <td>159000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:meta-llama/Llama-3.3-70B-Instruct</code></td>
+          <td>128000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8</code></td>
+          <td>524000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:moonshotai/Kimi-K2-Instruct-0905</code></td>
+          <td>256000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:openai/gpt-oss-120b</code></td>
+          <td>128000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:Qwen/Qwen3-235B-A22B-Instruct-2507</code></td>
+          <td>256000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:Qwen/Qwen3-Coder-480B-A35B-Instruct</code></td>
+          <td>256000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:Qwen/Qwen3-VL-235B-A22B-Instruct</code></td>
+          <td>250000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text + image</td>
+      </tr>
+      <tr>
+          <td><code>hf:zai-org/GLM-4.5</code></td>
+          <td>128000</td>
+          <td>128000</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:zai-org/GLM-4.6</code></td>
+          <td>198000</td>
+          <td>128000</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:deepseek-ai/DeepSeek-V3</code></td>
+          <td>128000</td>
+          <td>8192</td>
+          <td>false</td>
+          <td>text</td>
+      </tr>
+      <tr>
+          <td><code>hf:Qwen/Qwen3-235B-A22B-Thinking-2507</code></td>
+          <td>256000</td>
+          <td>8192</td>
+          <td>true</td>
+          <td>text</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h2>
+<ul>
+<li>模型引用格式为 <code>synthetic/&lt;modelId&gt;</code>。</li>
+<li>如果启用了模型允许列表（<code>agents.defaults.models</code>），请添加你计划使用的所有模型。</li>
+<li>参阅<a href="/concepts/model-providers">模型提供商</a>了解提供商规则。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/reference/templates/soul/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>SOUL.md - 你是谁</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/tailscale/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Tailscale（Gateway 网关仪表盘）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

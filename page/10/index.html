@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>工作区记忆 v2（离线）：研究笔记</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标：Clawd 风格的工作区（agents.defaults.workspace，默认 ~/.openclaw/workspace），其中&#34;记忆&#34;以每天一个 Markdown 文件（memory/YYYY-MM-DD.md）加上一小组稳定文件（例如 memory.md、SOUL.md）的形式存储。
+本文档提出一种离线优先的记忆架构，保持 Markdown 作为规范的、可审查的数据源，但通过派生索引添加结构化回忆（搜索、实体摘要、置信度更新）。
+为什么要改变？ 当前设置（每天一个文件）非常适合：
+“仅追加&#34;式日志记录 人工编辑 git 支持的持久性 &#43; 可审计性 低摩擦捕获（“直接写下来”） 但它在以下方面较弱：
+高召回率检索（“我们对 X 做了什么决定？&#34;、“上次我们尝试 Y 时？&#34;） 以实体为中心的答案（“告诉我关于 Alice / The Castle / warelay 的信息”）而无需重读多个文件 观点/偏好稳定性（以及变化时的证据） 时间约束（“2025 年 11 月期间什么是真实的？&#34;）和冲突解决 设计目标 离线：无需网络即可工作；可在笔记本电脑/Castle 上运行；无云依赖。 可解释：检索的项目应该可归因（文件 &#43; 位置）并与推理分离。 低仪式感：每日日志保持 Markdown，无需繁重的 schema 工作。 增量式：v1 仅使用 FTS 就很有用；语义/向量和图是可选升级。 对智能体友好：使&#34;在 token 预算内回忆&#34;变得简单（返回小型事实包）。 北极星模型（Hindsight × Letta） 需要融合两个部分：
+Letta/MemGPT 风格的控制循环 保持一个小的&#34;核心&#34;始终在上下文中（角色 &#43; 关键用户事实） 其他所有内容都在上下文之外，通过工具检索 记忆写入是显式的工具调用（append/replace/insert），持久化后在下一轮重新注入 Hindsight 风格的记忆基底 分离观察到的、相信的和总结的内容 支持 retain/recall/reflect 带有置信度的观点可以随证据演变 实体感知检索 &#43; 时间查询（即使没有完整的知识图谱） 提议的架构（Markdown 数据源 &#43; 派生索引） 规范存储（git 友好） 保持 ~/.openclaw/workspace 作为规范的人类可读记忆。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 工作区记忆 v2（离线）：研究笔记" href="/openclaw/experiments/research/memory/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>将 OpenClaw 迁移到新机器</h2>
+    </header>
+    <div class="entry-content">
+      <p>本指南将 OpenClaw Gateway 网关从一台机器迁移到另一台，无需重新进行新手引导。
+迁移在概念上很简单：
+复制状态目录（$OPENCLAW_STATE_DIR，默认：~/.openclaw/）— 这包括配置、认证、会话和渠道状态。 复制你的工作区（默认 ~/.openclaw/workspace/）— 这包括你的智能体文件（记忆、提示等）。 但在配置文件、权限和部分复制方面有常见的陷阱。
+开始之前（你要迁移什么） 1）确定你的状态目录 大多数安装使用默认值：
+状态目录： ~/.openclaw/ 但如果你使用以下方式，可能会不同：
+--profile &lt;name&gt;（通常变成 ~/.openclaw-&lt;profile&gt;/） OPENCLAW_STATE_DIR=/some/path 如果你不确定，在旧机器上运行：
+openclaw status 在输出中查找 OPENCLAW_STATE_DIR / profile 的提及。如果你运行多个 Gateway 网关，对每个配置文件重复此操作。
+2）确定你的工作区 常见默认值：
+~/.openclaw/workspace/（推荐的工作区） 你创建的自定义文件夹 你的工作区是 MEMORY.md、USER.md 和 memory/*.md 等文件所在的位置。
+3）了解你将保留什么 如果你复制两者——状态目录和工作区，你将保留：
+Gateway 网关配置（openclaw.json） 认证配置文件 / API 密钥 / OAuth 令牌 会话历史 &#43; 智能体状态 渠道状态（例如 WhatsApp 登录/会话） 你的工作区文件（记忆、Skills 笔记等） 如果你只复制工作区（例如通过 Git），你不会保留：
+会话 凭证 渠道登录 这些存储在 $OPENCLAW_STATE_DIR 下。
+迁移步骤（推荐） 步骤 0 — 备份（旧机器） 在旧机器上，首先停止 Gateway 网关，这样文件不会在复制过程中发生变化：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 将 OpenClaw 迁移到新机器" href="/openclaw/install/migrating/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>对话记录清理（提供商修正）</h2>
+    </header>
+    <div class="entry-content">
+      <p>本文档描述了在运行前（构建模型上下文时）应用于对话记录的提供商特定修正。这些是内存中的调整，用于满足提供商的严格要求。它们不会重写磁盘上存储的 JSONL 对话记录。
+涵盖范围包括：
+工具调用 id 清理 工具结果配对修复 轮次验证 / 排序 思考签名清理 图片负载清理 如需了解对话记录存储细节，请参阅：
+/reference/session-management-compaction 运行位置 所有对话记录清理逻辑集中在嵌入式运行器中：
+策略选择：src/agents/transcript-policy.ts 清理/修复应用：src/agents/pi-embedded-runner/google.ts 中的 sanitizeSessionHistory 策略根据 provider、modelApi 和 modelId 来决定应用哪些规则。
+全局规则：图片清理 图片负载始终会被清理，以防止因大小限制导致提供商端拒绝（对超大 base64 图片进行缩放/重新压缩）。
+实现：
+src/agents/pi-embedded-helpers/images.ts 中的 sanitizeSessionMessagesImages src/agents/tool-images.ts 中的 sanitizeContentBlocksImages 提供商矩阵（当前行为） OpenAI / OpenAI Codex
+仅图片清理。 切换到 OpenAI Responses/Codex 模型时，丢弃孤立的推理签名（没有后续内容块的独立推理项）。 不进行工具调用 id 清理。 不进行工具结果配对修复。 不进行轮次验证或重新排序。 不生成合成工具结果。 不剥离思考签名。 Google (Generative AI / Gemini CLI / Antigravity)
+工具调用 id 清理：严格字母数字。 工具结果配对修复和合成工具结果。 轮次验证（Gemini 风格的轮次交替）。 Google 轮次排序修正（如果历史记录以助手开头，则在前面添加一个小型用户引导消息）。 Antigravity Claude：规范化思考签名；丢弃未签名的思考块。 Anthropic / Minimax（Anthropic 兼容）
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 对话记录清理（提供商修正）" href="/openclaw/reference/transcript-hygiene/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>定时任务与心跳：何时使用哪种方式</h2>
+    </header>
+    <div class="entry-content">
+      <p>心跳和定时任务都可以按计划运行任务。本指南帮助你根据使用场景选择合适的机制。
+快速决策指南 使用场景 推荐方式 原因 每 30 分钟检查收件箱 心跳 可与其他检查批量处理，具备上下文感知能力 每天上午 9 点准时发送报告 定时任务（隔离式） 需要精确定时 监控日历中即将到来的事件 心跳 天然适合周期性感知 运行每周深度分析 定时任务（隔离式） 独立任务，可使用不同模型 20 分钟后提醒我 定时任务（主会话，--at） 精确定时的一次性任务 后台项目健康检查 心跳 搭载在现有周期上 心跳：周期性感知 心跳在主会话中以固定间隔运行（默认：30 分钟）。它的设计目的是让智能体检查各种事项并呈现重要信息。
+何时使用心跳 多个周期性检查：与其设置 5 个独立的定时任务分别检查收件箱、日历、天气、通知和项目状态，不如用一次心跳批量处理所有内容。 上下文感知决策：智能体拥有完整的主会话上下文，因此可以智能判断哪些紧急、哪些可以等待。 对话连续性：心跳运行共享同一会话，因此智能体记得最近的对话，可以自然地进行后续跟进。 低开销监控：一次心跳替代多个小型轮询任务。 心跳优势 批量处理多项检查：一次智能体轮次可以同时审查收件箱、日历和通知。 减少 API 调用：一次心跳比 5 个隔离式定时任务更经济。 上下文感知：智能体了解你一直在做什么，可以据此排定优先级。 智能抑制：如果没有需要关注的事项，智能体回复 HEARTBEAT_OK，不会投递任何消息。 自然定时：会根据队列负载略有漂移，但对大多数监控来说没有问题。 心跳示例：HEARTBEAT.md 检查清单 # Heartbeat checklist - Check email for urgent messages - Review calendar for events in next 2 hours - If a background task finished, summarize results - If idle for 8&#43; hours, send a brief check-in 智能体在每次心跳时读取此清单，并在一次轮次中处理所有项目。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 定时任务与心跳：何时使用哪种方式" href="/openclaw/automation/cron-vs-heartbeat/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>定时任务（Gateway网关调度器）</h2>
+    </header>
+    <div class="entry-content">
+      <p> 定时任务还是心跳？ 请参阅定时任务与心跳对比了解何时使用哪种方式。
+定时任务是 Gateway网关内置的调度器。它持久化任务、在合适的时间唤醒智能体，并可选择将输出发送回聊天。
+如果你想要 “每天早上运行” 或 “20 分钟后提醒智能体”，定时任务就是对应的机制。
+简要概述 定时任务运行在 Gateway网关内部（而非模型内部）。 任务持久化存储在 ~/.openclaw/cron/ 下，因此重启不会丢失计划。 两种执行方式： 主会话：入队一个系统事件，然后在下一次心跳时运行。 隔离式：在 cron:&lt;jobId&gt; 中运行专用智能体轮次，可投递摘要（默认 announce）或不投递。 唤醒是一等功能：任务可以请求&#34;立即唤醒&#34;或&#34;下次心跳时&#34;。 快速开始（可操作） 创建一个一次性提醒，验证其存在，然后立即运行：
+openclaw cron add \ --name &#34;Reminder&#34; \ --at &#34;2026-02-01T16:00:00Z&#34; \ --session main \ --system-event &#34;Reminder: check the cron docs draft&#34; \ --wake now \ --delete-after-run openclaw cron list openclaw cron run &lt;job-id&gt; --force openclaw cron runs --id &lt;job-id&gt; 调度一个带投递功能的周期性隔离任务：
+openclaw cron add \ --name &#34;Morning brief&#34; \ --cron &#34;0 7 * * *&#34; \ --tz &#34;America/Los_Angeles&#34; \ --session isolated \ --message &#34;Summarize overnight updates.&#34; \ --announce \ --channel slack \ --to &#34;channel:C1234567890&#34; 工具调用等价形式（Gateway网关定时任务工具） 有关规范的 JSON 结构和示例，请参阅工具调用的 JSON 模式。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 定时任务（Gateway网关调度器）" href="/openclaw/automation/cron-jobs/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>安装器内部机制</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 提供两个安装器脚本（托管在 openclaw.ai）：
+https://openclaw.ai/install.sh — “推荐&#34;安装器（默认全局 npm 安装；也可从 GitHub 检出安装） https://openclaw.ai/install-cli.sh — 无需 root 权限的 CLI 安装器（安装到带有独立 Node 的前缀目录） https://openclaw.ai/install.ps1 — Windows PowerShell 安装器（默认 npm；可选 git 安装） 查看当前参数/行为，运行：
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --help Windows (PowerShell) 帮助：
+&amp; ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -? 如果安装器完成但在新终端中找不到 openclaw，通常是 Node/npm PATH 问题。参见：安装。
+install.sh（推荐） 功能概述：
+检测操作系统（macOS / Linux / WSL）。 确保 Node.js 22&#43;（macOS 通过 Homebrew；Linux 通过 NodeSource）。 选择安装方式： npm（默认）：npm install -g openclaw@latest git：克隆/构建源码检出并安装包装脚本 在 Linux 上：必要时将 npm 前缀切换到 ~/.npm-global，以避免全局 npm 权限错误。 如果是升级现有安装：运行 openclaw doctor --non-interactive（尽力执行）。 对于 git 安装：安装/更新后运行 openclaw doctor --non-interactive（尽力执行）。 通过默认设置 SHARP_IGNORE_GLOBAL_LIBVIPS=1 来缓解 sharp 原生安装问题（避免使用系统 libvips 编译）。 如果你希望 sharp 链接到全局安装的 libvips（或你正在调试），请设置：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 安装器内部机制" href="/openclaw/install/installer/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>安全性 🔒</h2>
+    </header>
+    <div class="entry-content">
+      <p>快速检查：openclaw security audit 另请参阅：形式化验证（安全模型）
+定期运行此命令（尤其是在更改配置或暴露网络接口之后）：
+openclaw security audit openclaw security audit --deep openclaw security audit --fix 它会标记常见的安全隐患（Gateway 网关认证暴露、浏览器控制暴露、提权白名单、文件系统权限）。
+--fix 会应用安全防护措施：
+将常见渠道的 groupPolicy=&#34;open&#34; 收紧为 groupPolicy=&#34;allowlist&#34;（以及单账户变体）。 将 logging.redactSensitive=&#34;off&#34; 恢复为 &#34;tools&#34;。 收紧本地权限（~/.openclaw → 700，配置文件 → 600，以及常见状态文件如 credentials/*.json、agents/*/agent/auth-profiles.json 和 agents/*/sessions/sessions.json）。 在你的机器上运行具有 shell 访问权限的 AI 智能体是……有风险的。以下是如何避免被攻击的方法。
+OpenClaw 既是产品也是实验：你正在将前沿模型的行为连接到真实的消息平台和真实的工具。不存在&#34;完美安全&#34;的设置。 目标是有意识地考虑：
+谁可以与你的机器人交谠 机器人被允许在哪里执行操作 机器人可以访问什么 从能正常工作的最小访问权限开始，然后随着信心增长再逐步扩大。
+审计检查内容（高层概述） 入站访问（私信策略、群组策略、白名单）：陌生人能否触发机器人？ 工具影响范围（提权工具 &#43; 开放房间）：提示词注入是否可能转化为 shell/文件/网络操作？ 网络暴露（Gateway 网关绑定/认证、Tailscale Serve/Funnel、弱/短认证令牌）。 浏览器控制暴露（远程节点、中继端口、远程 CDP 端点）。 本地磁盘卫生（权限、符号链接、配置包含、“同步文件夹&#34;路径）。 插件（存在扩展但没有显式白名单）。 模型卫生（当配置的模型看起来是旧版时发出警告；不会硬性阻止）。 如果运行 --deep，OpenClaw 还会尝试尽力进行实时 Gateway 网关探测。
+凭证存储映射 在审计访问权限或决定备份内容时使用：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 安全性 🔒" href="/openclaw/gateway/security/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>子智能体</h2>
+    </header>
+    <div class="entry-content">
+      <p>子智能体是从现有智能体运行中生成的后台智能体运行。它们在自己的会话中运行（agent:&lt;agentId&gt;:subagent:&lt;uuid&gt;），完成后将结果通告回请求者的聊天渠道。
+斜杠命令 使用 /subagents 检查或控制当前会话的子智能体运行：
+/subagents list /subagents kill &lt;id|#|all&gt; /subagents log &lt;id|#&gt; [limit] [tools] /subagents info &lt;id|#&gt; /subagents send &lt;id|#&gt; &lt;message&gt; /subagents steer &lt;id|#&gt; &lt;message&gt; /subagents spawn &lt;agentId&gt; &lt;task&gt; [--model &lt;model&gt;] [--thinking &lt;level&gt;] /subagents info 显示运行元数据（状态、时间戳、会话 id、转录路径、清理）。
+启动行为 /subagents spawn 以用户命令方式启动后台子智能体，任务完成后会向请求者聊天频道回发一条最终完成消息。
+该命令非阻塞，先返回 runId。 完成后，子智能体会将汇总/结果消息发布到请求者聊天渠道。 --model 与 --thinking 可仅对本次运行做覆盖设置。 可在完成后通过 info/log 查看详细信息和输出。 主要目标：
+并行化&#34;研究 / 长任务 / 慢工具&#34;工作，而不阻塞主运行。 默认保持子智能体隔离（会话分离 &#43; 可选沙箱隔离）。 保持工具接口难以滥用：子智能体默认不获得会话工具。 避免嵌套扇出：子智能体不能生成子智能体。 成本说明：每个子智能体都有自己的上下文和 token 使用量。对于繁重或重复的任务，为子智能体设置更便宜的模型，而让主智能体使用更高质量的模型。你可以通过 agents.defaults.subagents.model 或每智能体覆盖来配置。
+工具 使用 sessions_spawn：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 子智能体" href="/openclaw/tools/subagents/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>媒体理解（入站）— 2026-01-17</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 可以在回复流程运行之前摘要入站媒体（图片/音频/视频）。它会自动检测本地工具或提供商密钥是否可用，并且可以禁用或自定义。如果理解关闭，模型仍然会像往常一样接收原始文件/URL。
+目标 可选：将入站媒体预先消化为短文本，以便更快路由 &#43; 更好的命令解析。 保留原始媒体传递给模型（始终）。 支持提供商 API 和 CLI 回退。 允许多个模型并按顺序回退（错误/大小/超时）。 高层行为 收集入站附件（MediaPaths、MediaUrls、MediaTypes）。 对于每个启用的能力（图片/音频/视频），根据策略选择附件（默认：第一个）。 选择第一个符合条件的模型条目（大小 &#43; 能力 &#43; 认证）。 如果模型失败或媒体太大，回退到下一个条目。 成功时： Body 变为 [Image]、[Audio] 或 [Video] 块。 音频设置 {{Transcript}}；命令解析在有标题文本时使用标题文本，否则使用转录。 标题作为 User text: 保留在块内。 如果理解失败或被禁用，回复流程继续使用原始正文 &#43; 附件。
+配置概述 tools.media 支持共享模型加上每能力覆盖：
+tools.media.models：共享模型列表（使用 capabilities 来限定）。 tools.media.image / tools.media.audio / tools.media.video： 默认值（prompt、maxChars、maxBytes、timeoutSeconds、language） 提供商覆盖（baseUrl、headers、providerOptions） 通过 tools.media.audio.providerOptions.deepgram 配置 Deepgram 音频选项 可选的每能力 models 列表（优先于共享模型） attachments 策略（mode、maxAttachments、prefer） scope（可选的按渠道/聊天类型/会话键限定） tools.media.concurrency：最大并发能力运行数（默认 2）。 { tools: { media: { models: [ /* 共享列表 */ ], image: { /* 可选覆盖 */ }, audio: { /* 可选覆盖 */ }, video: { /* 可选覆盖 */ }, }, }, } 模型条目 每个 models[] 条目可以是提供商或 CLI：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 媒体理解（入站）— 2026-01-17" href="/openclaw/nodes/media-understanding/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>多智能体路由</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标：多个隔离的智能体（独立的工作区 &#43; agentDir &#43; 会话），加上多个渠道账户（例如两个 WhatsApp）在一个运行的 Gateway 网关中。入站消息通过绑定路由到智能体。
+什么是&#34;一个智能体&#34;？ 一个智能体是一个完全独立作用域的大脑，拥有自己的：
+工作区（文件、AGENTS.md/SOUL.md/USER.md、本地笔记、人设规则）。 状态目录（agentDir）用于认证配置文件、模型注册表和每智能体配置。 会话存储（聊天历史 &#43; 路由状态）位于 ~/.openclaw/agents/&lt;agentId&gt;/sessions 下。 认证配置文件是每智能体独立的。每个智能体从自己的位置读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 主智能体凭证不会自动共享。切勿在智能体之间重用 agentDir（这会导致认证/会话冲突）。如果你想共享凭证，请将 auth-profiles.json 复制到另一个智能体的 agentDir。
+Skills 通过每个工作区的 skills/ 文件夹实现每智能体独立，共享的 Skills 可从 ~/.openclaw/skills 获取。参见 Skills：每智能体 vs 共享。
+Gateway 网关可以托管一个智能体（默认）或多个智能体并行。
+工作区注意事项： 每个智能体的工作区是默认 cwd，而不是硬性沙箱。相对路径在工作区内解析，但绝对路径可以访问主机的其他位置，除非启用了沙箱隔离。参见 沙箱隔离。
+路径（快速映射） 配置：~/.openclaw/openclaw.json（或 OPENCLAW_CONFIG_PATH） 状态目录：~/.openclaw（或 OPENCLAW_STATE_DIR） 工作区：~/.openclaw/workspace（或 ~/.openclaw/workspace-&lt;agentId&gt;） 智能体目录：~/.openclaw/agents/&lt;agentId&gt;/agent（或 agents.list[].agentDir） 会话：~/.openclaw/agents/&lt;agentId&gt;/sessions 单智能体模式（默认） 如果你什么都不做，OpenClaw 运行单个智能体：
+agentId 默认为 main。 会话键为 agent:main:&lt;mainKey&gt;。 工作区默认为 ~/.openclaw/workspace（或当设置了 OPENCLAW_PROFILE 时为 ~/.openclaw/workspace-&lt;profile&gt;）。 状态默认为 ~/.openclaw/agents/main/agent。 智能体助手 使用智能体向导添加新的隔离智能体：
+openclaw agents add work 然后添加 bindings（或让向导完成）来路由入站消息。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 多智能体路由" href="/openclaw/concepts/multi-agent/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/9/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/11/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

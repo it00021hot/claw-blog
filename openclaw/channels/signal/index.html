@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Signal (signal-cli) | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态：外部 CLI 集成。Gateway 网关通过 HTTP JSON-RPC &#43; SSE 与 signal-cli 通信。
+快速设置（初学者）
+
+为 bot 使用单独的 Signal 号码（推荐）。
+安装 signal-cli（需要 Java）。
+链接 bot 设备并启动守护进程：
+
+signal-cli link -n &quot;OpenClaw&quot;
+
+
+配置 OpenClaw 并启动 Gateway 网关。
+
+最小配置：
+{
+  channels: {
+    signal: {
+      enabled: true,
+      account: &#34;&#43;15551234567&#34;,
+      cliPath: &#34;signal-cli&#34;,
+      dmPolicy: &#34;pairing&#34;,
+      allowFrom: [&#34;&#43;15557654321&#34;],
+    },
+  },
+}
+它是什么
+
+通过 signal-cli 的 Signal 渠道（非嵌入式 libsignal）。
+确定性路由：回复始终返回到 Signal。
+私信共享智能体的主会话；群组是隔离的（agent:&lt;agentId&gt;:signal:group:&lt;groupId&gt;）。
+
+配置写入
+默认情况下，Signal 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。
+禁用方式：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/signal/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/signal/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/signal/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Signal (signal-cli)">
+  <meta property="og:description" content="状态：外部 CLI 集成。Gateway 网关通过 HTTP JSON-RPC &#43; SSE 与 signal-cli 通信。
+快速设置（初学者） 为 bot 使用单独的 Signal 号码（推荐）。 安装 signal-cli（需要 Java）。 链接 bot 设备并启动守护进程： signal-cli link -n &#34;OpenClaw&#34; 配置 OpenClaw 并启动 Gateway 网关。 最小配置：
+{ channels: { signal: { enabled: true, account: &#34;&#43;15551234567&#34;, cliPath: &#34;signal-cli&#34;, dmPolicy: &#34;pairing&#34;, allowFrom: [&#34;&#43;15557654321&#34;], }, }, } 它是什么 通过 signal-cli 的 Signal 渠道（非嵌入式 libsignal）。 确定性路由：回复始终返回到 Signal。 私信共享智能体的主会话；群组是隔离的（agent:&lt;agentId&gt;:signal:group:&lt;groupId&gt;）。 配置写入 默认情况下，Signal 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。
+禁用方式：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Signal (signal-cli)">
+<meta name="twitter:description" content="状态：外部 CLI 集成。Gateway 网关通过 HTTP JSON-RPC &#43; SSE 与 signal-cli 通信。
+快速设置（初学者）
+
+为 bot 使用单独的 Signal 号码（推荐）。
+安装 signal-cli（需要 Java）。
+链接 bot 设备并启动守护进程：
+
+signal-cli link -n &quot;OpenClaw&quot;
+
+
+配置 OpenClaw 并启动 Gateway 网关。
+
+最小配置：
+{
+  channels: {
+    signal: {
+      enabled: true,
+      account: &#34;&#43;15551234567&#34;,
+      cliPath: &#34;signal-cli&#34;,
+      dmPolicy: &#34;pairing&#34;,
+      allowFrom: [&#34;&#43;15557654321&#34;],
+    },
+  },
+}
+它是什么
+
+通过 signal-cli 的 Signal 渠道（非嵌入式 libsignal）。
+确定性路由：回复始终返回到 Signal。
+私信共享智能体的主会话；群组是隔离的（agent:&lt;agentId&gt;:signal:group:&lt;groupId&gt;）。
+
+配置写入
+默认情况下，Signal 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。
+禁用方式：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Signal (signal-cli)",
+      "item": "/openclaw/channels/signal/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Signal (signal-cli)",
+  "name": "Signal (signal-cli)",
+  "description": "状态：外部 CLI 集成。Gateway 网关通过 HTTP JSON-RPC + SSE 与 signal-cli 通信。\n快速设置（初学者） 为 bot 使用单独的 Signal 号码（推荐）。 安装 signal-cli（需要 Java）。 链接 bot 设备并启动守护进程： signal-cli link -n \u0026quot;OpenClaw\u0026quot; 配置 OpenClaw 并启动 Gateway 网关。 最小配置：\n{ channels: { signal: { enabled: true, account: \u0026#34;+15551234567\u0026#34;, cliPath: \u0026#34;signal-cli\u0026#34;, dmPolicy: \u0026#34;pairing\u0026#34;, allowFrom: [\u0026#34;+15557654321\u0026#34;], }, }, } 它是什么 通过 signal-cli 的 Signal 渠道（非嵌入式 libsignal）。 确定性路由：回复始终返回到 Signal。 私信共享智能体的主会话；群组是隔离的（agent:\u0026lt;agentId\u0026gt;:signal:group:\u0026lt;groupId\u0026gt;）。 配置写入 默认情况下，Signal 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。\n禁用方式：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态：外部 CLI 集成。Gateway 网关通过 HTTP JSON-RPC + SSE 与 signal-cli 通信。\n快速设置（初学者） 为 bot 使用单独的 Signal 号码（推荐）。 安装 signal-cli（需要 Java）。 链接 bot 设备并启动守护进程： signal-cli link -n \"OpenClaw\" 配置 OpenClaw 并启动 Gateway 网关。 最小配置：\n{ channels: { signal: { enabled: true, account: \"+15551234567\", cliPath: \"signal-cli\", dmPolicy: \"pairing\", allowFrom: [\"+15557654321\"], }, }, } 它是什么 通过 signal-cli 的 Signal 渠道（非嵌入式 libsignal）。 确定性路由：回复始终返回到 Signal。 私信共享智能体的主会话；群组是隔离的（agent::signal:group:）。 配置写入 默认情况下，Signal 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。\n禁用方式：\n{ channels: { signal: { configWrites: false } }, } 号码模型（重要） Gateway 网关连接到一个 Signal 设备（signal-cli 账户）。 如果你在个人 Signal 账户上运行 bot，它会忽略你自己的消息（循环保护）。 要实现\"我发消息给 bot 然后它回复\"，请使用单独的 bot 号码。 设置（快速路径） 安装 signal-cli（需要 Java）。 链接 bot 账户： signal-cli link -n \"OpenClaw\" 然后在 Signal 中扫描二维码。 配置 Signal 并启动 Gateway 网关。 示例：\n{ channels: { signal: { enabled: true, account: \"+15551234567\", cliPath: \"signal-cli\", dmPolicy: \"pairing\", allowFrom: [\"+15557654321\"], }, }, } 多账户支持：使用 channels.signal.accounts 配置每个账户及可选的 name。共享模式请参见 gateway/configuration。\n外部守护进程模式（httpUrl） 如果你想自己管理 signal-cli（JVM 冷启动慢、容器初始化或共享 CPU），请单独运行守护进程并将 OpenClaw 指向它：\n{ channels: { signal: { httpUrl: \"http://127.0.0.1:8080\", autoStart: false, }, }, } 这会跳过自动启动和 OpenClaw 内部的启动等待。对于自动启动时的慢启动，请设置 channels.signal.startupTimeoutMs。\n访问控制（私信 + 群组） 私信：\n默认：channels.signal.dmPolicy = \"pairing\"。 未知发送者会收到配对码；消息在批准前会被忽略（配对码 1 小时后过期）。 通过以下方式批准： openclaw pairing list signal openclaw pairing approve signal 配对是 Signal 私信的默认令牌交换方式。详情：配对 仅有 UUID 的发送者（来自 sourceUuid）在 channels.signal.allowFrom 中存储为 uuid:。 群组：\nchannels.signal.groupPolicy = open | allowlist | disabled。 当设置为 allowlist 时，channels.signal.groupAllowFrom 控制谁可以在群组中触发。 工作原理（行为） signal-cli 作为守护进程运行；Gateway 网关通过 SSE 读取事件。 入站消息被规范化为共享渠道信封。 回复始终路由回同一号码或群组。 媒体 + 限制 出站文本按 channels.signal.textChunkLimit 分块（默认 4000）。 可选换行分块：设置 channels.signal.chunkMode=\"newline\" 在长度分块前按空行（段落边界）分割。 支持附件（从 signal-cli 获取 base64）。 默认媒体上限：channels.signal.mediaMaxMb（默认 8）。 使用 channels.signal.ignoreAttachments 跳过下载媒体。 群组历史上下文使用 channels.signal.historyLimit（或 channels.signal.accounts.*.historyLimit），回退到 messages.groupChat.historyLimit。设置 0 禁用（默认 50）。 输入指示器 + 已读回执 输入指示器：OpenClaw 通过 signal-cli sendTyping 发送输入信号，并在回复运行时刷新它们。 已读回执：当 channels.signal.sendReadReceipts 为 true 时，OpenClaw 为允许的私信转发已读回执。 Signal-cli 不暴露群组的已读回执。 表情回应（message 工具） 使用 message action=react 配合 channel=signal。 目标：发送者 E.164 或 UUID（使用配对输出中的 uuid:；裸 UUID 也可以）。 messageId 是你要回应的消息的 Signal 时间戳。 群组表情回应需要 targetAuthor 或 targetAuthorUuid。 示例：\nmessage action=react channel=signal target=uuid:123e4567-e89b-12d3-a456-426614174000 messageId=1737630212345 emoji=🔥 message action=react channel=signal target=+15551234567 messageId=1737630212345 emoji=🔥 remove=true message action=react channel=signal target=signal:group: targetAuthor=uuid: messageId=1737630212345 emoji=✅ 配置：\nchannels.signal.actions.reactions：启用/禁用表情回应操作（默认 true）。 channels.signal.reactionLevel：off | ack | minimal | extensive。 off/ack 禁用智能体表情回应（message 工具 react 会报错）。 minimal/extensive 启用智能体表情回应并设置指导级别。 每账户覆盖：channels.signal.accounts..actions.reactions、channels.signal.accounts..reactionLevel。 投递目标（CLI/cron） 私信：signal:+15551234567（或纯 E.164）。 UUID 私信：uuid:（或裸 UUID）。 群组：signal:group:。 用户名：username:（如果你的 Signal 账户支持）。 配置参考（Signal） 完整配置：配置\n提供商选项：\nchannels.signal.enabled：启用/禁用渠道启动。 channels.signal.account：bot 账户的 E.164。 channels.signal.cliPath：signal-cli 的路径。 channels.signal.httpUrl：完整守护进程 URL（覆盖 host/port）。 channels.signal.httpHost、channels.signal.httpPort：守护进程绑定（默认 127.0.0.1:8080）。 channels.signal.autoStart：自动启动守护进程（如果未设置 httpUrl 则默认 true）。 channels.signal.startupTimeoutMs：启动等待超时（毫秒）（上限 120000）。 channels.signal.receiveMode：on-start | manual。 channels.signal.ignoreAttachments：跳过附件下载。 channels.signal.ignoreStories：忽略来自守护进程的动态。 channels.signal.sendReadReceipts：转发已读回执。 channels.signal.dmPolicy：pairing | allowlist | open | disabled（默认：pairing）。 channels.signal.allowFrom：私信允许列表（E.164 或 uuid:）。open 需要 \"*\"。Signal 没有用户名；使用电话/UUID id。 channels.signal.groupPolicy：open | allowlist | disabled（默认：allowlist）。 channels.signal.groupAllowFrom：群组发送者允许列表。 channels.signal.historyLimit：作为上下文包含的最大群组消息数（0 禁用）。 channels.signal.dmHistoryLimit：私信历史限制（用户轮次）。每用户覆盖：channels.signal.dms[\"\"].historyLimit。 channels.signal.textChunkLimit：出站分块大小（字符）。 channels.signal.chunkMode：length（默认）或 newline 在长度分块前按空行（段落边界）分割。 channels.signal.mediaMaxMb：入站/出站媒体上限（MB）。 相关全局选项：\nagents.list[].groupChat.mentionPatterns（Signal 不支持原生提及）。 messages.groupChat.mentionPatterns（全局回退）。 messages.responsePrefix。 ",
+  "wordCount" : "383",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/signal/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Signal (signal-cli)
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%ae%be%e7%bd%ae%e5%88%9d%e5%ad%a6%e8%80%85" aria-label="快速设置（初学者）">快速设置（初学者）</a></li>
+                <li>
+                    <a href="#%e5%ae%83%e6%98%af%e4%bb%80%e4%b9%88" aria-label="它是什么">它是什么</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%86%99%e5%85%a5" aria-label="配置写入">配置写入</a></li>
+                <li>
+                    <a href="#%e5%8f%b7%e7%a0%81%e6%a8%a1%e5%9e%8b%e9%87%8d%e8%a6%81" aria-label="号码模型（重要）">号码模型（重要）</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae%e5%bf%ab%e9%80%9f%e8%b7%af%e5%be%84" aria-label="设置（快速路径）">设置（快速路径）</a></li>
+                <li>
+                    <a href="#%e5%a4%96%e9%83%a8%e5%ae%88%e6%8a%a4%e8%bf%9b%e7%a8%8b%e6%a8%a1%e5%bc%8fhttpurl" aria-label="外部守护进程模式（httpUrl）">外部守护进程模式（httpUrl）</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6%e7%a7%81%e4%bf%a1--%e7%be%a4%e7%bb%84" aria-label="访问控制（私信 &#43; 群组）">访问控制（私信 + 群组）</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86%e8%a1%8c%e4%b8%ba" aria-label="工作原理（行为）">工作原理（行为）</a></li>
+                <li>
+                    <a href="#%e5%aa%92%e4%bd%93--%e9%99%90%e5%88%b6" aria-label="媒体 &#43; 限制">媒体 + 限制</a></li>
+                <li>
+                    <a href="#%e8%be%93%e5%85%a5%e6%8c%87%e7%a4%ba%e5%99%a8--%e5%b7%b2%e8%af%bb%e5%9b%9e%e6%89%a7" aria-label="输入指示器 &#43; 已读回执">输入指示器 + 已读回执</a></li>
+                <li>
+                    <a href="#%e8%a1%a8%e6%83%85%e5%9b%9e%e5%ba%94message-%e5%b7%a5%e5%85%b7" aria-label="表情回应（message 工具）">表情回应（message 工具）</a></li>
+                <li>
+                    <a href="#%e6%8a%95%e9%80%92%e7%9b%ae%e6%a0%87clicron" aria-label="投递目标（CLI/cron）">投递目标（CLI/cron）</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83signal" aria-label="配置参考（Signal）">配置参考（Signal）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>状态：外部 CLI 集成。Gateway 网关通过 HTTP JSON-RPC + SSE 与 <code>signal-cli</code> 通信。</p>
+<h2 id="快速设置初学者">快速设置（初学者）<a hidden class="anchor" aria-hidden="true" href="#快速设置初学者">#</a></h2>
+<ol>
+<li>为 bot 使用<strong>单独的 Signal 号码</strong>（推荐）。</li>
+<li>安装 <code>signal-cli</code>（需要 Java）。</li>
+<li>链接 bot 设备并启动守护进程：
+<ul>
+<li><code>signal-cli link -n &quot;OpenClaw&quot;</code></li>
+</ul>
+</li>
+<li>配置 OpenClaw 并启动 Gateway 网关。</li>
+</ol>
+<p>最小配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    signal: {
+      enabled: true,
+      account: &#34;+15551234567&#34;,
+      cliPath: &#34;signal-cli&#34;,
+      dmPolicy: &#34;pairing&#34;,
+      allowFrom: [&#34;+15557654321&#34;],
+    },
+  },
+}
+</code></pre><h2 id="它是什么">它是什么<a hidden class="anchor" aria-hidden="true" href="#它是什么">#</a></h2>
+<ul>
+<li>通过 <code>signal-cli</code> 的 Signal 渠道（非嵌入式 libsignal）。</li>
+<li>确定性路由：回复始终返回到 Signal。</li>
+<li>私信共享智能体的主会话；群组是隔离的（<code>agent:&lt;agentId&gt;:signal:group:&lt;groupId&gt;</code>）。</li>
+</ul>
+<h2 id="配置写入">配置写入<a hidden class="anchor" aria-hidden="true" href="#配置写入">#</a></h2>
+<p>默认情况下，Signal 允许写入由 <code>/config set|unset</code> 触发的配置更新（需要 <code>commands.config: true</code>）。</p>
+<p>禁用方式：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: { signal: { configWrites: false } },
+}
+</code></pre><h2 id="号码模型重要">号码模型（重要）<a hidden class="anchor" aria-hidden="true" href="#号码模型重要">#</a></h2>
+<ul>
+<li>Gateway 网关连接到一个 <strong>Signal 设备</strong>（<code>signal-cli</code> 账户）。</li>
+<li>如果你在<strong>个人 Signal 账户</strong>上运行 bot，它会忽略你自己的消息（循环保护）。</li>
+<li>要实现&quot;我发消息给 bot 然后它回复&quot;，请使用<strong>单独的 bot 号码</strong>。</li>
+</ul>
+<h2 id="设置快速路径">设置（快速路径）<a hidden class="anchor" aria-hidden="true" href="#设置快速路径">#</a></h2>
+<ol>
+<li>安装 <code>signal-cli</code>（需要 Java）。</li>
+<li>链接 bot 账户：
+<ul>
+<li><code>signal-cli link -n &quot;OpenClaw&quot;</code> 然后在 Signal 中扫描二维码。</li>
+</ul>
+</li>
+<li>配置 Signal 并启动 Gateway 网关。</li>
+</ol>
+<p>示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    signal: {
+      enabled: true,
+      account: &#34;+15551234567&#34;,
+      cliPath: &#34;signal-cli&#34;,
+      dmPolicy: &#34;pairing&#34;,
+      allowFrom: [&#34;+15557654321&#34;],
+    },
+  },
+}
+</code></pre><p>多账户支持：使用 <code>channels.signal.accounts</code> 配置每个账户及可选的 <code>name</code>。共享模式请参见 <a href="/gateway/configuration#telegramaccounts--discordaccounts--slackaccounts--signalaccounts--imessageaccounts"><code>gateway/configuration</code></a>。</p>
+<h2 id="外部守护进程模式httpurl">外部守护进程模式（httpUrl）<a hidden class="anchor" aria-hidden="true" href="#外部守护进程模式httpurl">#</a></h2>
+<p>如果你想自己管理 <code>signal-cli</code>（JVM 冷启动慢、容器初始化或共享 CPU），请单独运行守护进程并将 OpenClaw 指向它：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    signal: {
+      httpUrl: &#34;http://127.0.0.1:8080&#34;,
+      autoStart: false,
+    },
+  },
+}
+</code></pre><p>这会跳过自动启动和 OpenClaw 内部的启动等待。对于自动启动时的慢启动，请设置 <code>channels.signal.startupTimeoutMs</code>。</p>
+<h2 id="访问控制私信--群组">访问控制（私信 + 群组）<a hidden class="anchor" aria-hidden="true" href="#访问控制私信--群组">#</a></h2>
+<p>私信：</p>
+<ul>
+<li>默认：<code>channels.signal.dmPolicy = &quot;pairing&quot;</code>。</li>
+<li>未知发送者会收到配对码；消息在批准前会被忽略（配对码 1 小时后过期）。</li>
+<li>通过以下方式批准：
+<ul>
+<li><code>openclaw pairing list signal</code></li>
+<li><code>openclaw pairing approve signal &lt;CODE&gt;</code></li>
+</ul>
+</li>
+<li>配对是 Signal 私信的默认令牌交换方式。详情：<a href="/channels/pairing">配对</a></li>
+<li>仅有 UUID 的发送者（来自 <code>sourceUuid</code>）在 <code>channels.signal.allowFrom</code> 中存储为 <code>uuid:&lt;id&gt;</code>。</li>
+</ul>
+<p>群组：</p>
+<ul>
+<li><code>channels.signal.groupPolicy = open | allowlist | disabled</code>。</li>
+<li>当设置为 <code>allowlist</code> 时，<code>channels.signal.groupAllowFrom</code> 控制谁可以在群组中触发。</li>
+</ul>
+<h2 id="工作原理行为">工作原理（行为）<a hidden class="anchor" aria-hidden="true" href="#工作原理行为">#</a></h2>
+<ul>
+<li><code>signal-cli</code> 作为守护进程运行；Gateway 网关通过 SSE 读取事件。</li>
+<li>入站消息被规范化为共享渠道信封。</li>
+<li>回复始终路由回同一号码或群组。</li>
+</ul>
+<h2 id="媒体--限制">媒体 + 限制<a hidden class="anchor" aria-hidden="true" href="#媒体--限制">#</a></h2>
+<ul>
+<li>出站文本按 <code>channels.signal.textChunkLimit</code> 分块（默认 4000）。</li>
+<li>可选换行分块：设置 <code>channels.signal.chunkMode=&quot;newline&quot;</code> 在长度分块前按空行（段落边界）分割。</li>
+<li>支持附件（从 <code>signal-cli</code> 获取 base64）。</li>
+<li>默认媒体上限：<code>channels.signal.mediaMaxMb</code>（默认 8）。</li>
+<li>使用 <code>channels.signal.ignoreAttachments</code> 跳过下载媒体。</li>
+<li>群组历史上下文使用 <code>channels.signal.historyLimit</code>（或 <code>channels.signal.accounts.*.historyLimit</code>），回退到 <code>messages.groupChat.historyLimit</code>。设置 <code>0</code> 禁用（默认 50）。</li>
+</ul>
+<h2 id="输入指示器--已读回执">输入指示器 + 已读回执<a hidden class="anchor" aria-hidden="true" href="#输入指示器--已读回执">#</a></h2>
+<ul>
+<li><strong>输入指示器</strong>：OpenClaw 通过 <code>signal-cli sendTyping</code> 发送输入信号，并在回复运行时刷新它们。</li>
+<li><strong>已读回执</strong>：当 <code>channels.signal.sendReadReceipts</code> 为 true 时，OpenClaw 为允许的私信转发已读回执。</li>
+<li>Signal-cli 不暴露群组的已读回执。</li>
+</ul>
+<h2 id="表情回应message-工具">表情回应（message 工具）<a hidden class="anchor" aria-hidden="true" href="#表情回应message-工具">#</a></h2>
+<ul>
+<li>使用 <code>message action=react</code> 配合 <code>channel=signal</code>。</li>
+<li>目标：发送者 E.164 或 UUID（使用配对输出中的 <code>uuid:&lt;id&gt;</code>；裸 UUID 也可以）。</li>
+<li><code>messageId</code> 是你要回应的消息的 Signal 时间戳。</li>
+<li>群组表情回应需要 <code>targetAuthor</code> 或 <code>targetAuthorUuid</code>。</li>
+</ul>
+<p>示例：</p>
+<pre tabindex="0"><code>message action=react channel=signal target=uuid:123e4567-e89b-12d3-a456-426614174000 messageId=1737630212345 emoji=🔥
+message action=react channel=signal target=+15551234567 messageId=1737630212345 emoji=🔥 remove=true
+message action=react channel=signal target=signal:group:&lt;groupId&gt; targetAuthor=uuid:&lt;sender-uuid&gt; messageId=1737630212345 emoji=✅
+</code></pre><p>配置：</p>
+<ul>
+<li><code>channels.signal.actions.reactions</code>：启用/禁用表情回应操作（默认 true）。</li>
+<li><code>channels.signal.reactionLevel</code>：<code>off | ack | minimal | extensive</code>。
+<ul>
+<li><code>off</code>/<code>ack</code> 禁用智能体表情回应（message 工具 <code>react</code> 会报错）。</li>
+<li><code>minimal</code>/<code>extensive</code> 启用智能体表情回应并设置指导级别。</li>
+</ul>
+</li>
+<li>每账户覆盖：<code>channels.signal.accounts.&lt;id&gt;.actions.reactions</code>、<code>channels.signal.accounts.&lt;id&gt;.reactionLevel</code>。</li>
+</ul>
+<h2 id="投递目标clicron">投递目标（CLI/cron）<a hidden class="anchor" aria-hidden="true" href="#投递目标clicron">#</a></h2>
+<ul>
+<li>私信：<code>signal:+15551234567</code>（或纯 E.164）。</li>
+<li>UUID 私信：<code>uuid:&lt;id&gt;</code>（或裸 UUID）。</li>
+<li>群组：<code>signal:group:&lt;groupId&gt;</code>。</li>
+<li>用户名：<code>username:&lt;name&gt;</code>（如果你的 Signal 账户支持）。</li>
+</ul>
+<h2 id="配置参考signal">配置参考（Signal）<a hidden class="anchor" aria-hidden="true" href="#配置参考signal">#</a></h2>
+<p>完整配置：<a href="/gateway/configuration">配置</a></p>
+<p>提供商选项：</p>
+<ul>
+<li><code>channels.signal.enabled</code>：启用/禁用渠道启动。</li>
+<li><code>channels.signal.account</code>：bot 账户的 E.164。</li>
+<li><code>channels.signal.cliPath</code>：<code>signal-cli</code> 的路径。</li>
+<li><code>channels.signal.httpUrl</code>：完整守护进程 URL（覆盖 host/port）。</li>
+<li><code>channels.signal.httpHost</code>、<code>channels.signal.httpPort</code>：守护进程绑定（默认 127.0.0.1:8080）。</li>
+<li><code>channels.signal.autoStart</code>：自动启动守护进程（如果未设置 <code>httpUrl</code> 则默认 true）。</li>
+<li><code>channels.signal.startupTimeoutMs</code>：启动等待超时（毫秒）（上限 120000）。</li>
+<li><code>channels.signal.receiveMode</code>：<code>on-start | manual</code>。</li>
+<li><code>channels.signal.ignoreAttachments</code>：跳过附件下载。</li>
+<li><code>channels.signal.ignoreStories</code>：忽略来自守护进程的动态。</li>
+<li><code>channels.signal.sendReadReceipts</code>：转发已读回执。</li>
+<li><code>channels.signal.dmPolicy</code>：<code>pairing | allowlist | open | disabled</code>（默认：pairing）。</li>
+<li><code>channels.signal.allowFrom</code>：私信允许列表（E.164 或 <code>uuid:&lt;id&gt;</code>）。<code>open</code> 需要 <code>&quot;*&quot;</code>。Signal 没有用户名；使用电话/UUID id。</li>
+<li><code>channels.signal.groupPolicy</code>：<code>open | allowlist | disabled</code>（默认：allowlist）。</li>
+<li><code>channels.signal.groupAllowFrom</code>：群组发送者允许列表。</li>
+<li><code>channels.signal.historyLimit</code>：作为上下文包含的最大群组消息数（0 禁用）。</li>
+<li><code>channels.signal.dmHistoryLimit</code>：私信历史限制（用户轮次）。每用户覆盖：<code>channels.signal.dms[&quot;&lt;phone_or_uuid&gt;&quot;].historyLimit</code>。</li>
+<li><code>channels.signal.textChunkLimit</code>：出站分块大小（字符）。</li>
+<li><code>channels.signal.chunkMode</code>：<code>length</code>（默认）或 <code>newline</code> 在长度分块前按空行（段落边界）分割。</li>
+<li><code>channels.signal.mediaMaxMb</code>：入站/出站媒体上限（MB）。</li>
+</ul>
+<p>相关全局选项：</p>
+<ul>
+<li><code>agents.list[].groupChat.mentionPatterns</code>（Signal 不支持原生提及）。</li>
+<li><code>messages.groupChat.mentionPatterns</code>（全局回退）。</li>
+<li><code>messages.responsePrefix</code>。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/reference/rpc/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>RPC 适配器</span>
+  </a>
+  <a class="next" href="/openclaw/tools/skills-config/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Skills 配置</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>多智能体路由 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标：多个隔离的智能体（独立的工作区 &#43; agentDir &#43; 会话），加上多个渠道账户（例如两个 WhatsApp）在一个运行的 Gateway 网关中。入站消息通过绑定路由到智能体。
+什么是&quot;一个智能体&quot;？
+一个智能体是一个完全独立作用域的大脑，拥有自己的：
+
+工作区（文件、AGENTS.md/SOUL.md/USER.md、本地笔记、人设规则）。
+状态目录（agentDir）用于认证配置文件、模型注册表和每智能体配置。
+会话存储（聊天历史 &#43; 路由状态）位于 ~/.openclaw/agents/&lt;agentId&gt;/sessions 下。
+
+认证配置文件是每智能体独立的。每个智能体从自己的位置读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json
+主智能体凭证不会自动共享。切勿在智能体之间重用 agentDir（这会导致认证/会话冲突）。如果你想共享凭证，请将 auth-profiles.json 复制到另一个智能体的 agentDir。
+Skills 通过每个工作区的 skills/ 文件夹实现每智能体独立，共享的 Skills 可从 ~/.openclaw/skills 获取。参见 Skills：每智能体 vs 共享。
+Gateway 网关可以托管一个智能体（默认）或多个智能体并行。
+工作区注意事项： 每个智能体的工作区是默认 cwd，而不是硬性沙箱。相对路径在工作区内解析，但绝对路径可以访问主机的其他位置，除非启用了沙箱隔离。参见 沙箱隔离。
+路径（快速映射）
+
+配置：~/.openclaw/openclaw.json（或 OPENCLAW_CONFIG_PATH）
+状态目录：~/.openclaw（或 OPENCLAW_STATE_DIR）
+工作区：~/.openclaw/workspace（或 ~/.openclaw/workspace-&lt;agentId&gt;）
+智能体目录：~/.openclaw/agents/&lt;agentId&gt;/agent（或 agents.list[].agentDir）
+会话：~/.openclaw/agents/&lt;agentId&gt;/sessions
+
+单智能体模式（默认）
+如果你什么都不做，OpenClaw 运行单个智能体：
+
+agentId 默认为 main。
+会话键为 agent:main:&lt;mainKey&gt;。
+工作区默认为 ~/.openclaw/workspace（或当设置了 OPENCLAW_PROFILE 时为 ~/.openclaw/workspace-&lt;profile&gt;）。
+状态默认为 ~/.openclaw/agents/main/agent。
+
+智能体助手
+使用智能体向导添加新的隔离智能体：
+openclaw agents add work
+然后添加 bindings（或让向导完成）来路由入站消息。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/multi-agent/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/multi-agent/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/multi-agent/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="多智能体路由">
+  <meta property="og:description" content="目标：多个隔离的智能体（独立的工作区 &#43; agentDir &#43; 会话），加上多个渠道账户（例如两个 WhatsApp）在一个运行的 Gateway 网关中。入站消息通过绑定路由到智能体。
+什么是&#34;一个智能体&#34;？ 一个智能体是一个完全独立作用域的大脑，拥有自己的：
+工作区（文件、AGENTS.md/SOUL.md/USER.md、本地笔记、人设规则）。 状态目录（agentDir）用于认证配置文件、模型注册表和每智能体配置。 会话存储（聊天历史 &#43; 路由状态）位于 ~/.openclaw/agents/&lt;agentId&gt;/sessions 下。 认证配置文件是每智能体独立的。每个智能体从自己的位置读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 主智能体凭证不会自动共享。切勿在智能体之间重用 agentDir（这会导致认证/会话冲突）。如果你想共享凭证，请将 auth-profiles.json 复制到另一个智能体的 agentDir。
+Skills 通过每个工作区的 skills/ 文件夹实现每智能体独立，共享的 Skills 可从 ~/.openclaw/skills 获取。参见 Skills：每智能体 vs 共享。
+Gateway 网关可以托管一个智能体（默认）或多个智能体并行。
+工作区注意事项： 每个智能体的工作区是默认 cwd，而不是硬性沙箱。相对路径在工作区内解析，但绝对路径可以访问主机的其他位置，除非启用了沙箱隔离。参见 沙箱隔离。
+路径（快速映射） 配置：~/.openclaw/openclaw.json（或 OPENCLAW_CONFIG_PATH） 状态目录：~/.openclaw（或 OPENCLAW_STATE_DIR） 工作区：~/.openclaw/workspace（或 ~/.openclaw/workspace-&lt;agentId&gt;） 智能体目录：~/.openclaw/agents/&lt;agentId&gt;/agent（或 agents.list[].agentDir） 会话：~/.openclaw/agents/&lt;agentId&gt;/sessions 单智能体模式（默认） 如果你什么都不做，OpenClaw 运行单个智能体：
+agentId 默认为 main。 会话键为 agent:main:&lt;mainKey&gt;。 工作区默认为 ~/.openclaw/workspace（或当设置了 OPENCLAW_PROFILE 时为 ~/.openclaw/workspace-&lt;profile&gt;）。 状态默认为 ~/.openclaw/agents/main/agent。 智能体助手 使用智能体向导添加新的隔离智能体：
+openclaw agents add work 然后添加 bindings（或让向导完成）来路由入站消息。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多智能体路由">
+<meta name="twitter:description" content="目标：多个隔离的智能体（独立的工作区 &#43; agentDir &#43; 会话），加上多个渠道账户（例如两个 WhatsApp）在一个运行的 Gateway 网关中。入站消息通过绑定路由到智能体。
+什么是&quot;一个智能体&quot;？
+一个智能体是一个完全独立作用域的大脑，拥有自己的：
+
+工作区（文件、AGENTS.md/SOUL.md/USER.md、本地笔记、人设规则）。
+状态目录（agentDir）用于认证配置文件、模型注册表和每智能体配置。
+会话存储（聊天历史 &#43; 路由状态）位于 ~/.openclaw/agents/&lt;agentId&gt;/sessions 下。
+
+认证配置文件是每智能体独立的。每个智能体从自己的位置读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json
+主智能体凭证不会自动共享。切勿在智能体之间重用 agentDir（这会导致认证/会话冲突）。如果你想共享凭证，请将 auth-profiles.json 复制到另一个智能体的 agentDir。
+Skills 通过每个工作区的 skills/ 文件夹实现每智能体独立，共享的 Skills 可从 ~/.openclaw/skills 获取。参见 Skills：每智能体 vs 共享。
+Gateway 网关可以托管一个智能体（默认）或多个智能体并行。
+工作区注意事项： 每个智能体的工作区是默认 cwd，而不是硬性沙箱。相对路径在工作区内解析，但绝对路径可以访问主机的其他位置，除非启用了沙箱隔离。参见 沙箱隔离。
+路径（快速映射）
+
+配置：~/.openclaw/openclaw.json（或 OPENCLAW_CONFIG_PATH）
+状态目录：~/.openclaw（或 OPENCLAW_STATE_DIR）
+工作区：~/.openclaw/workspace（或 ~/.openclaw/workspace-&lt;agentId&gt;）
+智能体目录：~/.openclaw/agents/&lt;agentId&gt;/agent（或 agents.list[].agentDir）
+会话：~/.openclaw/agents/&lt;agentId&gt;/sessions
+
+单智能体模式（默认）
+如果你什么都不做，OpenClaw 运行单个智能体：
+
+agentId 默认为 main。
+会话键为 agent:main:&lt;mainKey&gt;。
+工作区默认为 ~/.openclaw/workspace（或当设置了 OPENCLAW_PROFILE 时为 ~/.openclaw/workspace-&lt;profile&gt;）。
+状态默认为 ~/.openclaw/agents/main/agent。
+
+智能体助手
+使用智能体向导添加新的隔离智能体：
+openclaw agents add work
+然后添加 bindings（或让向导完成）来路由入站消息。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "多智能体路由",
+      "item": "/openclaw/concepts/multi-agent/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "多智能体路由",
+  "name": "多智能体路由",
+  "description": "目标：多个隔离的智能体（独立的工作区 + agentDir + 会话），加上多个渠道账户（例如两个 WhatsApp）在一个运行的 Gateway 网关中。入站消息通过绑定路由到智能体。\n什么是\u0026quot;一个智能体\u0026quot;？ 一个智能体是一个完全独立作用域的大脑，拥有自己的：\n工作区（文件、AGENTS.md/SOUL.md/USER.md、本地笔记、人设规则）。 状态目录（agentDir）用于认证配置文件、模型注册表和每智能体配置。 会话存储（聊天历史 + 路由状态）位于 ~/.openclaw/agents/\u0026lt;agentId\u0026gt;/sessions 下。 认证配置文件是每智能体独立的。每个智能体从自己的位置读取：\n~/.openclaw/agents/\u0026lt;agentId\u0026gt;/agent/auth-profiles.json 主智能体凭证不会自动共享。切勿在智能体之间重用 agentDir（这会导致认证/会话冲突）。如果你想共享凭证，请将 auth-profiles.json 复制到另一个智能体的 agentDir。\nSkills 通过每个工作区的 skills/ 文件夹实现每智能体独立，共享的 Skills 可从 ~/.openclaw/skills 获取。参见 Skills：每智能体 vs 共享。\nGateway 网关可以托管一个智能体（默认）或多个智能体并行。\n工作区注意事项： 每个智能体的工作区是默认 cwd，而不是硬性沙箱。相对路径在工作区内解析，但绝对路径可以访问主机的其他位置，除非启用了沙箱隔离。参见 沙箱隔离。\n路径（快速映射） 配置：~/.openclaw/openclaw.json（或 OPENCLAW_CONFIG_PATH） 状态目录：~/.openclaw（或 OPENCLAW_STATE_DIR） 工作区：~/.openclaw/workspace（或 ~/.openclaw/workspace-\u0026lt;agentId\u0026gt;） 智能体目录：~/.openclaw/agents/\u0026lt;agentId\u0026gt;/agent（或 agents.list[].agentDir） 会话：~/.openclaw/agents/\u0026lt;agentId\u0026gt;/sessions 单智能体模式（默认） 如果你什么都不做，OpenClaw 运行单个智能体：\nagentId 默认为 main。 会话键为 agent:main:\u0026lt;mainKey\u0026gt;。 工作区默认为 ~/.openclaw/workspace（或当设置了 OPENCLAW_PROFILE 时为 ~/.openclaw/workspace-\u0026lt;profile\u0026gt;）。 状态默认为 ~/.openclaw/agents/main/agent。 智能体助手 使用智能体向导添加新的隔离智能体：\nopenclaw agents add work 然后添加 bindings（或让向导完成）来路由入站消息。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标：多个隔离的智能体（独立的工作区 + agentDir + 会话），加上多个渠道账户（例如两个 WhatsApp）在一个运行的 Gateway 网关中。入站消息通过绑定路由到智能体。\n什么是\"一个智能体\"？ 一个智能体是一个完全独立作用域的大脑，拥有自己的：\n工作区（文件、AGENTS.md/SOUL.md/USER.md、本地笔记、人设规则）。 状态目录（agentDir）用于认证配置文件、模型注册表和每智能体配置。 会话存储（聊天历史 + 路由状态）位于 ~/.openclaw/agents//sessions 下。 认证配置文件是每智能体独立的。每个智能体从自己的位置读取：\n~/.openclaw/agents//agent/auth-profiles.json 主智能体凭证不会自动共享。切勿在智能体之间重用 agentDir（这会导致认证/会话冲突）。如果你想共享凭证，请将 auth-profiles.json 复制到另一个智能体的 agentDir。\nSkills 通过每个工作区的 skills/ 文件夹实现每智能体独立，共享的 Skills 可从 ~/.openclaw/skills 获取。参见 Skills：每智能体 vs 共享。\nGateway 网关可以托管一个智能体（默认）或多个智能体并行。\n工作区注意事项： 每个智能体的工作区是默认 cwd，而不是硬性沙箱。相对路径在工作区内解析，但绝对路径可以访问主机的其他位置，除非启用了沙箱隔离。参见 沙箱隔离。\n路径（快速映射） 配置：~/.openclaw/openclaw.json（或 OPENCLAW_CONFIG_PATH） 状态目录：~/.openclaw（或 OPENCLAW_STATE_DIR） 工作区：~/.openclaw/workspace（或 ~/.openclaw/workspace-） 智能体目录：~/.openclaw/agents//agent（或 agents.list[].agentDir） 会话：~/.openclaw/agents//sessions 单智能体模式（默认） 如果你什么都不做，OpenClaw 运行单个智能体：\nagentId 默认为 main。 会话键为 agent:main:。 工作区默认为 ~/.openclaw/workspace（或当设置了 OPENCLAW_PROFILE 时为 ~/.openclaw/workspace-）。 状态默认为 ~/.openclaw/agents/main/agent。 智能体助手 使用智能体向导添加新的隔离智能体：\nopenclaw agents add work 然后添加 bindings（或让向导完成）来路由入站消息。\n验证：\nopenclaw agents list --bindings 多个智能体 = 多个人、多种人格 使用多个智能体，每个 agentId 成为一个完全隔离的人格：\n不同的电话号码/账户（每渠道 accountId）。 不同的人格（每智能体工作区文件如 AGENTS.md 和 SOUL.md）。 独立的认证 + 会话（除非明确启用，否则无交叉通信）。 这让多个人共享一个 Gateway 网关服务器，同时保持他们的 AI\"大脑\"和数据隔离。\n一个 WhatsApp 号码，多个人（私信分割） 你可以将不同的 WhatsApp 私信路由到不同的智能体，同时保持一个 WhatsApp 账户。使用 peer.kind: \"dm\" 匹配发送者 E.164（如 +15551234567）。回复仍然来自同一个 WhatsApp 号码（无每智能体发送者身份）。\n重要细节：直接聊天折叠到智能体的主会话键，因此真正的隔离需要每人一个智能体。\n示例：\n{ agents: { list: [ { id: \"alex\", workspace: \"~/.openclaw/workspace-alex\" }, { id: \"mia\", workspace: \"~/.openclaw/workspace-mia\" }, ], }, bindings: [ { agentId: \"alex\", match: { channel: \"whatsapp\", peer: { kind: \"dm\", id: \"+15551230001\" } } }, { agentId: \"mia\", match: { channel: \"whatsapp\", peer: { kind: \"dm\", id: \"+15551230002\" } } }, ], channels: { whatsapp: { dmPolicy: \"allowlist\", allowFrom: [\"+15551230001\", \"+15551230002\"], }, }, } 注意事项：\n私信访问控制是每 WhatsApp 账户全局的（配对/允许列表），而不是每智能体。 对于共享群组，将群组绑定到一个智能体或使用 广播群组。 路由规则（消息如何选择智能体） 绑定是确定性的，最具体的优先：\npeer 匹配（精确私信/群组/频道 id） guildId（Discord） teamId（Slack） 渠道的 accountId 匹配 渠道级匹配（accountId: \"*\"） 回退到默认智能体（agents.list[].default，否则列表中的第一个条目，默认：main） 多账户/电话号码 支持多账户的渠道（如 WhatsApp）使用 accountId 来识别每个登录。每个 accountId 可以路由到不同的智能体，因此一个服务器可以托管多个电话号码而不混合会话。\n概念 agentId：一个\"大脑\"（工作区、每智能体认证、每智能体会话存储）。 accountId：一个渠道账户实例（例如 WhatsApp 账户 \"personal\" vs \"biz\"）。 binding：通过 (channel, accountId, peer) 以及可选的 guild/team id 将入站消息路由到 agentId。 直接聊天折叠到 agent::（每智能体\"主\"；session.mainKey）。 示例：两个 WhatsApp → 两个智能体 ~/.openclaw/openclaw.json（JSON5）：\n{ agents: { list: [ { id: \"home\", default: true, name: \"Home\", workspace: \"~/.openclaw/workspace-home\", agentDir: \"~/.openclaw/agents/home/agent\", }, { id: \"work\", name: \"Work\", workspace: \"~/.openclaw/workspace-work\", agentDir: \"~/.openclaw/agents/work/agent\", }, ], }, // 确定性路由：第一个匹配获胜（最具体的优先）。 bindings: [ { agentId: \"home\", match: { channel: \"whatsapp\", accountId: \"personal\" } }, { agentId: \"work\", match: { channel: \"whatsapp\", accountId: \"biz\" } }, // 可选的每对等方覆盖（示例：将特定群组发送到 work 智能体）。 { agentId: \"work\", match: { channel: \"whatsapp\", accountId: \"personal\", peer: { kind: \"group\", id: \"1203630...@g.us\" }, }, }, ], // 默认关闭：智能体到智能体的消息必须明确启用 + 加入允许列表。 tools: { agentToAgent: { enabled: false, allow: [\"home\", \"work\"], }, }, channels: { whatsapp: { accounts: { personal: { // 可选覆盖。默认：~/.openclaw/credentials/whatsapp/personal // authDir: \"~/.openclaw/credentials/whatsapp/personal\", }, biz: { // 可选覆盖。默认：~/.openclaw/credentials/whatsapp/biz // authDir: \"~/.openclaw/credentials/whatsapp/biz\", }, }, }, }, } 示例：WhatsApp 日常聊天 + Telegram 深度工作 按渠道分割：将 WhatsApp 路由到快速日常智能体，Telegram 路由到 Opus 智能体。\n{ agents: { list: [ { id: \"chat\", name: \"Everyday\", workspace: \"~/.openclaw/workspace-chat\", model: \"anthropic/claude-sonnet-4-5\", }, { id: \"opus\", name: \"Deep Work\", workspace: \"~/.openclaw/workspace-opus\", model: \"anthropic/claude-opus-4-5\", }, ], }, bindings: [ { agentId: \"chat\", match: { channel: \"whatsapp\" } }, { agentId: \"opus\", match: { channel: \"telegram\" } }, ], } 注意事项：\n如果你有一个渠道的多个账户，请在绑定中添加 accountId（例如 { channel: \"whatsapp\", accountId: \"personal\" }）。 要将单个私信/群组路由到 Opus 而保持其余在 chat 上，请为该对等方添加 match.peer 绑定；对等方匹配始终优先于渠道级规则。 示例：同一渠道，一个对等方到 Opus 保持 WhatsApp 在快速智能体上，但将一个私信路由到 Opus：\n{ agents: { list: [ { id: \"chat\", name: \"Everyday\", workspace: \"~/.openclaw/workspace-chat\", model: \"anthropic/claude-sonnet-4-5\", }, { id: \"opus\", name: \"Deep Work\", workspace: \"~/.openclaw/workspace-opus\", model: \"anthropic/claude-opus-4-5\", }, ], }, bindings: [ { agentId: \"opus\", match: { channel: \"whatsapp\", peer: { kind: \"dm\", id: \"+15551234567\" } } }, { agentId: \"chat\", match: { channel: \"whatsapp\" } }, ], } 对等方绑定始终获胜，因此将它们放在渠道级规则之上。\n绑定到 WhatsApp 群组的家庭智能体 将专用家庭智能体绑定到单个 WhatsApp 群组，使用提及限制和更严格的工具策略：\n{ agents: { list: [ { id: \"family\", name: \"Family\", workspace: \"~/.openclaw/workspace-family\", identity: { name: \"Family Bot\" }, groupChat: { mentionPatterns: [\"@family\", \"@familybot\", \"@Family Bot\"], }, sandbox: { mode: \"all\", scope: \"agent\", }, tools: { allow: [ \"exec\", \"read\", \"sessions_list\", \"sessions_history\", \"sessions_send\", \"sessions_spawn\", \"session_status\", ], deny: [\"write\", \"edit\", \"apply_patch\", \"browser\", \"canvas\", \"nodes\", \"cron\"], }, }, ], }, bindings: [ { agentId: \"family\", match: { channel: \"whatsapp\", peer: { kind: \"group\", id: \"120363999999999999@g.us\" }, }, }, ], } 注意事项：\n工具允许/拒绝列表是工具，不是 Skills。如果 skill 需要运行二进制文件，请确保 exec 被允许且二进制文件存在于沙箱中。 对于更严格的限制，设置 agents.list[].groupChat.mentionPatterns 并为渠道保持群组允许列表启用。 每智能体沙箱和工具配置 从 v2026.1.6 开始，每个智能体可以有自己的沙箱和工具限制：\n{ agents: { list: [ { id: \"personal\", workspace: \"~/.openclaw/workspace-personal\", sandbox: { mode: \"off\", // 个人智能体无沙箱 }, // 无工具限制 - 所有工具可用 }, { id: \"family\", workspace: \"~/.openclaw/workspace-family\", sandbox: { mode: \"all\", // 始终沙箱隔离 scope: \"agent\", // 每智能体一个容器 docker: { // 容器创建后的可选一次性设置 setupCommand: \"apt-get update \u0026\u0026 apt-get install -y git curl\", }, }, tools: { allow: [\"read\"], // 仅 read 工具 deny: [\"exec\", \"write\", \"edit\", \"apply_patch\"], // 拒绝其他 }, }, ], }, } 注意：setupCommand 位于 sandbox.docker 下，在容器创建时运行一次。 当解析的 scope 为 \"shared\" 时，每智能体 sandbox.docker.* 覆盖会被忽略。\n好处：\n安全隔离：限制不受信任智能体的工具 资源控制：沙箱隔离特定智能体同时保持其他智能体在主机上 灵活策略：每智能体不同的权限 注意：tools.elevated 是全局的且基于发送者；不能按智能体配置。 如果你需要每智能体边界，使用 agents.list[].tools 拒绝 exec。 对于群组定向，使用 agents.list[].groupChat.mentionPatterns 使 @提及清晰地映射到目标智能体。\n参见 多智能体沙箱和工具 了解详细示例。\n",
+  "wordCount" : "688",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/multi-agent/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      多智能体路由
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%98%af%e4%b8%80%e4%b8%aa%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="什么是&quot;一个智能体&quot;？">什么是&quot;一个智能体&quot;？</a></li>
+                <li>
+                    <a href="#%e8%b7%af%e5%be%84%e5%bf%ab%e9%80%9f%e6%98%a0%e5%b0%84" aria-label="路径（快速映射）">路径（快速映射）</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8d%95%e6%99%ba%e8%83%bd%e4%bd%93%e6%a8%a1%e5%bc%8f%e9%bb%98%e8%ae%a4" aria-label="单智能体模式（默认）">单智能体模式（默认）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e5%8a%a9%e6%89%8b" aria-label="智能体助手">智能体助手</a></li>
+                <li>
+                    <a href="#%e5%a4%9a%e4%b8%aa%e6%99%ba%e8%83%bd%e4%bd%93--%e5%a4%9a%e4%b8%aa%e4%ba%ba%e5%a4%9a%e7%a7%8d%e4%ba%ba%e6%a0%bc" aria-label="多个智能体 = 多个人、多种人格">多个智能体 = 多个人、多种人格</a></li>
+                <li>
+                    <a href="#%e4%b8%80%e4%b8%aa-whatsapp-%e5%8f%b7%e7%a0%81%e5%a4%9a%e4%b8%aa%e4%ba%ba%e7%a7%81%e4%bf%a1%e5%88%86%e5%89%b2" aria-label="一个 WhatsApp 号码，多个人（私信分割）">一个 WhatsApp 号码，多个人（私信分割）</a></li>
+                <li>
+                    <a href="#%e8%b7%af%e7%94%b1%e8%a7%84%e5%88%99%e6%b6%88%e6%81%af%e5%a6%82%e4%bd%95%e9%80%89%e6%8b%a9%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="路由规则（消息如何选择智能体）">路由规则（消息如何选择智能体）</a></li>
+                <li>
+                    <a href="#%e5%a4%9a%e8%b4%a6%e6%88%b7%e7%94%b5%e8%af%9d%e5%8f%b7%e7%a0%81" aria-label="多账户/电话号码">多账户/电话号码</a></li>
+                <li>
+                    <a href="#%e6%a6%82%e5%bf%b5" aria-label="概念">概念</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b%e4%b8%a4%e4%b8%aa-whatsapp--%e4%b8%a4%e4%b8%aa%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="示例：两个 WhatsApp → 两个智能体">示例：两个 WhatsApp → 两个智能体</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8bwhatsapp-%e6%97%a5%e5%b8%b8%e8%81%8a%e5%a4%a9--telegram-%e6%b7%b1%e5%ba%a6%e5%b7%a5%e4%bd%9c" aria-label="示例：WhatsApp 日常聊天 &#43; Telegram 深度工作">示例：WhatsApp 日常聊天 + Telegram 深度工作</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b%e5%90%8c%e4%b8%80%e6%b8%a0%e9%81%93%e4%b8%80%e4%b8%aa%e5%af%b9%e7%ad%89%e6%96%b9%e5%88%b0-opus" aria-label="示例：同一渠道，一个对等方到 Opus">示例：同一渠道，一个对等方到 Opus</a></li>
+                <li>
+                    <a href="#%e7%bb%91%e5%ae%9a%e5%88%b0-whatsapp-%e7%be%a4%e7%bb%84%e7%9a%84%e5%ae%b6%e5%ba%ad%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="绑定到 WhatsApp 群组的家庭智能体">绑定到 WhatsApp 群组的家庭智能体</a></li>
+                <li>
+                    <a href="#%e6%af%8f%e6%99%ba%e8%83%bd%e4%bd%93%e6%b2%99%e7%ae%b1%e5%92%8c%e5%b7%a5%e5%85%b7%e9%85%8d%e7%bd%ae" aria-label="每智能体沙箱和工具配置">每智能体沙箱和工具配置</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>目标：多个<em>隔离的</em>智能体（独立的工作区 + <code>agentDir</code> + 会话），加上多个渠道账户（例如两个 WhatsApp）在一个运行的 Gateway 网关中。入站消息通过绑定路由到智能体。</p>
+<h2 id="什么是一个智能体">什么是&quot;一个智能体&quot;？<a hidden class="anchor" aria-hidden="true" href="#什么是一个智能体">#</a></h2>
+<p>一个<strong>智能体</strong>是一个完全独立作用域的大脑，拥有自己的：</p>
+<ul>
+<li><strong>工作区</strong>（文件、AGENTS.md/SOUL.md/USER.md、本地笔记、人设规则）。</li>
+<li><strong>状态目录</strong>（<code>agentDir</code>）用于认证配置文件、模型注册表和每智能体配置。</li>
+<li><strong>会话存储</strong>（聊天历史 + 路由状态）位于 <code>~/.openclaw/agents/&lt;agentId&gt;/sessions</code> 下。</li>
+</ul>
+<p>认证配置文件是<strong>每智能体独立的</strong>。每个智能体从自己的位置读取：</p>
+<pre tabindex="0"><code>~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json
+</code></pre><p>主智能体凭证<strong>不会</strong>自动共享。切勿在智能体之间重用 <code>agentDir</code>（这会导致认证/会话冲突）。如果你想共享凭证，请将 <code>auth-profiles.json</code> 复制到另一个智能体的 <code>agentDir</code>。</p>
+<p>Skills 通过每个工作区的 <code>skills/</code> 文件夹实现每智能体独立，共享的 Skills 可从 <code>~/.openclaw/skills</code> 获取。参见 <a href="/tools/skills#per-agent-vs-shared-skills">Skills：每智能体 vs 共享</a>。</p>
+<p>Gateway 网关可以托管<strong>一个智能体</strong>（默认）或<strong>多个智能体</strong>并行。</p>
+<p><strong>工作区注意事项：</strong> 每个智能体的工作区是<strong>默认 cwd</strong>，而不是硬性沙箱。相对路径在工作区内解析，但绝对路径可以访问主机的其他位置，除非启用了沙箱隔离。参见 <a href="/gateway/sandboxing">沙箱隔离</a>。</p>
+<h2 id="路径快速映射">路径（快速映射）<a hidden class="anchor" aria-hidden="true" href="#路径快速映射">#</a></h2>
+<ul>
+<li>配置：<code>~/.openclaw/openclaw.json</code>（或 <code>OPENCLAW_CONFIG_PATH</code>）</li>
+<li>状态目录：<code>~/.openclaw</code>（或 <code>OPENCLAW_STATE_DIR</code>）</li>
+<li>工作区：<code>~/.openclaw/workspace</code>（或 <code>~/.openclaw/workspace-&lt;agentId&gt;</code>）</li>
+<li>智能体目录：<code>~/.openclaw/agents/&lt;agentId&gt;/agent</code>（或 <code>agents.list[].agentDir</code>）</li>
+<li>会话：<code>~/.openclaw/agents/&lt;agentId&gt;/sessions</code></li>
+</ul>
+<h3 id="单智能体模式默认">单智能体模式（默认）<a hidden class="anchor" aria-hidden="true" href="#单智能体模式默认">#</a></h3>
+<p>如果你什么都不做，OpenClaw 运行单个智能体：</p>
+<ul>
+<li><code>agentId</code> 默认为 <strong><code>main</code></strong>。</li>
+<li>会话键为 <code>agent:main:&lt;mainKey&gt;</code>。</li>
+<li>工作区默认为 <code>~/.openclaw/workspace</code>（或当设置了 <code>OPENCLAW_PROFILE</code> 时为 <code>~/.openclaw/workspace-&lt;profile&gt;</code>）。</li>
+<li>状态默认为 <code>~/.openclaw/agents/main/agent</code>。</li>
+</ul>
+<h2 id="智能体助手">智能体助手<a hidden class="anchor" aria-hidden="true" href="#智能体助手">#</a></h2>
+<p>使用智能体向导添加新的隔离智能体：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw agents add work
+</span></span></code></pre></div><p>然后添加 <code>bindings</code>（或让向导完成）来路由入站消息。</p>
+<p>验证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw agents list --bindings
+</span></span></code></pre></div><h2 id="多个智能体--多个人多种人格">多个智能体 = 多个人、多种人格<a hidden class="anchor" aria-hidden="true" href="#多个智能体--多个人多种人格">#</a></h2>
+<p>使用<strong>多个智能体</strong>，每个 <code>agentId</code> 成为一个<strong>完全隔离的人格</strong>：</p>
+<ul>
+<li><strong>不同的电话号码/账户</strong>（每渠道 <code>accountId</code>）。</li>
+<li><strong>不同的人格</strong>（每智能体工作区文件如 <code>AGENTS.md</code> 和 <code>SOUL.md</code>）。</li>
+<li><strong>独立的认证 + 会话</strong>（除非明确启用，否则无交叉通信）。</li>
+</ul>
+<p>这让<strong>多个人</strong>共享一个 Gateway 网关服务器，同时保持他们的 AI&quot;大脑&quot;和数据隔离。</p>
+<h2 id="一个-whatsapp-号码多个人私信分割">一个 WhatsApp 号码，多个人（私信分割）<a hidden class="anchor" aria-hidden="true" href="#一个-whatsapp-号码多个人私信分割">#</a></h2>
+<p>你可以将<strong>不同的 WhatsApp 私信</strong>路由到不同的智能体，同时保持<strong>一个 WhatsApp 账户</strong>。使用 <code>peer.kind: &quot;dm&quot;</code> 匹配发送者 E.164（如 <code>+15551234567</code>）。回复仍然来自同一个 WhatsApp 号码（无每智能体发送者身份）。</p>
+<p>重要细节：直接聊天折叠到智能体的<strong>主会话键</strong>，因此真正的隔离需要<strong>每人一个智能体</strong>。</p>
+<p>示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    list: [
+      { id: &#34;alex&#34;, workspace: &#34;~/.openclaw/workspace-alex&#34; },
+      { id: &#34;mia&#34;, workspace: &#34;~/.openclaw/workspace-mia&#34; },
+    ],
+  },
+  bindings: [
+    { agentId: &#34;alex&#34;, match: { channel: &#34;whatsapp&#34;, peer: { kind: &#34;dm&#34;, id: &#34;+15551230001&#34; } } },
+    { agentId: &#34;mia&#34;, match: { channel: &#34;whatsapp&#34;, peer: { kind: &#34;dm&#34;, id: &#34;+15551230002&#34; } } },
+  ],
+  channels: {
+    whatsapp: {
+      dmPolicy: &#34;allowlist&#34;,
+      allowFrom: [&#34;+15551230001&#34;, &#34;+15551230002&#34;],
+    },
+  },
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>私信访问控制是<strong>每 WhatsApp 账户全局的</strong>（配对/允许列表），而不是每智能体。</li>
+<li>对于共享群组，将群组绑定到一个智能体或使用 <a href="/channels/broadcast-groups">广播群组</a>。</li>
+</ul>
+<h2 id="路由规则消息如何选择智能体">路由规则（消息如何选择智能体）<a hidden class="anchor" aria-hidden="true" href="#路由规则消息如何选择智能体">#</a></h2>
+<p>绑定是<strong>确定性的</strong>，<strong>最具体的优先</strong>：</p>
+<ol>
+<li><code>peer</code> 匹配（精确私信/群组/频道 id）</li>
+<li><code>guildId</code>（Discord）</li>
+<li><code>teamId</code>（Slack）</li>
+<li>渠道的 <code>accountId</code> 匹配</li>
+<li>渠道级匹配（<code>accountId: &quot;*&quot;</code>）</li>
+<li>回退到默认智能体（<code>agents.list[].default</code>，否则列表中的第一个条目，默认：<code>main</code>）</li>
+</ol>
+<h2 id="多账户电话号码">多账户/电话号码<a hidden class="anchor" aria-hidden="true" href="#多账户电话号码">#</a></h2>
+<p>支持<strong>多账户</strong>的渠道（如 WhatsApp）使用 <code>accountId</code> 来识别每个登录。每个 <code>accountId</code> 可以路由到不同的智能体，因此一个服务器可以托管多个电话号码而不混合会话。</p>
+<h2 id="概念">概念<a hidden class="anchor" aria-hidden="true" href="#概念">#</a></h2>
+<ul>
+<li><code>agentId</code>：一个&quot;大脑&quot;（工作区、每智能体认证、每智能体会话存储）。</li>
+<li><code>accountId</code>：一个渠道账户实例（例如 WhatsApp 账户 <code>&quot;personal&quot;</code> vs <code>&quot;biz&quot;</code>）。</li>
+<li><code>binding</code>：通过 <code>(channel, accountId, peer)</code> 以及可选的 guild/team id 将入站消息路由到 <code>agentId</code>。</li>
+<li>直接聊天折叠到 <code>agent:&lt;agentId&gt;:&lt;mainKey&gt;</code>（每智能体&quot;主&quot;；<code>session.mainKey</code>）。</li>
+</ul>
+<h2 id="示例两个-whatsapp--两个智能体">示例：两个 WhatsApp → 两个智能体<a hidden class="anchor" aria-hidden="true" href="#示例两个-whatsapp--两个智能体">#</a></h2>
+<p><code>~/.openclaw/openclaw.json</code>（JSON5）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">agents</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">list</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;home&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="k">default</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Home&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">workspace</span><span class="o">:</span> <span class="s2">&#34;~/.openclaw/workspace-home&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">agentDir</span><span class="o">:</span> <span class="s2">&#34;~/.openclaw/agents/home/agent&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;Work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">workspace</span><span class="o">:</span> <span class="s2">&#34;~/.openclaw/workspace-work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">agentDir</span><span class="o">:</span> <span class="s2">&#34;~/.openclaw/agents/work/agent&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 确定性路由：第一个匹配获胜（最具体的优先）。
+</span></span></span><span class="line"><span class="cl">  <span class="nx">bindings</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">agentId</span><span class="o">:</span> <span class="s2">&#34;home&#34;</span><span class="p">,</span> <span class="nx">match</span><span class="o">:</span> <span class="p">{</span> <span class="nx">channel</span><span class="o">:</span> <span class="s2">&#34;whatsapp&#34;</span><span class="p">,</span> <span class="nx">accountId</span><span class="o">:</span> <span class="s2">&#34;personal&#34;</span> <span class="p">}</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">agentId</span><span class="o">:</span> <span class="s2">&#34;work&#34;</span><span class="p">,</span> <span class="nx">match</span><span class="o">:</span> <span class="p">{</span> <span class="nx">channel</span><span class="o">:</span> <span class="s2">&#34;whatsapp&#34;</span><span class="p">,</span> <span class="nx">accountId</span><span class="o">:</span> <span class="s2">&#34;biz&#34;</span> <span class="p">}</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 可选的每对等方覆盖（示例：将特定群组发送到 work 智能体）。
+</span></span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">agentId</span><span class="o">:</span> <span class="s2">&#34;work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">match</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">channel</span><span class="o">:</span> <span class="s2">&#34;whatsapp&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">accountId</span><span class="o">:</span> <span class="s2">&#34;personal&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">peer</span><span class="o">:</span> <span class="p">{</span> <span class="nx">kind</span><span class="o">:</span> <span class="s2">&#34;group&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;1203630...@g.us&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 默认关闭：智能体到智能体的消息必须明确启用 + 加入允许列表。
+</span></span></span><span class="line"><span class="cl">  <span class="nx">tools</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">agentToAgent</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">enabled</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">allow</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;home&#34;</span><span class="p">,</span> <span class="s2">&#34;work&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">channels</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">whatsapp</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">accounts</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">personal</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// 可选覆盖。默认：~/.openclaw/credentials/whatsapp/personal
+</span></span></span><span class="line"><span class="cl">          <span class="c1">// authDir: &#34;~/.openclaw/credentials/whatsapp/personal&#34;,
+</span></span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">biz</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">// 可选覆盖。默认：~/.openclaw/credentials/whatsapp/biz
+</span></span></span><span class="line"><span class="cl">          <span class="c1">// authDir: &#34;~/.openclaw/credentials/whatsapp/biz&#34;,
+</span></span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="示例whatsapp-日常聊天--telegram-深度工作">示例：WhatsApp 日常聊天 + Telegram 深度工作<a hidden class="anchor" aria-hidden="true" href="#示例whatsapp-日常聊天--telegram-深度工作">#</a></h2>
+<p>按渠道分割：将 WhatsApp 路由到快速日常智能体，Telegram 路由到 Opus 智能体。</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    list: [
+      {
+        id: &#34;chat&#34;,
+        name: &#34;Everyday&#34;,
+        workspace: &#34;~/.openclaw/workspace-chat&#34;,
+        model: &#34;anthropic/claude-sonnet-4-5&#34;,
+      },
+      {
+        id: &#34;opus&#34;,
+        name: &#34;Deep Work&#34;,
+        workspace: &#34;~/.openclaw/workspace-opus&#34;,
+        model: &#34;anthropic/claude-opus-4-5&#34;,
+      },
+    ],
+  },
+  bindings: [
+    { agentId: &#34;chat&#34;, match: { channel: &#34;whatsapp&#34; } },
+    { agentId: &#34;opus&#34;, match: { channel: &#34;telegram&#34; } },
+  ],
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>如果你有一个渠道的多个账户，请在绑定中添加 <code>accountId</code>（例如 <code>{ channel: &quot;whatsapp&quot;, accountId: &quot;personal&quot; }</code>）。</li>
+<li>要将单个私信/群组路由到 Opus 而保持其余在 chat 上，请为该对等方添加 <code>match.peer</code> 绑定；对等方匹配始终优先于渠道级规则。</li>
+</ul>
+<h2 id="示例同一渠道一个对等方到-opus">示例：同一渠道，一个对等方到 Opus<a hidden class="anchor" aria-hidden="true" href="#示例同一渠道一个对等方到-opus">#</a></h2>
+<p>保持 WhatsApp 在快速智能体上，但将一个私信路由到 Opus：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    list: [
+      {
+        id: &#34;chat&#34;,
+        name: &#34;Everyday&#34;,
+        workspace: &#34;~/.openclaw/workspace-chat&#34;,
+        model: &#34;anthropic/claude-sonnet-4-5&#34;,
+      },
+      {
+        id: &#34;opus&#34;,
+        name: &#34;Deep Work&#34;,
+        workspace: &#34;~/.openclaw/workspace-opus&#34;,
+        model: &#34;anthropic/claude-opus-4-5&#34;,
+      },
+    ],
+  },
+  bindings: [
+    { agentId: &#34;opus&#34;, match: { channel: &#34;whatsapp&#34;, peer: { kind: &#34;dm&#34;, id: &#34;+15551234567&#34; } } },
+    { agentId: &#34;chat&#34;, match: { channel: &#34;whatsapp&#34; } },
+  ],
+}
+</code></pre><p>对等方绑定始终获胜，因此将它们放在渠道级规则之上。</p>
+<h2 id="绑定到-whatsapp-群组的家庭智能体">绑定到 WhatsApp 群组的家庭智能体<a hidden class="anchor" aria-hidden="true" href="#绑定到-whatsapp-群组的家庭智能体">#</a></h2>
+<p>将专用家庭智能体绑定到单个 WhatsApp 群组，使用提及限制和更严格的工具策略：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    list: [
+      {
+        id: &#34;family&#34;,
+        name: &#34;Family&#34;,
+        workspace: &#34;~/.openclaw/workspace-family&#34;,
+        identity: { name: &#34;Family Bot&#34; },
+        groupChat: {
+          mentionPatterns: [&#34;@family&#34;, &#34;@familybot&#34;, &#34;@Family Bot&#34;],
+        },
+        sandbox: {
+          mode: &#34;all&#34;,
+          scope: &#34;agent&#34;,
+        },
+        tools: {
+          allow: [
+            &#34;exec&#34;,
+            &#34;read&#34;,
+            &#34;sessions_list&#34;,
+            &#34;sessions_history&#34;,
+            &#34;sessions_send&#34;,
+            &#34;sessions_spawn&#34;,
+            &#34;session_status&#34;,
+          ],
+          deny: [&#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;, &#34;browser&#34;, &#34;canvas&#34;, &#34;nodes&#34;, &#34;cron&#34;],
+        },
+      },
+    ],
+  },
+  bindings: [
+    {
+      agentId: &#34;family&#34;,
+      match: {
+        channel: &#34;whatsapp&#34;,
+        peer: { kind: &#34;group&#34;, id: &#34;120363999999999999@g.us&#34; },
+      },
+    },
+  ],
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>工具允许/拒绝列表是<strong>工具</strong>，不是 Skills。如果 skill 需要运行二进制文件，请确保 <code>exec</code> 被允许且二进制文件存在于沙箱中。</li>
+<li>对于更严格的限制，设置 <code>agents.list[].groupChat.mentionPatterns</code> 并为渠道保持群组允许列表启用。</li>
+</ul>
+<h2 id="每智能体沙箱和工具配置">每智能体沙箱和工具配置<a hidden class="anchor" aria-hidden="true" href="#每智能体沙箱和工具配置">#</a></h2>
+<p>从 v2026.1.6 开始，每个智能体可以有自己的沙箱和工具限制：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">agents</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">list</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;personal&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">workspace</span><span class="o">:</span> <span class="s2">&#34;~/.openclaw/workspace-personal&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sandbox</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">mode</span><span class="o">:</span> <span class="s2">&#34;off&#34;</span><span class="p">,</span>  <span class="c1">// 个人智能体无沙箱
+</span></span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 无工具限制 - 所有工具可用
+</span></span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;family&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">workspace</span><span class="o">:</span> <span class="s2">&#34;~/.openclaw/workspace-family&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">sandbox</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">mode</span><span class="o">:</span> <span class="s2">&#34;all&#34;</span><span class="p">,</span>     <span class="c1">// 始终沙箱隔离
+</span></span></span><span class="line"><span class="cl">          <span class="nx">scope</span><span class="o">:</span> <span class="s2">&#34;agent&#34;</span><span class="p">,</span>  <span class="c1">// 每智能体一个容器
+</span></span></span><span class="line"><span class="cl">          <span class="nx">docker</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 容器创建后的可选一次性设置
+</span></span></span><span class="line"><span class="cl">            <span class="nx">setupCommand</span><span class="o">:</span> <span class="s2">&#34;apt-get update &amp;&amp; apt-get install -y git curl&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">tools</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">allow</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;read&#34;</span><span class="p">],</span>                    <span class="c1">// 仅 read 工具
+</span></span></span><span class="line"><span class="cl">          <span class="nx">deny</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;edit&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">],</span>    <span class="c1">// 拒绝其他
+</span></span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>注意：<code>setupCommand</code> 位于 <code>sandbox.docker</code> 下，在容器创建时运行一次。
+当解析的 scope 为 <code>&quot;shared&quot;</code> 时，每智能体 <code>sandbox.docker.*</code> 覆盖会被忽略。</p>
+<p><strong>好处：</strong></p>
+<ul>
+<li><strong>安全隔离</strong>：限制不受信任智能体的工具</li>
+<li><strong>资源控制</strong>：沙箱隔离特定智能体同时保持其他智能体在主机上</li>
+<li><strong>灵活策略</strong>：每智能体不同的权限</li>
+</ul>
+<p>注意：<code>tools.elevated</code> 是<strong>全局的</strong>且基于发送者；不能按智能体配置。
+如果你需要每智能体边界，使用 <code>agents.list[].tools</code> 拒绝 <code>exec</code>。
+对于群组定向，使用 <code>agents.list[].groupChat.mentionPatterns</code> 使 @提及清晰地映射到目标智能体。</p>
+<p>参见 <a href="/tools/multi-agent-sandbox-tools">多智能体沙箱和工具</a> 了解详细示例。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/tools/multi-agent-sandbox-tools/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>多智能体沙箱与工具配置</span>
+  </a>
+  <a class="next" href="/openclaw/nodes/media-understanding/">
+    <span class="title">Next »</span>
+    <br>
+    <span>媒体理解（入站）— 2026-01-17</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

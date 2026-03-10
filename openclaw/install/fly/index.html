@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Fly.io 部署 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标： OpenClaw Gateway 网关运行在 Fly.io 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。
+你需要什么
+
+已安装 flyctl CLI
+Fly.io 账户（免费套餐可用）
+模型认证：Anthropic API 密钥（或其他提供商密钥）
+渠道凭证：Discord bot token、Telegram token 等
+
+初学者快速路径
+
+克隆仓库 → 自定义 fly.toml
+创建应用 &#43; 卷 → 设置密钥
+使用 fly deploy 部署
+SSH 进入创建配置或使用 Control UI
+
+1）创建 Fly 应用
+# Clone the repo
+git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+
+# Create a new Fly app (pick your own name)
+fly apps create my-openclaw
+
+# Create a persistent volume (1GB is usually enough)
+fly volumes create openclaw_data --size 1 --region iad
+提示： 选择离你近的区域。常见选项：lhr（伦敦）、iad（弗吉尼亚）、sjc（圣何塞）。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/install/fly/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/install/fly/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/install/fly/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Fly.io 部署">
+  <meta property="og:description" content="目标： OpenClaw Gateway 网关运行在 Fly.io 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。
+你需要什么 已安装 flyctl CLI Fly.io 账户（免费套餐可用） 模型认证：Anthropic API 密钥（或其他提供商密钥） 渠道凭证：Discord bot token、Telegram token 等 初学者快速路径 克隆仓库 → 自定义 fly.toml 创建应用 &#43; 卷 → 设置密钥 使用 fly deploy 部署 SSH 进入创建配置或使用 Control UI 1）创建 Fly 应用 # Clone the repo git clone https://github.com/openclaw/openclaw.git cd openclaw # Create a new Fly app (pick your own name) fly apps create my-openclaw # Create a persistent volume (1GB is usually enough) fly volumes create openclaw_data --size 1 --region iad 提示： 选择离你近的区域。常见选项：lhr（伦敦）、iad（弗吉尼亚）、sjc（圣何塞）。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fly.io 部署">
+<meta name="twitter:description" content="目标： OpenClaw Gateway 网关运行在 Fly.io 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。
+你需要什么
+
+已安装 flyctl CLI
+Fly.io 账户（免费套餐可用）
+模型认证：Anthropic API 密钥（或其他提供商密钥）
+渠道凭证：Discord bot token、Telegram token 等
+
+初学者快速路径
+
+克隆仓库 → 自定义 fly.toml
+创建应用 &#43; 卷 → 设置密钥
+使用 fly deploy 部署
+SSH 进入创建配置或使用 Control UI
+
+1）创建 Fly 应用
+# Clone the repo
+git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+
+# Create a new Fly app (pick your own name)
+fly apps create my-openclaw
+
+# Create a persistent volume (1GB is usually enough)
+fly volumes create openclaw_data --size 1 --region iad
+提示： 选择离你近的区域。常见选项：lhr（伦敦）、iad（弗吉尼亚）、sjc（圣何塞）。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Fly.io 部署",
+      "item": "/openclaw/install/fly/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Fly.io 部署",
+  "name": "Fly.io 部署",
+  "description": "目标： OpenClaw Gateway 网关运行在 Fly.io 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。\n你需要什么 已安装 flyctl CLI Fly.io 账户（免费套餐可用） 模型认证：Anthropic API 密钥（或其他提供商密钥） 渠道凭证：Discord bot token、Telegram token 等 初学者快速路径 克隆仓库 → 自定义 fly.toml 创建应用 + 卷 → 设置密钥 使用 fly deploy 部署 SSH 进入创建配置或使用 Control UI 1）创建 Fly 应用 # Clone the repo git clone https://github.com/openclaw/openclaw.git cd openclaw # Create a new Fly app (pick your own name) fly apps create my-openclaw # Create a persistent volume (1GB is usually enough) fly volumes create openclaw_data --size 1 --region iad 提示： 选择离你近的区域。常见选项：lhr（伦敦）、iad（弗吉尼亚）、sjc（圣何塞）。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标： OpenClaw Gateway 网关运行在 Fly.io 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。\n你需要什么 已安装 flyctl CLI Fly.io 账户（免费套餐可用） 模型认证：Anthropic API 密钥（或其他提供商密钥） 渠道凭证：Discord bot token、Telegram token 等 初学者快速路径 克隆仓库 → 自定义 fly.toml 创建应用 + 卷 → 设置密钥 使用 fly deploy 部署 SSH 进入创建配置或使用 Control UI 1）创建 Fly 应用 # Clone the repo git clone https://github.com/openclaw/openclaw.git cd openclaw # Create a new Fly app (pick your own name) fly apps create my-openclaw # Create a persistent volume (1GB is usually enough) fly volumes create openclaw_data --size 1 --region iad 提示： 选择离你近的区域。常见选项：lhr（伦敦）、iad（弗吉尼亚）、sjc（圣何塞）。\n2）配置 fly.toml 编辑 fly.toml 以匹配你的应用名称和需求。\n安全注意事项： 默认配置暴露公共 URL。对于没有公共 IP 的加固部署，参见私有部署或使用 fly.private.toml。\napp = \"my-openclaw\" # Your app name primary_region = \"iad\" [build] dockerfile = \"Dockerfile\" [env] NODE_ENV = \"production\" OPENCLAW_PREFER_PNPM = \"1\" OPENCLAW_STATE_DIR = \"/data\" NODE_OPTIONS = \"--max-old-space-size=1536\" [processes] app = \"node dist/index.js gateway --allow-unconfigured --port 3000 --bind lan\" [http_service] internal_port = 3000 force_https = true auto_stop_machines = false auto_start_machines = true min_machines_running = 1 processes = [\"app\"] [[vm]] size = \"shared-cpu-2x\" memory = \"2048mb\" [mounts] source = \"openclaw_data\" destination = \"/data\" 关键设置：\n设置 原因 --bind lan 绑定到 0.0.0.0 以便 Fly 的代理可以访问 Gateway 网关 --allow-unconfigured 无需配置文件启动（你稍后会创建一个） internal_port = 3000 必须与 --port 3000（或 OPENCLAW_GATEWAY_PORT）匹配以进行 Fly 健康检查 memory = \"2048mb\" 512MB 太小；推荐 2GB OPENCLAW_STATE_DIR = \"/data\" 在卷上持久化状态 3）设置密钥 # Required: Gateway token (for non-loopback binding) fly secrets set OPENCLAW_GATEWAY_TOKEN=$(openssl rand -hex 32) # Model provider API keys fly secrets set ANTHROPIC_API_KEY=sk-ant-... # Optional: Other providers fly secrets set OPENAI_API_KEY=sk-... fly secrets set GOOGLE_API_KEY=... # Channel tokens fly secrets set DISCORD_BOT_TOKEN=MTQ... 注意事项：\n非 loopback 绑定（--bind lan）出于安全需要 OPENCLAW_GATEWAY_TOKEN。 像对待密码一样对待这些 token。 优先使用环境变量而不是配置文件来存储所有 API 密钥和 token。这可以避免密钥出现在 openclaw.json 中，防止意外暴露或记录。 4）部署 fly deploy 首次部署构建 Docker 镜像（约 2-3 分钟）。后续部署更快。\n部署后验证：\nfly status fly logs 你应该看到：\n[gateway] listening on ws://0.0.0.0:3000 (PID xxx) [discord] logged in to discord as xxx 5）创建配置文件 SSH 进入机器创建正确的配置：\nfly ssh console 创建配置目录和文件：\nmkdir -p /data cat \u003e /data/openclaw.json \u003c\u003c 'EOF' { \"agents\": { \"defaults\": { \"model\": { \"primary\": \"anthropic/claude-opus-4-5\", \"fallbacks\": [\"anthropic/claude-sonnet-4-5\", \"openai/gpt-4o\"] }, \"maxConcurrent\": 4 }, \"list\": [ { \"id\": \"main\", \"default\": true } ] }, \"auth\": { \"profiles\": { \"anthropic:default\": { \"mode\": \"token\", \"provider\": \"anthropic\" }, \"openai:default\": { \"mode\": \"token\", \"provider\": \"openai\" } } }, \"bindings\": [ { \"agentId\": \"main\", \"match\": { \"channel\": \"discord\" } } ], \"channels\": { \"discord\": { \"enabled\": true, \"groupPolicy\": \"allowlist\", \"guilds\": { \"YOUR_GUILD_ID\": { \"channels\": { \"general\": { \"allow\": true } }, \"requireMention\": false } } } }, \"gateway\": { \"mode\": \"local\", \"bind\": \"auto\" }, \"meta\": { \"lastTouchedVersion\": \"2026.1.29\" } } EOF 注意： 使用 OPENCLAW_STATE_DIR=/data 时，配置路径是 /data/openclaw.json。\n注意： Discord token 可以来自：\n环境变量：DISCORD_BOT_TOKEN（推荐用于密钥） 配置文件：channels.discord.token 如果使用环境变量，无需将 token 添加到配置中。Gateway 网关会自动读取 DISCORD_BOT_TOKEN。\n重启以应用：\nexit fly machine restart 6）访问 Gateway 网关 Control UI 在浏览器中打开：\nfly open 或访问 https://my-openclaw.fly.dev/\n粘贴你的 Gateway 网关 token（来自 OPENCLAW_GATEWAY_TOKEN 的那个）进行认证。\n日志 fly logs # Live logs fly logs --no-tail # Recent logs SSH 控制台 fly ssh console 故障排除 “App is not listening on expected address” Gateway 网关绑定到 127.0.0.1 而不是 0.0.0.0。\n修复： 在 fly.toml 中的进程命令添加 --bind lan。\n健康检查失败 / 连接被拒绝 Fly 无法在配置的端口上访问 Gateway 网关。\n修复： 确保 internal_port 与 Gateway 网关端口匹配（设置 --port 3000 或 OPENCLAW_GATEWAY_PORT=3000）。\nOOM / 内存问题 容器持续重启或被终止。迹象：SIGABRT、v8::internal::Runtime_AllocateInYoungGeneration 或静默重启。\n修复： 在 fly.toml 中增加内存：\n[[vm]] memory = \"2048mb\" 或更新现有机器：\nfly machine update --vm-memory 2048 -y 注意： 512MB 太小。1GB 可能可以工作但在负载或详细日志记录下可能 OOM。推荐 2GB。\nGateway 网关锁问题 Gateway 网关拒绝启动并显示\"already running\"错误。\n这发生在容器重启但 PID 锁文件在卷上持久存在时。\n修复： 删除锁文件：\nfly ssh console --command \"rm -f /data/gateway.*.lock\" fly machine restart 锁文件在 /data/gateway.*.lock（不在子目录中）。\n配置未被读取 如果使用 --allow-unconfigured，Gateway 网关会创建最小配置。你在 /data/openclaw.json 的自定义配置应该在重启时被读取。\n验证配置是否存在：\nfly ssh console --command \"cat /data/openclaw.json\" 通过 SSH 写入配置 fly ssh console -C 命令不支持 shell 重定向。要写入配置文件：\n# Use echo + tee (pipe from local to remote) echo '{\"your\":\"config\"}' | fly ssh console -C \"tee /data/openclaw.json\" # Or use sftp fly sftp shell \u003e put /local/path/config.json /data/openclaw.json 注意： 如果文件已存在，fly sftp 可能会失败。先删除：\nfly ssh console --command \"rm /data/openclaw.json\" 状态未持久化 如果重启后丢失凭证或会话，状态目录正在写入容器文件系统。\n修复： 确保 fly.toml 中设置了 OPENCLAW_STATE_DIR=/data 并重新部署。\n更新 # Pull latest changes git pull # Redeploy fly deploy # Check health fly status fly logs 更新机器命令 如果你需要更改启动命令而无需完全重新部署：\n# Get machine ID fly machines list # Update command fly machine update --command \"node dist/index.js gateway --port 3000 --bind lan\" -y # Or with memory increase fly machine update --vm-memory 2048 --command \"node dist/index.js gateway --port 3000 --bind lan\" -y 注意： fly deploy 后，机器命令可能会重置为 fly.toml 中的内容。如果你进行了手动更改，请在部署后重新应用它们。\n私有部署（加固） 默认情况下，Fly 分配公共 IP，使你的 Gateway 网关可通过 https://your-app.fly.dev 访问。这很方便，但意味着你的部署可被互联网扫描器（Shodan、Censys 等）发现。\n对于无公共暴露的加固部署，使用私有模板。\n何时使用私有部署 你只进行出站调用/消息（无入站 webhooks） 你使用 ngrok 或 Tailscale 隧道处理任何 webhook 回调 你通过 SSH、代理或 WireGuard 而不是浏览器访问 Gateway 网关 你希望部署对互联网扫描器隐藏 设置 使用 fly.private.toml 替代标准配置：\n# Deploy with private config fly deploy -c fly.private.toml 或转换现有部署：\n# List current IPs fly ips list -a my-openclaw # Release public IPs fly ips release -a my-openclaw fly ips release -a my-openclaw # Switch to private config so future deploys don't re-allocate public IPs # (remove [http_service] or deploy with the private template) fly deploy -c fly.private.toml # Allocate private-only IPv6 fly ips allocate-v6 --private -a my-openclaw 此后，fly ips list 应该只显示 private 类型的 IP：\nVERSION IP TYPE REGION v6 fdaa:x:x:x:x::x private global 访问私有部署 由于没有公共 URL，使用以下方法之一：\n选项 1：本地代理（最简单）\n# Forward local port 3000 to the app fly proxy 3000:3000 -a my-openclaw # Then open http://localhost:3000 in browser 选项 2：WireGuard VPN\n# Create WireGuard config (one-time) fly wireguard create # Import to WireGuard client, then access via internal IPv6 # Example: http://[fdaa:x:x:x:x::x]:3000 选项 3：仅 SSH\nfly ssh console -a my-openclaw 私有部署的 Webhooks 如果你需要 webhook 回调（Twilio、Telnyx 等）而不暴露公共：\nngrok 隧道 - 在容器内或作为 sidecar 运行 ngrok Tailscale Funnel - 通过 Tailscale 暴露特定路径 仅出站 - 某些提供商（Twilio）对于出站呼叫无需 webhooks 也能正常工作 使用 ngrok 的示例语音通话配置：\n{ \"plugins\": { \"entries\": { \"voice-call\": { \"enabled\": true, \"config\": { \"provider\": \"twilio\", \"tunnel\": { \"provider\": \"ngrok\" } } } } } } ngrok 隧道在容器内运行并提供公共 webhook URL，而不暴露 Fly 应用本身。\n安全优势 方面 公共 私有 互联网扫描器 可发现 隐藏 直接攻击 可能 被阻止 Control UI 访问 浏览器 代理/VPN Webhook 投递 直接 通过隧道 注意事项 Fly.io 使用 x86 架构（非 ARM） Dockerfile 兼容两种架构 对于 WhatsApp/Telegram 新手引导，使用 fly ssh console 持久数据位于 /data 卷上 Signal 需要 Java + signal-cli；使用自定义镜像并保持内存在 2GB+。 成本 使用推荐配置（shared-cpu-2x，2GB RAM）：\n根据使用情况约 $10-15/月 免费套餐包含一些配额 详情参见 Fly.io 定价。\n",
+  "wordCount" : "958",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/install/fly/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Fly.io 部署
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%bd%a0%e9%9c%80%e8%a6%81%e4%bb%80%e4%b9%88" aria-label="你需要什么">你需要什么</a></li>
+                <li>
+                    <a href="#%e5%88%9d%e5%ad%a6%e8%80%85%e5%bf%ab%e9%80%9f%e8%b7%af%e5%be%84" aria-label="初学者快速路径">初学者快速路径</a></li>
+                <li>
+                    <a href="#1%e5%88%9b%e5%bb%ba-fly-%e5%ba%94%e7%94%a8" aria-label="1）创建 Fly 应用">1）创建 Fly 应用</a></li>
+                <li>
+                    <a href="#2%e9%85%8d%e7%bd%ae-flytoml" aria-label="2）配置 fly.toml">2）配置 fly.toml</a></li>
+                <li>
+                    <a href="#3%e8%ae%be%e7%bd%ae%e5%af%86%e9%92%a5" aria-label="3）设置密钥">3）设置密钥</a></li>
+                <li>
+                    <a href="#4%e9%83%a8%e7%bd%b2" aria-label="4）部署">4）部署</a></li>
+                <li>
+                    <a href="#5%e5%88%9b%e5%bb%ba%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" aria-label="5）创建配置文件">5）创建配置文件</a></li>
+                <li>
+                    <a href="#6%e8%ae%bf%e9%97%ae-gateway-%e7%bd%91%e5%85%b3" aria-label="6）访问 Gateway 网关">6）访问 Gateway 网关</a><ul>
+                        
+                <li>
+                    <a href="#control-ui" aria-label="Control UI">Control UI</a></li>
+                <li>
+                    <a href="#%e6%97%a5%e5%bf%97" aria-label="日志">日志</a></li>
+                <li>
+                    <a href="#ssh-%e6%8e%a7%e5%88%b6%e5%8f%b0" aria-label="SSH 控制台">SSH 控制台</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#app-is-not-listening-on-expected-address" aria-label="&ldquo;App is not listening on expected address&rdquo;">&ldquo;App is not listening on expected address&rdquo;</a></li>
+                <li>
+                    <a href="#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5%e5%a4%b1%e8%b4%a5--%e8%bf%9e%e6%8e%a5%e8%a2%ab%e6%8b%92%e7%bb%9d" aria-label="健康检查失败 / 连接被拒绝">健康检查失败 / 连接被拒绝</a></li>
+                <li>
+                    <a href="#oom--%e5%86%85%e5%ad%98%e9%97%ae%e9%a2%98" aria-label="OOM / 内存问题">OOM / 内存问题</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e9%94%81%e9%97%ae%e9%a2%98" aria-label="Gateway 网关锁问题">Gateway 网关锁问题</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e6%9c%aa%e8%a2%ab%e8%af%bb%e5%8f%96" aria-label="配置未被读取">配置未被读取</a></li>
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87-ssh-%e5%86%99%e5%85%a5%e9%85%8d%e7%bd%ae" aria-label="通过 SSH 写入配置">通过 SSH 写入配置</a></li>
+                <li>
+                    <a href="#%e7%8a%b6%e6%80%81%e6%9c%aa%e6%8c%81%e4%b9%85%e5%8c%96" aria-label="状态未持久化">状态未持久化</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9b%b4%e6%96%b0" aria-label="更新">更新</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9b%b4%e6%96%b0%e6%9c%ba%e5%99%a8%e5%91%bd%e4%bb%a4" aria-label="更新机器命令">更新机器命令</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%a7%81%e6%9c%89%e9%83%a8%e7%bd%b2%e5%8a%a0%e5%9b%ba" aria-label="私有部署（加固）">私有部署（加固）</a><ul>
+                        
+                <li>
+                    <a href="#%e4%bd%95%e6%97%b6%e4%bd%bf%e7%94%a8%e7%a7%81%e6%9c%89%e9%83%a8%e7%bd%b2" aria-label="何时使用私有部署">何时使用私有部署</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae" aria-label="设置">设置</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e7%a7%81%e6%9c%89%e9%83%a8%e7%bd%b2" aria-label="访问私有部署">访问私有部署</a></li>
+                <li>
+                    <a href="#%e7%a7%81%e6%9c%89%e9%83%a8%e7%bd%b2%e7%9a%84-webhooks" aria-label="私有部署的 Webhooks">私有部署的 Webhooks</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e4%bc%98%e5%8a%bf" aria-label="安全优势">安全优势</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a></li>
+                <li>
+                    <a href="#%e6%88%90%e6%9c%ac" aria-label="成本">成本</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><strong>目标：</strong> OpenClaw Gateway 网关运行在 <a href="https://fly.io">Fly.io</a> 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。</p>
+<h2 id="你需要什么">你需要什么<a hidden class="anchor" aria-hidden="true" href="#你需要什么">#</a></h2>
+<ul>
+<li>已安装 <a href="https://fly.io/docs/hands-on/install-flyctl/">flyctl CLI</a></li>
+<li>Fly.io 账户（免费套餐可用）</li>
+<li>模型认证：Anthropic API 密钥（或其他提供商密钥）</li>
+<li>渠道凭证：Discord bot token、Telegram token 等</li>
+</ul>
+<h2 id="初学者快速路径">初学者快速路径<a hidden class="anchor" aria-hidden="true" href="#初学者快速路径">#</a></h2>
+<ol>
+<li>克隆仓库 → 自定义 <code>fly.toml</code></li>
+<li>创建应用 + 卷 → 设置密钥</li>
+<li>使用 <code>fly deploy</code> 部署</li>
+<li>SSH 进入创建配置或使用 Control UI</li>
+</ol>
+<h2 id="1创建-fly-应用">1）创建 Fly 应用<a hidden class="anchor" aria-hidden="true" href="#1创建-fly-应用">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Clone the repo</span>
+</span></span><span class="line"><span class="cl">git clone https://github.com/openclaw/openclaw.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create a new Fly app (pick your own name)</span>
+</span></span><span class="line"><span class="cl">fly apps create my-openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create a persistent volume (1GB is usually enough)</span>
+</span></span><span class="line"><span class="cl">fly volumes create openclaw_data --size <span class="m">1</span> --region iad
+</span></span></code></pre></div><p><strong>提示：</strong> 选择离你近的区域。常见选项：<code>lhr</code>（伦敦）、<code>iad</code>（弗吉尼亚）、<code>sjc</code>（圣何塞）。</p>
+<h2 id="2配置-flytoml">2）配置 fly.toml<a hidden class="anchor" aria-hidden="true" href="#2配置-flytoml">#</a></h2>
+<p>编辑 <code>fly.toml</code> 以匹配你的应用名称和需求。</p>
+<p><strong>安全注意事项：</strong> 默认配置暴露公共 URL。对于没有公共 IP 的加固部署，参见<a href="#%E7%A7%81%E6%9C%89%E9%83%A8%E7%BD%B2%E5%8A%A0%E5%9B%BA">私有部署</a>或使用 <code>fly.private.toml</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="nx">app</span> <span class="p">=</span> <span class="s2">&#34;my-openclaw&#34;</span>  <span class="c"># Your app name</span>
+</span></span><span class="line"><span class="cl"><span class="nx">primary_region</span> <span class="p">=</span> <span class="s2">&#34;iad&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">build</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">dockerfile</span> <span class="p">=</span> <span class="s2">&#34;Dockerfile&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">env</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NODE_ENV</span> <span class="p">=</span> <span class="s2">&#34;production&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">OPENCLAW_PREFER_PNPM</span> <span class="p">=</span> <span class="s2">&#34;1&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">OPENCLAW_STATE_DIR</span> <span class="p">=</span> <span class="s2">&#34;/data&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">NODE_OPTIONS</span> <span class="p">=</span> <span class="s2">&#34;--max-old-space-size=1536&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">processes</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span> <span class="p">=</span> <span class="s2">&#34;node dist/index.js gateway --allow-unconfigured --port 3000 --bind lan&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">http_service</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">internal_port</span> <span class="p">=</span> <span class="mi">3000</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">force_https</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auto_stop_machines</span> <span class="p">=</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auto_start_machines</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">min_machines_running</span> <span class="p">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">processes</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;app&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">vm</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">size</span> <span class="p">=</span> <span class="s2">&#34;shared-cpu-2x&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">memory</span> <span class="p">=</span> <span class="s2">&#34;2048mb&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">mounts</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">source</span> <span class="p">=</span> <span class="s2">&#34;openclaw_data&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">destination</span> <span class="p">=</span> <span class="s2">&#34;/data&#34;</span>
+</span></span></code></pre></div><p><strong>关键设置：</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th>设置</th>
+          <th>原因</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>--bind lan</code></td>
+          <td>绑定到 <code>0.0.0.0</code> 以便 Fly 的代理可以访问 Gateway 网关</td>
+      </tr>
+      <tr>
+          <td><code>--allow-unconfigured</code></td>
+          <td>无需配置文件启动（你稍后会创建一个）</td>
+      </tr>
+      <tr>
+          <td><code>internal_port = 3000</code></td>
+          <td>必须与 <code>--port 3000</code>（或 <code>OPENCLAW_GATEWAY_PORT</code>）匹配以进行 Fly 健康检查</td>
+      </tr>
+      <tr>
+          <td><code>memory = &quot;2048mb&quot;</code></td>
+          <td>512MB 太小；推荐 2GB</td>
+      </tr>
+      <tr>
+          <td><code>OPENCLAW_STATE_DIR = &quot;/data&quot;</code></td>
+          <td>在卷上持久化状态</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="3设置密钥">3）设置密钥<a hidden class="anchor" aria-hidden="true" href="#3设置密钥">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Required: Gateway token (for non-loopback binding)</span>
+</span></span><span class="line"><span class="cl">fly secrets <span class="nb">set</span> <span class="nv">OPENCLAW_GATEWAY_TOKEN</span><span class="o">=</span><span class="k">$(</span>openssl rand -hex 32<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Model provider API keys</span>
+</span></span><span class="line"><span class="cl">fly secrets <span class="nb">set</span> <span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span>sk-ant-...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Optional: Other providers</span>
+</span></span><span class="line"><span class="cl">fly secrets <span class="nb">set</span> <span class="nv">OPENAI_API_KEY</span><span class="o">=</span>sk-...
+</span></span><span class="line"><span class="cl">fly secrets <span class="nb">set</span> <span class="nv">GOOGLE_API_KEY</span><span class="o">=</span>...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Channel tokens</span>
+</span></span><span class="line"><span class="cl">fly secrets <span class="nb">set</span> <span class="nv">DISCORD_BOT_TOKEN</span><span class="o">=</span>MTQ...
+</span></span></code></pre></div><p><strong>注意事项：</strong></p>
+<ul>
+<li>非 loopback 绑定（<code>--bind lan</code>）出于安全需要 <code>OPENCLAW_GATEWAY_TOKEN</code>。</li>
+<li>像对待密码一样对待这些 token。</li>
+<li><strong>优先使用环境变量而不是配置文件</strong>来存储所有 API 密钥和 token。这可以避免密钥出现在 <code>openclaw.json</code> 中，防止意外暴露或记录。</li>
+</ul>
+<h2 id="4部署">4）部署<a hidden class="anchor" aria-hidden="true" href="#4部署">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly deploy
+</span></span></code></pre></div><p>首次部署构建 Docker 镜像（约 2-3 分钟）。后续部署更快。</p>
+<p>部署后验证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly status
+</span></span><span class="line"><span class="cl">fly logs
+</span></span></code></pre></div><p>你应该看到：</p>
+<pre tabindex="0"><code>[gateway] listening on ws://0.0.0.0:3000 (PID xxx)
+[discord] logged in to discord as xxx
+</code></pre><h2 id="5创建配置文件">5）创建配置文件<a hidden class="anchor" aria-hidden="true" href="#5创建配置文件">#</a></h2>
+<p>SSH 进入机器创建正确的配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console
+</span></span></code></pre></div><p>创建配置目录和文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p /data
+</span></span><span class="line"><span class="cl">cat &gt; /data/openclaw.json <span class="s">&lt;&lt; &#39;EOF&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s">{
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;agents&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;defaults&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;model&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34;primary&#34;: &#34;anthropic/claude-opus-4-5&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34;fallbacks&#34;: [&#34;anthropic/claude-sonnet-4-5&#34;, &#34;openai/gpt-4o&#34;]
+</span></span></span><span class="line"><span class="cl"><span class="s">      },
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;maxConcurrent&#34;: 4
+</span></span></span><span class="line"><span class="cl"><span class="s">    },
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;list&#34;: [
+</span></span></span><span class="line"><span class="cl"><span class="s">      {
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34;id&#34;: &#34;main&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34;default&#34;: true
+</span></span></span><span class="line"><span class="cl"><span class="s">      }
+</span></span></span><span class="line"><span class="cl"><span class="s">    ]
+</span></span></span><span class="line"><span class="cl"><span class="s">  },
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;auth&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;profiles&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;anthropic:default&#34;: { &#34;mode&#34;: &#34;token&#34;, &#34;provider&#34;: &#34;anthropic&#34; },
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;openai:default&#34;: { &#34;mode&#34;: &#34;token&#34;, &#34;provider&#34;: &#34;openai&#34; }
+</span></span></span><span class="line"><span class="cl"><span class="s">    }
+</span></span></span><span class="line"><span class="cl"><span class="s">  },
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;bindings&#34;: [
+</span></span></span><span class="line"><span class="cl"><span class="s">    {
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;agentId&#34;: &#34;main&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;match&#34;: { &#34;channel&#34;: &#34;discord&#34; }
+</span></span></span><span class="line"><span class="cl"><span class="s">    }
+</span></span></span><span class="line"><span class="cl"><span class="s">  ],
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;channels&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;discord&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;enabled&#34;: true,
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;groupPolicy&#34;: &#34;allowlist&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">      &#34;guilds&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34;YOUR_GUILD_ID&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">          &#34;channels&#34;: { &#34;general&#34;: { &#34;allow&#34;: true } },
+</span></span></span><span class="line"><span class="cl"><span class="s">          &#34;requireMention&#34;: false
+</span></span></span><span class="line"><span class="cl"><span class="s">        }
+</span></span></span><span class="line"><span class="cl"><span class="s">      }
+</span></span></span><span class="line"><span class="cl"><span class="s">    }
+</span></span></span><span class="line"><span class="cl"><span class="s">  },
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;gateway&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;mode&#34;: &#34;local&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;bind&#34;: &#34;auto&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">  },
+</span></span></span><span class="line"><span class="cl"><span class="s">  &#34;meta&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;lastTouchedVersion&#34;: &#34;2026.1.29&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">  }
+</span></span></span><span class="line"><span class="cl"><span class="s">}
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span></code></pre></div><p><strong>注意：</strong> 使用 <code>OPENCLAW_STATE_DIR=/data</code> 时，配置路径是 <code>/data/openclaw.json</code>。</p>
+<p><strong>注意：</strong> Discord token 可以来自：</p>
+<ul>
+<li>环境变量：<code>DISCORD_BOT_TOKEN</code>（推荐用于密钥）</li>
+<li>配置文件：<code>channels.discord.token</code></li>
+</ul>
+<p>如果使用环境变量，无需将 token 添加到配置中。Gateway 网关会自动读取 <code>DISCORD_BOT_TOKEN</code>。</p>
+<p>重启以应用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">fly machine restart &lt;machine-id&gt;
+</span></span></code></pre></div><h2 id="6访问-gateway-网关">6）访问 Gateway 网关<a hidden class="anchor" aria-hidden="true" href="#6访问-gateway-网关">#</a></h2>
+<h3 id="control-ui">Control UI<a hidden class="anchor" aria-hidden="true" href="#control-ui">#</a></h3>
+<p>在浏览器中打开：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly open
+</span></span></code></pre></div><p>或访问 <code>https://my-openclaw.fly.dev/</code></p>
+<p>粘贴你的 Gateway 网关 token（来自 <code>OPENCLAW_GATEWAY_TOKEN</code> 的那个）进行认证。</p>
+<h3 id="日志">日志<a hidden class="anchor" aria-hidden="true" href="#日志">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly logs              <span class="c1"># Live logs</span>
+</span></span><span class="line"><span class="cl">fly logs --no-tail    <span class="c1"># Recent logs</span>
+</span></span></code></pre></div><h3 id="ssh-控制台">SSH 控制台<a hidden class="anchor" aria-hidden="true" href="#ssh-控制台">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console
+</span></span></code></pre></div><h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="app-is-not-listening-on-expected-address">&ldquo;App is not listening on expected address&rdquo;<a hidden class="anchor" aria-hidden="true" href="#app-is-not-listening-on-expected-address">#</a></h3>
+<p>Gateway 网关绑定到 <code>127.0.0.1</code> 而不是 <code>0.0.0.0</code>。</p>
+<p><strong>修复：</strong> 在 <code>fly.toml</code> 中的进程命令添加 <code>--bind lan</code>。</p>
+<h3 id="健康检查失败--连接被拒绝">健康检查失败 / 连接被拒绝<a hidden class="anchor" aria-hidden="true" href="#健康检查失败--连接被拒绝">#</a></h3>
+<p>Fly 无法在配置的端口上访问 Gateway 网关。</p>
+<p><strong>修复：</strong> 确保 <code>internal_port</code> 与 Gateway 网关端口匹配（设置 <code>--port 3000</code> 或 <code>OPENCLAW_GATEWAY_PORT=3000</code>）。</p>
+<h3 id="oom--内存问题">OOM / 内存问题<a hidden class="anchor" aria-hidden="true" href="#oom--内存问题">#</a></h3>
+<p>容器持续重启或被终止。迹象：<code>SIGABRT</code>、<code>v8::internal::Runtime_AllocateInYoungGeneration</code> 或静默重启。</p>
+<p><strong>修复：</strong> 在 <code>fly.toml</code> 中增加内存：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">vm</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">memory</span> <span class="p">=</span> <span class="s2">&#34;2048mb&#34;</span>
+</span></span></code></pre></div><p>或更新现有机器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly machine update &lt;machine-id&gt; --vm-memory <span class="m">2048</span> -y
+</span></span></code></pre></div><p><strong>注意：</strong> 512MB 太小。1GB 可能可以工作但在负载或详细日志记录下可能 OOM。<strong>推荐 2GB。</strong></p>
+<h3 id="gateway-网关锁问题">Gateway 网关锁问题<a hidden class="anchor" aria-hidden="true" href="#gateway-网关锁问题">#</a></h3>
+<p>Gateway 网关拒绝启动并显示&quot;already running&quot;错误。</p>
+<p>这发生在容器重启但 PID 锁文件在卷上持久存在时。</p>
+<p><strong>修复：</strong> 删除锁文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console --command <span class="s2">&#34;rm -f /data/gateway.*.lock&#34;</span>
+</span></span><span class="line"><span class="cl">fly machine restart &lt;machine-id&gt;
+</span></span></code></pre></div><p>锁文件在 <code>/data/gateway.*.lock</code>（不在子目录中）。</p>
+<h3 id="配置未被读取">配置未被读取<a hidden class="anchor" aria-hidden="true" href="#配置未被读取">#</a></h3>
+<p>如果使用 <code>--allow-unconfigured</code>，Gateway 网关会创建最小配置。你在 <code>/data/openclaw.json</code> 的自定义配置应该在重启时被读取。</p>
+<p>验证配置是否存在：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console --command <span class="s2">&#34;cat /data/openclaw.json&#34;</span>
+</span></span></code></pre></div><h3 id="通过-ssh-写入配置">通过 SSH 写入配置<a hidden class="anchor" aria-hidden="true" href="#通过-ssh-写入配置">#</a></h3>
+<p><code>fly ssh console -C</code> 命令不支持 shell 重定向。要写入配置文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Use echo + tee (pipe from local to remote)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;{&#34;your&#34;:&#34;config&#34;}&#39;</span> <span class="p">|</span> fly ssh console -C <span class="s2">&#34;tee /data/openclaw.json&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Or use sftp</span>
+</span></span><span class="line"><span class="cl">fly sftp shell
+</span></span><span class="line"><span class="cl">&gt; put /local/path/config.json /data/openclaw.json
+</span></span></code></pre></div><p><strong>注意：</strong> 如果文件已存在，<code>fly sftp</code> 可能会失败。先删除：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console --command <span class="s2">&#34;rm /data/openclaw.json&#34;</span>
+</span></span></code></pre></div><h3 id="状态未持久化">状态未持久化<a hidden class="anchor" aria-hidden="true" href="#状态未持久化">#</a></h3>
+<p>如果重启后丢失凭证或会话，状态目录正在写入容器文件系统。</p>
+<p><strong>修复：</strong> 确保 <code>fly.toml</code> 中设置了 <code>OPENCLAW_STATE_DIR=/data</code> 并重新部署。</p>
+<h2 id="更新">更新<a hidden class="anchor" aria-hidden="true" href="#更新">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Pull latest changes</span>
+</span></span><span class="line"><span class="cl">git pull
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Redeploy</span>
+</span></span><span class="line"><span class="cl">fly deploy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Check health</span>
+</span></span><span class="line"><span class="cl">fly status
+</span></span><span class="line"><span class="cl">fly logs
+</span></span></code></pre></div><h3 id="更新机器命令">更新机器命令<a hidden class="anchor" aria-hidden="true" href="#更新机器命令">#</a></h3>
+<p>如果你需要更改启动命令而无需完全重新部署：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Get machine ID</span>
+</span></span><span class="line"><span class="cl">fly machines list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Update command</span>
+</span></span><span class="line"><span class="cl">fly machine update &lt;machine-id&gt; --command <span class="s2">&#34;node dist/index.js gateway --port 3000 --bind lan&#34;</span> -y
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Or with memory increase</span>
+</span></span><span class="line"><span class="cl">fly machine update &lt;machine-id&gt; --vm-memory <span class="m">2048</span> --command <span class="s2">&#34;node dist/index.js gateway --port 3000 --bind lan&#34;</span> -y
+</span></span></code></pre></div><p><strong>注意：</strong> <code>fly deploy</code> 后，机器命令可能会重置为 <code>fly.toml</code> 中的内容。如果你进行了手动更改，请在部署后重新应用它们。</p>
+<h2 id="私有部署加固">私有部署（加固）<a hidden class="anchor" aria-hidden="true" href="#私有部署加固">#</a></h2>
+<p>默认情况下，Fly 分配公共 IP，使你的 Gateway 网关可通过 <code>https://your-app.fly.dev</code> 访问。这很方便，但意味着你的部署可被互联网扫描器（Shodan、Censys 等）发现。</p>
+<p>对于<strong>无公共暴露</strong>的加固部署，使用私有模板。</p>
+<h3 id="何时使用私有部署">何时使用私有部署<a hidden class="anchor" aria-hidden="true" href="#何时使用私有部署">#</a></h3>
+<ul>
+<li>你只进行<strong>出站</strong>调用/消息（无入站 webhooks）</li>
+<li>你使用 <strong>ngrok 或 Tailscale</strong> 隧道处理任何 webhook 回调</li>
+<li>你通过 <strong>SSH、代理或 WireGuard</strong> 而不是浏览器访问 Gateway 网关</li>
+<li>你希望部署<strong>对互联网扫描器隐藏</strong></li>
+</ul>
+<h3 id="设置">设置<a hidden class="anchor" aria-hidden="true" href="#设置">#</a></h3>
+<p>使用 <code>fly.private.toml</code> 替代标准配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Deploy with private config</span>
+</span></span><span class="line"><span class="cl">fly deploy -c fly.private.toml
+</span></span></code></pre></div><p>或转换现有部署：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># List current IPs</span>
+</span></span><span class="line"><span class="cl">fly ips list -a my-openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Release public IPs</span>
+</span></span><span class="line"><span class="cl">fly ips release &lt;public-ipv4&gt; -a my-openclaw
+</span></span><span class="line"><span class="cl">fly ips release &lt;public-ipv6&gt; -a my-openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Switch to private config so future deploys don&#39;t re-allocate public IPs</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># (remove [http_service] or deploy with the private template)</span>
+</span></span><span class="line"><span class="cl">fly deploy -c fly.private.toml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Allocate private-only IPv6</span>
+</span></span><span class="line"><span class="cl">fly ips allocate-v6 --private -a my-openclaw
+</span></span></code></pre></div><p>此后，<code>fly ips list</code> 应该只显示 <code>private</code> 类型的 IP：</p>
+<pre tabindex="0"><code>VERSION  IP                   TYPE             REGION
+v6       fdaa:x:x:x:x::x      private          global
+</code></pre><h3 id="访问私有部署">访问私有部署<a hidden class="anchor" aria-hidden="true" href="#访问私有部署">#</a></h3>
+<p>由于没有公共 URL，使用以下方法之一：</p>
+<p><strong>选项 1：本地代理（最简单）</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Forward local port 3000 to the app</span>
+</span></span><span class="line"><span class="cl">fly proxy 3000:3000 -a my-openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Then open http://localhost:3000 in browser</span>
+</span></span></code></pre></div><p><strong>选项 2：WireGuard VPN</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Create WireGuard config (one-time)</span>
+</span></span><span class="line"><span class="cl">fly wireguard create
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Import to WireGuard client, then access via internal IPv6</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Example: http://[fdaa:x:x:x:x::x]:3000</span>
+</span></span></code></pre></div><p><strong>选项 3：仅 SSH</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fly ssh console -a my-openclaw
+</span></span></code></pre></div><h3 id="私有部署的-webhooks">私有部署的 Webhooks<a hidden class="anchor" aria-hidden="true" href="#私有部署的-webhooks">#</a></h3>
+<p>如果你需要 webhook 回调（Twilio、Telnyx 等）而不暴露公共：</p>
+<ol>
+<li><strong>ngrok 隧道</strong> - 在容器内或作为 sidecar 运行 ngrok</li>
+<li><strong>Tailscale Funnel</strong> - 通过 Tailscale 暴露特定路径</li>
+<li><strong>仅出站</strong> - 某些提供商（Twilio）对于出站呼叫无需 webhooks 也能正常工作</li>
+</ol>
+<p>使用 ngrok 的示例语音通话配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;voice-call&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;config&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;twilio&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;tunnel&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;ngrok&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>ngrok 隧道在容器内运行并提供公共 webhook URL，而不暴露 Fly 应用本身。</p>
+<h3 id="安全优势">安全优势<a hidden class="anchor" aria-hidden="true" href="#安全优势">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th>方面</th>
+          <th>公共</th>
+          <th>私有</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>互联网扫描器</td>
+          <td>可发现</td>
+          <td>隐藏</td>
+      </tr>
+      <tr>
+          <td>直接攻击</td>
+          <td>可能</td>
+          <td>被阻止</td>
+      </tr>
+      <tr>
+          <td>Control UI 访问</td>
+          <td>浏览器</td>
+          <td>代理/VPN</td>
+      </tr>
+      <tr>
+          <td>Webhook 投递</td>
+          <td>直接</td>
+          <td>通过隧道</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h2>
+<ul>
+<li>Fly.io 使用 <strong>x86 架构</strong>（非 ARM）</li>
+<li>Dockerfile 兼容两种架构</li>
+<li>对于 WhatsApp/Telegram 新手引导，使用 <code>fly ssh console</code></li>
+<li>持久数据位于 <code>/data</code> 卷上</li>
+<li>Signal 需要 Java + signal-cli；使用自定义镜像并保持内存在 2GB+。</li>
+</ul>
+<h2 id="成本">成本<a hidden class="anchor" aria-hidden="true" href="#成本">#</a></h2>
+<p>使用推荐配置（<code>shared-cpu-2x</code>，2GB RAM）：</p>
+<ul>
+<li>根据使用情况约 $10-15/月</li>
+<li>免费套餐包含一些配额</li>
+</ul>
+<p>详情参见 <a href="https://fly.io/docs/about/pricing/">Fly.io 定价</a>。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/tools/firecrawl/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Firecrawl</span>
+  </a>
+  <a class="next" href="/openclaw/cli/gateway/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Gateway 网关 CLI</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

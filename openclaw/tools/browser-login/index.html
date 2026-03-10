@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>浏览器登录 &#43; X/Twitter 发帖 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="手动登录（推荐）
+当网站需要登录时，请在主机浏览器配置文件（openclaw 浏览器）中手动登录。
+不要将你的凭证提供给模型。自动登录通常会触发反机器人防御并可能锁定账户。
+返回主浏览器文档：浏览器。
+使用哪个 Chrome 配置文件？
+OpenClaw 控制一个专用的 Chrome 配置文件（名为 openclaw，橙色调 UI）。这与你的日常浏览器配置文件是分开的。
+两种简单的访问方式：
+
+让智能体打开浏览器，然后你自己登录。
+通过 CLI 打开：
+
+openclaw browser start
+openclaw browser open https://x.com
+如果你有多个配置文件，传入 --browser-profile &lt;name&gt;（默认是 openclaw）。
+X/Twitter：推荐流程
+
+阅读/搜索/话题： 使用 bird CLI Skills（无浏览器，稳定）。
+
+仓库：https://github.com/steipete/bird
+
+
+发布更新： 使用主机浏览器（手动登录）。
+
+沙箱隔离 &#43; 主机浏览器访问
+沙箱隔离的浏览器会话更容易触发机器人检测。对于 X/Twitter（和其他严格的网站），优先使用主机浏览器。
+如果智能体在沙箱中，浏览器工具默认使用沙箱。要允许主机控制：
+{
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: &#34;non-main&#34;,
+        browser: {
+          allowHostControl: true,
+        },
+      },
+    },
+  },
+}
+然后定位主机浏览器：
+openclaw browser open https://x.com --browser-profile openclaw --target host
+或者为发布更新的智能体禁用沙箱隔离。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tools/browser-login/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tools/browser-login/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tools/browser-login/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="浏览器登录 &#43; X/Twitter 发帖">
+  <meta property="og:description" content="手动登录（推荐） 当网站需要登录时，请在主机浏览器配置文件（openclaw 浏览器）中手动登录。
+不要将你的凭证提供给模型。自动登录通常会触发反机器人防御并可能锁定账户。
+返回主浏览器文档：浏览器。
+使用哪个 Chrome 配置文件？ OpenClaw 控制一个专用的 Chrome 配置文件（名为 openclaw，橙色调 UI）。这与你的日常浏览器配置文件是分开的。
+两种简单的访问方式：
+让智能体打开浏览器，然后你自己登录。 通过 CLI 打开： openclaw browser start openclaw browser open https://x.com 如果你有多个配置文件，传入 --browser-profile &lt;name&gt;（默认是 openclaw）。
+X/Twitter：推荐流程 阅读/搜索/话题： 使用 bird CLI Skills（无浏览器，稳定）。 仓库：https://github.com/steipete/bird 发布更新： 使用主机浏览器（手动登录）。 沙箱隔离 &#43; 主机浏览器访问 沙箱隔离的浏览器会话更容易触发机器人检测。对于 X/Twitter（和其他严格的网站），优先使用主机浏览器。
+如果智能体在沙箱中，浏览器工具默认使用沙箱。要允许主机控制：
+{ agents: { defaults: { sandbox: { mode: &#34;non-main&#34;, browser: { allowHostControl: true, }, }, }, }, } 然后定位主机浏览器：
+openclaw browser open https://x.com --browser-profile openclaw --target host 或者为发布更新的智能体禁用沙箱隔离。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浏览器登录 &#43; X/Twitter 发帖">
+<meta name="twitter:description" content="手动登录（推荐）
+当网站需要登录时，请在主机浏览器配置文件（openclaw 浏览器）中手动登录。
+不要将你的凭证提供给模型。自动登录通常会触发反机器人防御并可能锁定账户。
+返回主浏览器文档：浏览器。
+使用哪个 Chrome 配置文件？
+OpenClaw 控制一个专用的 Chrome 配置文件（名为 openclaw，橙色调 UI）。这与你的日常浏览器配置文件是分开的。
+两种简单的访问方式：
+
+让智能体打开浏览器，然后你自己登录。
+通过 CLI 打开：
+
+openclaw browser start
+openclaw browser open https://x.com
+如果你有多个配置文件，传入 --browser-profile &lt;name&gt;（默认是 openclaw）。
+X/Twitter：推荐流程
+
+阅读/搜索/话题： 使用 bird CLI Skills（无浏览器，稳定）。
+
+仓库：https://github.com/steipete/bird
+
+
+发布更新： 使用主机浏览器（手动登录）。
+
+沙箱隔离 &#43; 主机浏览器访问
+沙箱隔离的浏览器会话更容易触发机器人检测。对于 X/Twitter（和其他严格的网站），优先使用主机浏览器。
+如果智能体在沙箱中，浏览器工具默认使用沙箱。要允许主机控制：
+{
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: &#34;non-main&#34;,
+        browser: {
+          allowHostControl: true,
+        },
+      },
+    },
+  },
+}
+然后定位主机浏览器：
+openclaw browser open https://x.com --browser-profile openclaw --target host
+或者为发布更新的智能体禁用沙箱隔离。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "浏览器登录 + X/Twitter 发帖",
+      "item": "/openclaw/tools/browser-login/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "浏览器登录 + X/Twitter 发帖",
+  "name": "浏览器登录 \u002b X\/Twitter 发帖",
+  "description": "手动登录（推荐） 当网站需要登录时，请在主机浏览器配置文件（openclaw 浏览器）中手动登录。\n不要将你的凭证提供给模型。自动登录通常会触发反机器人防御并可能锁定账户。\n返回主浏览器文档：浏览器。\n使用哪个 Chrome 配置文件？ OpenClaw 控制一个专用的 Chrome 配置文件（名为 openclaw，橙色调 UI）。这与你的日常浏览器配置文件是分开的。\n两种简单的访问方式：\n让智能体打开浏览器，然后你自己登录。 通过 CLI 打开： openclaw browser start openclaw browser open https://x.com 如果你有多个配置文件，传入 --browser-profile \u0026lt;name\u0026gt;（默认是 openclaw）。\nX/Twitter：推荐流程 阅读/搜索/话题： 使用 bird CLI Skills（无浏览器，稳定）。 仓库：https://github.com/steipete/bird 发布更新： 使用主机浏览器（手动登录）。 沙箱隔离 + 主机浏览器访问 沙箱隔离的浏览器会话更容易触发机器人检测。对于 X/Twitter（和其他严格的网站），优先使用主机浏览器。\n如果智能体在沙箱中，浏览器工具默认使用沙箱。要允许主机控制：\n{ agents: { defaults: { sandbox: { mode: \u0026#34;non-main\u0026#34;, browser: { allowHostControl: true, }, }, }, }, } 然后定位主机浏览器：\nopenclaw browser open https://x.com --browser-profile openclaw --target host 或者为发布更新的智能体禁用沙箱隔离。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "手动登录（推荐） 当网站需要登录时，请在主机浏览器配置文件（openclaw 浏览器）中手动登录。\n不要将你的凭证提供给模型。自动登录通常会触发反机器人防御并可能锁定账户。\n返回主浏览器文档：浏览器。\n使用哪个 Chrome 配置文件？ OpenClaw 控制一个专用的 Chrome 配置文件（名为 openclaw，橙色调 UI）。这与你的日常浏览器配置文件是分开的。\n两种简单的访问方式：\n让智能体打开浏览器，然后你自己登录。 通过 CLI 打开： openclaw browser start openclaw browser open https://x.com 如果你有多个配置文件，传入 --browser-profile （默认是 openclaw）。\nX/Twitter：推荐流程 阅读/搜索/话题： 使用 bird CLI Skills（无浏览器，稳定）。 仓库：https://github.com/steipete/bird 发布更新： 使用主机浏览器（手动登录）。 沙箱隔离 + 主机浏览器访问 沙箱隔离的浏览器会话更容易触发机器人检测。对于 X/Twitter（和其他严格的网站），优先使用主机浏览器。\n如果智能体在沙箱中，浏览器工具默认使用沙箱。要允许主机控制：\n{ agents: { defaults: { sandbox: { mode: \"non-main\", browser: { allowHostControl: true, }, }, }, }, } 然后定位主机浏览器：\nopenclaw browser open https://x.com --browser-profile openclaw --target host 或者为发布更新的智能体禁用沙箱隔离。\n",
+  "wordCount" : "73",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/tools/browser-login/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      浏览器登录 &#43; X/Twitter 发帖
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%89%8b%e5%8a%a8%e7%99%bb%e5%bd%95%e6%8e%a8%e8%8d%90" aria-label="手动登录（推荐）">手动登录（推荐）</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e5%93%aa%e4%b8%aa-chrome-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" aria-label="使用哪个 Chrome 配置文件？">使用哪个 Chrome 配置文件？</a></li>
+                <li>
+                    <a href="#xtwitter%e6%8e%a8%e8%8d%90%e6%b5%81%e7%a8%8b" aria-label="X/Twitter：推荐流程">X/Twitter：推荐流程</a></li>
+                <li>
+                    <a href="#%e6%b2%99%e7%ae%b1%e9%9a%94%e7%a6%bb--%e4%b8%bb%e6%9c%ba%e6%b5%8f%e8%a7%88%e5%99%a8%e8%ae%bf%e9%97%ae" aria-label="沙箱隔离 &#43; 主机浏览器访问">沙箱隔离 + 主机浏览器访问</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="手动登录推荐">手动登录（推荐）<a hidden class="anchor" aria-hidden="true" href="#手动登录推荐">#</a></h2>
+<p>当网站需要登录时，请在<strong>主机</strong>浏览器配置文件（openclaw 浏览器）中<strong>手动登录</strong>。</p>
+<p><strong>不要</strong>将你的凭证提供给模型。自动登录通常会触发反机器人防御并可能锁定账户。</p>
+<p>返回主浏览器文档：<a href="/tools/browser">浏览器</a>。</p>
+<h2 id="使用哪个-chrome-配置文件">使用哪个 Chrome 配置文件？<a hidden class="anchor" aria-hidden="true" href="#使用哪个-chrome-配置文件">#</a></h2>
+<p>OpenClaw 控制一个<strong>专用的 Chrome 配置文件</strong>（名为 <code>openclaw</code>，橙色调 UI）。这与你的日常浏览器配置文件是分开的。</p>
+<p>两种简单的访问方式：</p>
+<ol>
+<li><strong>让智能体打开浏览器</strong>，然后你自己登录。</li>
+<li><strong>通过 CLI 打开</strong>：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw browser start
+</span></span><span class="line"><span class="cl">openclaw browser open https://x.com
+</span></span></code></pre></div><p>如果你有多个配置文件，传入 <code>--browser-profile &lt;name&gt;</code>（默认是 <code>openclaw</code>）。</p>
+<h2 id="xtwitter推荐流程">X/Twitter：推荐流程<a hidden class="anchor" aria-hidden="true" href="#xtwitter推荐流程">#</a></h2>
+<ul>
+<li><strong>阅读/搜索/话题：</strong> 使用 <strong>bird</strong> CLI Skills（无浏览器，稳定）。
+<ul>
+<li>仓库：https://github.com/steipete/bird</li>
+</ul>
+</li>
+<li><strong>发布更新：</strong> 使用<strong>主机</strong>浏览器（手动登录）。</li>
+</ul>
+<h2 id="沙箱隔离--主机浏览器访问">沙箱隔离 + 主机浏览器访问<a hidden class="anchor" aria-hidden="true" href="#沙箱隔离--主机浏览器访问">#</a></h2>
+<p>沙箱隔离的浏览器会话<strong>更容易</strong>触发机器人检测。对于 X/Twitter（和其他严格的网站），优先使用<strong>主机</strong>浏览器。</p>
+<p>如果智能体在沙箱中，浏览器工具默认使用沙箱。要允许主机控制：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: &#34;non-main&#34;,
+        browser: {
+          allowHostControl: true,
+        },
+      },
+    },
+  },
+}
+</code></pre><p>然后定位主机浏览器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw browser open https://x.com --browser-profile openclaw --target host
+</span></span></code></pre></div><p>或者为发布更新的智能体禁用沙箱隔离。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/tools/browser-linux-troubleshooting/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>浏览器故障排除（Linux）</span>
+  </a>
+  <a class="next" href="/openclaw/concepts/messages/">
+    <span class="title">Next »</span>
+    <br>
+    <span>消息</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

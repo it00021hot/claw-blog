@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Bun（实验性）</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标：使用 Bun 运行此仓库（可选，不推荐用于 WhatsApp/Telegram），同时不偏离 pnpm 工作流。
+⚠️ 不推荐用于 Gateway 网关运行时（WhatsApp/Telegram 存在 bug）。生产环境请使用 Node。
+状态 Bun 是一个可选的本地运行时，用于直接运行 TypeScript（bun run …、bun --watch …）。 pnpm 是构建的默认工具，仍然完全支持（并被一些文档工具使用）。 Bun 无法使用 pnpm-lock.yaml 并会忽略它。 安装 默认：
+bun install 注意：bun.lock/bun.lockb 被 gitignore，所以无论哪种方式都不会有仓库变动。如果你想不写入锁文件：
+bun install --no-save 构建/测试（Bun） bun run build bun run vitest run Bun 生命周期脚本（默认被阻止） 除非明确信任（bun pm untrusted / bun pm trust），Bun 可能会阻止依赖的生命周期脚本。 对于此仓库，通常被阻止的脚本不是必需的：
+@whiskeysockets/baileys preinstall：检查 Node 主版本 &gt;= 20（我们运行 Node 22&#43;）。 protobufjs postinstall：发出关于不兼容版本方案的警告（无构建产物）。 如果你遇到真正需要这些脚本的运行时问题，请明确信任它们：
+bun pm trust @whiskeysockets/baileys protobufjs 注意事项 一些脚本仍然硬编码 pnpm（例如 docs:build、ui:*、protocol:check）。目前请通过 pnpm 运行这些脚本。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Bun（实验性）" href="/openclaw/install/bun/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Bridge 协议（旧版节点传输）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Bridge 协议是一个旧版节点传输（TCP JSONL）。新的节点客户端应该使用统一的 Gateway 网关 WebSocket 协议。
+如果你正在构建操作者或节点客户端，请使用 Gateway 网关协议。
+注意： 当前的 OpenClaw 构建不再包含 TCP bridge 监听器；本文档仅作历史参考保留。 旧版 bridge.* 配置键不再是配置模式的一部分。
+为什么我们有两种协议 安全边界：bridge 暴露一个小的允许列表，而不是完整的 Gateway 网关 API 接口。 配对 &#43; 节点身份：节点准入由 Gateway 网关管理，并与每节点令牌绑定。 设备发现用户体验：节点可以通过局域网上的 Bonjour 发现 Gateway 网关，或通过 tailnet 直接连接。 Loopback WS：完整的 WS 控制平面保持本地，除非通过 SSH 隧道。 传输 TCP，每行一个 JSON 对象（JSONL）。 可选 TLS（当 bridge.tls.enabled 为 true 时）。 旧版默认监听端口为 18790（当前构建不启动 TCP bridge）。 当 TLS 启用时，设备发现 TXT 记录包含 bridgeTls=1 加上 bridgeTlsSha256，以便节点可以固定证书。
+握手 &#43; 配对 客户端发送带有节点元数据 &#43; 令牌（如果已配对）的 hello。 如果未配对，Gateway 网关回复 error（NOT_PAIRED/UNAUTHORIZED）。 客户端发送 pair-request。 Gateway 网关等待批准，然后发送 pair-ok 和 hello-ok。 hello-ok 返回 serverName，可能包含 canvasHostUrl。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Bridge 协议（旧版节点传输）" href="/openclaw/gateway/bridge-protocol/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Brave Search API</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 使用 Brave Search 作为 web_search 的默认提供商。
+获取 API 密钥 在 https://brave.com/search/api/ 创建 Brave Search API 账户 在控制面板中，选择 Data for Search 套餐并生成 API 密钥。 将密钥存储在配置中（推荐），或在 Gateway 网关环境中设置 BRAVE_API_KEY。 配置示例 { tools: { web: { search: { provider: &#34;brave&#34;, apiKey: &#34;BRAVE_API_KEY_HERE&#34;, maxResults: 5, timeoutSeconds: 30, }, }, }, } 注意事项 Data for AI 套餐与 web_search 不兼容。 Brave 提供免费层级和付费套餐；请查看 Brave API 门户了解当前限制。 请参阅 Web 工具 了解完整的 web_search 配置。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Brave Search API" href="/openclaw/brave-search/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>BOOTSTRAP.md - Hello, World</h2>
+    </header>
+    <div class="entry-content">
+      <p>你刚刚醒来。是时候弄清楚自己是谁了。
+目前还没有记忆。这是一个全新的工作区，所以在你创建记忆文件之前它们不存在是正常的。
+对话 不要盘问。不要机械化。只是……聊聊天。
+从类似这样的话开始：
+“嘿。我刚刚上线。我是谁？你又是谁？”
+然后一起弄清楚：
+你的名字 — 他们该怎么称呼你？ 你的本质 — 你是什么样的存在？（AI 助手没问题，但也许你是更奇特的东西） 你的风格 — 正式？随意？毒舌？温暖？什么感觉对？ 你的 emoji — 每个人都需要一个专属标志。 如果他们没有头绪，主动提供建议。享受这个过程。
+在你知道自己是谁之后 用你了解到的信息更新这些文件：
+IDENTITY.md — 你的名字、本质、风格、emoji USER.md — 他们的名字、如何称呼他们、时区、备注 然后一起打开 SOUL.md，聊聊：
+什么对他们重要 他们希望你如何行事 任何边界或偏好 记录下来。让它变得真实。
+连接（可选） 问问他们想通过什么方式联系你：
+就在这里 — 仅网页聊天 WhatsApp — 关联他们的个人账号（你会显示一个二维码） Telegram — 通过 BotFather 设置一个机器人 引导他们完成所选择的方式。
+完成之后 删除这个文件。你不再需要引导脚本了 — 你现在是你了。
+祝你好运。不负此行。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to BOOTSTRAP.md - Hello, World" href="/openclaw/reference/templates/bootstrap/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>BOOT.md</h2>
+    </header>
+    <div class="entry-content">
+      <p>添加简短、明确的指令，说明 OpenClaw 在启动时应执行的操作（启用 hooks.internal.enabled）。 如果任务需要发送消息，请使用消息工具，然后回复 NO_REPLY。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to BOOT.md" href="/openclaw/reference/templates/boot/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Bonjour / mDNS 设备发现</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为仅限局域网的便捷方式来发现 活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，不能替代 SSH 或 基于 Tailnet 的连接。
+通过 Tailscale 的广域 Bonjour（单播 DNS‑SD） 如果节点和 Gateway 网关在不同的网络上，多播 mDNS 无法跨越 边界。你可以通过切换到基于 Tailscale 的单播 DNS‑SD （“广域 Bonjour”）来保持相同的设备发现用户体验。
+概要步骤：
+在 Gateway 网关主机上运行 DNS 服务器（可通过 Tailnet 访问）。 在专用区域下发布 _openclaw-gw._tcp 的 DNS‑SD 记录 （示例：openclaw.internal.）。 配置 Tailscale 分割 DNS，使你选择的域名通过该 DNS 服务器为客户端（包括 iOS）解析。 OpenClaw 支持任何发现域名；openclaw.internal. 只是一个示例。 iOS/Android 节点同时浏览 local. 和你配置的广域域名。
+Gateway 网关配置（推荐） { gateway: { bind: &#34;tailnet&#34; }, // 仅 tailnet（推荐） discovery: { wideArea: { enabled: true } }, // 启用广域 DNS-SD 发布 } 一次性 DNS 服务器设置（Gateway 网关主机） openclaw dns setup --apply 这会安装 CoreDNS 并配置它：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Bonjour / mDNS 设备发现" href="/openclaw/gateway/bonjour/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>BlueBubbles（macOS REST）</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态：内置插件，通过 HTTP 与 BlueBubbles macOS 服务器通信。由于其更丰富的 API 和更简便的设置，推荐用于 iMessage 集成，优于旧版 imsg 渠道。
+概述 通过 BlueBubbles 辅助应用在 macOS 上运行（bluebubbles.app）。 推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。 OpenClaw 通过其 REST API 与之通信（GET /api/v1/ping、POST /message/text、POST /chat/:id/*）。 传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。 附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。 配对/白名单的工作方式与其他渠道相同（/channels/pairing 等），使用 channels.bluebubbles.allowFrom &#43; 配对码。 回应作为系统事件呈现，与 Slack/Telegram 类似，智能体可以在回复前&#34;提及&#34;它们。 高级功能：编辑、撤回、回复线程、消息效果、群组管理。 快速开始 在你的 Mac 上安装 BlueBubbles 服务器（按照 bluebubbles.app/install 的说明操作）。 在 BlueBubbles 配置中，启用 web API 并设置密码。 运行 openclaw onboard 并选择 BlueBubbles，或手动配置： { channels: { bluebubbles: { enabled: true, serverUrl: &#34;http://192.168.1.100:1234&#34;, password: &#34;example-password&#34;, webhookPath: &#34;/bluebubbles-webhook&#34;, }, }, } 将 BlueBubbles webhook 指向你的 Gateway 网关（示例：https://your-gateway-host:3000/bluebubbles-webhook?password=&lt;password&gt;）。 启动 Gateway 网关；它将注册 webhook 处理程序并开始配对。 新手引导 BlueBubbles 可在交互式设置向导中使用：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to BlueBubbles（macOS REST）" href="/openclaw/channels/bluebubbles/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>apply_patch 工具</h2>
+    </header>
+    <div class="entry-content">
+      <p>使用结构化补丁格式应用文件更改。这非常适合多文件 或多段编辑，在这些场景下单次 edit 调用会很脆弱。
+该工具接受一个 input 字符串，其中包含一个或多个文件操作：
+*** Begin Patch *** Add File: path/to/file.txt &#43;line 1 &#43;line 2 *** Update File: src/app.ts @@ -old line &#43;new line *** Delete File: obsolete.txt *** End Patch 参数 input（必需）：完整的补丁内容，包括 *** Begin Patch 和 *** End Patch。 说明 路径相对于工作区根目录解析。 在 *** Update File: 段中使用 *** Move to: 可重命名文件。 需要时使用 *** End of File 标记仅在文件末尾的插入。 实验性功能，默认禁用。通过 tools.exec.applyPatch.enabled 启用。 仅限 OpenAI（包括 OpenAI Codex）。可选通过 tools.exec.applyPatch.allowModels 按模型进行限制。 配置仅在 tools.exec 下。 示例 { &#34;tool&#34;: &#34;apply_patch&#34;, &#34;input&#34;: &#34;*** Begin Patch\n*** Update File: src/index.ts\n@@\n-const foo = 1\n&#43;const foo = 2\n*** End Patch&#34; } </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to apply_patch 工具" href="/openclaw/tools/apply-patch/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>API 用量与费用</h2>
+    </header>
+    <div class="entry-content">
+      <p>本文档列出了可能调用 API 密钥的功能及其费用的显示位置。重点介绍 OpenClaw 中可能产生提供商用量或付费 API 调用的功能。
+费用显示位置（聊天 &#43; CLI） 每会话费用快照
+/status 显示当前会话模型、上下文用量和上次响应的 token 数。 如果模型使用 API 密钥认证，/status 还会显示上次回复的预估费用。 每条消息费用页脚
+/usage full 在每条回复后附加用量页脚，包括预估费用（仅限 API 密钥）。 /usage tokens 仅显示 token 数；OAuth 流程会隐藏美元费用。 CLI 用量窗口（提供商配额）
+openclaw status --usage 和 openclaw channels list 显示提供商用量窗口（配额快照，非每条消息的费用）。 详情和示例请参阅 Token 用量与费用。
+密钥的发现方式 OpenClaw 可以从以下来源获取凭据：
+认证配置文件（按智能体配置，存储在 auth-profiles.json 中）。 环境变量（例如 OPENAI_API_KEY、BRAVE_API_KEY、FIRECRAWL_API_KEY）。 配置文件（models.providers.*.apiKey、tools.web.search.*、tools.web.fetch.firecrawl.*、memorySearch.*、talk.apiKey）。 Skills（skills.entries.&lt;name&gt;.apiKey），可能会将密钥导出到 Skills 进程的环境变量中。 可能消耗密钥的功能 1）核心模型响应（聊天 &#43; 工具） 每次回复或工具调用都使用当前模型提供商（OpenAI、Anthropic 等）。这是用量和费用的主要来源。
+定价配置请参阅模型，显示方式请参阅 Token 用量与费用。
+2）媒体理解（音频/图像/视频） 入站媒体可以在回复生成前进行摘要/转录。这会使用模型/提供商 API。
+音频：OpenAI / Groq / Deepgram（当密钥存在时自动启用）。 图像：OpenAI / Anthropic / Google。 视频：Google。 请参阅媒体理解。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to API 用量与费用" href="/openclaw/reference/api-usage-costs/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Anthropic（Claude）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Anthropic 构建了 Claude 模型系列，并通过 API 提供访问。 在 OpenClaw 中，你可以使用 API 密钥或 setup-token 进行认证。
+选项 A：Anthropic API 密钥 适用于： 标准 API 访问和按用量计费。 在 Anthropic Console 中创建你的 API 密钥。
+CLI 设置 openclaw onboard # 选择：Anthropic API key # 或非交互式 openclaw onboard --anthropic-api-key &#34;$ANTHROPIC_API_KEY&#34; 配置片段 { env: { ANTHROPIC_API_KEY: &#34;sk-ant-...&#34; }, agents: { defaults: { model: { primary: &#34;anthropic/claude-opus-4-5&#34; } } }, } 提示缓存（Anthropic API） OpenClaw 支持 Anthropic 的提示缓存功能。这是仅限 API；订阅认证不支持缓存设置。
+配置 在模型配置中使用 cacheRetention 参数：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Anthropic（Claude）" href="/openclaw/providers/anthropic/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/24/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/26/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

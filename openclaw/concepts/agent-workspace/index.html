@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>智能体工作区 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="工作区是智能体的家。它是文件工具和工作区上下文使用的唯一工作目录。请保持其私密性并将其视为记忆。
+这与 ~/.openclaw/ 是分开的，后者存储配置、凭证和会话。
+重要： 工作区是默认 cwd，而不是硬性沙箱。工具会根据工作区解析相对路径，但绝对路径仍然可以访问主机上的其他位置，除非启用了沙箱隔离。如果你需要隔离，请使用
+agents.defaults.sandbox（和/或每智能体沙箱配置）。
+当启用沙箱隔离且 workspaceAccess 不是 &quot;rw&quot; 时，工具在 ~/.openclaw/sandboxes 下的沙箱工作区内操作，而不是你的主机工作区。
+默认位置
+
+默认：~/.openclaw/workspace
+如果设置了 OPENCLAW_PROFILE 且不是 &quot;default&quot;，默认值变为
+~/.openclaw/workspace-&lt;profile&gt;。
+在 ~/.openclaw/openclaw.json 中覆盖：
+
+{
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+  },
+}
+openclaw onboard、openclaw configure 或 openclaw setup 将创建工作区并在缺失时填充引导文件。
+如果你已经自己管理工作区文件，可以禁用引导文件创建：
+{ agent: { skipBootstrap: true } }
+额外的工作区文件夹
+旧版安装可能创建了 ~/openclaw。保留多个工作区目录可能会导致混乱的认证或状态漂移，因为同一时间只有一个工作区是活动的。
+建议： 保持单个活动工作区。如果你不再使用额外的文件夹，请归档或移至废纸篓（例如 trash ~/openclaw）。
+如果你有意保留多个工作区，请确保 agents.defaults.workspace 指向活动的那个。
+openclaw doctor 在检测到额外工作区目录时会发出警告。
+工作区文件映射（每个文件的含义）
+这些是 OpenClaw 在工作区内期望的标准文件：
+
+
+AGENTS.md
+
+智能体的操作指南以及它应该如何使用记忆。
+在每个会话开始时加载。
+适合放置规则、优先级和&quot;如何行为&quot;的详细信息。
+
+
+
+SOUL.md
+
+人设、语气和边界。
+每个会话加载。
+
+
+
+USER.md">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/agent-workspace/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/agent-workspace/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/agent-workspace/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="智能体工作区">
+  <meta property="og:description" content="工作区是智能体的家。它是文件工具和工作区上下文使用的唯一工作目录。请保持其私密性并将其视为记忆。
+这与 ~/.openclaw/ 是分开的，后者存储配置、凭证和会话。
+重要： 工作区是默认 cwd，而不是硬性沙箱。工具会根据工作区解析相对路径，但绝对路径仍然可以访问主机上的其他位置，除非启用了沙箱隔离。如果你需要隔离，请使用 agents.defaults.sandbox（和/或每智能体沙箱配置）。 当启用沙箱隔离且 workspaceAccess 不是 &#34;rw&#34; 时，工具在 ~/.openclaw/sandboxes 下的沙箱工作区内操作，而不是你的主机工作区。
+默认位置 默认：~/.openclaw/workspace 如果设置了 OPENCLAW_PROFILE 且不是 &#34;default&#34;，默认值变为 ~/.openclaw/workspace-&lt;profile&gt;。 在 ~/.openclaw/openclaw.json 中覆盖： { agent: { workspace: &#34;~/.openclaw/workspace&#34;, }, } openclaw onboard、openclaw configure 或 openclaw setup 将创建工作区并在缺失时填充引导文件。
+如果你已经自己管理工作区文件，可以禁用引导文件创建：
+{ agent: { skipBootstrap: true } } 额外的工作区文件夹 旧版安装可能创建了 ~/openclaw。保留多个工作区目录可能会导致混乱的认证或状态漂移，因为同一时间只有一个工作区是活动的。
+建议： 保持单个活动工作区。如果你不再使用额外的文件夹，请归档或移至废纸篓（例如 trash ~/openclaw）。 如果你有意保留多个工作区，请确保 agents.defaults.workspace 指向活动的那个。
+openclaw doctor 在检测到额外工作区目录时会发出警告。
+工作区文件映射（每个文件的含义） 这些是 OpenClaw 在工作区内期望的标准文件：
+AGENTS.md
+智能体的操作指南以及它应该如何使用记忆。 在每个会话开始时加载。 适合放置规则、优先级和&#34;如何行为&#34;的详细信息。 SOUL.md
+人设、语气和边界。 每个会话加载。 USER.md">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="智能体工作区">
+<meta name="twitter:description" content="工作区是智能体的家。它是文件工具和工作区上下文使用的唯一工作目录。请保持其私密性并将其视为记忆。
+这与 ~/.openclaw/ 是分开的，后者存储配置、凭证和会话。
+重要： 工作区是默认 cwd，而不是硬性沙箱。工具会根据工作区解析相对路径，但绝对路径仍然可以访问主机上的其他位置，除非启用了沙箱隔离。如果你需要隔离，请使用
+agents.defaults.sandbox（和/或每智能体沙箱配置）。
+当启用沙箱隔离且 workspaceAccess 不是 &quot;rw&quot; 时，工具在 ~/.openclaw/sandboxes 下的沙箱工作区内操作，而不是你的主机工作区。
+默认位置
+
+默认：~/.openclaw/workspace
+如果设置了 OPENCLAW_PROFILE 且不是 &quot;default&quot;，默认值变为
+~/.openclaw/workspace-&lt;profile&gt;。
+在 ~/.openclaw/openclaw.json 中覆盖：
+
+{
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+  },
+}
+openclaw onboard、openclaw configure 或 openclaw setup 将创建工作区并在缺失时填充引导文件。
+如果你已经自己管理工作区文件，可以禁用引导文件创建：
+{ agent: { skipBootstrap: true } }
+额外的工作区文件夹
+旧版安装可能创建了 ~/openclaw。保留多个工作区目录可能会导致混乱的认证或状态漂移，因为同一时间只有一个工作区是活动的。
+建议： 保持单个活动工作区。如果你不再使用额外的文件夹，请归档或移至废纸篓（例如 trash ~/openclaw）。
+如果你有意保留多个工作区，请确保 agents.defaults.workspace 指向活动的那个。
+openclaw doctor 在检测到额外工作区目录时会发出警告。
+工作区文件映射（每个文件的含义）
+这些是 OpenClaw 在工作区内期望的标准文件：
+
+
+AGENTS.md
+
+智能体的操作指南以及它应该如何使用记忆。
+在每个会话开始时加载。
+适合放置规则、优先级和&quot;如何行为&quot;的详细信息。
+
+
+
+SOUL.md
+
+人设、语气和边界。
+每个会话加载。
+
+
+
+USER.md">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "智能体工作区",
+      "item": "/openclaw/concepts/agent-workspace/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "智能体工作区",
+  "name": "智能体工作区",
+  "description": "工作区是智能体的家。它是文件工具和工作区上下文使用的唯一工作目录。请保持其私密性并将其视为记忆。\n这与 ~/.openclaw/ 是分开的，后者存储配置、凭证和会话。\n重要： 工作区是默认 cwd，而不是硬性沙箱。工具会根据工作区解析相对路径，但绝对路径仍然可以访问主机上的其他位置，除非启用了沙箱隔离。如果你需要隔离，请使用 agents.defaults.sandbox（和/或每智能体沙箱配置）。 当启用沙箱隔离且 workspaceAccess 不是 \u0026quot;rw\u0026quot; 时，工具在 ~/.openclaw/sandboxes 下的沙箱工作区内操作，而不是你的主机工作区。\n默认位置 默认：~/.openclaw/workspace 如果设置了 OPENCLAW_PROFILE 且不是 \u0026quot;default\u0026quot;，默认值变为 ~/.openclaw/workspace-\u0026lt;profile\u0026gt;。 在 ~/.openclaw/openclaw.json 中覆盖： { agent: { workspace: \u0026#34;~/.openclaw/workspace\u0026#34;, }, } openclaw onboard、openclaw configure 或 openclaw setup 将创建工作区并在缺失时填充引导文件。\n如果你已经自己管理工作区文件，可以禁用引导文件创建：\n{ agent: { skipBootstrap: true } } 额外的工作区文件夹 旧版安装可能创建了 ~/openclaw。保留多个工作区目录可能会导致混乱的认证或状态漂移，因为同一时间只有一个工作区是活动的。\n建议： 保持单个活动工作区。如果你不再使用额外的文件夹，请归档或移至废纸篓（例如 trash ~/openclaw）。 如果你有意保留多个工作区，请确保 agents.defaults.workspace 指向活动的那个。\nopenclaw doctor 在检测到额外工作区目录时会发出警告。\n工作区文件映射（每个文件的含义） 这些是 OpenClaw 在工作区内期望的标准文件：\nAGENTS.md\n智能体的操作指南以及它应该如何使用记忆。 在每个会话开始时加载。 适合放置规则、优先级和\u0026quot;如何行为\u0026quot;的详细信息。 SOUL.md\n人设、语气和边界。 每个会话加载。 USER.md\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "工作区是智能体的家。它是文件工具和工作区上下文使用的唯一工作目录。请保持其私密性并将其视为记忆。\n这与 ~/.openclaw/ 是分开的，后者存储配置、凭证和会话。\n重要： 工作区是默认 cwd，而不是硬性沙箱。工具会根据工作区解析相对路径，但绝对路径仍然可以访问主机上的其他位置，除非启用了沙箱隔离。如果你需要隔离，请使用 agents.defaults.sandbox（和/或每智能体沙箱配置）。 当启用沙箱隔离且 workspaceAccess 不是 \"rw\" 时，工具在 ~/.openclaw/sandboxes 下的沙箱工作区内操作，而不是你的主机工作区。\n默认位置 默认：~/.openclaw/workspace 如果设置了 OPENCLAW_PROFILE 且不是 \"default\"，默认值变为 ~/.openclaw/workspace-。 在 ~/.openclaw/openclaw.json 中覆盖： { agent: { workspace: \"~/.openclaw/workspace\", }, } openclaw onboard、openclaw configure 或 openclaw setup 将创建工作区并在缺失时填充引导文件。\n如果你已经自己管理工作区文件，可以禁用引导文件创建：\n{ agent: { skipBootstrap: true } } 额外的工作区文件夹 旧版安装可能创建了 ~/openclaw。保留多个工作区目录可能会导致混乱的认证或状态漂移，因为同一时间只有一个工作区是活动的。\n建议： 保持单个活动工作区。如果你不再使用额外的文件夹，请归档或移至废纸篓（例如 trash ~/openclaw）。 如果你有意保留多个工作区，请确保 agents.defaults.workspace 指向活动的那个。\nopenclaw doctor 在检测到额外工作区目录时会发出警告。\n工作区文件映射（每个文件的含义） 这些是 OpenClaw 在工作区内期望的标准文件：\nAGENTS.md\n智能体的操作指南以及它应该如何使用记忆。 在每个会话开始时加载。 适合放置规则、优先级和\"如何行为\"的详细信息。 SOUL.md\n人设、语气和边界。 每个会话加载。 USER.md\n用户是谁以及如何称呼他们。 每个会话加载。 IDENTITY.md\n智能体的名称、风格和表情符号。 在引导仪式期间创建/更新。 TOOLS.md\n关于你本地工具和惯例的注释。 不控制工具可用性；仅作为指导。 HEARTBEAT.md\n可选的心跳运行小型检查清单。 保持简短以避免 token 消耗。 BOOT.md\n当启用内部 hooks 时，在 Gateway 网关重启时执行的可选启动检查清单。 保持简短；使用 message 工具进行出站发送。 BOOTSTRAP.md\n一次性首次运行仪式。 仅为全新工作区创建。 仪式完成后删除它。 memory/YYYY-MM-DD.md\n每日记忆日志（每天一个文件）。 建议在会话开始时读取今天 + 昨天的内容。 MEMORY.md（可选）\n精选的长期记忆。 仅在主私密会话中加载（不在共享/群组上下文中）。 参见 记忆 了解工作流程和自动记忆刷新。\nskills/（可选）\n工作区特定的 Skills。 当名称冲突时覆盖托管/捆绑的 Skills。 canvas/（可选）\n用于节点显示的 Canvas UI 文件（例如 canvas/index.html）。 如果任何引导文件缺失，OpenClaw 会在会话中注入\"缺失文件\"标记并继续。大型引导文件在注入时会被截断；使用 agents.defaults.bootstrapMaxChars 调整限制（默认：20000）。 openclaw setup 可以重新创建缺失的默认值而不覆盖现有文件。\n工作区中不包含的内容 这些位于 ~/.openclaw/ 下，不应提交到工作区仓库：\n~/.openclaw/openclaw.json（配置） ~/.openclaw/credentials/（OAuth token、API 密钥） ~/.openclaw/agents//sessions/（会话记录 + 元数据） ~/.openclaw/skills/（托管的 Skills） 如果你需要迁移会话或配置，请单独复制它们并将它们排除在版本控制之外。\nGit 备份（推荐，私有） 将工作区视为私密记忆。将其放入私有 git 仓库以便备份和恢复。\n在运行 Gateway 网关的机器上执行这些步骤（工作区就在那里）。\n1）初始化仓库 如果安装了 git，全新工作区会自动初始化。如果此工作区还不是仓库，请运行：\ncd ~/.openclaw/workspace git init git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/ git commit -m \"Add agent workspace\" 2）添加私有远程（适合初学者的选项） 选项 A：GitHub 网页界面\n在 GitHub 上创建新的私有仓库。 不要用 README 初始化（避免合并冲突）。 复制 HTTPS 远程 URL。 添加远程并推送： git branch -M main git remote add origin git push -u origin main 选项 B：GitHub CLI（gh）\ngh auth login gh repo create openclaw-workspace --private --source . --remote origin --push 选项 C：GitLab 网页界面\n在 GitLab 上创建新的私有仓库。 不要用 README 初始化（避免合并冲突）。 复制 HTTPS 远程 URL。 添加远程并推送： git branch -M main git remote add origin git push -u origin main 3）持续更新 git status git add . git commit -m \"Update memory\" git push 不要提交密钥 即使在私有仓库中，也要避免在工作区中存储密钥：\nAPI 密钥、OAuth token、密码或私有凭证。 ~/.openclaw/ 下的任何内容。 聊天的原始转储或敏感附件。 如果你必须存储敏感引用，请使用占位符并将真正的密钥保存在其他地方（密码管理器、环境变量或 ~/.openclaw/）。\n建议的 .gitignore 起始配置：\n.DS_Store .env **/*.key **/*.pem **/secrets* 将工作区迁移到新机器 将仓库克隆到所需路径（默认 ~/.openclaw/workspace）。 在 ~/.openclaw/openclaw.json 中将 agents.defaults.workspace 设置为该路径。 运行 openclaw setup --workspace 来填充任何缺失的文件。 如果你需要会话，请单独从旧机器复制 ~/.openclaw/agents//sessions/。 高级注意事项 多智能体路由可以为每个智能体使用不同的工作区。参见 渠道路由 了解路由配置。 如果启用了 agents.defaults.sandbox，非主会话可以在 agents.defaults.sandbox.workspaceRoot 下使用每会话沙箱工作区。 ",
+  "wordCount" : "299",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/agent-workspace/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      智能体工作区
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%bb%98%e8%ae%a4%e4%bd%8d%e7%bd%ae" aria-label="默认位置">默认位置</a></li>
+                <li>
+                    <a href="#%e9%a2%9d%e5%a4%96%e7%9a%84%e5%b7%a5%e4%bd%9c%e5%8c%ba%e6%96%87%e4%bb%b6%e5%a4%b9" aria-label="额外的工作区文件夹">额外的工作区文件夹</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8c%ba%e6%96%87%e4%bb%b6%e6%98%a0%e5%b0%84%e6%af%8f%e4%b8%aa%e6%96%87%e4%bb%b6%e7%9a%84%e5%90%ab%e4%b9%89" aria-label="工作区文件映射（每个文件的含义）">工作区文件映射（每个文件的含义）</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8c%ba%e4%b8%ad%e4%b8%8d%e5%8c%85%e5%90%ab%e7%9a%84%e5%86%85%e5%ae%b9" aria-label="工作区中不包含的内容">工作区中不包含的内容</a></li>
+                <li>
+                    <a href="#git-%e5%a4%87%e4%bb%bd%e6%8e%a8%e8%8d%90%e7%a7%81%e6%9c%89" aria-label="Git 备份（推荐，私有）">Git 备份（推荐，私有）</a><ul>
+                        
+                <li>
+                    <a href="#1%e5%88%9d%e5%a7%8b%e5%8c%96%e4%bb%93%e5%ba%93" aria-label="1）初始化仓库">1）初始化仓库</a></li>
+                <li>
+                    <a href="#2%e6%b7%bb%e5%8a%a0%e7%a7%81%e6%9c%89%e8%bf%9c%e7%a8%8b%e9%80%82%e5%90%88%e5%88%9d%e5%ad%a6%e8%80%85%e7%9a%84%e9%80%89%e9%a1%b9" aria-label="2）添加私有远程（适合初学者的选项）">2）添加私有远程（适合初学者的选项）</a></li>
+                <li>
+                    <a href="#3%e6%8c%81%e7%bb%ad%e6%9b%b4%e6%96%b0" aria-label="3）持续更新">3）持续更新</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%8d%e8%a6%81%e6%8f%90%e4%ba%a4%e5%af%86%e9%92%a5" aria-label="不要提交密钥">不要提交密钥</a></li>
+                <li>
+                    <a href="#%e5%b0%86%e5%b7%a5%e4%bd%9c%e5%8c%ba%e8%bf%81%e7%a7%bb%e5%88%b0%e6%96%b0%e6%9c%ba%e5%99%a8" aria-label="将工作区迁移到新机器">将工作区迁移到新机器</a></li>
+                <li>
+                    <a href="#%e9%ab%98%e7%ba%a7%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="高级注意事项">高级注意事项</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>工作区是智能体的家。它是文件工具和工作区上下文使用的唯一工作目录。请保持其私密性并将其视为记忆。</p>
+<p>这与 <code>~/.openclaw/</code> 是分开的，后者存储配置、凭证和会话。</p>
+<p><strong>重要：</strong> 工作区是<strong>默认 cwd</strong>，而不是硬性沙箱。工具会根据工作区解析相对路径，但绝对路径仍然可以访问主机上的其他位置，除非启用了沙箱隔离。如果你需要隔离，请使用
+<a href="/gateway/sandboxing"><code>agents.defaults.sandbox</code></a>（和/或每智能体沙箱配置）。
+当启用沙箱隔离且 <code>workspaceAccess</code> 不是 <code>&quot;rw&quot;</code> 时，工具在 <code>~/.openclaw/sandboxes</code> 下的沙箱工作区内操作，而不是你的主机工作区。</p>
+<h2 id="默认位置">默认位置<a hidden class="anchor" aria-hidden="true" href="#默认位置">#</a></h2>
+<ul>
+<li>默认：<code>~/.openclaw/workspace</code></li>
+<li>如果设置了 <code>OPENCLAW_PROFILE</code> 且不是 <code>&quot;default&quot;</code>，默认值变为
+<code>~/.openclaw/workspace-&lt;profile&gt;</code>。</li>
+<li>在 <code>~/.openclaw/openclaw.json</code> 中覆盖：</li>
+</ul>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    workspace: &#34;~/.openclaw/workspace&#34;,
+  },
+}
+</code></pre><p><code>openclaw onboard</code>、<code>openclaw configure</code> 或 <code>openclaw setup</code> 将创建工作区并在缺失时填充引导文件。</p>
+<p>如果你已经自己管理工作区文件，可以禁用引导文件创建：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{ agent: { skipBootstrap: true } }
+</code></pre><h2 id="额外的工作区文件夹">额外的工作区文件夹<a hidden class="anchor" aria-hidden="true" href="#额外的工作区文件夹">#</a></h2>
+<p>旧版安装可能创建了 <code>~/openclaw</code>。保留多个工作区目录可能会导致混乱的认证或状态漂移，因为同一时间只有一个工作区是活动的。</p>
+<p><strong>建议：</strong> 保持单个活动工作区。如果你不再使用额外的文件夹，请归档或移至废纸篓（例如 <code>trash ~/openclaw</code>）。
+如果你有意保留多个工作区，请确保 <code>agents.defaults.workspace</code> 指向活动的那个。</p>
+<p><code>openclaw doctor</code> 在检测到额外工作区目录时会发出警告。</p>
+<h2 id="工作区文件映射每个文件的含义">工作区文件映射（每个文件的含义）<a hidden class="anchor" aria-hidden="true" href="#工作区文件映射每个文件的含义">#</a></h2>
+<p>这些是 OpenClaw 在工作区内期望的标准文件：</p>
+<ul>
+<li>
+<p><code>AGENTS.md</code></p>
+<ul>
+<li>智能体的操作指南以及它应该如何使用记忆。</li>
+<li>在每个会话开始时加载。</li>
+<li>适合放置规则、优先级和&quot;如何行为&quot;的详细信息。</li>
+</ul>
+</li>
+<li>
+<p><code>SOUL.md</code></p>
+<ul>
+<li>人设、语气和边界。</li>
+<li>每个会话加载。</li>
+</ul>
+</li>
+<li>
+<p><code>USER.md</code></p>
+<ul>
+<li>用户是谁以及如何称呼他们。</li>
+<li>每个会话加载。</li>
+</ul>
+</li>
+<li>
+<p><code>IDENTITY.md</code></p>
+<ul>
+<li>智能体的名称、风格和表情符号。</li>
+<li>在引导仪式期间创建/更新。</li>
+</ul>
+</li>
+<li>
+<p><code>TOOLS.md</code></p>
+<ul>
+<li>关于你本地工具和惯例的注释。</li>
+<li>不控制工具可用性；仅作为指导。</li>
+</ul>
+</li>
+<li>
+<p><code>HEARTBEAT.md</code></p>
+<ul>
+<li>可选的心跳运行小型检查清单。</li>
+<li>保持简短以避免 token 消耗。</li>
+</ul>
+</li>
+<li>
+<p><code>BOOT.md</code></p>
+<ul>
+<li>当启用内部 hooks 时，在 Gateway 网关重启时执行的可选启动检查清单。</li>
+<li>保持简短；使用 message 工具进行出站发送。</li>
+</ul>
+</li>
+<li>
+<p><code>BOOTSTRAP.md</code></p>
+<ul>
+<li>一次性首次运行仪式。</li>
+<li>仅为全新工作区创建。</li>
+<li>仪式完成后删除它。</li>
+</ul>
+</li>
+<li>
+<p><code>memory/YYYY-MM-DD.md</code></p>
+<ul>
+<li>每日记忆日志（每天一个文件）。</li>
+<li>建议在会话开始时读取今天 + 昨天的内容。</li>
+</ul>
+</li>
+<li>
+<p><code>MEMORY.md</code>（可选）</p>
+<ul>
+<li>精选的长期记忆。</li>
+<li>仅在主私密会话中加载（不在共享/群组上下文中）。</li>
+</ul>
+</li>
+</ul>
+<p>参见 <a href="/concepts/memory">记忆</a> 了解工作流程和自动记忆刷新。</p>
+<ul>
+<li>
+<p><code>skills/</code>（可选）</p>
+<ul>
+<li>工作区特定的 Skills。</li>
+<li>当名称冲突时覆盖托管/捆绑的 Skills。</li>
+</ul>
+</li>
+<li>
+<p><code>canvas/</code>（可选）</p>
+<ul>
+<li>用于节点显示的 Canvas UI 文件（例如 <code>canvas/index.html</code>）。</li>
+</ul>
+</li>
+</ul>
+<p>如果任何引导文件缺失，OpenClaw 会在会话中注入&quot;缺失文件&quot;标记并继续。大型引导文件在注入时会被截断；使用 <code>agents.defaults.bootstrapMaxChars</code> 调整限制（默认：20000）。
+<code>openclaw setup</code> 可以重新创建缺失的默认值而不覆盖现有文件。</p>
+<h2 id="工作区中不包含的内容">工作区中不包含的内容<a hidden class="anchor" aria-hidden="true" href="#工作区中不包含的内容">#</a></h2>
+<p>这些位于 <code>~/.openclaw/</code> 下，不应提交到工作区仓库：</p>
+<ul>
+<li><code>~/.openclaw/openclaw.json</code>（配置）</li>
+<li><code>~/.openclaw/credentials/</code>（OAuth token、API 密钥）</li>
+<li><code>~/.openclaw/agents/&lt;agentId&gt;/sessions/</code>（会话记录 + 元数据）</li>
+<li><code>~/.openclaw/skills/</code>（托管的 Skills）</li>
+</ul>
+<p>如果你需要迁移会话或配置，请单独复制它们并将它们排除在版本控制之外。</p>
+<h2 id="git-备份推荐私有">Git 备份（推荐，私有）<a hidden class="anchor" aria-hidden="true" href="#git-备份推荐私有">#</a></h2>
+<p>将工作区视为私密记忆。将其放入<strong>私有</strong> git 仓库以便备份和恢复。</p>
+<p>在运行 Gateway 网关的机器上执行这些步骤（工作区就在那里）。</p>
+<h3 id="1初始化仓库">1）初始化仓库<a hidden class="anchor" aria-hidden="true" href="#1初始化仓库">#</a></h3>
+<p>如果安装了 git，全新工作区会自动初始化。如果此工作区还不是仓库，请运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> ~/.openclaw/workspace
+</span></span><span class="line"><span class="cl">git init
+</span></span><span class="line"><span class="cl">git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;Add agent workspace&#34;</span>
+</span></span></code></pre></div><h3 id="2添加私有远程适合初学者的选项">2）添加私有远程（适合初学者的选项）<a hidden class="anchor" aria-hidden="true" href="#2添加私有远程适合初学者的选项">#</a></h3>
+<p>选项 A：GitHub 网页界面</p>
+<ol>
+<li>在 GitHub 上创建新的<strong>私有</strong>仓库。</li>
+<li>不要用 README 初始化（避免合并冲突）。</li>
+<li>复制 HTTPS 远程 URL。</li>
+<li>添加远程并推送：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git branch -M main
+</span></span><span class="line"><span class="cl">git remote add origin &lt;https-url&gt;
+</span></span><span class="line"><span class="cl">git push -u origin main
+</span></span></code></pre></div><p>选项 B：GitHub CLI（<code>gh</code>）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gh auth login
+</span></span><span class="line"><span class="cl">gh repo create openclaw-workspace --private --source . --remote origin --push
+</span></span></code></pre></div><p>选项 C：GitLab 网页界面</p>
+<ol>
+<li>在 GitLab 上创建新的<strong>私有</strong>仓库。</li>
+<li>不要用 README 初始化（避免合并冲突）。</li>
+<li>复制 HTTPS 远程 URL。</li>
+<li>添加远程并推送：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git branch -M main
+</span></span><span class="line"><span class="cl">git remote add origin &lt;https-url&gt;
+</span></span><span class="line"><span class="cl">git push -u origin main
+</span></span></code></pre></div><h3 id="3持续更新">3）持续更新<a hidden class="anchor" aria-hidden="true" href="#3持续更新">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git status
+</span></span><span class="line"><span class="cl">git add .
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;Update memory&#34;</span>
+</span></span><span class="line"><span class="cl">git push
+</span></span></code></pre></div><h2 id="不要提交密钥">不要提交密钥<a hidden class="anchor" aria-hidden="true" href="#不要提交密钥">#</a></h2>
+<p>即使在私有仓库中，也要避免在工作区中存储密钥：</p>
+<ul>
+<li>API 密钥、OAuth token、密码或私有凭证。</li>
+<li><code>~/.openclaw/</code> 下的任何内容。</li>
+<li>聊天的原始转储或敏感附件。</li>
+</ul>
+<p>如果你必须存储敏感引用，请使用占位符并将真正的密钥保存在其他地方（密码管理器、环境变量或 <code>~/.openclaw/</code>）。</p>
+<p>建议的 <code>.gitignore</code> 起始配置：</p>
+<pre tabindex="0"><code class="language-gitignore" data-lang="gitignore">.DS_Store
+.env
+**/*.key
+**/*.pem
+**/secrets*
+</code></pre><h2 id="将工作区迁移到新机器">将工作区迁移到新机器<a hidden class="anchor" aria-hidden="true" href="#将工作区迁移到新机器">#</a></h2>
+<ol>
+<li>将仓库克隆到所需路径（默认 <code>~/.openclaw/workspace</code>）。</li>
+<li>在 <code>~/.openclaw/openclaw.json</code> 中将 <code>agents.defaults.workspace</code> 设置为该路径。</li>
+<li>运行 <code>openclaw setup --workspace &lt;path&gt;</code> 来填充任何缺失的文件。</li>
+<li>如果你需要会话，请单独从旧机器复制 <code>~/.openclaw/agents/&lt;agentId&gt;/sessions/</code>。</li>
+</ol>
+<h2 id="高级注意事项">高级注意事项<a hidden class="anchor" aria-hidden="true" href="#高级注意事项">#</a></h2>
+<ul>
+<li>多智能体路由可以为每个智能体使用不同的工作区。参见
+<a href="/channels/channel-routing">渠道路由</a> 了解路由配置。</li>
+<li>如果启用了 <code>agents.defaults.sandbox</code>，非主会话可以在 <code>agents.defaults.sandbox.workspaceRoot</code> 下使用每会话沙箱工作区。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/concepts/timezone/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>时区</span>
+  </a>
+  <a class="next" href="/openclaw/start/bootstrapping/">
+    <span class="title">Next »</span>
+    <br>
+    <span>智能体引导</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

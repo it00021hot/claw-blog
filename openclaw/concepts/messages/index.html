@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>消息 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="本页汇总了 OpenClaw 如何处理入站消息、会话、队列、流式传输和推理可见性。
+消息流程（高层概述）
+入站消息
+  -&gt; 路由/绑定 -&gt; 会话密钥
+  -&gt; 队列（如果有运行中的任务）
+  -&gt; 智能体运行（流式传输 &#43; 工具）
+  -&gt; 出站回复（渠道限制 &#43; 分块）
+关键配置项在配置中：
+
+messages.* 用于前缀、队列和群组行为。
+agents.defaults.* 用于分块流式传输和分块默认值。
+渠道覆盖（channels.whatsapp.*、channels.telegram.* 等）用于上限和流式传输开关。
+
+完整 schema 参见配置。
+入站去重
+渠道可能在重新连接后重复投递同一消息。OpenClaw 保持一个短期缓存，以渠道/账户/对端/会话/消息 ID 为键，因此重复投递不会触发另一次智能体运行。
+入站防抖
+来自同一发送者的快速连续消息可以通过 messages.inbound 批量合并为单个智能体轮次。防抖按渠道 &#43; 会话为范围，并使用最近的消息进行回复线程/ID 处理。
+配置（全局默认 &#43; 单渠道覆盖）：
+{
+  messages: {
+    inbound: {
+      debounceMs: 2000,
+      byChannel: {
+        whatsapp: 5000,
+        slack: 1500,
+        discord: 1500,
+      },
+    },
+  },
+}
+注意事项：
+
+防抖仅适用于纯文本消息；媒体/附件会立即刷新。
+控制命令会绕过防抖，保持独立。
+
+会话和设备
+会话由 Gateway 网关拥有，而非客户端。
+
+直接聊天合并到智能体主会话密钥。
+群组/渠道获得各自的会话密钥。
+会话存储和记录保存在 Gateway 网关主机上。
+
+多个设备/渠道可以映射到同一会话，但历史记录不会完全同步回每个客户端。建议：对长对话使用一个主设备，以避免上下文分歧。控制 UI 和 TUI 始终显示 Gateway 网关支持的会话记录，因此它们是事实来源。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/messages/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/messages/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/messages/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="消息">
+  <meta property="og:description" content="本页汇总了 OpenClaw 如何处理入站消息、会话、队列、流式传输和推理可见性。
+消息流程（高层概述） 入站消息 -&gt; 路由/绑定 -&gt; 会话密钥 -&gt; 队列（如果有运行中的任务） -&gt; 智能体运行（流式传输 &#43; 工具） -&gt; 出站回复（渠道限制 &#43; 分块） 关键配置项在配置中：
+messages.* 用于前缀、队列和群组行为。 agents.defaults.* 用于分块流式传输和分块默认值。 渠道覆盖（channels.whatsapp.*、channels.telegram.* 等）用于上限和流式传输开关。 完整 schema 参见配置。
+入站去重 渠道可能在重新连接后重复投递同一消息。OpenClaw 保持一个短期缓存，以渠道/账户/对端/会话/消息 ID 为键，因此重复投递不会触发另一次智能体运行。
+入站防抖 来自同一发送者的快速连续消息可以通过 messages.inbound 批量合并为单个智能体轮次。防抖按渠道 &#43; 会话为范围，并使用最近的消息进行回复线程/ID 处理。
+配置（全局默认 &#43; 单渠道覆盖）：
+{ messages: { inbound: { debounceMs: 2000, byChannel: { whatsapp: 5000, slack: 1500, discord: 1500, }, }, }, } 注意事项：
+防抖仅适用于纯文本消息；媒体/附件会立即刷新。 控制命令会绕过防抖，保持独立。 会话和设备 会话由 Gateway 网关拥有，而非客户端。
+直接聊天合并到智能体主会话密钥。 群组/渠道获得各自的会话密钥。 会话存储和记录保存在 Gateway 网关主机上。 多个设备/渠道可以映射到同一会话，但历史记录不会完全同步回每个客户端。建议：对长对话使用一个主设备，以避免上下文分歧。控制 UI 和 TUI 始终显示 Gateway 网关支持的会话记录，因此它们是事实来源。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="消息">
+<meta name="twitter:description" content="本页汇总了 OpenClaw 如何处理入站消息、会话、队列、流式传输和推理可见性。
+消息流程（高层概述）
+入站消息
+  -&gt; 路由/绑定 -&gt; 会话密钥
+  -&gt; 队列（如果有运行中的任务）
+  -&gt; 智能体运行（流式传输 &#43; 工具）
+  -&gt; 出站回复（渠道限制 &#43; 分块）
+关键配置项在配置中：
+
+messages.* 用于前缀、队列和群组行为。
+agents.defaults.* 用于分块流式传输和分块默认值。
+渠道覆盖（channels.whatsapp.*、channels.telegram.* 等）用于上限和流式传输开关。
+
+完整 schema 参见配置。
+入站去重
+渠道可能在重新连接后重复投递同一消息。OpenClaw 保持一个短期缓存，以渠道/账户/对端/会话/消息 ID 为键，因此重复投递不会触发另一次智能体运行。
+入站防抖
+来自同一发送者的快速连续消息可以通过 messages.inbound 批量合并为单个智能体轮次。防抖按渠道 &#43; 会话为范围，并使用最近的消息进行回复线程/ID 处理。
+配置（全局默认 &#43; 单渠道覆盖）：
+{
+  messages: {
+    inbound: {
+      debounceMs: 2000,
+      byChannel: {
+        whatsapp: 5000,
+        slack: 1500,
+        discord: 1500,
+      },
+    },
+  },
+}
+注意事项：
+
+防抖仅适用于纯文本消息；媒体/附件会立即刷新。
+控制命令会绕过防抖，保持独立。
+
+会话和设备
+会话由 Gateway 网关拥有，而非客户端。
+
+直接聊天合并到智能体主会话密钥。
+群组/渠道获得各自的会话密钥。
+会话存储和记录保存在 Gateway 网关主机上。
+
+多个设备/渠道可以映射到同一会话，但历史记录不会完全同步回每个客户端。建议：对长对话使用一个主设备，以避免上下文分歧。控制 UI 和 TUI 始终显示 Gateway 网关支持的会话记录，因此它们是事实来源。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "消息",
+      "item": "/openclaw/concepts/messages/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "消息",
+  "name": "消息",
+  "description": "本页汇总了 OpenClaw 如何处理入站消息、会话、队列、流式传输和推理可见性。\n消息流程（高层概述） 入站消息 -\u0026gt; 路由/绑定 -\u0026gt; 会话密钥 -\u0026gt; 队列（如果有运行中的任务） -\u0026gt; 智能体运行（流式传输 + 工具） -\u0026gt; 出站回复（渠道限制 + 分块） 关键配置项在配置中：\nmessages.* 用于前缀、队列和群组行为。 agents.defaults.* 用于分块流式传输和分块默认值。 渠道覆盖（channels.whatsapp.*、channels.telegram.* 等）用于上限和流式传输开关。 完整 schema 参见配置。\n入站去重 渠道可能在重新连接后重复投递同一消息。OpenClaw 保持一个短期缓存，以渠道/账户/对端/会话/消息 ID 为键，因此重复投递不会触发另一次智能体运行。\n入站防抖 来自同一发送者的快速连续消息可以通过 messages.inbound 批量合并为单个智能体轮次。防抖按渠道 + 会话为范围，并使用最近的消息进行回复线程/ID 处理。\n配置（全局默认 + 单渠道覆盖）：\n{ messages: { inbound: { debounceMs: 2000, byChannel: { whatsapp: 5000, slack: 1500, discord: 1500, }, }, }, } 注意事项：\n防抖仅适用于纯文本消息；媒体/附件会立即刷新。 控制命令会绕过防抖，保持独立。 会话和设备 会话由 Gateway 网关拥有，而非客户端。\n直接聊天合并到智能体主会话密钥。 群组/渠道获得各自的会话密钥。 会话存储和记录保存在 Gateway 网关主机上。 多个设备/渠道可以映射到同一会话，但历史记录不会完全同步回每个客户端。建议：对长对话使用一个主设备，以避免上下文分歧。控制 UI 和 TUI 始终显示 Gateway 网关支持的会话记录，因此它们是事实来源。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "本页汇总了 OpenClaw 如何处理入站消息、会话、队列、流式传输和推理可见性。\n消息流程（高层概述） 入站消息 -\u003e 路由/绑定 -\u003e 会话密钥 -\u003e 队列（如果有运行中的任务） -\u003e 智能体运行（流式传输 + 工具） -\u003e 出站回复（渠道限制 + 分块） 关键配置项在配置中：\nmessages.* 用于前缀、队列和群组行为。 agents.defaults.* 用于分块流式传输和分块默认值。 渠道覆盖（channels.whatsapp.*、channels.telegram.* 等）用于上限和流式传输开关。 完整 schema 参见配置。\n入站去重 渠道可能在重新连接后重复投递同一消息。OpenClaw 保持一个短期缓存，以渠道/账户/对端/会话/消息 ID 为键，因此重复投递不会触发另一次智能体运行。\n入站防抖 来自同一发送者的快速连续消息可以通过 messages.inbound 批量合并为单个智能体轮次。防抖按渠道 + 会话为范围，并使用最近的消息进行回复线程/ID 处理。\n配置（全局默认 + 单渠道覆盖）：\n{ messages: { inbound: { debounceMs: 2000, byChannel: { whatsapp: 5000, slack: 1500, discord: 1500, }, }, }, } 注意事项：\n防抖仅适用于纯文本消息；媒体/附件会立即刷新。 控制命令会绕过防抖，保持独立。 会话和设备 会话由 Gateway 网关拥有，而非客户端。\n直接聊天合并到智能体主会话密钥。 群组/渠道获得各自的会话密钥。 会话存储和记录保存在 Gateway 网关主机上。 多个设备/渠道可以映射到同一会话，但历史记录不会完全同步回每个客户端。建议：对长对话使用一个主设备，以避免上下文分歧。控制 UI 和 TUI 始终显示 Gateway 网关支持的会话记录，因此它们是事实来源。\n详情：会话管理。\n入站正文和历史上下文 OpenClaw 将提示正文与命令正文分开：\nBody：发送给智能体的提示文本。这可能包括渠道信封和可选的历史包装器。 CommandBody：用于指令/命令解析的原始用户文本。 RawBody：CommandBody 的旧别名（为兼容性保留）。 当渠道提供历史记录时，使用共享包装器：\n[Chat messages since your last reply - for context] [Current message - respond to this] 对于非直接聊天（群组/渠道/房间），当前消息正文会加上发送者标签前缀（与历史条目使用的样式相同）。这使智能体提示中的实时消息和队列/历史消息保持一致。\n历史缓冲区是仅待处理的：它们包含未触发运行的群组消息（例如，提及门控的消息），并排除已在会话记录中的消息。\n指令剥离仅适用于当前消息部分，因此历史记录保持完整。包装历史记录的渠道应将 CommandBody（或 RawBody）设置为原始消息文本，并将 Body 保留为组合提示。历史缓冲区可通过 messages.groupChat.historyLimit（全局默认）和单渠道覆盖（如 channels.slack.historyLimit 或 channels.telegram.accounts..historyLimit）进行配置（设置 0 表示禁用）。\n队列和后续消息 如果运行已在进行中，入站消息可以排队、导入当前运行，或收集用于后续轮次。\n通过 messages.queue（和 messages.queue.byChannel）配置。 模式：interrupt、steer、followup、collect，以及积压变体。 详情：队列。\n流式传输、分块和批处理 分块流式传输在模型生成文本块时发送部分回复。分块遵循渠道文本限制，避免拆分围栏代码。\n关键设置：\nagents.defaults.blockStreamingDefault（on|off，默认 off） agents.defaults.blockStreamingBreak（text_end|message_end） agents.defaults.blockStreamingChunk（minChars|maxChars|breakPreference） agents.defaults.blockStreamingCoalesce（基于空闲的批处理） agents.defaults.humanDelay（块回复之间的拟人化暂停） 渠道覆盖：*.blockStreaming 和 *.blockStreamingCoalesce（非 Telegram 渠道需要显式设置 *.blockStreaming: true） 详情：流式传输 + 分块。\n推理可见性和 token OpenClaw 可以显示或隐藏模型推理：\n/reasoning on|off|stream 控制可见性。 当模型产生推理内容时，它仍计入 token 使用量。 Telegram 支持将推理流式传输到草稿气泡中。 详情：思考 + 推理指令和 Token 使用。\n前缀、线程和回复 出站消息格式在 messages 中集中配置：\nmessages.responsePrefix（出站前缀）和 channels.whatsapp.messagePrefix（WhatsApp 入站前缀） 通过 replyToMode 和单渠道默认值进行回复线程 详情：配置和渠道文档。\n",
+  "wordCount" : "173",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/messages/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      消息
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af%e6%b5%81%e7%a8%8b%e9%ab%98%e5%b1%82%e6%a6%82%e8%bf%b0" aria-label="消息流程（高层概述）">消息流程（高层概述）</a></li>
+                <li>
+                    <a href="#%e5%85%a5%e7%ab%99%e5%8e%bb%e9%87%8d" aria-label="入站去重">入站去重</a></li>
+                <li>
+                    <a href="#%e5%85%a5%e7%ab%99%e9%98%b2%e6%8a%96" aria-label="入站防抖">入站防抖</a></li>
+                <li>
+                    <a href="#%e4%bc%9a%e8%af%9d%e5%92%8c%e8%ae%be%e5%a4%87" aria-label="会话和设备">会话和设备</a></li>
+                <li>
+                    <a href="#%e5%85%a5%e7%ab%99%e6%ad%a3%e6%96%87%e5%92%8c%e5%8e%86%e5%8f%b2%e4%b8%8a%e4%b8%8b%e6%96%87" aria-label="入站正文和历史上下文">入站正文和历史上下文</a></li>
+                <li>
+                    <a href="#%e9%98%9f%e5%88%97%e5%92%8c%e5%90%8e%e7%bb%ad%e6%b6%88%e6%81%af" aria-label="队列和后续消息">队列和后续消息</a></li>
+                <li>
+                    <a href="#%e6%b5%81%e5%bc%8f%e4%bc%a0%e8%be%93%e5%88%86%e5%9d%97%e5%92%8c%e6%89%b9%e5%a4%84%e7%90%86" aria-label="流式传输、分块和批处理">流式传输、分块和批处理</a></li>
+                <li>
+                    <a href="#%e6%8e%a8%e7%90%86%e5%8f%af%e8%a7%81%e6%80%a7%e5%92%8c-token" aria-label="推理可见性和 token">推理可见性和 token</a></li>
+                <li>
+                    <a href="#%e5%89%8d%e7%bc%80%e7%ba%bf%e7%a8%8b%e5%92%8c%e5%9b%9e%e5%a4%8d" aria-label="前缀、线程和回复">前缀、线程和回复</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本页汇总了 OpenClaw 如何处理入站消息、会话、队列、流式传输和推理可见性。</p>
+<h2 id="消息流程高层概述">消息流程（高层概述）<a hidden class="anchor" aria-hidden="true" href="#消息流程高层概述">#</a></h2>
+<pre tabindex="0"><code>入站消息
+  -&gt; 路由/绑定 -&gt; 会话密钥
+  -&gt; 队列（如果有运行中的任务）
+  -&gt; 智能体运行（流式传输 + 工具）
+  -&gt; 出站回复（渠道限制 + 分块）
+</code></pre><p>关键配置项在配置中：</p>
+<ul>
+<li><code>messages.*</code> 用于前缀、队列和群组行为。</li>
+<li><code>agents.defaults.*</code> 用于分块流式传输和分块默认值。</li>
+<li>渠道覆盖（<code>channels.whatsapp.*</code>、<code>channels.telegram.*</code> 等）用于上限和流式传输开关。</li>
+</ul>
+<p>完整 schema 参见<a href="/gateway/configuration">配置</a>。</p>
+<h2 id="入站去重">入站去重<a hidden class="anchor" aria-hidden="true" href="#入站去重">#</a></h2>
+<p>渠道可能在重新连接后重复投递同一消息。OpenClaw 保持一个短期缓存，以渠道/账户/对端/会话/消息 ID 为键，因此重复投递不会触发另一次智能体运行。</p>
+<h2 id="入站防抖">入站防抖<a hidden class="anchor" aria-hidden="true" href="#入站防抖">#</a></h2>
+<p>来自<strong>同一发送者</strong>的快速连续消息可以通过 <code>messages.inbound</code> 批量合并为单个智能体轮次。防抖按渠道 + 会话为范围，并使用最近的消息进行回复线程/ID 处理。</p>
+<p>配置（全局默认 + 单渠道覆盖）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    inbound: {
+      debounceMs: 2000,
+      byChannel: {
+        whatsapp: 5000,
+        slack: 1500,
+        discord: 1500,
+      },
+    },
+  },
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>防抖仅适用于<strong>纯文本</strong>消息；媒体/附件会立即刷新。</li>
+<li>控制命令会绕过防抖，保持独立。</li>
+</ul>
+<h2 id="会话和设备">会话和设备<a hidden class="anchor" aria-hidden="true" href="#会话和设备">#</a></h2>
+<p>会话由 Gateway 网关拥有，而非客户端。</p>
+<ul>
+<li>直接聊天合并到智能体主会话密钥。</li>
+<li>群组/渠道获得各自的会话密钥。</li>
+<li>会话存储和记录保存在 Gateway 网关主机上。</li>
+</ul>
+<p>多个设备/渠道可以映射到同一会话，但历史记录不会完全同步回每个客户端。建议：对长对话使用一个主设备，以避免上下文分歧。控制 UI 和 TUI 始终显示 Gateway 网关支持的会话记录，因此它们是事实来源。</p>
+<p>详情：<a href="/concepts/session">会话管理</a>。</p>
+<h2 id="入站正文和历史上下文">入站正文和历史上下文<a hidden class="anchor" aria-hidden="true" href="#入站正文和历史上下文">#</a></h2>
+<p>OpenClaw 将<strong>提示正文</strong>与<strong>命令正文</strong>分开：</p>
+<ul>
+<li><code>Body</code>：发送给智能体的提示文本。这可能包括渠道信封和可选的历史包装器。</li>
+<li><code>CommandBody</code>：用于指令/命令解析的原始用户文本。</li>
+<li><code>RawBody</code>：<code>CommandBody</code> 的旧别名（为兼容性保留）。</li>
+</ul>
+<p>当渠道提供历史记录时，使用共享包装器：</p>
+<ul>
+<li><code>[Chat messages since your last reply - for context]</code></li>
+<li><code>[Current message - respond to this]</code></li>
+</ul>
+<p>对于<strong>非直接聊天</strong>（群组/渠道/房间），<strong>当前消息正文</strong>会加上发送者标签前缀（与历史条目使用的样式相同）。这使智能体提示中的实时消息和队列/历史消息保持一致。</p>
+<p>历史缓冲区是<strong>仅待处理的</strong>：它们包含<em>未</em>触发运行的群组消息（例如，提及门控的消息），并<strong>排除</strong>已在会话记录中的消息。</p>
+<p>指令剥离仅适用于<strong>当前消息</strong>部分，因此历史记录保持完整。包装历史记录的渠道应将 <code>CommandBody</code>（或 <code>RawBody</code>）设置为原始消息文本，并将 <code>Body</code> 保留为组合提示。历史缓冲区可通过 <code>messages.groupChat.historyLimit</code>（全局默认）和单渠道覆盖（如 <code>channels.slack.historyLimit</code> 或 <code>channels.telegram.accounts.&lt;id&gt;.historyLimit</code>）进行配置（设置 <code>0</code> 表示禁用）。</p>
+<h2 id="队列和后续消息">队列和后续消息<a hidden class="anchor" aria-hidden="true" href="#队列和后续消息">#</a></h2>
+<p>如果运行已在进行中，入站消息可以排队、导入当前运行，或收集用于后续轮次。</p>
+<ul>
+<li>通过 <code>messages.queue</code>（和 <code>messages.queue.byChannel</code>）配置。</li>
+<li>模式：<code>interrupt</code>、<code>steer</code>、<code>followup</code>、<code>collect</code>，以及积压变体。</li>
+</ul>
+<p>详情：<a href="/concepts/queue">队列</a>。</p>
+<h2 id="流式传输分块和批处理">流式传输、分块和批处理<a hidden class="anchor" aria-hidden="true" href="#流式传输分块和批处理">#</a></h2>
+<p>分块流式传输在模型生成文本块时发送部分回复。分块遵循渠道文本限制，避免拆分围栏代码。</p>
+<p>关键设置：</p>
+<ul>
+<li><code>agents.defaults.blockStreamingDefault</code>（<code>on|off</code>，默认 off）</li>
+<li><code>agents.defaults.blockStreamingBreak</code>（<code>text_end|message_end</code>）</li>
+<li><code>agents.defaults.blockStreamingChunk</code>（<code>minChars|maxChars|breakPreference</code>）</li>
+<li><code>agents.defaults.blockStreamingCoalesce</code>（基于空闲的批处理）</li>
+<li><code>agents.defaults.humanDelay</code>（块回复之间的拟人化暂停）</li>
+<li>渠道覆盖：<code>*.blockStreaming</code> 和 <code>*.blockStreamingCoalesce</code>（非 Telegram 渠道需要显式设置 <code>*.blockStreaming: true</code>）</li>
+</ul>
+<p>详情：<a href="/concepts/streaming">流式传输 + 分块</a>。</p>
+<h2 id="推理可见性和-token">推理可见性和 token<a hidden class="anchor" aria-hidden="true" href="#推理可见性和-token">#</a></h2>
+<p>OpenClaw 可以显示或隐藏模型推理：</p>
+<ul>
+<li><code>/reasoning on|off|stream</code> 控制可见性。</li>
+<li>当模型产生推理内容时，它仍计入 token 使用量。</li>
+<li>Telegram 支持将推理流式传输到草稿气泡中。</li>
+</ul>
+<p>详情：<a href="/tools/thinking">思考 + 推理指令</a>和 <a href="/reference/token-use">Token 使用</a>。</p>
+<h2 id="前缀线程和回复">前缀、线程和回复<a hidden class="anchor" aria-hidden="true" href="#前缀线程和回复">#</a></h2>
+<p>出站消息格式在 <code>messages</code> 中集中配置：</p>
+<ul>
+<li><code>messages.responsePrefix</code>（出站前缀）和 <code>channels.whatsapp.messagePrefix</code>（WhatsApp 入站前缀）</li>
+<li>通过 <code>replyToMode</code> 和单渠道默认值进行回复线程</li>
+</ul>
+<p>详情：<a href="/gateway/configuration#messages">配置</a>和渠道文档。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/tools/browser-login/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>浏览器登录 &#43; X/Twitter 发帖</span>
+  </a>
+  <a class="next" href="/openclaw/channels/channel-routing/">
+    <span class="title">Next »</span>
+    <br>
+    <span>渠道与路由</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>测试</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 包含三个 Vitest 测试套件（单元/集成、端到端、实时）以及一小组 Docker 运行器。
+本文档是一份&#34;我们如何测试&#34;的指南：
+每个套件覆盖什么（以及它刻意不覆盖什么） 常见工作流程应运行哪些命令（本地、推送前、调试） 实时测试如何发现凭证并选择模型/提供商 如何为现实中的模型/提供商问题添加回归测试 快速开始 日常使用：
+完整检查（推送前的预期流程）：pnpm build &amp;&amp; pnpm check &amp;&amp; pnpm test 当你修改测试或需要额外的信心时：
+覆盖率检查：pnpm test:coverage 端到端套件：pnpm test:e2e 调试真实提供商/模型时（需要真实凭证）：
+实时套件（模型 &#43; Gateway 网关工具/图像探测）：pnpm test:live 提示：当你只需要一个失败用例时，建议使用下文描述的允许列表环境变量来缩小实时测试范围。
+测试套件（在哪里运行什么） 可以将这些套件理解为&#34;逐渐增强的真实性&#34;（以及逐渐增加的不稳定性/成本）：
+单元/集成测试（默认） 命令：pnpm test 配置：vitest.config.ts 文件：src/**/*.test.ts 范围： 纯单元测试 进程内集成测试（Gateway 网关认证、路由、工具、解析、配置） 已知问题的确定性回归测试 预期： 在 CI 中运行 不需要真实密钥 应该快速且稳定 端到端测试（Gateway 网关冒烟测试） 命令：pnpm test:e2e 配置：vitest.e2e.config.ts 文件：src/**/*.e2e.test.ts 范围： 多实例 Gateway 网关端到端行为 WebSocket/HTTP 接口、节点配对和较重的网络操作 预期： 在 CI 中运行（当在流水线中启用时） 不需要真实密钥 比单元测试有更多活动部件（可能较慢） 实时测试（真实提供商 &#43; 真实模型） 命令：pnpm test:live 配置：vitest.live.config.ts 文件：src/**/*.live.test.ts 默认：通过 pnpm test:live 启用（设置 OPENCLAW_LIVE_TEST=1） 范围： “这个提供商/模型用真实凭证今天实际能工作吗？” 捕获提供商格式变更、工具调用怪癖、认证问题和速率限制行为 预期： 设计上不适合 CI 稳定运行（真实网络、真实提供商策略、配额、故障） 花费金钱/使用速率限制 建议运行缩小范围的子集而非&#34;全部&#34; 实时运行会加载 ~/.profile 以获取缺失的 API 密钥 Anthropic 密钥轮换：设置 OPENCLAW_LIVE_ANTHROPIC_KEYS=&#34;sk-...,sk-...&#34;（或 OPENCLAW_LIVE_ANTHROPIC_KEY=sk-...）或多个 ANTHROPIC_API_KEY* 变量；测试会在遇到速率限制时重试 我应该运行哪个套件？ 使用这个决策表：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 测试" href="/openclaw/help/testing/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>流式传输 &#43; 分块</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 有两个独立的&#34;流式传输&#34;层：
+分块流式传输（渠道）： 在助手写入时发出已完成的块。这些是普通的渠道消息（不是令牌增量）。 类令牌流式传输（仅限 Telegram）： 在生成时用部分文本更新草稿气泡；最终消息在结束时发送。 目前没有真正的令牌流式传输到外部渠道消息。Telegram 草稿流式传输是唯一的部分流式传输界面。
+分块流式传输（渠道消息） 分块流式传输在助手输出可用时以粗粒度块发送。
+模型输出 └─ text_delta/events ├─ (blockStreamingBreak=text_end) │ └─ 分块器在缓冲区增长时发出块 └─ (blockStreamingBreak=message_end) └─ 分块器在 message_end 时刷新 └─ 渠道发送（块回复） 图例：
+text_delta/events：模型流事件（对于非流式模型可能稀疏）。 chunker：应用最小/最大边界 &#43; 断点偏好的 EmbeddedBlockChunker。 channel send：实际的出站消息（块回复）。 控制项：
+agents.defaults.blockStreamingDefault：&#34;on&#34;/&#34;off&#34;（默认关闭）。 渠道覆盖：*.blockStreaming（以及每账户变体）可为每个渠道强制设置 &#34;on&#34;/&#34;off&#34;。 agents.defaults.blockStreamingBreak：&#34;text_end&#34; 或 &#34;message_end&#34;。 agents.defaults.blockStreamingChunk：{ minChars, maxChars, breakPreference? }。 agents.defaults.blockStreamingCoalesce：{ minChars?, maxChars?, idleMs? }（发送前合并流式块）。 渠道硬上限：*.textChunkLimit（例如 channels.whatsapp.textChunkLimit）。 渠道分块模式：*.chunkMode（默认 length，newline 在长度分块之前按空行（段落边界）分割）。 Discord 软上限：channels.discord.maxLinesPerMessage（默认 17）分割高度较大的回复以避免 UI 裁剪。 边界语义：
+text_end：分块器发出时立即流式传输块；在每个 text_end 时刷新。 message_end：等到助手消息完成，然后刷新缓冲的输出。 如果缓冲文本超过 maxChars，message_end 仍然使用分块器，因此可能在最后发出多个块。
+分块算法（低/高边界） 块分块由 EmbeddedBlockChunker 实现：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 流式传输 &#43; 分块" href="/openclaw/concepts/streaming/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>沙箱隔离</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 可以在 Docker 容器内运行工具以减少影响范围。 这是可选的，由配置控制（agents.defaults.sandbox 或 agents.list[].sandbox）。如果沙箱隔离关闭，工具在主机上运行。 Gateway 网关保留在主机上；启用时工具执行在隔离的沙箱中运行。
+这不是完美的安全边界，但当模型做出愚蠢行为时，它实质性地限制了文件系统和进程访问。
+什么会被沙箱隔离 工具执行（exec、read、write、edit、apply_patch、process 等）。 可选的沙箱浏览器（agents.defaults.sandbox.browser）。 默认情况下，当浏览器工具需要时，沙箱浏览器会自动启动（确保 CDP 可达）。 通过 agents.defaults.sandbox.browser.autoStart 和 agents.defaults.sandbox.browser.autoStartTimeoutMs 配置。 agents.defaults.sandbox.browser.allowHostControl 允许沙箱会话显式定位主机浏览器。 可选的允许列表限制 target: &#34;custom&#34;：allowedControlUrls、allowedControlHosts、allowedControlPorts。 不被沙箱隔离：
+Gateway 网关进程本身。 任何明确允许在主机上运行的工具（例如 tools.elevated）。 提权 exec 在主机上运行并绕过沙箱隔离。 如果沙箱隔离关闭，tools.elevated 不会改变执行（已经在主机上）。参见提权模式。 模式 agents.defaults.sandbox.mode 控制何时使用沙箱隔离：
+&#34;off&#34;：不使用沙箱隔离。 &#34;non-main&#34;：仅沙箱隔离非主会话（如果你想让普通聊天在主机上运行，这是默认值）。 &#34;all&#34;：每个会话都在沙箱中运行。 注意：&#34;non-main&#34; 基于 session.mainKey（默认 &#34;main&#34;），而不是智能体 ID。 群组/频道会话使用它们自己的键，因此它们算作非主会话并将被沙箱隔离。 作用域 agents.defaults.sandbox.scope 控制创建多少容器：
+&#34;session&#34;（默认）：每个会话一个容器。 &#34;agent&#34;：每个智能体一个容器。 &#34;shared&#34;：所有沙箱会话共享一个容器。 工作区访问 agents.defaults.sandbox.workspaceAccess 控制沙箱可以看到什么：
+&#34;none&#34;（默认）：工具看到 ~/.openclaw/sandboxes 下的沙箱工作区。 &#34;ro&#34;：以只读方式在 /agent 挂载智能体工作区（禁用 write/edit/apply_patch）。 &#34;rw&#34;：以读写方式在 /workspace 挂载智能体工作区。 入站媒体被复制到活动沙箱工作区（media/inbound/*）。 Skills 注意事项：read 工具以沙箱为根。使用 workspaceAccess: &#34;none&#34; 时，OpenClaw 将符合条件的 Skills 镜像到沙箱工作区（.../skills）以便可以读取。使用 &#34;rw&#34; 时，工作区 Skills 可从 /workspace/skills 读取。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 沙箱隔离" href="/openclaw/gateway/sandboxing/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>沙箱 vs 工具策略 vs 提权</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 有三个相关（但不同）的控制：
+沙箱（agents.defaults.sandbox.* / agents.list[].sandbox.*）决定工具在哪里运行（Docker vs 主机）。 工具策略（tools.*、tools.sandbox.tools.*、agents.list[].tools.*）决定哪些工具可用/允许。 提权（tools.elevated.*、agents.list[].tools.elevated.*）是一个仅限 exec 的逃逸通道，允许在沙箱隔离时在主机上运行。 快速调试 使用检查器查看 OpenClaw 实际在做什么：
+openclaw sandbox explain openclaw sandbox explain --session agent:main:main openclaw sandbox explain --agent work openclaw sandbox explain --json 它会打印：
+生效的沙箱模式/范围/工作区访问 会话当前是否被沙箱隔离（主 vs 非主） 生效的沙箱工具允许/拒绝（以及它来自智能体/全局/默认哪里） 提权限制和修复键路径 沙箱：工具在哪里运行 沙箱隔离由 agents.defaults.sandbox.mode 控制：
+&#34;off&#34;：所有内容在主机上运行。 &#34;non-main&#34;：仅非主会话被沙箱隔离（群组/渠道的常见&#34;意外&#34;）。 &#34;all&#34;：所有内容都被沙箱隔离。 参见沙箱隔离了解完整矩阵（范围、工作区挂载、镜像）。
+绑定挂载（安全快速检查） docker.binds 穿透沙箱文件系统：你挂载的任何内容在容器内以你设置的模式（:ro 或 :rw）可见。 如果省略模式，默认为读写；对于源代码/密钥优先使用 :ro。 scope: &#34;shared&#34; 忽略每个智能体的绑定（仅全局绑定适用）。 绑定 /var/run/docker.sock 实际上将主机控制权交给沙箱；只有在有意为之时才这样做。 工作区访问（workspaceAccess: &#34;ro&#34;/&#34;rw&#34;）独立于绑定模式。 工具策略：哪些工具存在/可调用 两个层次很重要：
+工具配置文件：tools.profile 和 agents.list[].tools.profile（基础允许列表） 提供商工具配置文件：tools.byProvider[provider].profile 和 agents.list[].tools.byProvider[provider].profile 全局/每个智能体工具策略：tools.allow/tools.deny 和 agents.list[].tools.allow/agents.list[].tools.deny 提供商工具策略：tools.byProvider[provider].allow/deny 和 agents.list[].tools.byProvider[provider].allow/deny 沙箱工具策略（仅在沙箱隔离时适用）：tools.sandbox.tools.allow/tools.sandbox.tools.deny 和 agents.list[].tools.sandbox.tools.* 经验法则：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 沙箱 vs 工具策略 vs 提权" href="/openclaw/gateway/sandbox-vs-tool-policy-vs-elevated/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>沙箱 CLI</h2>
+    </header>
+    <div class="entry-content">
+      <p>管理基于 Docker 的沙箱容器，用于隔离智能体执行。
+概述 OpenClaw 可以在隔离的 Docker 容器中运行智能体以确保安全。sandbox 命令帮助你管理这些容器，特别是在更新或配置更改后。
+命令 openclaw sandbox explain 检查生效的沙箱模式/作用域/工作区访问权限、沙箱工具策略和提权门控（附带修复配置的键路径）。
+openclaw sandbox explain openclaw sandbox explain --session agent:main:main openclaw sandbox explain --agent work openclaw sandbox explain --json openclaw sandbox list 列出所有沙箱容器及其状态和配置。
+openclaw sandbox list openclaw sandbox list --browser # List only browser containers openclaw sandbox list --json # JSON output 输出包括：
+容器名称和状态（运行中/已停止） Docker 镜像及其是否与配置匹配 创建时间 空闲时间（自上次使用以来的时间） 关联的会话/智能体 openclaw sandbox recreate 移除沙箱容器以强制使用更新的镜像/配置重新创建。
+openclaw sandbox recreate --all # Recreate all containers openclaw sandbox recreate --session main # Specific session openclaw sandbox recreate --agent mybot # Specific agent openclaw sandbox recreate --browser # Only browser containers openclaw sandbox recreate --all --force # Skip confirmation 选项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 沙箱 CLI" href="/openclaw/cli/sandbox/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>模型配置（探索）</h2>
+    </header>
+    <div class="entry-content">
+      <p>本文档记录了未来模型配置的构想。这不是正式的发布规范。如需了解当前行为，请参阅：
+模型 模型故障转移 OAuth &#43; 配置文件 动机 运营者希望：
+每个提供商支持多个认证配置文件（个人 vs 工作）。 简单的 /model 选择，并具有可预测的回退行为。 文本模型与图像模型之间有清晰的分离。 可能的方向（高层级） 保持模型选择简洁：provider/model 加可选别名。 允许提供商拥有多个认证配置文件，并指定明确的顺序。 使用全局回退列表，使所有会话以一致的方式进行故障转移。 仅在明确配置时才覆盖图像路由。 待解决的问题 配置文件轮换应该按提供商还是按模型进行？ UI 应如何为会话展示配置文件选择？ 从旧版配置键迁移的最安全路径是什么？ </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 模型配置（探索）" href="/openclaw/experiments/proposals/model-config/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>模型故障转移</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 分两个阶段处理故障：
+在当前提供商内进行认证配置文件轮换。 模型回退到 agents.defaults.model.fallbacks 中的下一个模型。 本文档解释运行时规则及其背后的数据。
+认证存储（密钥 &#43; OAuth） OpenClaw 对 API 密钥和 OAuth 令牌都使用认证配置文件。
+密钥存储在 ~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json（旧版：~/.openclaw/agent/auth-profiles.json）。 配置 auth.profiles / auth.order 仅用于元数据和路由（不含密钥）。 旧版仅导入 OAuth 文件：~/.openclaw/credentials/oauth.json（首次使用时导入到 auth-profiles.json）。 更多详情：/concepts/oauth
+凭证类型：
+type: &#34;api_key&#34; → { provider, key } type: &#34;oauth&#34; → { provider, access, refresh, expires, email? }（某些提供商还有 projectId/enterpriseUrl） 配置文件 ID OAuth 登录创建不同的配置文件，以便多个账户可以共存。
+默认：当没有电子邮件可用时为 provider:default。 带电子邮件的 OAuth：provider:&lt;email&gt;（例如 google-antigravity:user@gmail.com）。 配置文件存储在 ~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 的 profiles 下。
+轮换顺序 当一个提供商有多个配置文件时，OpenClaw 按以下顺序选择：
+显式配置：auth.order[provider]（如果设置）。 已配置的配置文件：按提供商过滤的 auth.profiles。 已存储的配置文件：auth-profiles.json 中该提供商的条目。 如果没有配置显式顺序，OpenClaw 使用轮询顺序：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 模型故障转移" href="/openclaw/concepts/model-failover/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>模型提供商</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 可以使用许多 LLM 提供商。选择一个，进行认证，然后将默认模型设置为 provider/model。
+推荐：Venice（Venice AI） Venice 是我们推荐的 Venice AI 设置，用于隐私优先的推理，并可选择使用 Opus 处理最困难的任务。
+默认：venice/llama-3.3-70b 最佳综合：venice/claude-opus-45（Opus 仍然是最强的） 参见 Venice AI。
+快速开始（两个步骤） 与提供商认证（通常通过 openclaw onboard）。 设置默认模型： { agents: { defaults: { model: { primary: &#34;anthropic/claude-opus-4-5&#34; } } }, } 支持的提供商（入门集） OpenAI（API &#43; Codex） Anthropic（API &#43; Claude Code CLI） OpenRouter Vercel AI Gateway Moonshot AI（Kimi &#43; Kimi Coding） Synthetic OpenCode Zen Z.AI GLM 模型 MiniMax Venice（Venice AI） Amazon Bedrock 有关完整的提供商目录（xAI、Groq、Mistral 等）和高级配置，请参阅模型提供商。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 模型提供商" href="/openclaw/providers/models/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>模型提供商</h2>
+    </header>
+    <div class="entry-content">
+      <p>本页介绍 LLM/模型提供商（不是 WhatsApp/Telegram 等聊天渠道）。 关于模型选择规则，请参阅 /concepts/models。
+快速规则 模型引用使用 provider/model 格式（例如：opencode/claude-opus-4-5）。 如果设置了 agents.defaults.models，它将成为允许列表。 CLI 辅助工具：openclaw onboard、openclaw models list、openclaw models set &lt;provider/model&gt;。 内置提供商（pi-ai 目录） OpenClaw 附带 pi-ai 目录。这些提供商不需要 models.providers 配置；只需设置认证 &#43; 选择模型。
+OpenAI 提供商：openai 认证：OPENAI_API_KEY 示例模型：openai/gpt-5.2 CLI：openclaw onboard --auth-choice openai-api-key { agents: { defaults: { model: { primary: &#34;openai/gpt-5.2&#34; } } }, } Anthropic 提供商：anthropic 认证：ANTHROPIC_API_KEY 或 claude setup-token 示例模型：anthropic/claude-opus-4-5 CLI：openclaw onboard --auth-choice token（粘贴 setup-token）或 openclaw models auth paste-token --provider anthropic { agents: { defaults: { model: { primary: &#34;anthropic/claude-opus-4-5&#34; } } }, } OpenAI Code (Codex) 提供商：openai-codex 认证：OAuth (ChatGPT) 示例模型：openai-codex/gpt-5.2 CLI：openclaw onboard --auth-choice openai-codex 或 openclaw models auth login --provider openai-codex { agents: { defaults: { model: { primary: &#34;openai-codex/gpt-5.2&#34; } } }, } OpenCode Zen 提供商：opencode 认证：OPENCODE_API_KEY（或 OPENCODE_ZEN_API_KEY） 示例模型：opencode/claude-opus-4-5 CLI：openclaw onboard --auth-choice opencode-zen { agents: { defaults: { model: { primary: &#34;opencode/claude-opus-4-5&#34; } } }, } Google Gemini（API 密钥） 提供商：google 认证：GEMINI_API_KEY 示例模型：google/gemini-3-pro-preview CLI：openclaw onboard --auth-choice gemini-api-key Google Vertex、Antigravity 和 Gemini CLI 提供商：google-vertex、google-antigravity、google-gemini-cli 认证：Vertex 使用 gcloud ADC；Antigravity/Gemini CLI 使用各自的认证流程 Antigravity OAuth 作为捆绑插件提供（google-antigravity-auth，默认禁用）。 启用：openclaw plugins enable google-antigravity-auth 登录：openclaw models auth login --provider google-antigravity --set-default Gemini CLI OAuth 作为捆绑插件提供（google-gemini-cli-auth，默认禁用）。 启用：openclaw plugins enable google-gemini-cli-auth 登录：openclaw models auth login --provider google-gemini-cli --set-default 注意：你不需要将客户端 ID 或密钥粘贴到 openclaw.json 中。CLI 登录流程将令牌存储在 Gateway 网关主机的认证配置文件中。 Z.AI (GLM) 提供商：zai 认证：ZAI_API_KEY 示例模型：zai/glm-4.7 CLI：openclaw onboard --auth-choice zai-api-key 别名：z.ai/* 和 z-ai/* 规范化为 zai/* Vercel AI Gateway 提供商：vercel-ai-gateway 认证：AI_GATEWAY_API_KEY 示例模型：vercel-ai-gateway/anthropic/claude-opus-4.5 CLI：openclaw onboard --auth-choice ai-gateway-api-key 其他内置提供商 OpenRouter：openrouter（OPENROUTER_API_KEY） 示例模型：openrouter/anthropic/claude-sonnet-4-5 xAI：xai（XAI_API_KEY） Groq：groq（GROQ_API_KEY） Cerebras：cerebras（CEREBRAS_API_KEY） Cerebras 上的 GLM 模型使用 ID zai-glm-4.7 和 zai-glm-4.6。 OpenAI 兼容的基础 URL：https://api.cerebras.ai/v1。 Mistral：mistral（MISTRAL_API_KEY） GitHub Copilot：github-copilot（COPILOT_GITHUB_TOKEN / GH_TOKEN / GITHUB_TOKEN） 通过 models.providers 配置的提供商（自定义/基础 URL） 使用 models.providers（或 models.json）添加自定义提供商或 OpenAI/Anthropic 兼容的代理。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 模型提供商" href="/openclaw/concepts/model-providers/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>模型 CLI</h2>
+    </header>
+    <div class="entry-content">
+      <p>参见 /concepts/model-failover 了解认证配置文件轮换、冷却时间及其与回退的交互。 快速提供商概述 &#43; 示例：/concepts/model-providers。
+模型选择工作原理 OpenClaw 按以下顺序选择模型：
+主要模型（agents.defaults.model.primary 或 agents.defaults.model）。 agents.defaults.model.fallbacks 中的回退（按顺序）。 提供商认证故障转移在移动到下一个模型之前在提供商内部发生。 相关：
+agents.defaults.models 是 OpenClaw 可使用的模型白名单/目录（加上别名）。 agents.defaults.imageModel 仅在主要模型无法接受图像时使用。 每个智能体的默认值可以通过 agents.list[].model 加绑定覆盖 agents.defaults.model（参见 /concepts/multi-agent）。 快速模型推荐（经验之谈） GLM：在编程/工具调用方面稍好。 MiniMax：在写作和氛围方面更好。 设置向导（推荐） 如果你不想手动编辑配置，请运行新手引导向导：
+openclaw onboard 它可以为常见提供商设置模型 &#43; 认证，包括 OpenAI Code（Codex）订阅（OAuth）和 Anthropic（推荐使用 API 密钥；也支持 claude setup-token）。
+配置键（概述） agents.defaults.model.primary 和 agents.defaults.model.fallbacks agents.defaults.imageModel.primary 和 agents.defaults.imageModel.fallbacks agents.defaults.models（白名单 &#43; 别名 &#43; 提供商参数） models.providers（写入 models.json 的自定义提供商） 模型引用会规范化为小写。提供商别名如 z.ai/* 会规范化为 zai/*。
+提供商配置示例（包括 OpenCode Zen）在 /gateway/configuration。
+“Model is not allowed”（以及为什么回复停止） 如果设置了 agents.defaults.models，它将成为 /model 和会话覆盖的白名单。当用户选择不在该白名单中的模型时，OpenClaw 返回：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 模型 CLI" href="/openclaw/concepts/models/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/4/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/6/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

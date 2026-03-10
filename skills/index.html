@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Skills解读 | CLAW博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="OpenClaw 技能生态详解、使用指南和开发教程">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/skills/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/skills/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/skills/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Skills解读">
+  <meta property="og:description" content="OpenClaw 技能生态详解、使用指南和开发教程">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Skills解读">
+<meta name="twitter:description" content="OpenClaw 技能生态详解、使用指南和开发教程">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Skills解读",
+      "item": "/skills/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span class="active">Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="/">Home</a></div>
+  <h1>
+    Skills解读
+  </h1>
+  <div class="post-description">
+    OpenClaw 技能生态详解、使用指南和开发教程
+  </div>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">OpenClaw Skills 是什么？怎么用？
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw Skills 是什么？ Skills 是 OpenClaw 生态的核心扩展机制，类似于 VS Code 的插件、Chrome 的扩展程序，是可插拔的能力模块，可以快速为你的 AI 代理团队增加各种专业能力，无需修改核心框架代码。
+核心特性 1. 即插即用 安装即可使用，无需复杂配置，每个 Skill 都封装了完整的领域知识、执行逻辑和交互流程，代理可以直接调用 Skill 的能力完成特定领域的任务。
+2. 领域专精 每个 Skill 都专注于解决特定领域的问题，从代码开发到云原生运维，从内容创作到数据分析，覆盖绝大多数常见工作场景，你可以按需选择安装。
+3. 社区驱动 Skill 生态完全开放，任何人都可以开发和发布自己的 Skill，共享到 ClawHub 市场供所有人使用，同时也可以自由修改和定制已有的 Skill 满足个性化需求。
+4. 版本管理 内置完整的版本管理机制，支持安装指定版本、更新到最新版本、回滚到历史版本，保证依赖的稳定性和兼容性。
+5. 权限可控 每个 Skill 都有明确的权限声明，你可以精确控制 Skill 可以访问的资源和执行的操作范围，避免安全风险。
+常见 Skill 类型 开发工具类 各种编程语言和框架的开发支持（Rust/Go/Python/Vue等） 代码审查、测试、部署自动化 数据库设计、API 开发、系统架构设计 运营效率类 社交媒体运营、内容创作、SEO优化 数据分析、报表生成、用户反馈处理 邮件处理、日程管理、会议纪要生成 运维安全类 服务器运维、监控告警、故障排查 安全审计、漏洞扫描、合规检查 备份恢复、扩容缩容、成本优化 行业定制类 电商运营、客服自动化、订单处理 金融数据分析、风险控制、报表生成 医疗数据处理、法律文书生成、教育内容创作 使用方式 安装 Skill 通过 ClawHub 市场一键安装：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 04:05:00 +0800 +0800'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to OpenClaw Skills 是什么？怎么用？" href="/skills/what-are-skills/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">OpenClaw 必备 Skills 清单：2026 年最值得安装的 10 个技能
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>什么是 OpenClaw Skill OpenClaw Skill 是可以插件式安装到你的 AI Agent 上的能力扩展模块。安装 Skill 之后，OpenClaw 就获得了该 Skill 所赋予的工具——例如，安装了 browser-use 之后，你可以直接让 Agent 打开网页、点击按钮、截图；安装了 calendar 之后，Agent 可以查询和创建你的日程事件。
+Skills 的底层协议基于 MCP（Model Context Protocol）——一个由 Anthropic 主导设计的开放标准，用于规范化 AI 模型与外部工具之间的通信方式。MCP 定义了工具描述、调用格式和返回值结构，使得不同厂商开发的 Skill 可以无缝集成到任何兼容 MCP 的 Agent 框架中。OpenClaw 完全兼容 MCP，因此你不仅可以使用官方 Skills，还可以安装社区开发的第三方 Skill，甚至自己编写。
+与传统的插件系统不同，MCP 的优势在于 工具描述对 LLM 可读——AI 模型能够理解每个工具的功能和参数，从而智能地决定何时调用、如何调用，而无需你手动触发。
+如何安装 Skill OpenClaw 提供了统一的 Skill 管理命令，安装、卸载、列出 Skill 都非常简单：
+# 安装一个 Skill openclaw skill add &lt;skill-name&gt; # 列出已安装的 Skills openclaw skill list # 查看某个 Skill 的详细信息 openclaw skill info &lt;skill-name&gt; # 卸载一个 Skill openclaw skill remove &lt;skill-name&gt; # 更新所有 Skill 到最新版本 openclaw skill update --all 安装完 Skill 后，重启 OpenClaw（或运行 openclaw reload），Agent 即可立即使用新的工具能力。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-09 08:05:00 +0800 +0800'>March 9, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to OpenClaw 必备 Skills 清单：2026 年最值得安装的 10 个技能" href="/skills/openclaw-essential-skills/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

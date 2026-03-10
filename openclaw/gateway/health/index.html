@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>健康检查（CLI） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="验证渠道连接的简短指南，无需猜测。
+快速检查
+
+openclaw status — 本地摘要：Gateway 网关可达性/模式、更新提示、已链接渠道认证时长、会话 &#43; 最近活动。
+openclaw status --all — 完整本地诊断（只读、彩色、可安全粘贴用于调试）。
+openclaw status --deep — 还会探测运行中的 Gateway 网关（支持时进行每渠道探测）。
+openclaw health --json — 向运行中的 Gateway 网关请求完整健康快照（仅 WS；不直接访问 Baileys 套接字）。
+在 WhatsApp/WebChat 中单独发送 /status 消息可获取状态回复，而不调用智能体。
+日志：跟踪 /tmp/openclaw/openclaw-*.log 并过滤 web-heartbeat、web-reconnect、web-auto-reply、web-inbound。
+
+深度诊断
+
+磁盘上的凭证：ls -l ~/.openclaw/credentials/whatsapp/&lt;accountId&gt;/creds.json（mtime 应该是最近的）。
+会话存储：ls -l ~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json（路径可在配置中覆盖）。计数和最近收件人通过 status 显示。
+重新链接流程：当日志中出现状态码 409–515 或 loggedOut 时，执行 openclaw channels logout &amp;&amp; openclaw channels login --verbose。（注意：配对后状态 515 时 QR 登录流程会自动重启一次。）
+
+当出现故障时
+
+logged out 或状态 409–515 → 使用 openclaw channels logout 然后 openclaw channels login 重新链接。
+Gateway 网关不可达 → 启动它：openclaw gateway --port 18789（如果端口被占用则使用 --force）。
+没有入站消息 → 确认已链接的手机在线且发送者被允许（channels.whatsapp.allowFrom）；对于群聊，确保允许列表 &#43; 提及规则匹配（channels.whatsapp.groups、agents.list[].groupChat.mentionPatterns）。
+
+专用&quot;health&quot;命令
+openclaw health --json 向运行中的 Gateway 网关请求其健康快照（CLI 不直接访问渠道套接字）。它报告已链接凭证/认证时长（如可用）、每渠道探测摘要、会话存储摘要和探测持续时间。如果 Gateway 网关不可达或探测失败/超时，它以非零退出。使用 --timeout &lt;ms&gt; 覆盖默认的 10 秒。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/health/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/health/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/health/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="健康检查（CLI）">
+  <meta property="og:description" content="验证渠道连接的简短指南，无需猜测。
+快速检查 openclaw status — 本地摘要：Gateway 网关可达性/模式、更新提示、已链接渠道认证时长、会话 &#43; 最近活动。 openclaw status --all — 完整本地诊断（只读、彩色、可安全粘贴用于调试）。 openclaw status --deep — 还会探测运行中的 Gateway 网关（支持时进行每渠道探测）。 openclaw health --json — 向运行中的 Gateway 网关请求完整健康快照（仅 WS；不直接访问 Baileys 套接字）。 在 WhatsApp/WebChat 中单独发送 /status 消息可获取状态回复，而不调用智能体。 日志：跟踪 /tmp/openclaw/openclaw-*.log 并过滤 web-heartbeat、web-reconnect、web-auto-reply、web-inbound。 深度诊断 磁盘上的凭证：ls -l ~/.openclaw/credentials/whatsapp/&lt;accountId&gt;/creds.json（mtime 应该是最近的）。 会话存储：ls -l ~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json（路径可在配置中覆盖）。计数和最近收件人通过 status 显示。 重新链接流程：当日志中出现状态码 409–515 或 loggedOut 时，执行 openclaw channels logout &amp;&amp; openclaw channels login --verbose。（注意：配对后状态 515 时 QR 登录流程会自动重启一次。） 当出现故障时 logged out 或状态 409–515 → 使用 openclaw channels logout 然后 openclaw channels login 重新链接。 Gateway 网关不可达 → 启动它：openclaw gateway --port 18789（如果端口被占用则使用 --force）。 没有入站消息 → 确认已链接的手机在线且发送者被允许（channels.whatsapp.allowFrom）；对于群聊，确保允许列表 &#43; 提及规则匹配（channels.whatsapp.groups、agents.list[].groupChat.mentionPatterns）。 专用&#34;health&#34;命令 openclaw health --json 向运行中的 Gateway 网关请求其健康快照（CLI 不直接访问渠道套接字）。它报告已链接凭证/认证时长（如可用）、每渠道探测摘要、会话存储摘要和探测持续时间。如果 Gateway 网关不可达或探测失败/超时，它以非零退出。使用 --timeout &lt;ms&gt; 覆盖默认的 10 秒。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="健康检查（CLI）">
+<meta name="twitter:description" content="验证渠道连接的简短指南，无需猜测。
+快速检查
+
+openclaw status — 本地摘要：Gateway 网关可达性/模式、更新提示、已链接渠道认证时长、会话 &#43; 最近活动。
+openclaw status --all — 完整本地诊断（只读、彩色、可安全粘贴用于调试）。
+openclaw status --deep — 还会探测运行中的 Gateway 网关（支持时进行每渠道探测）。
+openclaw health --json — 向运行中的 Gateway 网关请求完整健康快照（仅 WS；不直接访问 Baileys 套接字）。
+在 WhatsApp/WebChat 中单独发送 /status 消息可获取状态回复，而不调用智能体。
+日志：跟踪 /tmp/openclaw/openclaw-*.log 并过滤 web-heartbeat、web-reconnect、web-auto-reply、web-inbound。
+
+深度诊断
+
+磁盘上的凭证：ls -l ~/.openclaw/credentials/whatsapp/&lt;accountId&gt;/creds.json（mtime 应该是最近的）。
+会话存储：ls -l ~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json（路径可在配置中覆盖）。计数和最近收件人通过 status 显示。
+重新链接流程：当日志中出现状态码 409–515 或 loggedOut 时，执行 openclaw channels logout &amp;&amp; openclaw channels login --verbose。（注意：配对后状态 515 时 QR 登录流程会自动重启一次。）
+
+当出现故障时
+
+logged out 或状态 409–515 → 使用 openclaw channels logout 然后 openclaw channels login 重新链接。
+Gateway 网关不可达 → 启动它：openclaw gateway --port 18789（如果端口被占用则使用 --force）。
+没有入站消息 → 确认已链接的手机在线且发送者被允许（channels.whatsapp.allowFrom）；对于群聊，确保允许列表 &#43; 提及规则匹配（channels.whatsapp.groups、agents.list[].groupChat.mentionPatterns）。
+
+专用&quot;health&quot;命令
+openclaw health --json 向运行中的 Gateway 网关请求其健康快照（CLI 不直接访问渠道套接字）。它报告已链接凭证/认证时长（如可用）、每渠道探测摘要、会话存储摘要和探测持续时间。如果 Gateway 网关不可达或探测失败/超时，它以非零退出。使用 --timeout &lt;ms&gt; 覆盖默认的 10 秒。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "健康检查（CLI）",
+      "item": "/openclaw/gateway/health/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "健康检查（CLI）",
+  "name": "健康检查（CLI）",
+  "description": "验证渠道连接的简短指南，无需猜测。\n快速检查 openclaw status — 本地摘要：Gateway 网关可达性/模式、更新提示、已链接渠道认证时长、会话 + 最近活动。 openclaw status --all — 完整本地诊断（只读、彩色、可安全粘贴用于调试）。 openclaw status --deep — 还会探测运行中的 Gateway 网关（支持时进行每渠道探测）。 openclaw health --json — 向运行中的 Gateway 网关请求完整健康快照（仅 WS；不直接访问 Baileys 套接字）。 在 WhatsApp/WebChat 中单独发送 /status 消息可获取状态回复，而不调用智能体。 日志：跟踪 /tmp/openclaw/openclaw-*.log 并过滤 web-heartbeat、web-reconnect、web-auto-reply、web-inbound。 深度诊断 磁盘上的凭证：ls -l ~/.openclaw/credentials/whatsapp/\u0026lt;accountId\u0026gt;/creds.json（mtime 应该是最近的）。 会话存储：ls -l ~/.openclaw/agents/\u0026lt;agentId\u0026gt;/sessions/sessions.json（路径可在配置中覆盖）。计数和最近收件人通过 status 显示。 重新链接流程：当日志中出现状态码 409–515 或 loggedOut 时，执行 openclaw channels logout \u0026amp;\u0026amp; openclaw channels login --verbose。（注意：配对后状态 515 时 QR 登录流程会自动重启一次。） 当出现故障时 logged out 或状态 409–515 → 使用 openclaw channels logout 然后 openclaw channels login 重新链接。 Gateway 网关不可达 → 启动它：openclaw gateway --port 18789（如果端口被占用则使用 --force）。 没有入站消息 → 确认已链接的手机在线且发送者被允许（channels.whatsapp.allowFrom）；对于群聊，确保允许列表 + 提及规则匹配（channels.whatsapp.groups、agents.list[].groupChat.mentionPatterns）。 专用\u0026quot;health\u0026quot;命令 openclaw health --json 向运行中的 Gateway 网关请求其健康快照（CLI 不直接访问渠道套接字）。它报告已链接凭证/认证时长（如可用）、每渠道探测摘要、会话存储摘要和探测持续时间。如果 Gateway 网关不可达或探测失败/超时，它以非零退出。使用 --timeout \u0026lt;ms\u0026gt; 覆盖默认的 10 秒。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "验证渠道连接的简短指南，无需猜测。\n快速检查 openclaw status — 本地摘要：Gateway 网关可达性/模式、更新提示、已链接渠道认证时长、会话 + 最近活动。 openclaw status --all — 完整本地诊断（只读、彩色、可安全粘贴用于调试）。 openclaw status --deep — 还会探测运行中的 Gateway 网关（支持时进行每渠道探测）。 openclaw health --json — 向运行中的 Gateway 网关请求完整健康快照（仅 WS；不直接访问 Baileys 套接字）。 在 WhatsApp/WebChat 中单独发送 /status 消息可获取状态回复，而不调用智能体。 日志：跟踪 /tmp/openclaw/openclaw-*.log 并过滤 web-heartbeat、web-reconnect、web-auto-reply、web-inbound。 深度诊断 磁盘上的凭证：ls -l ~/.openclaw/credentials/whatsapp//creds.json（mtime 应该是最近的）。 会话存储：ls -l ~/.openclaw/agents//sessions/sessions.json（路径可在配置中覆盖）。计数和最近收件人通过 status 显示。 重新链接流程：当日志中出现状态码 409–515 或 loggedOut 时，执行 openclaw channels logout \u0026\u0026 openclaw channels login --verbose。（注意：配对后状态 515 时 QR 登录流程会自动重启一次。） 当出现故障时 logged out 或状态 409–515 → 使用 openclaw channels logout 然后 openclaw channels login 重新链接。 Gateway 网关不可达 → 启动它：openclaw gateway --port 18789（如果端口被占用则使用 --force）。 没有入站消息 → 确认已链接的手机在线且发送者被允许（channels.whatsapp.allowFrom）；对于群聊，确保允许列表 + 提及规则匹配（channels.whatsapp.groups、agents.list[].groupChat.mentionPatterns）。 专用\"health\"命令 openclaw health --json 向运行中的 Gateway 网关请求其健康快照（CLI 不直接访问渠道套接字）。它报告已链接凭证/认证时长（如可用）、每渠道探测摘要、会话存储摘要和探测持续时间。如果 Gateway 网关不可达或探测失败/超时，它以非零退出。使用 --timeout 覆盖默认的 10 秒。\n",
+  "wordCount" : "110",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/health/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      健康检查（CLI）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e6%a3%80%e6%9f%a5" aria-label="快速检查">快速检查</a></li>
+                <li>
+                    <a href="#%e6%b7%b1%e5%ba%a6%e8%af%8a%e6%96%ad" aria-label="深度诊断">深度诊断</a></li>
+                <li>
+                    <a href="#%e5%bd%93%e5%87%ba%e7%8e%b0%e6%95%85%e9%9a%9c%e6%97%b6" aria-label="当出现故障时">当出现故障时</a></li>
+                <li>
+                    <a href="#%e4%b8%93%e7%94%a8health%e5%91%bd%e4%bb%a4" aria-label="专用&quot;health&quot;命令">专用&quot;health&quot;命令</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>验证渠道连接的简短指南，无需猜测。</p>
+<h2 id="快速检查">快速检查<a hidden class="anchor" aria-hidden="true" href="#快速检查">#</a></h2>
+<ul>
+<li><code>openclaw status</code> — 本地摘要：Gateway 网关可达性/模式、更新提示、已链接渠道认证时长、会话 + 最近活动。</li>
+<li><code>openclaw status --all</code> — 完整本地诊断（只读、彩色、可安全粘贴用于调试）。</li>
+<li><code>openclaw status --deep</code> — 还会探测运行中的 Gateway 网关（支持时进行每渠道探测）。</li>
+<li><code>openclaw health --json</code> — 向运行中的 Gateway 网关请求完整健康快照（仅 WS；不直接访问 Baileys 套接字）。</li>
+<li>在 WhatsApp/WebChat 中单独发送 <code>/status</code> 消息可获取状态回复，而不调用智能体。</li>
+<li>日志：跟踪 <code>/tmp/openclaw/openclaw-*.log</code> 并过滤 <code>web-heartbeat</code>、<code>web-reconnect</code>、<code>web-auto-reply</code>、<code>web-inbound</code>。</li>
+</ul>
+<h2 id="深度诊断">深度诊断<a hidden class="anchor" aria-hidden="true" href="#深度诊断">#</a></h2>
+<ul>
+<li>磁盘上的凭证：<code>ls -l ~/.openclaw/credentials/whatsapp/&lt;accountId&gt;/creds.json</code>（mtime 应该是最近的）。</li>
+<li>会话存储：<code>ls -l ~/.openclaw/agents/&lt;agentId&gt;/sessions/sessions.json</code>（路径可在配置中覆盖）。计数和最近收件人通过 <code>status</code> 显示。</li>
+<li>重新链接流程：当日志中出现状态码 409–515 或 <code>loggedOut</code> 时，执行 <code>openclaw channels logout &amp;&amp; openclaw channels login --verbose</code>。（注意：配对后状态 515 时 QR 登录流程会自动重启一次。）</li>
+</ul>
+<h2 id="当出现故障时">当出现故障时<a hidden class="anchor" aria-hidden="true" href="#当出现故障时">#</a></h2>
+<ul>
+<li><code>logged out</code> 或状态 409–515 → 使用 <code>openclaw channels logout</code> 然后 <code>openclaw channels login</code> 重新链接。</li>
+<li>Gateway 网关不可达 → 启动它：<code>openclaw gateway --port 18789</code>（如果端口被占用则使用 <code>--force</code>）。</li>
+<li>没有入站消息 → 确认已链接的手机在线且发送者被允许（<code>channels.whatsapp.allowFrom</code>）；对于群聊，确保允许列表 + 提及规则匹配（<code>channels.whatsapp.groups</code>、<code>agents.list[].groupChat.mentionPatterns</code>）。</li>
+</ul>
+<h2 id="专用health命令">专用&quot;health&quot;命令<a hidden class="anchor" aria-hidden="true" href="#专用health命令">#</a></h2>
+<p><code>openclaw health --json</code> 向运行中的 Gateway 网关请求其健康快照（CLI 不直接访问渠道套接字）。它报告已链接凭证/认证时长（如可用）、每渠道探测摘要、会话存储摘要和探测持续时间。如果 Gateway 网关不可达或探测失败/超时，它以非零退出。使用 <code>--timeout &lt;ms&gt;</code> 覆盖默认的 10 秒。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/concepts/usage-tracking/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>使用量跟踪</span>
+  </a>
+  <a class="next" href="/openclaw/start/getting-started/">
+    <span class="title">Next »</span>
+    <br>
+    <span>入门指南</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

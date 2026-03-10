@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>智能体引导</h2>
+    </header>
+    <div class="entry-content">
+      <p>该页面是英文文档的中文占位版本，完整内容请先参考英文版：Agent Bootstrapping。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 智能体引导" href="/openclaw/start/bootstrapping/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>智能体工作区</h2>
+    </header>
+    <div class="entry-content">
+      <p>工作区是智能体的家。它是文件工具和工作区上下文使用的唯一工作目录。请保持其私密性并将其视为记忆。
+这与 ~/.openclaw/ 是分开的，后者存储配置、凭证和会话。
+重要： 工作区是默认 cwd，而不是硬性沙箱。工具会根据工作区解析相对路径，但绝对路径仍然可以访问主机上的其他位置，除非启用了沙箱隔离。如果你需要隔离，请使用 agents.defaults.sandbox（和/或每智能体沙箱配置）。 当启用沙箱隔离且 workspaceAccess 不是 &#34;rw&#34; 时，工具在 ~/.openclaw/sandboxes 下的沙箱工作区内操作，而不是你的主机工作区。
+默认位置 默认：~/.openclaw/workspace 如果设置了 OPENCLAW_PROFILE 且不是 &#34;default&#34;，默认值变为 ~/.openclaw/workspace-&lt;profile&gt;。 在 ~/.openclaw/openclaw.json 中覆盖： { agent: { workspace: &#34;~/.openclaw/workspace&#34;, }, } openclaw onboard、openclaw configure 或 openclaw setup 将创建工作区并在缺失时填充引导文件。
+如果你已经自己管理工作区文件，可以禁用引导文件创建：
+{ agent: { skipBootstrap: true } } 额外的工作区文件夹 旧版安装可能创建了 ~/openclaw。保留多个工作区目录可能会导致混乱的认证或状态漂移，因为同一时间只有一个工作区是活动的。
+建议： 保持单个活动工作区。如果你不再使用额外的文件夹，请归档或移至废纸篓（例如 trash ~/openclaw）。 如果你有意保留多个工作区，请确保 agents.defaults.workspace 指向活动的那个。
+openclaw doctor 在检测到额外工作区目录时会发出警告。
+工作区文件映射（每个文件的含义） 这些是 OpenClaw 在工作区内期望的标准文件：
+AGENTS.md
+智能体的操作指南以及它应该如何使用记忆。 在每个会话开始时加载。 适合放置规则、优先级和&#34;如何行为&#34;的详细信息。 SOUL.md
+人设、语气和边界。 每个会话加载。 USER.md
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 智能体工作区" href="/openclaw/concepts/agent-workspace/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>时区</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 对时间戳进行标准化，使模型看到单一的参考时间。
+消息信封（默认为本地时间） 入站消息被包装在如下信封中：
+[Provider ... 2026-01-05 16:26 PST] message text 信封中的时间戳默认为主机本地时间，精确到分钟。
+你可以通过以下配置进行覆盖：
+{ agents: { defaults: { envelopeTimezone: &#34;local&#34;, // &#34;utc&#34; | &#34;local&#34; | &#34;user&#34; | IANA 时区 envelopeTimestamp: &#34;on&#34;, // &#34;on&#34; | &#34;off&#34; envelopeElapsed: &#34;on&#34;, // &#34;on&#34; | &#34;off&#34; }, }, } envelopeTimezone: &#34;utc&#34; 使用 UTC。 envelopeTimezone: &#34;user&#34; 使用 agents.defaults.userTimezone（回退到主机时区）。 使用显式 IANA 时区（例如 &#34;Europe/Vienna&#34;）可设置固定偏移量。 envelopeTimestamp: &#34;off&#34; 从信封头中移除绝对时间戳。 envelopeElapsed: &#34;off&#34; 移除已用时间后缀（&#43;2m 样式）。 示例 本地时间（默认）：
+[Signal Alice &#43;1555 2026-01-18 00:19 PST] hello 固定时区：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 时区" href="/openclaw/concepts/timezone/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>日期与时间</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 默认使用主机本地时间作为传输时间戳，并且仅在系统提示词中使用用户时区。 提供商时间戳会被保留，因此工具保持其原生语义（当前时间可通过 session_status 获取）。
+消息信封（默认为本地时间） 入站消息会附带一个时间戳（分钟精度）：
+[Provider ... 2026-01-05 16:26 PST] message text 此信封时间戳默认为主机本地时间，与提供商时区无关。
+你可以覆盖此行为：
+{ agents: { defaults: { envelopeTimezone: &#34;local&#34;, // &#34;utc&#34; | &#34;local&#34; | &#34;user&#34; | IANA 时区 envelopeTimestamp: &#34;on&#34;, // &#34;on&#34; | &#34;off&#34; envelopeElapsed: &#34;on&#34;, // &#34;on&#34; | &#34;off&#34; }, }, } envelopeTimezone: &#34;utc&#34; 使用 UTC。 envelopeTimezone: &#34;local&#34; 使用主机时区。 envelopeTimezone: &#34;user&#34; 使用 agents.defaults.userTimezone（回退到主机时区）。 使用显式 IANA 时区（例如 &#34;America/Chicago&#34;）指定固定时区。 envelopeTimestamp: &#34;off&#34; 从信封头中移除绝对时间戳。 envelopeElapsed: &#34;off&#34; 移除已用时间后缀（&#43;2m 样式）。 示例 本地时间（默认）：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 日期与时间" href="/openclaw/date-time/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>日志（macOS）</h2>
+    </header>
+    <div class="entry-content">
+      <p>滚动诊断文件日志（Debug 面板） OpenClaw 通过 swift-log（默认使用统一日志）路由 macOS 应用日志，并且在需要持久化捕获时可以将本地轮转文件日志写入磁盘。
+详细级别：Debug 面板 → Logs → App logging → Verbosity 启用：Debug 面板 → Logs → App logging → “Write rolling diagnostics log (JSONL)” 位置：~/Library/Logs/OpenClaw/diagnostics.jsonl（自动轮转；旧文件以 .1、.2、… 为后缀） 清除：Debug 面板 → Logs → App logging → “Clear” 注意事项：
+此功能默认关闭。仅在主动调试时启用。 该文件包含敏感信息；分享前请先审查内容。 macOS 上统一日志的隐私数据 统一日志会屏蔽大部分负载内容，除非子系统选择启用 privacy -off。根据 Peter 关于 macOS 日志隐私机制（2025）的文章，这通过 /Library/Preferences/Logging/Subsystems/ 中以子系统名称为键的 plist 文件来控制。只有新的日志条目才会应用该标志，因此请在复现问题之前启用它。
+为 OpenClaw 启用（bot.molt） 先将 plist 写入临时文件，然后以 root 身份原子性地安装： cat &lt;&lt;&#39;EOF&#39; &gt;/tmp/bot.molt.plist &lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt; &lt;!DOCTYPE plist PUBLIC &#34;-//Apple//DTD PLIST 1.0//EN&#34; &#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;&gt; &lt;plist version=&#34;1.0&#34;&gt; &lt;dict&gt; &lt;key&gt;DEFAULT-OPTIONS&lt;/key&gt; &lt;dict&gt; &lt;key&gt;Enable-Private-Data&lt;/key&gt; &lt;true/&gt; &lt;/dict&gt; &lt;/dict&gt; &lt;/plist&gt; EOF sudo install -m 644 -o root -g wheel /tmp/bot.molt.plist /Library/Preferences/Logging/Subsystems/bot.molt.plist 无需重启；logd 会很快检测到该文件，但只有新的日志行才会包含隐私负载。 使用现有的辅助脚本查看更丰富的输出，例如 ./scripts/clawlog.sh --category WebChat --last 5m。 调试后禁用 移除覆盖配置：sudo rm /Library/Preferences/Logging/Subsystems/bot.molt.plist。 可选择运行 sudo log config --reload 强制 logd 立即丢弃覆盖配置。 请注意此数据可能包含电话号码和消息正文；仅在确实需要额外详细信息时才保留该 plist 文件。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 日志（macOS）" href="/openclaw/platforms/mac/logging/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>日志</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 在两个地方记录日志：
+文件日志（JSON 行）由 Gateway 网关写入。 控制台输出显示在终端和控制 UI 中。 本页说明日志存放位置、如何读取日志以及如何配置日志级别和格式。
+日志存放位置 默认情况下，Gateway 网关在以下位置写入滚动日志文件：
+/tmp/openclaw/openclaw-YYYY-MM-DD.log
+日期使用 Gateway 网关主机的本地时区。
+你可以在 ~/.openclaw/openclaw.json 中覆盖此设置：
+{ &#34;logging&#34;: { &#34;file&#34;: &#34;/path/to/openclaw.log&#34; } } 如何读取日志 CLI：实时跟踪（推荐） 使用 CLI 通过 RPC 跟踪 Gateway 网关日志文件：
+openclaw logs --follow 输出模式：
+TTY 会话：美观、彩色、结构化的日志行。 非 TTY 会话：纯文本。 --json：行分隔的 JSON（每行一个日志事件）。 --plain：在 TTY 会话中强制纯文本。 --no-color：禁用 ANSI 颜色。 在 JSON 模式下，CLI 输出带 type 标签的对象：
+meta：流元数据（文件、游标、大小） log：解析的日志条目 notice：截断/轮转提示 raw：未解析的日志行 如果 Gateway 网关无法访问，CLI 会打印一个简短提示运行：
+openclaw doctor 控制 UI（Web） 控制 UI 的日志标签页使用 logs.tail 跟踪相同的文件。 参见 /web/control-ui 了解如何打开它。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 日志" href="/openclaw/logging/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>日志</h2>
+    </header>
+    <div class="entry-content">
+      <p>面向用户的概览（CLI &#43; Control UI &#43; 配置），请参阅 /logging。
+OpenClaw 有两个日志&#34;界面&#34;：
+控制台输出（你在终端 / Debug UI 中看到的内容）。 文件日志（JSON 行）由 Gateway 网关日志记录器写入。 基于文件的日志记录器 默认滚动日志文件位于 /tmp/openclaw/ 下（每天一个文件）：openclaw-YYYY-MM-DD.log 日期使用 Gateway 网关主机的本地时区。 日志文件路径和级别可以通过 ~/.openclaw/openclaw.json 配置： logging.file logging.level 文件格式是每行一个 JSON 对象。
+Control UI 的 Logs 标签页通过 Gateway 网关（logs.tail）尾随此文件。CLI 也可以这样做：
+openclaw logs --follow Verbose 与日志级别
+文件日志完全由 logging.level 控制。 --verbose 仅影响控制台详细程度（和 WS 日志样式）；它不会提高文件日志级别。 要在文件日志中捕获仅 verbose 的详细信息，请将 logging.level 设置为 debug 或 trace。 控制台捕获 CLI 捕获 console.log/info/warn/error/debug/trace 并将它们写入文件日志，同时仍打印到 stdout/stderr。
+你可以独立调整控制台详细程度：
+logging.consoleLevel（默认 info） logging.consoleStyle（pretty | compact | json） 工具摘要脱敏 详细工具摘要（例如 🛠️ Exec: ...）可以在进入控制台流之前屏蔽敏感令牌。这仅限工具，不会更改文件日志。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 日志" href="/openclaw/gateway/logging/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>新手引导向导（CLI）</h2>
+    </header>
+    <div class="entry-content">
+      <p>新手引导向导是在 macOS、Linux 或 Windows（通过 WSL2；强烈推荐）上设置 OpenClaw 的推荐方式。 它可以在一个引导式流程中配置本地 Gateway 网关或远程 Gateway 网关连接，以及渠道、Skills 和工作区默认值。
+主要入口：
+openclaw onboard 最快开始聊天的方式：打开控制界面（无需设置渠道）。运行 openclaw dashboard 并在浏览器中聊天。文档：控制面板。
+后续重新配置：
+openclaw configure 推荐：设置 Brave Search API 密钥，以便智能体可以使用 web_search（web_fetch 无需密钥即可使用）。最简单的方式：openclaw configure --section web，它会存储 tools.web.search.apiKey。文档：Web 工具。
+快速开始 vs 高级 向导从快速开始（默认值）vs 高级（完全控制）开始。
+快速开始保持默认值：
+本地 Gateway 网关（loopback） 默认工作区（或现有工作区） Gateway 网关端口 18789 Gateway 网关认证 Token（自动生成，即使在 loopback 上） Tailscale 暴露 关闭 Telegram &#43; WhatsApp 私信默认使用允许列表（系统会提示你输入电话号码） 高级暴露每个步骤（模式、工作区、Gateway 网关、渠道、守护进程、Skills）。
+向导做了什么 **本地模式（默认）**引导你完成：
+模型/认证（OpenAI Code (Codex) 订阅 OAuth、Anthropic API 密钥（推荐）或 setup-token（粘贴），以及 MiniMax/GLM/Moonshot/AI Gateway 选项） 工作区位置 &#43; 引导文件 Gateway 网关设置（端口/绑定/认证/tailscale） 提供商（Telegram、WhatsApp、Discord、Google Chat、Mattermost（插件）、Signal） 守护进程安装（LaunchAgent / systemd 用户单元） 健康检查 Skills（推荐） 远程模式仅配置本地客户端连接到其他位置的 Gateway 网关。 它不会在远程主机上安装或更改任何内容。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 新手引导向导（CLI）" href="/openclaw/start/wizard/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>新手引导（macOS 应用）</h2>
+    </header>
+    <div class="entry-content">
+      <p>本文档描述当前的首次运行新手引导流程。目标是流畅的&#34;第 0 天&#34;体验：选择 Gateway 网关运行位置、连接认证、运行向导，然后让智能体自行引导。
+页面顺序（当前） 欢迎 &#43; 安全提示 Gateway 网关选择（本地 / 远程 / 稍后配置） 认证（Anthropic OAuth） — 仅限本地 设置向导（Gateway 网关驱动） 权限（TCC 提示） CLI（可选） 新手引导聊天（专用会话） 就绪 1) 欢迎 &#43; 安全提示 阅读显示的安全提示并相应决定。
+2) 本地 vs 远程 Gateway 网关在哪里运行？
+本地（此 Mac）： 新手引导可以在本地运行 OAuth 流程并写入凭证。 远程（通过 SSH/Tailnet）： 新手引导不会在本地运行 OAuth；凭证必须存在于 Gateway 网关主机上。 稍后配置： 跳过设置并保持应用未配置状态。 Gateway 网关认证提示：
+向导现在即使对于 loopback 也会生成令牌，因此本地 WS 客户端必须认证。 如果你禁用认证，任何本地进程都可以连接；仅在完全受信任的机器上使用。 对于多机器访问或非 loopback 绑定，使用令牌。 3) 仅限本地的认证（Anthropic OAuth） macOS 应用支持 Anthropic OAuth（Claude Pro/Max）。流程：
+打开浏览器进行 OAuth（PKCE） 要求用户粘贴 code#state 值 将凭证写入 ~/.openclaw/credentials/oauth.json 其他提供商（OpenAI、自定义 API）目前通过环境变量或配置文件配置。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 新手引导（macOS 应用）" href="/openclaw/start/onboarding/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>新手引导 &#43; 配置协议</h2>
+    </header>
+    <div class="entry-content">
+      <p>目的：CLI、macOS 应用和 Web UI 之间共享的新手引导 &#43; 配置界面。
+组件 向导引擎（共享会话 &#43; 提示 &#43; 新手引导状态）。 CLI 新手引导使用与 UI 客户端相同的向导流程。 Gateway 网关 RPC 公开向导 &#43; 配置模式端点。 macOS 新手引导使用向导步骤模型。 Web UI 从 JSON Schema &#43; UI 提示渲染配置表单。 Gateway 网关 RPC wizard.start 参数：{ mode?: &#34;local&#34;|&#34;remote&#34;, workspace?: string } wizard.next 参数：{ sessionId, answer?: { stepId, value? } } wizard.cancel 参数：{ sessionId } wizard.status 参数：{ sessionId } config.schema 参数：{} 响应（结构）
+向导：{ sessionId, done, step?, status?, error? } 配置模式：{ schema, uiHints, version, generatedAt } UI 提示 uiHints 按路径键入；可选元数据（label/help/group/order/advanced/sensitive/placeholder）。 敏感字段渲染为密码输入；无脱敏层。 不支持的模式节点回退到原始 JSON 编辑器。 注意 本文档是跟踪新手引导/配置协议重构的唯一位置。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 新手引导 &#43; 配置协议" href="/openclaw/experiments/onboarding-config-protocol/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/6/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/8/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

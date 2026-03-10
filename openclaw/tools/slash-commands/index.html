@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>斜杠命令 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="命令由 Gateway 网关处理。大多数命令必须作为以 / 开头的独立消息发送。
+仅主机的 bash 聊天命令使用 ! &lt;cmd&gt;（/bash &lt;cmd&gt; 是别名）。
+有两个相关系统：
+
+命令：独立的 /... 消息。
+指令：/think、/verbose、/reasoning、/elevated、/exec、/model、/queue。
+
+指令在模型看到消息之前被剥离。
+在普通聊天消息中（不是仅指令消息），它们被视为&quot;内联提示&quot;，不会持久化会话设置。
+在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。
+指令仅对授权发送者生效（渠道白名单/配对加上 commands.useAccessGroups）。
+未授权发送者的指令被视为纯文本。
+
+
+
+还有一些内联快捷方式（仅限白名单/授权发送者）：/help、/commands、/status、/whoami（/id）。
+它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。
+配置
+{
+  commands: {
+    native: &#34;auto&#34;,
+    nativeSkills: &#34;auto&#34;,
+    text: true,
+    bash: false,
+    bashForegroundMs: 2000,
+    config: false,
+    debug: false,
+    restart: false,
+    useAccessGroups: true,
+  },
+}
+
+commands.text（默认 true）启用解析聊天消息中的 /...。
+
+在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 false，文本命令仍然有效。
+
+
+commands.native（默认 &quot;auto&quot;）注册原生命令。
+
+Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。
+设置 channels.discord.commands.native、channels.telegram.commands.native 或 channels.slack.commands.native 以按提供商覆盖（布尔值或 &quot;auto&quot;）。
+false 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。
+
+
+commands.nativeSkills（默认 &quot;auto&quot;）在支持时原生注册 Skill 命令。
+
+Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。
+设置 channels.discord.commands.nativeSkills、channels.telegram.commands.nativeSkills 或 channels.slack.commands.nativeSkills 以按提供商覆盖（布尔值或 &quot;auto&quot;）。
+
+
+commands.bash（默认 false）启用 ! &lt;cmd&gt; 来运行主机 shell 命令（/bash &lt;cmd&gt; 是别名；需要 tools.elevated 白名单）。
+commands.bashForegroundMs（默认 2000）控制 bash 切换到后台模式之前等待多长时间（0 立即后台运行）。
+commands.config（默认 false）启用 /config（读写 openclaw.json）。
+commands.debug（默认 false）启用 /debug（仅运行时覆盖）。
+commands.useAccessGroups（默认 true）对命令强制执行白名单/策略。
+
+命令列表
+文本 &#43; 原生（启用时）：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tools/slash-commands/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tools/slash-commands/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tools/slash-commands/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="斜杠命令">
+  <meta property="og:description" content="命令由 Gateway 网关处理。大多数命令必须作为以 / 开头的独立消息发送。 仅主机的 bash 聊天命令使用 ! &lt;cmd&gt;（/bash &lt;cmd&gt; 是别名）。
+有两个相关系统：
+命令：独立的 /... 消息。 指令：/think、/verbose、/reasoning、/elevated、/exec、/model、/queue。 指令在模型看到消息之前被剥离。 在普通聊天消息中（不是仅指令消息），它们被视为&#34;内联提示&#34;，不会持久化会话设置。 在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。 指令仅对授权发送者生效（渠道白名单/配对加上 commands.useAccessGroups）。 未授权发送者的指令被视为纯文本。 还有一些内联快捷方式（仅限白名单/授权发送者）：/help、/commands、/status、/whoami（/id）。 它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。
+配置 { commands: { native: &#34;auto&#34;, nativeSkills: &#34;auto&#34;, text: true, bash: false, bashForegroundMs: 2000, config: false, debug: false, restart: false, useAccessGroups: true, }, } commands.text（默认 true）启用解析聊天消息中的 /...。 在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 false，文本命令仍然有效。 commands.native（默认 &#34;auto&#34;）注册原生命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。 设置 channels.discord.commands.native、channels.telegram.commands.native 或 channels.slack.commands.native 以按提供商覆盖（布尔值或 &#34;auto&#34;）。 false 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。 commands.nativeSkills（默认 &#34;auto&#34;）在支持时原生注册 Skill 命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。 设置 channels.discord.commands.nativeSkills、channels.telegram.commands.nativeSkills 或 channels.slack.commands.nativeSkills 以按提供商覆盖（布尔值或 &#34;auto&#34;）。 commands.bash（默认 false）启用 ! &lt;cmd&gt; 来运行主机 shell 命令（/bash &lt;cmd&gt; 是别名；需要 tools.elevated 白名单）。 commands.bashForegroundMs（默认 2000）控制 bash 切换到后台模式之前等待多长时间（0 立即后台运行）。 commands.config（默认 false）启用 /config（读写 openclaw.json）。 commands.debug（默认 false）启用 /debug（仅运行时覆盖）。 commands.useAccessGroups（默认 true）对命令强制执行白名单/策略。 命令列表 文本 &#43; 原生（启用时）：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="斜杠命令">
+<meta name="twitter:description" content="命令由 Gateway 网关处理。大多数命令必须作为以 / 开头的独立消息发送。
+仅主机的 bash 聊天命令使用 ! &lt;cmd&gt;（/bash &lt;cmd&gt; 是别名）。
+有两个相关系统：
+
+命令：独立的 /... 消息。
+指令：/think、/verbose、/reasoning、/elevated、/exec、/model、/queue。
+
+指令在模型看到消息之前被剥离。
+在普通聊天消息中（不是仅指令消息），它们被视为&quot;内联提示&quot;，不会持久化会话设置。
+在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。
+指令仅对授权发送者生效（渠道白名单/配对加上 commands.useAccessGroups）。
+未授权发送者的指令被视为纯文本。
+
+
+
+还有一些内联快捷方式（仅限白名单/授权发送者）：/help、/commands、/status、/whoami（/id）。
+它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。
+配置
+{
+  commands: {
+    native: &#34;auto&#34;,
+    nativeSkills: &#34;auto&#34;,
+    text: true,
+    bash: false,
+    bashForegroundMs: 2000,
+    config: false,
+    debug: false,
+    restart: false,
+    useAccessGroups: true,
+  },
+}
+
+commands.text（默认 true）启用解析聊天消息中的 /...。
+
+在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 false，文本命令仍然有效。
+
+
+commands.native（默认 &quot;auto&quot;）注册原生命令。
+
+Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。
+设置 channels.discord.commands.native、channels.telegram.commands.native 或 channels.slack.commands.native 以按提供商覆盖（布尔值或 &quot;auto&quot;）。
+false 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。
+
+
+commands.nativeSkills（默认 &quot;auto&quot;）在支持时原生注册 Skill 命令。
+
+Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。
+设置 channels.discord.commands.nativeSkills、channels.telegram.commands.nativeSkills 或 channels.slack.commands.nativeSkills 以按提供商覆盖（布尔值或 &quot;auto&quot;）。
+
+
+commands.bash（默认 false）启用 ! &lt;cmd&gt; 来运行主机 shell 命令（/bash &lt;cmd&gt; 是别名；需要 tools.elevated 白名单）。
+commands.bashForegroundMs（默认 2000）控制 bash 切换到后台模式之前等待多长时间（0 立即后台运行）。
+commands.config（默认 false）启用 /config（读写 openclaw.json）。
+commands.debug（默认 false）启用 /debug（仅运行时覆盖）。
+commands.useAccessGroups（默认 true）对命令强制执行白名单/策略。
+
+命令列表
+文本 &#43; 原生（启用时）：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "斜杠命令",
+      "item": "/openclaw/tools/slash-commands/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "斜杠命令",
+  "name": "斜杠命令",
+  "description": "命令由 Gateway 网关处理。大多数命令必须作为以 / 开头的独立消息发送。 仅主机的 bash 聊天命令使用 ! \u0026lt;cmd\u0026gt;（/bash \u0026lt;cmd\u0026gt; 是别名）。\n有两个相关系统：\n命令：独立的 /... 消息。 指令：/think、/verbose、/reasoning、/elevated、/exec、/model、/queue。 指令在模型看到消息之前被剥离。 在普通聊天消息中（不是仅指令消息），它们被视为\u0026quot;内联提示\u0026quot;，不会持久化会话设置。 在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。 指令仅对授权发送者生效（渠道白名单/配对加上 commands.useAccessGroups）。 未授权发送者的指令被视为纯文本。 还有一些内联快捷方式（仅限白名单/授权发送者）：/help、/commands、/status、/whoami（/id）。 它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。\n配置 { commands: { native: \u0026#34;auto\u0026#34;, nativeSkills: \u0026#34;auto\u0026#34;, text: true, bash: false, bashForegroundMs: 2000, config: false, debug: false, restart: false, useAccessGroups: true, }, } commands.text（默认 true）启用解析聊天消息中的 /...。 在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 false，文本命令仍然有效。 commands.native（默认 \u0026quot;auto\u0026quot;）注册原生命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。 设置 channels.discord.commands.native、channels.telegram.commands.native 或 channels.slack.commands.native 以按提供商覆盖（布尔值或 \u0026quot;auto\u0026quot;）。 false 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。 commands.nativeSkills（默认 \u0026quot;auto\u0026quot;）在支持时原生注册 Skill 命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。 设置 channels.discord.commands.nativeSkills、channels.telegram.commands.nativeSkills 或 channels.slack.commands.nativeSkills 以按提供商覆盖（布尔值或 \u0026quot;auto\u0026quot;）。 commands.bash（默认 false）启用 ! \u0026lt;cmd\u0026gt; 来运行主机 shell 命令（/bash \u0026lt;cmd\u0026gt; 是别名；需要 tools.elevated 白名单）。 commands.bashForegroundMs（默认 2000）控制 bash 切换到后台模式之前等待多长时间（0 立即后台运行）。 commands.config（默认 false）启用 /config（读写 openclaw.json）。 commands.debug（默认 false）启用 /debug（仅运行时覆盖）。 commands.useAccessGroups（默认 true）对命令强制执行白名单/策略。 命令列表 文本 + 原生（启用时）：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "命令由 Gateway 网关处理。大多数命令必须作为以 / 开头的独立消息发送。 仅主机的 bash 聊天命令使用 ! （/bash 是别名）。\n有两个相关系统：\n命令：独立的 /... 消息。 指令：/think、/verbose、/reasoning、/elevated、/exec、/model、/queue。 指令在模型看到消息之前被剥离。 在普通聊天消息中（不是仅指令消息），它们被视为\"内联提示\"，不会持久化会话设置。 在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。 指令仅对授权发送者生效（渠道白名单/配对加上 commands.useAccessGroups）。 未授权发送者的指令被视为纯文本。 还有一些内联快捷方式（仅限白名单/授权发送者）：/help、/commands、/status、/whoami（/id）。 它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。\n配置 { commands: { native: \"auto\", nativeSkills: \"auto\", text: true, bash: false, bashForegroundMs: 2000, config: false, debug: false, restart: false, useAccessGroups: true, }, } commands.text（默认 true）启用解析聊天消息中的 /...。 在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 false，文本命令仍然有效。 commands.native（默认 \"auto\"）注册原生命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。 设置 channels.discord.commands.native、channels.telegram.commands.native 或 channels.slack.commands.native 以按提供商覆盖（布尔值或 \"auto\"）。 false 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。 commands.nativeSkills（默认 \"auto\"）在支持时原生注册 Skill 命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。 设置 channels.discord.commands.nativeSkills、channels.telegram.commands.nativeSkills 或 channels.slack.commands.nativeSkills 以按提供商覆盖（布尔值或 \"auto\"）。 commands.bash（默认 false）启用 ! 来运行主机 shell 命令（/bash 是别名；需要 tools.elevated 白名单）。 commands.bashForegroundMs（默认 2000）控制 bash 切换到后台模式之前等待多长时间（0 立即后台运行）。 commands.config（默认 false）启用 /config（读写 openclaw.json）。 commands.debug（默认 false）启用 /debug（仅运行时覆盖）。 commands.useAccessGroups（默认 true）对命令强制执行白名单/策略。 命令列表 文本 + 原生（启用时）：\n/help /commands /skill [input]（按名称运行 Skill） /status（显示当前状态；在可用时包含当前模型提供商的提供商使用量/配额） /allowlist（列出/添加/删除白名单条目） /approve allow-once|allow-always|deny（解决 exec 审批提示） /context [list|detail|json]（解释\"上下文\"；detail 显示每个文件 + 每个工具 + 每个 Skill + 系统提示词大小） /whoami（显示你的发送者 ID；别名：/id） /subagents list|kill|log|info|send|steer|spawn（检查、控制或创建当前会话的子智能体运行） /config show|get|set|unset（将配置持久化到磁盘，仅所有者；需要 commands.config: true） /debug show|set|unset|reset（运行时覆盖，仅所有者；需要 commands.debug: true） /usage off|tokens|full|cost（每响应使用量页脚或本地成本摘要） /tts off|always|inbound|tagged|status|provider|limit|summary|audio（控制 TTS；参见 /tts） Discord：原生命令是 /voice（Discord 保留了 /tts）；文本 /tts 仍然有效。 /stop /restart /dock-telegram（别名：/dock_telegram）（将回复切换到 Telegram） /dock-discord（别名：/dock_discord）（将回复切换到 Discord） /dock-slack（别名：/dock_slack）（将回复切换到 Slack） /activation mention|always（仅限群组） /send on|off|inherit（仅所有者） /reset 或 /new [model]（可选模型提示；其余部分传递） /think （按模型/提供商动态选择；别名：/thinking、/t） /verbose on|full|off（别名：/v） /reasoning on|off|stream（别名：/reason；启用时，发送带有 Reasoning: 前缀的单独消息；stream = 仅 Telegram 草稿） /elevated on|off|ask|full（别名：/elev；full 跳过 exec 审批） /exec host= security= ask= node=（发送 /exec 显示当前设置） /model （别名：/models；或 agents.defaults.models.*.alias 中的 /） /queue （加上选项如 debounce:2s cap:25 drop:summarize；发送 /queue 查看当前设置） /bash （仅主机；! 的别名；需要 commands.bash: true + tools.elevated 白名单） 仅文本：\n/compact [instructions]（参见 /concepts/compaction） ! （仅主机；一次一个；对长时间运行的任务使用 !poll + !stop） !poll（检查输出/状态；接受可选的 sessionId；/bash poll 也可用） !stop（停止正在运行的 bash 任务；接受可选的 sessionId；/bash stop 也可用） 注意事项：\n命令接受命令和参数之间的可选 :（例如 /think: high、/send: on、/help:）。 /new 接受模型别名、provider/model 或提供商名称（模糊匹配）；如果没有匹配，文本被视为消息正文。 要获取完整的提供商使用量分解，使用 openclaw status --usage。 /allowlist add|remove 需要 commands.config=true 并遵循渠道 configWrites。 /usage 控制每响应使用量页脚；/usage cost 从 OpenClaw 会话日志打印本地成本摘要。 /restart 默认禁用；设置 commands.restart: true 启用它。 /verbose 用于调试和额外可见性；在正常使用中保持关闭。 /reasoning（和 /verbose）在群组设置中有风险：它们可能会暴露你不打算公开的内部推理或工具输出。最好保持关闭，尤其是在群聊中。 快速路径： 来自白名单发送者的仅命令消息会立即处理（绕过队列 + 模型）。 群组提及门控： 来自白名单发送者的仅命令消息绕过提及要求。 内联快捷方式（仅限白名单发送者）： 某些命令在嵌入普通消息时也能工作，并在模型看到剩余文本之前被剥离。 示例：hey /status 触发状态回复，剩余文本继续通过正常流程。 目前：/help、/commands、/status、/whoami（/id）。 未授权的仅命令消息被静默忽略，内联 /... 令牌被视为纯文本。 Skill 命令： user-invocable Skills 作为斜杠命令公开。名称被清理为 a-z0-9_（最多 32 个字符）；冲突获得数字后缀（例如 _2）。 /skill [input] 按名称运行 Skill（当原生命令限制阻止每个 Skill 命令时有用）。 默认情况下，Skill 命令作为普通请求转发给模型。 Skills 可以选择声明 command-dispatch: tool 将命令直接路由到工具（确定性，无模型）。 示例：/prose（OpenProse 插件）— 参见 OpenProse。 原生命令参数： Discord 使用自动完成进行动态选项（以及当你省略必需参数时的按钮菜单）。当命令支持选择且你省略参数时，Telegram 和 Slack 显示按钮菜单。 使用量显示（什么显示在哪里） 提供商使用量/配额（示例：“Claude 80% left”）在启用使用量跟踪时显示在 /status 中，针对当前模型提供商。 每响应令牌/成本由 /usage off|tokens|full 控制（附加到普通回复）。 /model status 是关于模型/认证/端点的，不是使用量。 模型选择（/model） /model 作为指令实现。\n示例：\n/model /model list /model 3 /model openai/gpt-5.2 /model opus@anthropic:default /model status 注意事项：\n/model 和 /model list 显示紧凑的编号选择器（模型系列 + 可用提供商）。 /model \u003c#\u003e 从该选择器中选择（并在可能时优先选择当前提供商）。 /model status 显示详细视图，包括在可用时配置的提供商端点（baseUrl）和 API 模式（api）。 调试覆盖 /debug 让你设置仅运行时的配置覆盖（内存，不写磁盘）。仅所有者。默认禁用；使用 commands.debug: true 启用。\n示例：\n/debug show /debug set messages.responsePrefix=\"[openclaw]\" /debug set channels.whatsapp.allowFrom=[\"+1555\",\"+4477\"] /debug unset messages.responsePrefix /debug reset 注意事项：\n覆盖立即应用于新的配置读取，但不会写入 openclaw.json。 使用 /debug reset 清除所有覆盖并返回到磁盘上的配置。 配置更新 /config 写入你的磁盘配置（openclaw.json）。仅所有者。默认禁用；使用 commands.config: true 启用。\n示例：\n/config show /config show messages.responsePrefix /config get messages.responsePrefix /config set messages.responsePrefix=\"[openclaw]\" /config unset messages.responsePrefix 注意事项：\n配置在写入前会验证；无效更改会被拒绝。 /config 更新在重启后持久化。 平台注意事项 文本命令在普通聊天会话中运行（私信共享 main，群组有自己的会话）。 原生命令使用隔离的会话： Discord：agent::discord:slash: Slack：agent::slack:slash:（前缀可通过 channels.slack.slashCommand.sessionPrefix 配置） Telegram：telegram:slash:（通过 CommandTargetSessionKey 定向到聊天会话） /stop 定向到活动聊天会话，因此可以中止当前运行。 Slack： channels.slack.slashCommand 仍然支持单个 /openclaw 风格的命令。如果你启用 commands.native，你必须为每个内置命令创建一个 Slack 斜杠命令（与 /help 相同的名称）。Slack 的命令参数菜单以临时 Block Kit 按钮形式发送。 ",
+  "wordCount" : "456",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/tools/slash-commands/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      斜杠命令
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae" aria-label="配置">配置</a></li>
+                <li>
+                    <a href="#%e5%91%bd%e4%bb%a4%e5%88%97%e8%a1%a8" aria-label="命令列表">命令列表</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8%e9%87%8f%e6%98%be%e7%a4%ba%e4%bb%80%e4%b9%88%e6%98%be%e7%a4%ba%e5%9c%a8%e5%93%aa%e9%87%8c" aria-label="使用量显示（什么显示在哪里）">使用量显示（什么显示在哪里）</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e9%80%89%e6%8b%a9model" aria-label="模型选择（/model）">模型选择（/model）</a></li>
+                <li>
+                    <a href="#%e8%b0%83%e8%af%95%e8%a6%86%e7%9b%96" aria-label="调试覆盖">调试覆盖</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e6%9b%b4%e6%96%b0" aria-label="配置更新">配置更新</a></li>
+                <li>
+                    <a href="#%e5%b9%b3%e5%8f%b0%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="平台注意事项">平台注意事项</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>命令由 Gateway 网关处理。大多数命令必须作为以 <code>/</code> 开头的<strong>独立</strong>消息发送。
+仅主机的 bash 聊天命令使用 <code>! &lt;cmd&gt;</code>（<code>/bash &lt;cmd&gt;</code> 是别名）。</p>
+<p>有两个相关系统：</p>
+<ul>
+<li><strong>命令</strong>：独立的 <code>/...</code> 消息。</li>
+<li><strong>指令</strong>：<code>/think</code>、<code>/verbose</code>、<code>/reasoning</code>、<code>/elevated</code>、<code>/exec</code>、<code>/model</code>、<code>/queue</code>。
+<ul>
+<li>指令在模型看到消息之前被剥离。</li>
+<li>在普通聊天消息中（不是仅指令消息），它们被视为&quot;内联提示&quot;，<strong>不会</strong>持久化会话设置。</li>
+<li>在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。</li>
+<li>指令仅对<strong>授权发送者</strong>生效（渠道白名单/配对加上 <code>commands.useAccessGroups</code>）。
+未授权发送者的指令被视为纯文本。</li>
+</ul>
+</li>
+</ul>
+<p>还有一些<strong>内联快捷方式</strong>（仅限白名单/授权发送者）：<code>/help</code>、<code>/commands</code>、<code>/status</code>、<code>/whoami</code>（<code>/id</code>）。
+它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。</p>
+<h2 id="配置">配置<a hidden class="anchor" aria-hidden="true" href="#配置">#</a></h2>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  commands: {
+    native: &#34;auto&#34;,
+    nativeSkills: &#34;auto&#34;,
+    text: true,
+    bash: false,
+    bashForegroundMs: 2000,
+    config: false,
+    debug: false,
+    restart: false,
+    useAccessGroups: true,
+  },
+}
+</code></pre><ul>
+<li><code>commands.text</code>（默认 <code>true</code>）启用解析聊天消息中的 <code>/...</code>。
+<ul>
+<li>在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 <code>false</code>，文本命令仍然有效。</li>
+</ul>
+</li>
+<li><code>commands.native</code>（默认 <code>&quot;auto&quot;</code>）注册原生命令。
+<ul>
+<li>Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。</li>
+<li>设置 <code>channels.discord.commands.native</code>、<code>channels.telegram.commands.native</code> 或 <code>channels.slack.commands.native</code> 以按提供商覆盖（布尔值或 <code>&quot;auto&quot;</code>）。</li>
+<li><code>false</code> 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。</li>
+</ul>
+</li>
+<li><code>commands.nativeSkills</code>（默认 <code>&quot;auto&quot;</code>）在支持时原生注册 <strong>Skill</strong> 命令。
+<ul>
+<li>Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。</li>
+<li>设置 <code>channels.discord.commands.nativeSkills</code>、<code>channels.telegram.commands.nativeSkills</code> 或 <code>channels.slack.commands.nativeSkills</code> 以按提供商覆盖（布尔值或 <code>&quot;auto&quot;</code>）。</li>
+</ul>
+</li>
+<li><code>commands.bash</code>（默认 <code>false</code>）启用 <code>! &lt;cmd&gt;</code> 来运行主机 shell 命令（<code>/bash &lt;cmd&gt;</code> 是别名；需要 <code>tools.elevated</code> 白名单）。</li>
+<li><code>commands.bashForegroundMs</code>（默认 <code>2000</code>）控制 bash 切换到后台模式之前等待多长时间（<code>0</code> 立即后台运行）。</li>
+<li><code>commands.config</code>（默认 <code>false</code>）启用 <code>/config</code>（读写 <code>openclaw.json</code>）。</li>
+<li><code>commands.debug</code>（默认 <code>false</code>）启用 <code>/debug</code>（仅运行时覆盖）。</li>
+<li><code>commands.useAccessGroups</code>（默认 <code>true</code>）对命令强制执行白名单/策略。</li>
+</ul>
+<h2 id="命令列表">命令列表<a hidden class="anchor" aria-hidden="true" href="#命令列表">#</a></h2>
+<p>文本 + 原生（启用时）：</p>
+<ul>
+<li><code>/help</code></li>
+<li><code>/commands</code></li>
+<li><code>/skill &lt;name&gt; [input]</code>（按名称运行 Skill）</li>
+<li><code>/status</code>（显示当前状态；在可用时包含当前模型提供商的提供商使用量/配额）</li>
+<li><code>/allowlist</code>（列出/添加/删除白名单条目）</li>
+<li><code>/approve &lt;id&gt; allow-once|allow-always|deny</code>（解决 exec 审批提示）</li>
+<li><code>/context [list|detail|json]</code>（解释&quot;上下文&quot;；<code>detail</code> 显示每个文件 + 每个工具 + 每个 Skill + 系统提示词大小）</li>
+<li><code>/whoami</code>（显示你的发送者 ID；别名：<code>/id</code>）</li>
+<li><code>/subagents list|kill|log|info|send|steer|spawn</code>（检查、控制或创建当前会话的子智能体运行）</li>
+<li><code>/config show|get|set|unset</code>（将配置持久化到磁盘，仅所有者；需要 <code>commands.config: true</code>）</li>
+<li><code>/debug show|set|unset|reset</code>（运行时覆盖，仅所有者；需要 <code>commands.debug: true</code>）</li>
+<li><code>/usage off|tokens|full|cost</code>（每响应使用量页脚或本地成本摘要）</li>
+<li><code>/tts off|always|inbound|tagged|status|provider|limit|summary|audio</code>（控制 TTS；参见 <a href="/tts">/tts</a>）
+<ul>
+<li>Discord：原生命令是 <code>/voice</code>（Discord 保留了 <code>/tts</code>）；文本 <code>/tts</code> 仍然有效。</li>
+</ul>
+</li>
+<li><code>/stop</code></li>
+<li><code>/restart</code></li>
+<li><code>/dock-telegram</code>（别名：<code>/dock_telegram</code>）（将回复切换到 Telegram）</li>
+<li><code>/dock-discord</code>（别名：<code>/dock_discord</code>）（将回复切换到 Discord）</li>
+<li><code>/dock-slack</code>（别名：<code>/dock_slack</code>）（将回复切换到 Slack）</li>
+<li><code>/activation mention|always</code>（仅限群组）</li>
+<li><code>/send on|off|inherit</code>（仅所有者）</li>
+<li><code>/reset</code> 或 <code>/new [model]</code>（可选模型提示；其余部分传递）</li>
+<li><code>/think &lt;off|minimal|low|medium|high|xhigh&gt;</code>（按模型/提供商动态选择；别名：<code>/thinking</code>、<code>/t</code>）</li>
+<li><code>/verbose on|full|off</code>（别名：<code>/v</code>）</li>
+<li><code>/reasoning on|off|stream</code>（别名：<code>/reason</code>；启用时，发送带有 <code>Reasoning:</code> 前缀的单独消息；<code>stream</code> = 仅 Telegram 草稿）</li>
+<li><code>/elevated on|off|ask|full</code>（别名：<code>/elev</code>；<code>full</code> 跳过 exec 审批）</li>
+<li><code>/exec host=&lt;sandbox|gateway|node&gt; security=&lt;deny|allowlist|full&gt; ask=&lt;off|on-miss|always&gt; node=&lt;id&gt;</code>（发送 <code>/exec</code> 显示当前设置）</li>
+<li><code>/model &lt;name&gt;</code>（别名：<code>/models</code>；或 <code>agents.defaults.models.*.alias</code> 中的 <code>/&lt;alias&gt;</code>）</li>
+<li><code>/queue &lt;mode&gt;</code>（加上选项如 <code>debounce:2s cap:25 drop:summarize</code>；发送 <code>/queue</code> 查看当前设置）</li>
+<li><code>/bash &lt;command&gt;</code>（仅主机；<code>! &lt;command&gt;</code> 的别名；需要 <code>commands.bash: true</code> + <code>tools.elevated</code> 白名单）</li>
+</ul>
+<p>仅文本：</p>
+<ul>
+<li><code>/compact [instructions]</code>（参见 <a href="/concepts/compaction">/concepts/compaction</a>）</li>
+<li><code>! &lt;command&gt;</code>（仅主机；一次一个；对长时间运行的任务使用 <code>!poll</code> + <code>!stop</code>）</li>
+<li><code>!poll</code>（检查输出/状态；接受可选的 <code>sessionId</code>；<code>/bash poll</code> 也可用）</li>
+<li><code>!stop</code>（停止正在运行的 bash 任务；接受可选的 <code>sessionId</code>；<code>/bash stop</code> 也可用）</li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>命令接受命令和参数之间的可选 <code>:</code>（例如 <code>/think: high</code>、<code>/send: on</code>、<code>/help:</code>）。</li>
+<li><code>/new &lt;model&gt;</code> 接受模型别名、<code>provider/model</code> 或提供商名称（模糊匹配）；如果没有匹配，文本被视为消息正文。</li>
+<li>要获取完整的提供商使用量分解，使用 <code>openclaw status --usage</code>。</li>
+<li><code>/allowlist add|remove</code> 需要 <code>commands.config=true</code> 并遵循渠道 <code>configWrites</code>。</li>
+<li><code>/usage</code> 控制每响应使用量页脚；<code>/usage cost</code> 从 OpenClaw 会话日志打印本地成本摘要。</li>
+<li><code>/restart</code> 默认禁用；设置 <code>commands.restart: true</code> 启用它。</li>
+<li><code>/verbose</code> 用于调试和额外可见性；在正常使用中保持<strong>关闭</strong>。</li>
+<li><code>/reasoning</code>（和 <code>/verbose</code>）在群组设置中有风险：它们可能会暴露你不打算公开的内部推理或工具输出。最好保持关闭，尤其是在群聊中。</li>
+<li><strong>快速路径：</strong> 来自白名单发送者的仅命令消息会立即处理（绕过队列 + 模型）。</li>
+<li><strong>群组提及门控：</strong> 来自白名单发送者的仅命令消息绕过提及要求。</li>
+<li><strong>内联快捷方式（仅限白名单发送者）：</strong> 某些命令在嵌入普通消息时也能工作，并在模型看到剩余文本之前被剥离。
+<ul>
+<li>示例：<code>hey /status</code> 触发状态回复，剩余文本继续通过正常流程。</li>
+</ul>
+</li>
+<li>目前：<code>/help</code>、<code>/commands</code>、<code>/status</code>、<code>/whoami</code>（<code>/id</code>）。</li>
+<li>未授权的仅命令消息被静默忽略，内联 <code>/...</code> 令牌被视为纯文本。</li>
+<li><strong>Skill 命令：</strong> <code>user-invocable</code> Skills 作为斜杠命令公开。名称被清理为 <code>a-z0-9_</code>（最多 32 个字符）；冲突获得数字后缀（例如 <code>_2</code>）。
+<ul>
+<li><code>/skill &lt;name&gt; [input]</code> 按名称运行 Skill（当原生命令限制阻止每个 Skill 命令时有用）。</li>
+<li>默认情况下，Skill 命令作为普通请求转发给模型。</li>
+<li>Skills 可以选择声明 <code>command-dispatch: tool</code> 将命令直接路由到工具（确定性，无模型）。</li>
+<li>示例：<code>/prose</code>（OpenProse 插件）— 参见 <a href="/prose">OpenProse</a>。</li>
+</ul>
+</li>
+<li><strong>原生命令参数：</strong> Discord 使用自动完成进行动态选项（以及当你省略必需参数时的按钮菜单）。当命令支持选择且你省略参数时，Telegram 和 Slack 显示按钮菜单。</li>
+</ul>
+<h2 id="使用量显示什么显示在哪里">使用量显示（什么显示在哪里）<a hidden class="anchor" aria-hidden="true" href="#使用量显示什么显示在哪里">#</a></h2>
+<ul>
+<li><strong>提供商使用量/配额</strong>（示例：&ldquo;Claude 80% left&rdquo;）在启用使用量跟踪时显示在 <code>/status</code> 中，针对当前模型提供商。</li>
+<li><strong>每响应令牌/成本</strong>由 <code>/usage off|tokens|full</code> 控制（附加到普通回复）。</li>
+<li><code>/model status</code> 是关于<strong>模型/认证/端点</strong>的，不是使用量。</li>
+</ul>
+<h2 id="模型选择model">模型选择（<code>/model</code>）<a hidden class="anchor" aria-hidden="true" href="#模型选择model">#</a></h2>
+<p><code>/model</code> 作为指令实现。</p>
+<p>示例：</p>
+<pre tabindex="0"><code>/model
+/model list
+/model 3
+/model openai/gpt-5.2
+/model opus@anthropic:default
+/model status
+</code></pre><p>注意事项：</p>
+<ul>
+<li><code>/model</code> 和 <code>/model list</code> 显示紧凑的编号选择器（模型系列 + 可用提供商）。</li>
+<li><code>/model &lt;#&gt;</code> 从该选择器中选择（并在可能时优先选择当前提供商）。</li>
+<li><code>/model status</code> 显示详细视图，包括在可用时配置的提供商端点（<code>baseUrl</code>）和 API 模式（<code>api</code>）。</li>
+</ul>
+<h2 id="调试覆盖">调试覆盖<a hidden class="anchor" aria-hidden="true" href="#调试覆盖">#</a></h2>
+<p><code>/debug</code> 让你设置<strong>仅运行时</strong>的配置覆盖（内存，不写磁盘）。仅所有者。默认禁用；使用 <code>commands.debug: true</code> 启用。</p>
+<p>示例：</p>
+<pre tabindex="0"><code>/debug show
+/debug set messages.responsePrefix=&#34;[openclaw]&#34;
+/debug set channels.whatsapp.allowFrom=[&#34;+1555&#34;,&#34;+4477&#34;]
+/debug unset messages.responsePrefix
+/debug reset
+</code></pre><p>注意事项：</p>
+<ul>
+<li>覆盖立即应用于新的配置读取，但<strong>不会</strong>写入 <code>openclaw.json</code>。</li>
+<li>使用 <code>/debug reset</code> 清除所有覆盖并返回到磁盘上的配置。</li>
+</ul>
+<h2 id="配置更新">配置更新<a hidden class="anchor" aria-hidden="true" href="#配置更新">#</a></h2>
+<p><code>/config</code> 写入你的磁盘配置（<code>openclaw.json</code>）。仅所有者。默认禁用；使用 <code>commands.config: true</code> 启用。</p>
+<p>示例：</p>
+<pre tabindex="0"><code>/config show
+/config show messages.responsePrefix
+/config get messages.responsePrefix
+/config set messages.responsePrefix=&#34;[openclaw]&#34;
+/config unset messages.responsePrefix
+</code></pre><p>注意事项：</p>
+<ul>
+<li>配置在写入前会验证；无效更改会被拒绝。</li>
+<li><code>/config</code> 更新在重启后持久化。</li>
+</ul>
+<h2 id="平台注意事项">平台注意事项<a hidden class="anchor" aria-hidden="true" href="#平台注意事项">#</a></h2>
+<ul>
+<li><strong>文本命令</strong>在普通聊天会话中运行（私信共享 <code>main</code>，群组有自己的会话）。</li>
+<li><strong>原生命令</strong>使用隔离的会话：
+<ul>
+<li>Discord：<code>agent:&lt;agentId&gt;:discord:slash:&lt;userId&gt;</code></li>
+<li>Slack：<code>agent:&lt;agentId&gt;:slack:slash:&lt;userId&gt;</code>（前缀可通过 <code>channels.slack.slashCommand.sessionPrefix</code> 配置）</li>
+<li>Telegram：<code>telegram:slash:&lt;userId&gt;</code>（通过 <code>CommandTargetSessionKey</code> 定向到聊天会话）</li>
+</ul>
+</li>
+<li><strong><code>/stop</code></strong> 定向到活动聊天会话，因此可以中止当前运行。</li>
+<li><strong>Slack：</strong> <code>channels.slack.slashCommand</code> 仍然支持单个 <code>/openclaw</code> 风格的命令。如果你启用 <code>commands.native</code>，你必须为每个内置命令创建一个 Slack 斜杠命令（与 <code>/help</code> 相同的名称）。Slack 的命令参数菜单以临时 Block Kit 按钮形式发送。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/start/hubs/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>文档导航中心</span>
+  </a>
+  <a class="next" href="/openclaw/experiments/onboarding-config-protocol/">
+    <span class="title">Next »</span>
+    <br>
+    <span>新手引导 &#43; 配置协议</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>`openclaw message` | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="用于发送消息和渠道操作的单一出站命令
+（Discord/Google Chat/Slack/Mattermost（插件）/Telegram/WhatsApp/Signal/iMessage/MS Teams）。
+用法
+openclaw message &lt;subcommand&gt; [flags]
+渠道选择：
+
+如果配置了多个渠道，则必须指定 --channel。
+如果只配置了一个渠道，则该渠道为默认值。
+可选值：whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams（Mattermost 需要插件）
+
+目标格式（--target）：
+
+WhatsApp：E.164 或群组 JID
+Telegram：聊天 ID 或 @username
+Discord：channel:&lt;id&gt; 或 user:&lt;id&gt;（或 &lt;@id&gt; 提及；纯数字 ID 被视为频道）
+Google Chat：spaces/&lt;spaceId&gt; 或 users/&lt;userId&gt;
+Slack：channel:&lt;id&gt; 或 user:&lt;id&gt;（接受纯频道 ID）
+Mattermost（插件）：channel:&lt;id&gt;、user:&lt;id&gt; 或 @username（纯 ID 被视为频道）
+Signal：&#43;E.164、group:&lt;id&gt;、signal:&#43;E.164、signal:group:&lt;id&gt; 或 username:&lt;name&gt;/u:&lt;name&gt;
+iMessage：句柄、chat_id:&lt;id&gt;、chat_guid:&lt;guid&gt; 或 chat_identifier:&lt;id&gt;
+MS Teams：会话 ID（19:...@thread.tacv2）或 conversation:&lt;id&gt; 或 user:&lt;aad-object-id&gt;
+
+名称查找：
+
+对于支持的提供商（Discord/Slack 等），如 Help 或 #help 之类的频道名称会通过目录缓存进行解析。
+缓存未命中时，如果提供商支持，OpenClaw 将尝试实时目录查找。
+
+通用标志
+
+--channel &lt;name&gt;
+--account &lt;id&gt;
+--target &lt;dest&gt;（用于 send/poll/read 等的目标渠道或用户）
+--targets &lt;name&gt;（可重复；仅限广播）
+--json
+--dry-run
+--verbose
+
+操作
+核心
+
+
+send">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/cli/message/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/cli/message/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/cli/message/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="`openclaw message`">
+  <meta property="og:description" content="用于发送消息和渠道操作的单一出站命令 （Discord/Google Chat/Slack/Mattermost（插件）/Telegram/WhatsApp/Signal/iMessage/MS Teams）。
+用法 openclaw message &lt;subcommand&gt; [flags] 渠道选择：
+如果配置了多个渠道，则必须指定 --channel。 如果只配置了一个渠道，则该渠道为默认值。 可选值：whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams（Mattermost 需要插件） 目标格式（--target）：
+WhatsApp：E.164 或群组 JID Telegram：聊天 ID 或 @username Discord：channel:&lt;id&gt; 或 user:&lt;id&gt;（或 &lt;@id&gt; 提及；纯数字 ID 被视为频道） Google Chat：spaces/&lt;spaceId&gt; 或 users/&lt;userId&gt; Slack：channel:&lt;id&gt; 或 user:&lt;id&gt;（接受纯频道 ID） Mattermost（插件）：channel:&lt;id&gt;、user:&lt;id&gt; 或 @username（纯 ID 被视为频道） Signal：&#43;E.164、group:&lt;id&gt;、signal:&#43;E.164、signal:group:&lt;id&gt; 或 username:&lt;name&gt;/u:&lt;name&gt; iMessage：句柄、chat_id:&lt;id&gt;、chat_guid:&lt;guid&gt; 或 chat_identifier:&lt;id&gt; MS Teams：会话 ID（19:...@thread.tacv2）或 conversation:&lt;id&gt; 或 user:&lt;aad-object-id&gt; 名称查找：
+对于支持的提供商（Discord/Slack 等），如 Help 或 #help 之类的频道名称会通过目录缓存进行解析。 缓存未命中时，如果提供商支持，OpenClaw 将尝试实时目录查找。 通用标志 --channel &lt;name&gt; --account &lt;id&gt; --target &lt;dest&gt;（用于 send/poll/read 等的目标渠道或用户） --targets &lt;name&gt;（可重复；仅限广播） --json --dry-run --verbose 操作 核心 send">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="`openclaw message`">
+<meta name="twitter:description" content="用于发送消息和渠道操作的单一出站命令
+（Discord/Google Chat/Slack/Mattermost（插件）/Telegram/WhatsApp/Signal/iMessage/MS Teams）。
+用法
+openclaw message &lt;subcommand&gt; [flags]
+渠道选择：
+
+如果配置了多个渠道，则必须指定 --channel。
+如果只配置了一个渠道，则该渠道为默认值。
+可选值：whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams（Mattermost 需要插件）
+
+目标格式（--target）：
+
+WhatsApp：E.164 或群组 JID
+Telegram：聊天 ID 或 @username
+Discord：channel:&lt;id&gt; 或 user:&lt;id&gt;（或 &lt;@id&gt; 提及；纯数字 ID 被视为频道）
+Google Chat：spaces/&lt;spaceId&gt; 或 users/&lt;userId&gt;
+Slack：channel:&lt;id&gt; 或 user:&lt;id&gt;（接受纯频道 ID）
+Mattermost（插件）：channel:&lt;id&gt;、user:&lt;id&gt; 或 @username（纯 ID 被视为频道）
+Signal：&#43;E.164、group:&lt;id&gt;、signal:&#43;E.164、signal:group:&lt;id&gt; 或 username:&lt;name&gt;/u:&lt;name&gt;
+iMessage：句柄、chat_id:&lt;id&gt;、chat_guid:&lt;guid&gt; 或 chat_identifier:&lt;id&gt;
+MS Teams：会话 ID（19:...@thread.tacv2）或 conversation:&lt;id&gt; 或 user:&lt;aad-object-id&gt;
+
+名称查找：
+
+对于支持的提供商（Discord/Slack 等），如 Help 或 #help 之类的频道名称会通过目录缓存进行解析。
+缓存未命中时，如果提供商支持，OpenClaw 将尝试实时目录查找。
+
+通用标志
+
+--channel &lt;name&gt;
+--account &lt;id&gt;
+--target &lt;dest&gt;（用于 send/poll/read 等的目标渠道或用户）
+--targets &lt;name&gt;（可重复；仅限广播）
+--json
+--dry-run
+--verbose
+
+操作
+核心
+
+
+send">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "`openclaw message`",
+      "item": "/openclaw/cli/message/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "`openclaw message`",
+  "name": "\u0060openclaw message\u0060",
+  "description": "用于发送消息和渠道操作的单一出站命令 （Discord/Google Chat/Slack/Mattermost（插件）/Telegram/WhatsApp/Signal/iMessage/MS Teams）。\n用法 openclaw message \u0026lt;subcommand\u0026gt; [flags] 渠道选择：\n如果配置了多个渠道，则必须指定 --channel。 如果只配置了一个渠道，则该渠道为默认值。 可选值：whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams（Mattermost 需要插件） 目标格式（--target）：\nWhatsApp：E.164 或群组 JID Telegram：聊天 ID 或 @username Discord：channel:\u0026lt;id\u0026gt; 或 user:\u0026lt;id\u0026gt;（或 \u0026lt;@id\u0026gt; 提及；纯数字 ID 被视为频道） Google Chat：spaces/\u0026lt;spaceId\u0026gt; 或 users/\u0026lt;userId\u0026gt; Slack：channel:\u0026lt;id\u0026gt; 或 user:\u0026lt;id\u0026gt;（接受纯频道 ID） Mattermost（插件）：channel:\u0026lt;id\u0026gt;、user:\u0026lt;id\u0026gt; 或 @username（纯 ID 被视为频道） Signal：+E.164、group:\u0026lt;id\u0026gt;、signal:+E.164、signal:group:\u0026lt;id\u0026gt; 或 username:\u0026lt;name\u0026gt;/u:\u0026lt;name\u0026gt; iMessage：句柄、chat_id:\u0026lt;id\u0026gt;、chat_guid:\u0026lt;guid\u0026gt; 或 chat_identifier:\u0026lt;id\u0026gt; MS Teams：会话 ID（19:...@thread.tacv2）或 conversation:\u0026lt;id\u0026gt; 或 user:\u0026lt;aad-object-id\u0026gt; 名称查找：\n对于支持的提供商（Discord/Slack 等），如 Help 或 #help 之类的频道名称会通过目录缓存进行解析。 缓存未命中时，如果提供商支持，OpenClaw 将尝试实时目录查找。 通用标志 --channel \u0026lt;name\u0026gt; --account \u0026lt;id\u0026gt; --target \u0026lt;dest\u0026gt;（用于 send/poll/read 等的目标渠道或用户） --targets \u0026lt;name\u0026gt;（可重复；仅限广播） --json --dry-run --verbose 操作 核心 send\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "用于发送消息和渠道操作的单一出站命令 （Discord/Google Chat/Slack/Mattermost（插件）/Telegram/WhatsApp/Signal/iMessage/MS Teams）。\n用法 openclaw message [flags] 渠道选择：\n如果配置了多个渠道，则必须指定 --channel。 如果只配置了一个渠道，则该渠道为默认值。 可选值：whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams（Mattermost 需要插件） 目标格式（--target）：\nWhatsApp：E.164 或群组 JID Telegram：聊天 ID 或 @username Discord：channel: 或 user:（或 \u003c@id\u003e 提及；纯数字 ID 被视为频道） Google Chat：spaces/ 或 users/ Slack：channel: 或 user:（接受纯频道 ID） Mattermost（插件）：channel:、user: 或 @username（纯 ID 被视为频道） Signal：+E.164、group:、signal:+E.164、signal:group: 或 username:/u: iMessage：句柄、chat_id:、chat_guid: 或 chat_identifier: MS Teams：会话 ID（19:...@thread.tacv2）或 conversation: 或 user: 名称查找：\n对于支持的提供商（Discord/Slack 等），如 Help 或 #help 之类的频道名称会通过目录缓存进行解析。 缓存未命中时，如果提供商支持，OpenClaw 将尝试实时目录查找。 通用标志 --channel --account --target （用于 send/poll/read 等的目标渠道或用户） --targets （可重复；仅限广播） --json --dry-run --verbose 操作 核心 send\n渠道：WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost（插件）/Signal/iMessage/MS Teams 必需：--target，以及 --message 或 --media 可选：--media、--reply-to、--thread-id、--gif-playback 仅限 Telegram：--buttons（需要 channels.telegram.capabilities.inlineButtons 以启用） 仅限 Telegram：--thread-id（论坛主题 ID） 仅限 Slack：--thread-id（线程时间戳；--reply-to 使用相同字段） 仅限 WhatsApp：--gif-playback poll\n渠道：WhatsApp/Discord/MS Teams 必需：--target、--poll-question、--poll-option（可重复） 可选：--poll-multi 仅限 Discord：--poll-duration-hours、--message react\n渠道：Discord/Google Chat/Slack/Telegram/WhatsApp/Signal 必需：--message-id、--target 可选：--emoji、--remove、--participant、--from-me、--target-author、--target-author-uuid 注意：--remove 需要 --emoji（省略 --emoji 可清除自己的表情回应（如果支持）；参见 /tools/reactions） 仅限 WhatsApp：--participant、--from-me Signal 群组表情回应：需要 --target-author 或 --target-author-uuid reactions\n渠道：Discord/Google Chat/Slack 必需：--message-id、--target 可选：--limit read\n渠道：Discord/Slack 必需：--target 可选：--limit、--before、--after 仅限 Discord：--around edit\n渠道：Discord/Slack 必需：--message-id、--message、--target delete\n渠道：Discord/Slack/Telegram 必需：--message-id、--target pin / unpin\n渠道：Discord/Slack 必需：--message-id、--target pins（列表）\n渠道：Discord/Slack 必需：--target permissions\n渠道：Discord 必需：--target search\n渠道：Discord 必需：--guild-id、--query 可选：--channel-id、--channel-ids（可重复）、--author-id、--author-ids（可重复）、--limit 线程 thread create\n渠道：Discord 必需：--thread-name、--target（频道 ID） 可选：--message-id、--auto-archive-min thread list\n渠道：Discord 必需：--guild-id 可选：--channel-id、--include-archived、--before、--limit thread reply\n渠道：Discord 必需：--target（线程 ID）、--message 可选：--media、--reply-to 表情符号 emoji list\nDiscord：--guild-id Slack：无需额外标志 emoji upload\n渠道：Discord 必需：--guild-id、--emoji-name、--media 可选：--role-ids（可重复） 贴纸 sticker send\n渠道：Discord 必需：--target、--sticker-id（可重复） 可选：--message sticker upload\n渠道：Discord 必需：--guild-id、--sticker-name、--sticker-desc、--sticker-tags、--media 角色 / 频道 / 成员 / 语音 role info（Discord）：--guild-id role add / role remove（Discord）：--guild-id、--user-id、--role-id channel info（Discord）：--target channel list（Discord）：--guild-id member info（Discord/Slack）：--user-id（Discord 还需要 --guild-id） voice status（Discord）：--guild-id、--user-id 事件 event list（Discord）：--guild-id event create（Discord）：--guild-id、--event-name、--start-time 可选：--end-time、--desc、--channel-id、--location、--event-type 管理（Discord） timeout：--guild-id、--user-id（可选 --duration-min 或 --until；两者都省略则清除超时） kick：--guild-id、--user-id（+ --reason） ban：--guild-id、--user-id（+ --delete-days、--reason） timeout 也支持 --reason 广播 broadcast 渠道：任何已配置的渠道；使用 --channel all 可针对所有提供商 必需：--targets（可重复） 可选：--message、--media、--dry-run 示例 发送 Discord 回复：\nopenclaw message send --channel discord \\ --target channel:123 --message \"hi\" --reply-to 456 创建 Discord 投票：\nopenclaw message poll --channel discord \\ --target channel:123 \\ --poll-question \"Snack?\" \\ --poll-option Pizza --poll-option Sushi \\ --poll-multi --poll-duration-hours 48 发送 Teams 主动消息：\nopenclaw message send --channel msteams \\ --target conversation:19:abc@thread.tacv2 --message \"hi\" 创建 Teams 投票：\nopenclaw message poll --channel msteams \\ --target conversation:19:abc@thread.tacv2 \\ --poll-question \"Lunch?\" \\ --poll-option Pizza --poll-option Sushi 在 Slack 中添加表情回应：\nopenclaw message react --channel slack \\ --target C123 --message-id 456 --emoji \"✅\" 在 Signal 群组中添加表情回应：\nopenclaw message react --channel signal \\ --target signal:group:abc123 --message-id 1737630212345 \\ --emoji \"✅\" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000 发送 Telegram 内联按钮：\nopenclaw message send --channel telegram --target @mychat --message \"Choose:\" \\ --buttons '[ [{\"text\":\"Yes\",\"callback_data\":\"cmd:yes\"}], [{\"text\":\"No\",\"callback_data\":\"cmd:no\"}] ]' ",
+  "wordCount" : "368",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/cli/message/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      `openclaw message`
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%94%a8%e6%b3%95" aria-label="用法">用法</a></li>
+                <li>
+                    <a href="#%e9%80%9a%e7%94%a8%e6%a0%87%e5%bf%97" aria-label="通用标志">通用标志</a></li>
+                <li>
+                    <a href="#%e6%93%8d%e4%bd%9c" aria-label="操作">操作</a><ul>
+                        
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83" aria-label="核心">核心</a></li>
+                <li>
+                    <a href="#%e7%ba%bf%e7%a8%8b" aria-label="线程">线程</a></li>
+                <li>
+                    <a href="#%e8%a1%a8%e6%83%85%e7%ac%a6%e5%8f%b7" aria-label="表情符号">表情符号</a></li>
+                <li>
+                    <a href="#%e8%b4%b4%e7%ba%b8" aria-label="贴纸">贴纸</a></li>
+                <li>
+                    <a href="#%e8%a7%92%e8%89%b2--%e9%a2%91%e9%81%93--%e6%88%90%e5%91%98--%e8%af%ad%e9%9f%b3" aria-label="角色 / 频道 / 成员 / 语音">角色 / 频道 / 成员 / 语音</a></li>
+                <li>
+                    <a href="#%e4%ba%8b%e4%bb%b6" aria-label="事件">事件</a></li>
+                <li>
+                    <a href="#%e7%ae%a1%e7%90%86discord" aria-label="管理（Discord）">管理（Discord）</a></li>
+                <li>
+                    <a href="#%e5%b9%bf%e6%92%ad" aria-label="广播">广播</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b" aria-label="示例">示例</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>用于发送消息和渠道操作的单一出站命令
+（Discord/Google Chat/Slack/Mattermost（插件）/Telegram/WhatsApp/Signal/iMessage/MS Teams）。</p>
+<h2 id="用法">用法<a hidden class="anchor" aria-hidden="true" href="#用法">#</a></h2>
+<pre tabindex="0"><code>openclaw message &lt;subcommand&gt; [flags]
+</code></pre><p>渠道选择：</p>
+<ul>
+<li>如果配置了多个渠道，则必须指定 <code>--channel</code>。</li>
+<li>如果只配置了一个渠道，则该渠道为默认值。</li>
+<li>可选值：<code>whatsapp|telegram|discord|googlechat|slack|mattermost|signal|imessage|msteams</code>（Mattermost 需要插件）</li>
+</ul>
+<p>目标格式（<code>--target</code>）：</p>
+<ul>
+<li>WhatsApp：E.164 或群组 JID</li>
+<li>Telegram：聊天 ID 或 <code>@username</code></li>
+<li>Discord：<code>channel:&lt;id&gt;</code> 或 <code>user:&lt;id&gt;</code>（或 <code>&lt;@id&gt;</code> 提及；纯数字 ID 被视为频道）</li>
+<li>Google Chat：<code>spaces/&lt;spaceId&gt;</code> 或 <code>users/&lt;userId&gt;</code></li>
+<li>Slack：<code>channel:&lt;id&gt;</code> 或 <code>user:&lt;id&gt;</code>（接受纯频道 ID）</li>
+<li>Mattermost（插件）：<code>channel:&lt;id&gt;</code>、<code>user:&lt;id&gt;</code> 或 <code>@username</code>（纯 ID 被视为频道）</li>
+<li>Signal：<code>+E.164</code>、<code>group:&lt;id&gt;</code>、<code>signal:+E.164</code>、<code>signal:group:&lt;id&gt;</code> 或 <code>username:&lt;name&gt;</code>/<code>u:&lt;name&gt;</code></li>
+<li>iMessage：句柄、<code>chat_id:&lt;id&gt;</code>、<code>chat_guid:&lt;guid&gt;</code> 或 <code>chat_identifier:&lt;id&gt;</code></li>
+<li>MS Teams：会话 ID（<code>19:...@thread.tacv2</code>）或 <code>conversation:&lt;id&gt;</code> 或 <code>user:&lt;aad-object-id&gt;</code></li>
+</ul>
+<p>名称查找：</p>
+<ul>
+<li>对于支持的提供商（Discord/Slack 等），如 <code>Help</code> 或 <code>#help</code> 之类的频道名称会通过目录缓存进行解析。</li>
+<li>缓存未命中时，如果提供商支持，OpenClaw 将尝试实时目录查找。</li>
+</ul>
+<h2 id="通用标志">通用标志<a hidden class="anchor" aria-hidden="true" href="#通用标志">#</a></h2>
+<ul>
+<li><code>--channel &lt;name&gt;</code></li>
+<li><code>--account &lt;id&gt;</code></li>
+<li><code>--target &lt;dest&gt;</code>（用于 send/poll/read 等的目标渠道或用户）</li>
+<li><code>--targets &lt;name&gt;</code>（可重复；仅限广播）</li>
+<li><code>--json</code></li>
+<li><code>--dry-run</code></li>
+<li><code>--verbose</code></li>
+</ul>
+<h2 id="操作">操作<a hidden class="anchor" aria-hidden="true" href="#操作">#</a></h2>
+<h3 id="核心">核心<a hidden class="anchor" aria-hidden="true" href="#核心">#</a></h3>
+<ul>
+<li>
+<p><code>send</code></p>
+<ul>
+<li>渠道：WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost（插件）/Signal/iMessage/MS Teams</li>
+<li>必需：<code>--target</code>，以及 <code>--message</code> 或 <code>--media</code></li>
+<li>可选：<code>--media</code>、<code>--reply-to</code>、<code>--thread-id</code>、<code>--gif-playback</code></li>
+<li>仅限 Telegram：<code>--buttons</code>（需要 <code>channels.telegram.capabilities.inlineButtons</code> 以启用）</li>
+<li>仅限 Telegram：<code>--thread-id</code>（论坛主题 ID）</li>
+<li>仅限 Slack：<code>--thread-id</code>（线程时间戳；<code>--reply-to</code> 使用相同字段）</li>
+<li>仅限 WhatsApp：<code>--gif-playback</code></li>
+</ul>
+</li>
+<li>
+<p><code>poll</code></p>
+<ul>
+<li>渠道：WhatsApp/Discord/MS Teams</li>
+<li>必需：<code>--target</code>、<code>--poll-question</code>、<code>--poll-option</code>（可重复）</li>
+<li>可选：<code>--poll-multi</code></li>
+<li>仅限 Discord：<code>--poll-duration-hours</code>、<code>--message</code></li>
+</ul>
+</li>
+<li>
+<p><code>react</code></p>
+<ul>
+<li>渠道：Discord/Google Chat/Slack/Telegram/WhatsApp/Signal</li>
+<li>必需：<code>--message-id</code>、<code>--target</code></li>
+<li>可选：<code>--emoji</code>、<code>--remove</code>、<code>--participant</code>、<code>--from-me</code>、<code>--target-author</code>、<code>--target-author-uuid</code></li>
+<li>注意：<code>--remove</code> 需要 <code>--emoji</code>（省略 <code>--emoji</code> 可清除自己的表情回应（如果支持）；参见 /tools/reactions）</li>
+<li>仅限 WhatsApp：<code>--participant</code>、<code>--from-me</code></li>
+<li>Signal 群组表情回应：需要 <code>--target-author</code> 或 <code>--target-author-uuid</code></li>
+</ul>
+</li>
+<li>
+<p><code>reactions</code></p>
+<ul>
+<li>渠道：Discord/Google Chat/Slack</li>
+<li>必需：<code>--message-id</code>、<code>--target</code></li>
+<li>可选：<code>--limit</code></li>
+</ul>
+</li>
+<li>
+<p><code>read</code></p>
+<ul>
+<li>渠道：Discord/Slack</li>
+<li>必需：<code>--target</code></li>
+<li>可选：<code>--limit</code>、<code>--before</code>、<code>--after</code></li>
+<li>仅限 Discord：<code>--around</code></li>
+</ul>
+</li>
+<li>
+<p><code>edit</code></p>
+<ul>
+<li>渠道：Discord/Slack</li>
+<li>必需：<code>--message-id</code>、<code>--message</code>、<code>--target</code></li>
+</ul>
+</li>
+<li>
+<p><code>delete</code></p>
+<ul>
+<li>渠道：Discord/Slack/Telegram</li>
+<li>必需：<code>--message-id</code>、<code>--target</code></li>
+</ul>
+</li>
+<li>
+<p><code>pin</code> / <code>unpin</code></p>
+<ul>
+<li>渠道：Discord/Slack</li>
+<li>必需：<code>--message-id</code>、<code>--target</code></li>
+</ul>
+</li>
+<li>
+<p><code>pins</code>（列表）</p>
+<ul>
+<li>渠道：Discord/Slack</li>
+<li>必需：<code>--target</code></li>
+</ul>
+</li>
+<li>
+<p><code>permissions</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--target</code></li>
+</ul>
+</li>
+<li>
+<p><code>search</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--guild-id</code>、<code>--query</code></li>
+<li>可选：<code>--channel-id</code>、<code>--channel-ids</code>（可重复）、<code>--author-id</code>、<code>--author-ids</code>（可重复）、<code>--limit</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="线程">线程<a hidden class="anchor" aria-hidden="true" href="#线程">#</a></h3>
+<ul>
+<li>
+<p><code>thread create</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--thread-name</code>、<code>--target</code>（频道 ID）</li>
+<li>可选：<code>--message-id</code>、<code>--auto-archive-min</code></li>
+</ul>
+</li>
+<li>
+<p><code>thread list</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--guild-id</code></li>
+<li>可选：<code>--channel-id</code>、<code>--include-archived</code>、<code>--before</code>、<code>--limit</code></li>
+</ul>
+</li>
+<li>
+<p><code>thread reply</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--target</code>（线程 ID）、<code>--message</code></li>
+<li>可选：<code>--media</code>、<code>--reply-to</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="表情符号">表情符号<a hidden class="anchor" aria-hidden="true" href="#表情符号">#</a></h3>
+<ul>
+<li>
+<p><code>emoji list</code></p>
+<ul>
+<li>Discord：<code>--guild-id</code></li>
+<li>Slack：无需额外标志</li>
+</ul>
+</li>
+<li>
+<p><code>emoji upload</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--guild-id</code>、<code>--emoji-name</code>、<code>--media</code></li>
+<li>可选：<code>--role-ids</code>（可重复）</li>
+</ul>
+</li>
+</ul>
+<h3 id="贴纸">贴纸<a hidden class="anchor" aria-hidden="true" href="#贴纸">#</a></h3>
+<ul>
+<li>
+<p><code>sticker send</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--target</code>、<code>--sticker-id</code>（可重复）</li>
+<li>可选：<code>--message</code></li>
+</ul>
+</li>
+<li>
+<p><code>sticker upload</code></p>
+<ul>
+<li>渠道：Discord</li>
+<li>必需：<code>--guild-id</code>、<code>--sticker-name</code>、<code>--sticker-desc</code>、<code>--sticker-tags</code>、<code>--media</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="角色--频道--成员--语音">角色 / 频道 / 成员 / 语音<a hidden class="anchor" aria-hidden="true" href="#角色--频道--成员--语音">#</a></h3>
+<ul>
+<li><code>role info</code>（Discord）：<code>--guild-id</code></li>
+<li><code>role add</code> / <code>role remove</code>（Discord）：<code>--guild-id</code>、<code>--user-id</code>、<code>--role-id</code></li>
+<li><code>channel info</code>（Discord）：<code>--target</code></li>
+<li><code>channel list</code>（Discord）：<code>--guild-id</code></li>
+<li><code>member info</code>（Discord/Slack）：<code>--user-id</code>（Discord 还需要 <code>--guild-id</code>）</li>
+<li><code>voice status</code>（Discord）：<code>--guild-id</code>、<code>--user-id</code></li>
+</ul>
+<h3 id="事件">事件<a hidden class="anchor" aria-hidden="true" href="#事件">#</a></h3>
+<ul>
+<li><code>event list</code>（Discord）：<code>--guild-id</code></li>
+<li><code>event create</code>（Discord）：<code>--guild-id</code>、<code>--event-name</code>、<code>--start-time</code>
+<ul>
+<li>可选：<code>--end-time</code>、<code>--desc</code>、<code>--channel-id</code>、<code>--location</code>、<code>--event-type</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="管理discord">管理（Discord）<a hidden class="anchor" aria-hidden="true" href="#管理discord">#</a></h3>
+<ul>
+<li><code>timeout</code>：<code>--guild-id</code>、<code>--user-id</code>（可选 <code>--duration-min</code> 或 <code>--until</code>；两者都省略则清除超时）</li>
+<li><code>kick</code>：<code>--guild-id</code>、<code>--user-id</code>（+ <code>--reason</code>）</li>
+<li><code>ban</code>：<code>--guild-id</code>、<code>--user-id</code>（+ <code>--delete-days</code>、<code>--reason</code>）
+<ul>
+<li><code>timeout</code> 也支持 <code>--reason</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="广播">广播<a hidden class="anchor" aria-hidden="true" href="#广播">#</a></h3>
+<ul>
+<li><code>broadcast</code>
+<ul>
+<li>渠道：任何已配置的渠道；使用 <code>--channel all</code> 可针对所有提供商</li>
+<li>必需：<code>--targets</code>（可重复）</li>
+<li>可选：<code>--message</code>、<code>--media</code>、<code>--dry-run</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="示例">示例<a hidden class="anchor" aria-hidden="true" href="#示例">#</a></h2>
+<p>发送 Discord 回复：</p>
+<pre tabindex="0"><code>openclaw message send --channel discord \
+  --target channel:123 --message &#34;hi&#34; --reply-to 456
+</code></pre><p>创建 Discord 投票：</p>
+<pre tabindex="0"><code>openclaw message poll --channel discord \
+  --target channel:123 \
+  --poll-question &#34;Snack?&#34; \
+  --poll-option Pizza --poll-option Sushi \
+  --poll-multi --poll-duration-hours 48
+</code></pre><p>发送 Teams 主动消息：</p>
+<pre tabindex="0"><code>openclaw message send --channel msteams \
+  --target conversation:19:abc@thread.tacv2 --message &#34;hi&#34;
+</code></pre><p>创建 Teams 投票：</p>
+<pre tabindex="0"><code>openclaw message poll --channel msteams \
+  --target conversation:19:abc@thread.tacv2 \
+  --poll-question &#34;Lunch?&#34; \
+  --poll-option Pizza --poll-option Sushi
+</code></pre><p>在 Slack 中添加表情回应：</p>
+<pre tabindex="0"><code>openclaw message react --channel slack \
+  --target C123 --message-id 456 --emoji &#34;✅&#34;
+</code></pre><p>在 Signal 群组中添加表情回应：</p>
+<pre tabindex="0"><code>openclaw message react --channel signal \
+  --target signal:group:abc123 --message-id 1737630212345 \
+  --emoji &#34;✅&#34; --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
+</code></pre><p>发送 Telegram 内联按钮：</p>
+<pre tabindex="0"><code>openclaw message send --channel telegram --target @mychat --message &#34;Choose:&#34; \
+  --buttons &#39;[ [{&#34;text&#34;:&#34;Yes&#34;,&#34;callback_data&#34;:&#34;cmd:yes&#34;}], [{&#34;text&#34;:&#34;No&#34;,&#34;callback_data&#34;:&#34;cmd:no&#34;}] ]&#39;
+</code></pre>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/cli/memory/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>`openclaw memory`</span>
+  </a>
+  <a class="next" href="/openclaw/cli/models/">
+    <span class="title">Next »</span>
+    <br>
+    <span>`openclaw models`</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

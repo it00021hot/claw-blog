@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>飞书机器人 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态：生产就绪，支持机器人私聊和群组。使用 WebSocket 长连接模式接收消息。
+
+内置插件
+当前版本的 OpenClaw 已内置 Feishu 插件，因此通常不需要单独安装。
+如果你使用的是较旧版本，或是没有内置 Feishu 的自定义安装，可手动安装：
+openclaw plugins install @openclaw/feishu
+
+快速开始
+添加飞书渠道有两种方式：
+方式一：通过安装向导添加（推荐）
+如果您刚安装完 OpenClaw，可以直接运行向导，根据提示添加飞书：
+openclaw onboard
+向导会引导您完成：
+
+创建飞书应用并获取凭证
+配置应用凭证
+启动网关
+
+✅ 完成配置后，您可以使用以下命令检查网关状态：
+
+openclaw gateway status - 查看网关运行状态
+openclaw logs --follow - 查看实时日志
+
+方式二：通过命令行添加
+如果您已经完成了初始安装，可以用以下命令添加飞书渠道：
+openclaw channels add
+然后根据交互式提示选择 Feishu，输入 App ID 和 App Secret 即可。
+✅ 完成配置后，您可以使用以下命令管理网关：
+
+openclaw gateway status - 查看网关运行状态
+openclaw gateway restart - 重启网关以应用新配置
+openclaw logs --follow - 查看实时日志
+
+
+第一步：创建飞书应用
+1. 打开飞书开放平台
+访问 飞书开放平台，使用飞书账号登录。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/feishu/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/feishu/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/feishu/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="飞书机器人">
+  <meta property="og:description" content="状态：生产就绪，支持机器人私聊和群组。使用 WebSocket 长连接模式接收消息。
+内置插件 当前版本的 OpenClaw 已内置 Feishu 插件，因此通常不需要单独安装。
+如果你使用的是较旧版本，或是没有内置 Feishu 的自定义安装，可手动安装：
+openclaw plugins install @openclaw/feishu 快速开始 添加飞书渠道有两种方式：
+方式一：通过安装向导添加（推荐） 如果您刚安装完 OpenClaw，可以直接运行向导，根据提示添加飞书：
+openclaw onboard 向导会引导您完成：
+创建飞书应用并获取凭证 配置应用凭证 启动网关 ✅ 完成配置后，您可以使用以下命令检查网关状态：
+openclaw gateway status - 查看网关运行状态 openclaw logs --follow - 查看实时日志 方式二：通过命令行添加 如果您已经完成了初始安装，可以用以下命令添加飞书渠道：
+openclaw channels add 然后根据交互式提示选择 Feishu，输入 App ID 和 App Secret 即可。
+✅ 完成配置后，您可以使用以下命令管理网关：
+openclaw gateway status - 查看网关运行状态 openclaw gateway restart - 重启网关以应用新配置 openclaw logs --follow - 查看实时日志 第一步：创建飞书应用 1. 打开飞书开放平台 访问 飞书开放平台，使用飞书账号登录。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="飞书机器人">
+<meta name="twitter:description" content="状态：生产就绪，支持机器人私聊和群组。使用 WebSocket 长连接模式接收消息。
+
+内置插件
+当前版本的 OpenClaw 已内置 Feishu 插件，因此通常不需要单独安装。
+如果你使用的是较旧版本，或是没有内置 Feishu 的自定义安装，可手动安装：
+openclaw plugins install @openclaw/feishu
+
+快速开始
+添加飞书渠道有两种方式：
+方式一：通过安装向导添加（推荐）
+如果您刚安装完 OpenClaw，可以直接运行向导，根据提示添加飞书：
+openclaw onboard
+向导会引导您完成：
+
+创建飞书应用并获取凭证
+配置应用凭证
+启动网关
+
+✅ 完成配置后，您可以使用以下命令检查网关状态：
+
+openclaw gateway status - 查看网关运行状态
+openclaw logs --follow - 查看实时日志
+
+方式二：通过命令行添加
+如果您已经完成了初始安装，可以用以下命令添加飞书渠道：
+openclaw channels add
+然后根据交互式提示选择 Feishu，输入 App ID 和 App Secret 即可。
+✅ 完成配置后，您可以使用以下命令管理网关：
+
+openclaw gateway status - 查看网关运行状态
+openclaw gateway restart - 重启网关以应用新配置
+openclaw logs --follow - 查看实时日志
+
+
+第一步：创建飞书应用
+1. 打开飞书开放平台
+访问 飞书开放平台，使用飞书账号登录。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "飞书机器人",
+      "item": "/openclaw/channels/feishu/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "飞书机器人",
+  "name": "飞书机器人",
+  "description": "状态：生产就绪，支持机器人私聊和群组。使用 WebSocket 长连接模式接收消息。\n内置插件 当前版本的 OpenClaw 已内置 Feishu 插件，因此通常不需要单独安装。\n如果你使用的是较旧版本，或是没有内置 Feishu 的自定义安装，可手动安装：\nopenclaw plugins install @openclaw/feishu 快速开始 添加飞书渠道有两种方式：\n方式一：通过安装向导添加（推荐） 如果您刚安装完 OpenClaw，可以直接运行向导，根据提示添加飞书：\nopenclaw onboard 向导会引导您完成：\n创建飞书应用并获取凭证 配置应用凭证 启动网关 ✅ 完成配置后，您可以使用以下命令检查网关状态：\nopenclaw gateway status - 查看网关运行状态 openclaw logs --follow - 查看实时日志 方式二：通过命令行添加 如果您已经完成了初始安装，可以用以下命令添加飞书渠道：\nopenclaw channels add 然后根据交互式提示选择 Feishu，输入 App ID 和 App Secret 即可。\n✅ 完成配置后，您可以使用以下命令管理网关：\nopenclaw gateway status - 查看网关运行状态 openclaw gateway restart - 重启网关以应用新配置 openclaw logs --follow - 查看实时日志 第一步：创建飞书应用 1. 打开飞书开放平台 访问 飞书开放平台，使用飞书账号登录。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态：生产就绪，支持机器人私聊和群组。使用 WebSocket 长连接模式接收消息。\n内置插件 当前版本的 OpenClaw 已内置 Feishu 插件，因此通常不需要单独安装。\n如果你使用的是较旧版本，或是没有内置 Feishu 的自定义安装，可手动安装：\nopenclaw plugins install @openclaw/feishu 快速开始 添加飞书渠道有两种方式：\n方式一：通过安装向导添加（推荐） 如果您刚安装完 OpenClaw，可以直接运行向导，根据提示添加飞书：\nopenclaw onboard 向导会引导您完成：\n创建飞书应用并获取凭证 配置应用凭证 启动网关 ✅ 完成配置后，您可以使用以下命令检查网关状态：\nopenclaw gateway status - 查看网关运行状态 openclaw logs --follow - 查看实时日志 方式二：通过命令行添加 如果您已经完成了初始安装，可以用以下命令添加飞书渠道：\nopenclaw channels add 然后根据交互式提示选择 Feishu，输入 App ID 和 App Secret 即可。\n✅ 完成配置后，您可以使用以下命令管理网关：\nopenclaw gateway status - 查看网关运行状态 openclaw gateway restart - 重启网关以应用新配置 openclaw logs --follow - 查看实时日志 第一步：创建飞书应用 1. 打开飞书开放平台 访问 飞书开放平台，使用飞书账号登录。\nLark（国际版）请使用 https://open.larksuite.com/app，并在配置中设置 domain: \"lark\"。\n2. 创建应用 点击 创建企业自建应用 填写应用名称和描述 选择应用图标 3. 获取应用凭证 在应用的 凭证与基础信息 页面，复制：\nApp ID（格式如 cli_xxx） App Secret ❗ 重要：请妥善保管 App Secret，不要分享给他人。\n4. 配置应用权限 在 权限管理 页面，点击 批量导入 按钮，粘贴以下 JSON 配置一键导入所需权限：\n{ \"scopes\": { \"tenant\": [ \"aily:file:read\", \"aily:file:write\", \"application:application.app_message_stats.overview:readonly\", \"application:application:self_manage\", \"application:bot.menu:write\", \"cardkit:card:write\", \"contact:user.employee_id:readonly\", \"corehr:file:download\", \"docs:document.content:read\", \"event:ip_list\", \"im:chat\", \"im:chat.access_event.bot_p2p_chat:read\", \"im:chat.members:bot_access\", \"im:message\", \"im:message.group_at_msg:readonly\", \"im:message.group_msg\", \"im:message.p2p_msg:readonly\", \"im:message:readonly\", \"im:message:send_as_bot\", \"im:resource\", \"sheets:spreadsheet\", \"wiki:wiki:readonly\" ], \"user\": [\"aily:file:read\", \"aily:file:write\", \"im:chat.access_event.bot_p2p_chat:read\"] } } 5. 启用机器人能力 在 应用能力 \u003e 机器人 页面：\n开启机器人能力 配置机器人名称 6. 配置事件订阅 ⚠️ 重要提醒：在配置事件订阅前，请务必确保已完成以下步骤：\n运行 openclaw channels add 添加了 Feishu 渠道 网关处于启动状态（可通过 openclaw gateway status 检查状态） 在 事件订阅 页面：\n选择 使用长连接接收事件（WebSocket 模式） 添加事件：im.message.receive_v1（接收消息） ⚠️ 注意：如果网关未启动或渠道未添加，长连接设置将保存失败。\n7. 发布应用 在 版本管理与发布 页面创建版本 提交审核并发布 等待管理员审批（企业自建应用通常自动通过） 第二步：配置 OpenClaw 通过向导配置（推荐） 运行以下命令，根据提示粘贴 App ID 和 App Secret：\nopenclaw channels add 选择 Feishu，然后输入您在第一步获取的凭证即可。\n通过配置文件配置 编辑 ~/.openclaw/openclaw.json：\n{ channels: { feishu: { enabled: true, dmPolicy: \"pairing\", accounts: { main: { appId: \"cli_xxx\", appSecret: \"xxx\", botName: \"我的AI助手\", }, }, }, }, } 若使用 connectionMode: \"webhook\"，需设置 verificationToken。飞书 Webhook 服务默认绑定 127.0.0.1；仅在需要不同监听地址时设置 webhookHost。\n获取 Verification Token（仅 Webhook 模式） 使用 Webhook 模式时，需在配置中设置 channels.feishu.verificationToken。获取方式：\n在飞书开放平台打开您的应用 进入 开发配置 → 事件与回调 打开 加密策略 选项卡 复制 Verification Token（校验令牌） 通过环境变量配置 export FEISHU_APP_ID=\"cli_xxx\" export FEISHU_APP_SECRET=\"xxx\" Lark（国际版）域名 如果您的租户在 Lark（国际版），请设置域名为 lark（或完整域名），可配置 channels.feishu.domain 或 channels.feishu.accounts..domain：\n{ channels: { feishu: { domain: \"lark\", accounts: { main: { appId: \"cli_xxx\", appSecret: \"xxx\", }, }, }, }, } 配额优化 可通过以下可选配置减少飞书 API 调用：\ntypingIndicator（默认 true）：设为 false 时不发送“正在输入”状态。 resolveSenderNames（默认 true）：设为 false 时不拉取发送者资料。 可在渠道级或账号级配置：\n{ channels: { feishu: { typingIndicator: false, resolveSenderNames: false, accounts: { main: { appId: \"cli_xxx\", appSecret: \"xxx\", typingIndicator: true, resolveSenderNames: false, }, }, }, }, } 第三步：启动并测试 1. 启动网关 openclaw gateway 2. 发送测试消息 在飞书中找到您创建的机器人，发送一条消息。\n3. 配对授权 默认情况下，机器人会回复一个 配对码。您需要批准此代码：\nopenclaw pairing approve feishu \u003c配对码\u003e 批准后即可正常对话。\n介绍 飞书机器人渠道：由网关管理的飞书机器人 确定性路由：回复始终返回飞书，模型不会选择渠道 会话隔离：私聊共享主会话；群组独立隔离 WebSocket 连接：使用飞书 SDK 的长连接模式，无需公网 URL 访问控制 私聊访问 默认：dmPolicy: \"pairing\"，陌生用户会收到配对码 批准配对： openclaw pairing list feishu # 查看待审批列表 openclaw pairing approve feishu # 批准 白名单模式：通过 channels.feishu.allowFrom 配置允许的用户 Open ID 群组访问 1. 群组策略（channels.feishu.groupPolicy）：\n\"open\" = 允许群组中所有人（默认） \"allowlist\" = 仅允许 groupAllowFrom 中的群组 \"disabled\" = 禁用群组消息 2. @提及要求（channels.feishu.groups..requireMention）：\ntrue = 需要 @机器人才响应（默认） false = 无需 @也响应 群组配置示例 允许所有群组，需要 @提及（默认行为） { channels: { feishu: { groupPolicy: \"open\", // 默认 requireMention: true }, }, } 允许所有群组，无需 @提及 需要为特定群组配置：\n{ channels: { feishu: { groups: { oc_xxx: { requireMention: false }, }, }, }, } 仅允许特定群组 { channels: { feishu: { groupPolicy: \"allowlist\", // 群组 ID 格式为 oc_xxx groupAllowFrom: [\"oc_xxx\", \"oc_yyy\"], }, }, } 仅允许特定成员在群组中发信（发送者白名单） 除群组白名单外，该群组内所有消息均按发送者 open_id 校验：仅 groups..allowFrom 中列出的用户消息会被处理，其他成员的消息会被忽略（此为发送者级白名单，不仅针对 /reset、/new 等控制命令）。\n{ channels: { feishu: { groupPolicy: \"allowlist\", groupAllowFrom: [\"oc_xxx\"], groups: { oc_xxx: { // 用户 open_id 格式为 ou_xxx allowFrom: [\"ou_user1\", \"ou_user2\"], }, }, }, }, } 获取群组/用户 ID 获取群组 ID（chat_id） 群组 ID 格式为 oc_xxx，可以通过以下方式获取：\n方法一（推荐）：\n启动网关并在群组中 @机器人发消息 运行 openclaw logs --follow 查看日志中的 chat_id 方法二： 使用飞书 API 调试工具获取机器人所在群组列表。\n获取用户 ID（open_id） 用户 ID 格式为 ou_xxx，可以通过以下方式获取：\n方法一（推荐）：\n启动网关并给机器人发消息 运行 openclaw logs --follow 查看日志中的 open_id 方法二： 查看配对请求列表，其中包含用户的 Open ID：\nopenclaw pairing list feishu 常用命令 命令 说明 /status 查看机器人状态 /reset 重置对话会话 /model 查看/切换模型 注意：飞书目前不支持原生命令菜单，命令需要以文本形式发送。\n网关管理命令 在配置和使用飞书渠道时，您可能需要使用以下网关管理命令：\n命令 说明 openclaw gateway status 查看网关运行状态 openclaw gateway install 安装/启动网关服务 openclaw gateway stop 停止网关服务 openclaw gateway restart 重启网关服务 openclaw logs --follow 实时查看日志输出 故障排除 机器人在群组中不响应 检查机器人是否已添加到群组 检查是否 @了机器人（默认需要 @提及） 检查 groupPolicy 是否为 \"disabled\" 查看日志：openclaw logs --follow 机器人收不到消息 检查应用是否已发布并审批通过 检查事件订阅是否配置正确（im.message.receive_v1） 检查是否选择了 长连接 模式 检查应用权限是否完整 检查网关是否正在运行：openclaw gateway status 查看实时日志：openclaw logs --follow App Secret 泄露怎么办 在飞书开放平台重置 App Secret 更新配置文件中的 App Secret 重启网关 发送消息失败 检查应用是否有 im:message:send_as_bot 权限 检查应用是否已发布 查看日志获取详细错误信息 高级配置 多账号配置 如果需要管理多个飞书机器人，可配置 defaultAccount 指定出站未显式指定 accountId 时使用的账号：\n{ channels: { feishu: { defaultAccount: \"main\", accounts: { main: { appId: \"cli_xxx\", appSecret: \"xxx\", botName: \"主机器人\", }, backup: { appId: \"cli_yyy\", appSecret: \"yyy\", botName: \"备用机器人\", enabled: false, // 暂时禁用 }, }, }, }, } 消息限制 textChunkLimit：出站文本分块大小（默认 2000 字符） mediaMaxMb：媒体上传/下载限制（默认 30MB） 流式输出 飞书支持通过交互式卡片实现流式输出，机器人会实时更新卡片内容显示生成进度。默认配置：\n{ channels: { feishu: { streaming: true, // 启用流式卡片输出（默认 true） blockStreaming: true, // 启用块级流式（默认 true） }, }, } 如需禁用流式输出（等待完整回复后一次性发送），可设置 streaming: false。\n消息引用 在群聊中，机器人的回复可以引用用户发送的原始消息，让对话上下文更加清晰。\n配置选项：\n{ channels: { feishu: { // 账户级别配置（默认 \"all\"） replyToMode: \"all\", groups: { oc_xxx: { // 特定群组可以覆盖 replyToMode: \"first\", }, }, }, }, } replyToMode 值说明：\n值 行为 \"off\" 不引用原消息（私聊默认值） \"first\" 仅在第一条回复时引用原消息 \"all\" 所有回复都引用原消息（群聊默认值） 注意：消息引用功能与流式卡片输出（streaming: true）不能同时使用。当启用流式输出时，回复会以卡片形式呈现，不会显示引用。\n多 Agent 路由 通过 bindings 配置，您可以用一个飞书机器人对接多个不同功能或性格的 Agent。系统会根据用户 ID 或群组 ID 自动将对话分发到对应的 Agent。\n配置示例：\n{ agents: { list: [ { id: \"main\" }, { id: \"clawd-fan\", workspace: \"/home/user/clawd-fan\", agentDir: \"/home/user/.openclaw/agents/clawd-fan/agent\", }, { id: \"clawd-xi\", workspace: \"/home/user/clawd-xi\", agentDir: \"/home/user/.openclaw/agents/clawd-xi/agent\", }, ], }, bindings: [ { // 用户 A 的私聊 → main agent agentId: \"main\", match: { channel: \"feishu\", peer: { kind: \"dm\", id: \"ou_28b31a88...\" }, }, }, { // 用户 B 的私聊 → clawd-fan agent agentId: \"clawd-fan\", match: { channel: \"feishu\", peer: { kind: \"dm\", id: \"ou_0fe6b1c9...\" }, }, }, { // 某个群组 → clawd-xi agent agentId: \"clawd-xi\", match: { channel: \"feishu\", peer: { kind: \"group\", id: \"oc_xxx...\" }, }, }, ], } 匹配规则说明：\n字段 说明 agentId 目标 Agent 的 ID，需要在 agents.list 中定义 match.channel 渠道类型，这里固定为 \"feishu\" match.peer.kind 对话类型：\"dm\"（私聊）或 \"group\"（群组） match.peer.id 用户 Open ID（ou_xxx）或群组 ID（oc_xxx） 获取 ID 的方法：参见上文 获取群组/用户 ID 章节。\n配置参考 完整配置请参考：网关配置\n主要选项：\n配置项 说明 默认值 channels.feishu.enabled 启用/禁用渠道 true channels.feishu.domain API 域名（feishu 或 lark） feishu channels.feishu.connectionMode 事件传输模式（websocket/webhook） websocket channels.feishu.defaultAccount 出站路由默认账号 ID default channels.feishu.verificationToken Webhook 模式必填 - channels.feishu.webhookPath Webhook 路由路径 /feishu/events channels.feishu.webhookHost Webhook 监听地址 127.0.0.1 channels.feishu.webhookPort Webhook 监听端口 3000 channels.feishu.accounts..appId 应用 App ID - channels.feishu.accounts..appSecret 应用 App Secret - channels.feishu.accounts..domain 单账号 API 域名覆盖 feishu channels.feishu.dmPolicy 私聊策略 pairing channels.feishu.allowFrom 私聊白名单（open_id 列表） - channels.feishu.groupPolicy 群组策略 open channels.feishu.groupAllowFrom 群组白名单 - channels.feishu.groups..requireMention 是否需要 @提及 true channels.feishu.groups..enabled 是否启用该群组 true channels.feishu.textChunkLimit 消息分块大小 2000 channels.feishu.mediaMaxMb 媒体大小限制 30 channels.feishu.streaming 启用流式卡片输出 true channels.feishu.blockStreaming 启用块级流式 true dmPolicy 策略说明 值 行为 \"pairing\" 默认。未知用户收到配对码，管理员批准后才能对话 \"allowlist\" 仅 allowFrom 列表中的用户可对话，其他静默忽略 \"open\" 允许所有人对话（需在 allowFrom 中加 \"*\"） \"disabled\" 完全禁止私聊 支持的消息类型 接收 ✅ 文本消息 ✅ 富文本（帖子） ✅ 图片 ✅ 文件 ✅ 音频 ✅ 视频 ✅ 表情包 发送 ✅ 文本消息 ✅ 图片 ✅ 文件 ✅ 音频 ⚠️ 富文本（部分支持） ",
+  "wordCount" : "980",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/feishu/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      飞书机器人
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%86%85%e7%bd%ae%e6%8f%92%e4%bb%b6" aria-label="内置插件">内置插件</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b" aria-label="快速开始">快速开始</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%b9%e5%bc%8f%e4%b8%80%e9%80%9a%e8%bf%87%e5%ae%89%e8%a3%85%e5%90%91%e5%af%bc%e6%b7%bb%e5%8a%a0%e6%8e%a8%e8%8d%90" aria-label="方式一：通过安装向导添加（推荐）">方式一：通过安装向导添加（推荐）</a></li>
+                <li>
+                    <a href="#%e6%96%b9%e5%bc%8f%e4%ba%8c%e9%80%9a%e8%bf%87%e5%91%bd%e4%bb%a4%e8%a1%8c%e6%b7%bb%e5%8a%a0" aria-label="方式二：通过命令行添加">方式二：通过命令行添加</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%88%9b%e5%bb%ba%e9%a3%9e%e4%b9%a6%e5%ba%94%e7%94%a8" aria-label="第一步：创建飞书应用">第一步：创建飞书应用</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%89%93%e5%bc%80%e9%a3%9e%e4%b9%a6%e5%bc%80%e6%94%be%e5%b9%b3%e5%8f%b0" aria-label="1. 打开飞书开放平台">1. 打开飞书开放平台</a></li>
+                <li>
+                    <a href="#2-%e5%88%9b%e5%bb%ba%e5%ba%94%e7%94%a8" aria-label="2. 创建应用">2. 创建应用</a></li>
+                <li>
+                    <a href="#3-%e8%8e%b7%e5%8f%96%e5%ba%94%e7%94%a8%e5%87%ad%e8%af%81" aria-label="3. 获取应用凭证">3. 获取应用凭证</a></li>
+                <li>
+                    <a href="#4-%e9%85%8d%e7%bd%ae%e5%ba%94%e7%94%a8%e6%9d%83%e9%99%90" aria-label="4. 配置应用权限">4. 配置应用权限</a></li>
+                <li>
+                    <a href="#5-%e5%90%af%e7%94%a8%e6%9c%ba%e5%99%a8%e4%ba%ba%e8%83%bd%e5%8a%9b" aria-label="5. 启用机器人能力">5. 启用机器人能力</a></li>
+                <li>
+                    <a href="#6-%e9%85%8d%e7%bd%ae%e4%ba%8b%e4%bb%b6%e8%ae%a2%e9%98%85" aria-label="6. 配置事件订阅">6. 配置事件订阅</a></li>
+                <li>
+                    <a href="#7-%e5%8f%91%e5%b8%83%e5%ba%94%e7%94%a8" aria-label="7. 发布应用">7. 发布应用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e9%85%8d%e7%bd%ae-openclaw" aria-label="第二步：配置 OpenClaw">第二步：配置 OpenClaw</a><ul>
+                        
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87%e5%90%91%e5%af%bc%e9%85%8d%e7%bd%ae%e6%8e%a8%e8%8d%90" aria-label="通过向导配置（推荐）">通过向导配置（推荐）</a></li>
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e9%85%8d%e7%bd%ae" aria-label="通过配置文件配置">通过配置文件配置</a><ul>
+                        
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96-verification-token%e4%bb%85-webhook-%e6%a8%a1%e5%bc%8f" aria-label="获取 Verification Token（仅 Webhook 模式）">获取 Verification Token（仅 Webhook 模式）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f%e9%85%8d%e7%bd%ae" aria-label="通过环境变量配置">通过环境变量配置</a></li>
+                <li>
+                    <a href="#lark%e5%9b%bd%e9%99%85%e7%89%88%e5%9f%9f%e5%90%8d" aria-label="Lark（国际版）域名">Lark（国际版）域名</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e9%a2%9d%e4%bc%98%e5%8c%96" aria-label="配额优化">配额优化</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%89%e6%ad%a5%e5%90%af%e5%8a%a8%e5%b9%b6%e6%b5%8b%e8%af%95" aria-label="第三步：启动并测试">第三步：启动并测试</a><ul>
+                        
+                <li>
+                    <a href="#1-%e5%90%af%e5%8a%a8%e7%bd%91%e5%85%b3" aria-label="1. 启动网关">1. 启动网关</a></li>
+                <li>
+                    <a href="#2-%e5%8f%91%e9%80%81%e6%b5%8b%e8%af%95%e6%b6%88%e6%81%af" aria-label="2. 发送测试消息">2. 发送测试消息</a></li>
+                <li>
+                    <a href="#3-%e9%85%8d%e5%af%b9%e6%8e%88%e6%9d%83" aria-label="3. 配对授权">3. 配对授权</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bb%8b%e7%bb%8d" aria-label="介绍">介绍</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6" aria-label="访问控制">访问控制</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a7%81%e8%81%8a%e8%ae%bf%e9%97%ae" aria-label="私聊访问">私聊访问</a></li>
+                <li>
+                    <a href="#%e7%be%a4%e7%bb%84%e8%ae%bf%e9%97%ae" aria-label="群组访问">群组访问</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%be%a4%e7%bb%84%e9%85%8d%e7%bd%ae%e7%a4%ba%e4%be%8b" aria-label="群组配置示例">群组配置示例</a><ul>
+                        
+                <li>
+                    <a href="#%e5%85%81%e8%ae%b8%e6%89%80%e6%9c%89%e7%be%a4%e7%bb%84%e9%9c%80%e8%a6%81-%e6%8f%90%e5%8f%8a%e9%bb%98%e8%ae%a4%e8%a1%8c%e4%b8%ba" aria-label="允许所有群组，需要 @提及（默认行为）">允许所有群组，需要 @提及（默认行为）</a></li>
+                <li>
+                    <a href="#%e5%85%81%e8%ae%b8%e6%89%80%e6%9c%89%e7%be%a4%e7%bb%84%e6%97%a0%e9%9c%80-%e6%8f%90%e5%8f%8a" aria-label="允许所有群组，无需 @提及">允许所有群组，无需 @提及</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e5%85%81%e8%ae%b8%e7%89%b9%e5%ae%9a%e7%be%a4%e7%bb%84" aria-label="仅允许特定群组">仅允许特定群组</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e5%85%81%e8%ae%b8%e7%89%b9%e5%ae%9a%e6%88%90%e5%91%98%e5%9c%a8%e7%be%a4%e7%bb%84%e4%b8%ad%e5%8f%91%e4%bf%a1%e5%8f%91%e9%80%81%e8%80%85%e7%99%bd%e5%90%8d%e5%8d%95" aria-label="仅允许特定成员在群组中发信（发送者白名单）">仅允许特定成员在群组中发信（发送者白名单）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96%e7%be%a4%e7%bb%84%e7%94%a8%e6%88%b7-id" aria-label="获取群组/用户 ID">获取群组/用户 ID</a><ul>
+                        
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96%e7%be%a4%e7%bb%84-idchat_id" aria-label="获取群组 ID（chat_id）">获取群组 ID（chat_id）</a></li>
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96%e7%94%a8%e6%88%b7-idopen_id" aria-label="获取用户 ID（open_id）">获取用户 ID（open_id）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4" aria-label="常用命令">常用命令</a></li>
+                <li>
+                    <a href="#%e7%bd%91%e5%85%b3%e7%ae%a1%e7%90%86%e5%91%bd%e4%bb%a4" aria-label="网关管理命令">网关管理命令</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%ba%e5%99%a8%e4%ba%ba%e5%9c%a8%e7%be%a4%e7%bb%84%e4%b8%ad%e4%b8%8d%e5%93%8d%e5%ba%94" aria-label="机器人在群组中不响应">机器人在群组中不响应</a></li>
+                <li>
+                    <a href="#%e6%9c%ba%e5%99%a8%e4%ba%ba%e6%94%b6%e4%b8%8d%e5%88%b0%e6%b6%88%e6%81%af" aria-label="机器人收不到消息">机器人收不到消息</a></li>
+                <li>
+                    <a href="#app-secret-%e6%b3%84%e9%9c%b2%e6%80%8e%e4%b9%88%e5%8a%9e" aria-label="App Secret 泄露怎么办">App Secret 泄露怎么办</a></li>
+                <li>
+                    <a href="#%e5%8f%91%e9%80%81%e6%b6%88%e6%81%af%e5%a4%b1%e8%b4%a5" aria-label="发送消息失败">发送消息失败</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%ab%98%e7%ba%a7%e9%85%8d%e7%bd%ae" aria-label="高级配置">高级配置</a><ul>
+                        
+                <li>
+                    <a href="#%e5%a4%9a%e8%b4%a6%e5%8f%b7%e9%85%8d%e7%bd%ae" aria-label="多账号配置">多账号配置</a></li>
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af%e9%99%90%e5%88%b6" aria-label="消息限制">消息限制</a></li>
+                <li>
+                    <a href="#%e6%b5%81%e5%bc%8f%e8%be%93%e5%87%ba" aria-label="流式输出">流式输出</a></li>
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af%e5%bc%95%e7%94%a8" aria-label="消息引用">消息引用</a></li>
+                <li>
+                    <a href="#%e5%a4%9a-agent-%e8%b7%af%e7%94%b1" aria-label="多 Agent 路由">多 Agent 路由</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83" aria-label="配置参考">配置参考</a></li>
+                <li>
+                    <a href="#dmpolicy-%e7%ad%96%e7%95%a5%e8%af%b4%e6%98%8e" aria-label="dmPolicy 策略说明">dmPolicy 策略说明</a></li>
+                <li>
+                    <a href="#%e6%94%af%e6%8c%81%e7%9a%84%e6%b6%88%e6%81%af%e7%b1%bb%e5%9e%8b" aria-label="支持的消息类型">支持的消息类型</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8e%a5%e6%94%b6" aria-label="接收">接收</a></li>
+                <li>
+                    <a href="#%e5%8f%91%e9%80%81" aria-label="发送">发送</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>状态：生产就绪，支持机器人私聊和群组。使用 WebSocket 长连接模式接收消息。</p>
+<hr>
+<h2 id="内置插件">内置插件<a hidden class="anchor" aria-hidden="true" href="#内置插件">#</a></h2>
+<p>当前版本的 OpenClaw 已内置 Feishu 插件，因此通常不需要单独安装。</p>
+<p>如果你使用的是较旧版本，或是没有内置 Feishu 的自定义安装，可手动安装：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install @openclaw/feishu
+</span></span></code></pre></div><hr>
+<h2 id="快速开始">快速开始<a hidden class="anchor" aria-hidden="true" href="#快速开始">#</a></h2>
+<p>添加飞书渠道有两种方式：</p>
+<h3 id="方式一通过安装向导添加推荐">方式一：通过安装向导添加（推荐）<a hidden class="anchor" aria-hidden="true" href="#方式一通过安装向导添加推荐">#</a></h3>
+<p>如果您刚安装完 OpenClaw，可以直接运行向导，根据提示添加飞书：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw onboard
+</span></span></code></pre></div><p>向导会引导您完成：</p>
+<ol>
+<li>创建飞书应用并获取凭证</li>
+<li>配置应用凭证</li>
+<li>启动网关</li>
+</ol>
+<p>✅ <strong>完成配置后</strong>，您可以使用以下命令检查网关状态：</p>
+<ul>
+<li><code>openclaw gateway status</code> - 查看网关运行状态</li>
+<li><code>openclaw logs --follow</code> - 查看实时日志</li>
+</ul>
+<h3 id="方式二通过命令行添加">方式二：通过命令行添加<a hidden class="anchor" aria-hidden="true" href="#方式二通过命令行添加">#</a></h3>
+<p>如果您已经完成了初始安装，可以用以下命令添加飞书渠道：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw channels add
+</span></span></code></pre></div><p>然后根据交互式提示选择 Feishu，输入 App ID 和 App Secret 即可。</p>
+<p>✅ <strong>完成配置后</strong>，您可以使用以下命令管理网关：</p>
+<ul>
+<li><code>openclaw gateway status</code> - 查看网关运行状态</li>
+<li><code>openclaw gateway restart</code> - 重启网关以应用新配置</li>
+<li><code>openclaw logs --follow</code> - 查看实时日志</li>
+</ul>
+<hr>
+<h2 id="第一步创建飞书应用">第一步：创建飞书应用<a hidden class="anchor" aria-hidden="true" href="#第一步创建飞书应用">#</a></h2>
+<h3 id="1-打开飞书开放平台">1. 打开飞书开放平台<a hidden class="anchor" aria-hidden="true" href="#1-打开飞书开放平台">#</a></h3>
+<p>访问 <a href="https://open.feishu.cn/app">飞书开放平台</a>，使用飞书账号登录。</p>
+<p>Lark（国际版）请使用 <a href="https://open.larksuite.com/app">https://open.larksuite.com/app</a>，并在配置中设置 <code>domain: &quot;lark&quot;</code>。</p>
+<h3 id="2-创建应用">2. 创建应用<a hidden class="anchor" aria-hidden="true" href="#2-创建应用">#</a></h3>
+<ol>
+<li>点击 <strong>创建企业自建应用</strong></li>
+<li>填写应用名称和描述</li>
+<li>选择应用图标</li>
+</ol>
+<p><img alt="创建企业自建应用" loading="lazy" src="/images/feishu-step2-create-app.png"></p>
+<h3 id="3-获取应用凭证">3. 获取应用凭证<a hidden class="anchor" aria-hidden="true" href="#3-获取应用凭证">#</a></h3>
+<p>在应用的 <strong>凭证与基础信息</strong> 页面，复制：</p>
+<ul>
+<li><strong>App ID</strong>（格式如 <code>cli_xxx</code>）</li>
+<li><strong>App Secret</strong></li>
+</ul>
+<p>❗ <strong>重要</strong>：请妥善保管 App Secret，不要分享给他人。</p>
+<p><img alt="获取应用凭证" loading="lazy" src="/images/feishu-step3-credentials.png"></p>
+<h3 id="4-配置应用权限">4. 配置应用权限<a hidden class="anchor" aria-hidden="true" href="#4-配置应用权限">#</a></h3>
+<p>在 <strong>权限管理</strong> 页面，点击 <strong>批量导入</strong> 按钮，粘贴以下 JSON 配置一键导入所需权限：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;scopes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;tenant&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;aily:file:read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;aily:file:write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;application:application.app_message_stats.overview:readonly&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;application:application:self_manage&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;application:bot.menu:write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;cardkit:card:write&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;contact:user.employee_id:readonly&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;corehr:file:download&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;docs:document.content:read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;event:ip_list&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:chat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:chat.access_event.bot_p2p_chat:read&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:chat.members:bot_access&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:message&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:message.group_at_msg:readonly&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:message.group_msg&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:message.p2p_msg:readonly&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:message:readonly&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:message:send_as_bot&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;im:resource&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;sheets:spreadsheet&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;wiki:wiki:readonly&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;aily:file:read&#34;</span><span class="p">,</span> <span class="s2">&#34;aily:file:write&#34;</span><span class="p">,</span> <span class="s2">&#34;im:chat.access_event.bot_p2p_chat:read&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><img alt="配置应用权限" loading="lazy" src="/images/feishu-step4-permissions.png"></p>
+<h3 id="5-启用机器人能力">5. 启用机器人能力<a hidden class="anchor" aria-hidden="true" href="#5-启用机器人能力">#</a></h3>
+<p>在 <strong>应用能力</strong> &gt; <strong>机器人</strong> 页面：</p>
+<ol>
+<li>开启机器人能力</li>
+<li>配置机器人名称</li>
+</ol>
+<p><img alt="启用机器人能力" loading="lazy" src="/images/feishu-step5-bot-capability.png"></p>
+<h3 id="6-配置事件订阅">6. 配置事件订阅<a hidden class="anchor" aria-hidden="true" href="#6-配置事件订阅">#</a></h3>
+<p>⚠️ <strong>重要提醒</strong>：在配置事件订阅前，请务必确保已完成以下步骤：</p>
+<ol>
+<li>运行 <code>openclaw channels add</code> 添加了 Feishu 渠道</li>
+<li>网关处于启动状态（可通过 <code>openclaw gateway status</code> 检查状态）</li>
+</ol>
+<p>在 <strong>事件订阅</strong> 页面：</p>
+<ol>
+<li>选择 <strong>使用长连接接收事件</strong>（WebSocket 模式）</li>
+<li>添加事件：<code>im.message.receive_v1</code>（接收消息）</li>
+</ol>
+<p>⚠️ <strong>注意</strong>：如果网关未启动或渠道未添加，长连接设置将保存失败。</p>
+<p><img alt="配置事件订阅" loading="lazy" src="/images/feishu-step6-event-subscription.png"></p>
+<h3 id="7-发布应用">7. 发布应用<a hidden class="anchor" aria-hidden="true" href="#7-发布应用">#</a></h3>
+<ol>
+<li>在 <strong>版本管理与发布</strong> 页面创建版本</li>
+<li>提交审核并发布</li>
+<li>等待管理员审批（企业自建应用通常自动通过）</li>
+</ol>
+<hr>
+<h2 id="第二步配置-openclaw">第二步：配置 OpenClaw<a hidden class="anchor" aria-hidden="true" href="#第二步配置-openclaw">#</a></h2>
+<h3 id="通过向导配置推荐">通过向导配置（推荐）<a hidden class="anchor" aria-hidden="true" href="#通过向导配置推荐">#</a></h3>
+<p>运行以下命令，根据提示粘贴 App ID 和 App Secret：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw channels add
+</span></span></code></pre></div><p>选择 <strong>Feishu</strong>，然后输入您在第一步获取的凭证即可。</p>
+<h3 id="通过配置文件配置">通过配置文件配置<a hidden class="anchor" aria-hidden="true" href="#通过配置文件配置">#</a></h3>
+<p>编辑 <code>~/.openclaw/openclaw.json</code>：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      enabled: true,
+      dmPolicy: &#34;pairing&#34;,
+      accounts: {
+        main: {
+          appId: &#34;cli_xxx&#34;,
+          appSecret: &#34;xxx&#34;,
+          botName: &#34;我的AI助手&#34;,
+        },
+      },
+    },
+  },
+}
+</code></pre><p>若使用 <code>connectionMode: &quot;webhook&quot;</code>，需设置 <code>verificationToken</code>。飞书 Webhook 服务默认绑定 <code>127.0.0.1</code>；仅在需要不同监听地址时设置 <code>webhookHost</code>。</p>
+<h4 id="获取-verification-token仅-webhook-模式">获取 Verification Token（仅 Webhook 模式）<a hidden class="anchor" aria-hidden="true" href="#获取-verification-token仅-webhook-模式">#</a></h4>
+<p>使用 Webhook 模式时，需在配置中设置 <code>channels.feishu.verificationToken</code>。获取方式：</p>
+<ol>
+<li>在飞书开放平台打开您的应用</li>
+<li>进入 <strong>开发配置</strong> → <strong>事件与回调</strong></li>
+<li>打开 <strong>加密策略</strong> 选项卡</li>
+<li>复制 <strong>Verification Token</strong>（校验令牌）</li>
+</ol>
+<p><img alt="Verification Token 位置" loading="lazy" src="/images/feishu-verification-token.png"></p>
+<h3 id="通过环境变量配置">通过环境变量配置<a hidden class="anchor" aria-hidden="true" href="#通过环境变量配置">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">FEISHU_APP_ID</span><span class="o">=</span><span class="s2">&#34;cli_xxx&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">FEISHU_APP_SECRET</span><span class="o">=</span><span class="s2">&#34;xxx&#34;</span>
+</span></span></code></pre></div><h3 id="lark国际版域名">Lark（国际版）域名<a hidden class="anchor" aria-hidden="true" href="#lark国际版域名">#</a></h3>
+<p>如果您的租户在 Lark（国际版），请设置域名为 <code>lark</code>（或完整域名），可配置 <code>channels.feishu.domain</code> 或 <code>channels.feishu.accounts.&lt;id&gt;.domain</code>：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      domain: &#34;lark&#34;,
+      accounts: {
+        main: {
+          appId: &#34;cli_xxx&#34;,
+          appSecret: &#34;xxx&#34;,
+        },
+      },
+    },
+  },
+}
+</code></pre><h3 id="配额优化">配额优化<a hidden class="anchor" aria-hidden="true" href="#配额优化">#</a></h3>
+<p>可通过以下可选配置减少飞书 API 调用：</p>
+<ul>
+<li><code>typingIndicator</code>（默认 <code>true</code>）：设为 <code>false</code> 时不发送“正在输入”状态。</li>
+<li><code>resolveSenderNames</code>（默认 <code>true</code>）：设为 <code>false</code> 时不拉取发送者资料。</li>
+</ul>
+<p>可在渠道级或账号级配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      typingIndicator: false,
+      resolveSenderNames: false,
+      accounts: {
+        main: {
+          appId: &#34;cli_xxx&#34;,
+          appSecret: &#34;xxx&#34;,
+          typingIndicator: true,
+          resolveSenderNames: false,
+        },
+      },
+    },
+  },
+}
+</code></pre><hr>
+<h2 id="第三步启动并测试">第三步：启动并测试<a hidden class="anchor" aria-hidden="true" href="#第三步启动并测试">#</a></h2>
+<h3 id="1-启动网关">1. 启动网关<a hidden class="anchor" aria-hidden="true" href="#1-启动网关">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway
+</span></span></code></pre></div><h3 id="2-发送测试消息">2. 发送测试消息<a hidden class="anchor" aria-hidden="true" href="#2-发送测试消息">#</a></h3>
+<p>在飞书中找到您创建的机器人，发送一条消息。</p>
+<h3 id="3-配对授权">3. 配对授权<a hidden class="anchor" aria-hidden="true" href="#3-配对授权">#</a></h3>
+<p>默认情况下，机器人会回复一个 <strong>配对码</strong>。您需要批准此代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw pairing approve feishu &lt;配对码&gt;
+</span></span></code></pre></div><p>批准后即可正常对话。</p>
+<hr>
+<h2 id="介绍">介绍<a hidden class="anchor" aria-hidden="true" href="#介绍">#</a></h2>
+<ul>
+<li><strong>飞书机器人渠道</strong>：由网关管理的飞书机器人</li>
+<li><strong>确定性路由</strong>：回复始终返回飞书，模型不会选择渠道</li>
+<li><strong>会话隔离</strong>：私聊共享主会话；群组独立隔离</li>
+<li><strong>WebSocket 连接</strong>：使用飞书 SDK 的长连接模式，无需公网 URL</li>
+</ul>
+<hr>
+<h2 id="访问控制">访问控制<a hidden class="anchor" aria-hidden="true" href="#访问控制">#</a></h2>
+<h3 id="私聊访问">私聊访问<a hidden class="anchor" aria-hidden="true" href="#私聊访问">#</a></h3>
+<ul>
+<li><strong>默认</strong>：<code>dmPolicy: &quot;pairing&quot;</code>，陌生用户会收到配对码</li>
+<li><strong>批准配对</strong>：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw pairing list feishu      <span class="c1"># 查看待审批列表</span>
+</span></span><span class="line"><span class="cl">openclaw pairing approve feishu &lt;CODE&gt;  <span class="c1"># 批准</span>
+</span></span></code></pre></div></li>
+<li><strong>白名单模式</strong>：通过 <code>channels.feishu.allowFrom</code> 配置允许的用户 Open ID</li>
+</ul>
+<h3 id="群组访问">群组访问<a hidden class="anchor" aria-hidden="true" href="#群组访问">#</a></h3>
+<p><strong>1. 群组策略</strong>（<code>channels.feishu.groupPolicy</code>）：</p>
+<ul>
+<li><code>&quot;open&quot;</code> = 允许群组中所有人（默认）</li>
+<li><code>&quot;allowlist&quot;</code> = 仅允许 <code>groupAllowFrom</code> 中的群组</li>
+<li><code>&quot;disabled&quot;</code> = 禁用群组消息</li>
+</ul>
+<p><strong>2. @提及要求</strong>（<code>channels.feishu.groups.&lt;chat_id&gt;.requireMention</code>）：</p>
+<ul>
+<li><code>true</code> = 需要 @机器人才响应（默认）</li>
+<li><code>false</code> = 无需 @也响应</li>
+</ul>
+<hr>
+<h2 id="群组配置示例">群组配置示例<a hidden class="anchor" aria-hidden="true" href="#群组配置示例">#</a></h2>
+<h3 id="允许所有群组需要-提及默认行为">允许所有群组，需要 @提及（默认行为）<a hidden class="anchor" aria-hidden="true" href="#允许所有群组需要-提及默认行为">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      groupPolicy: &#34;open&#34;,
+      // 默认 requireMention: true
+    },
+  },
+}
+</code></pre><h3 id="允许所有群组无需-提及">允许所有群组，无需 @提及<a hidden class="anchor" aria-hidden="true" href="#允许所有群组无需-提及">#</a></h3>
+<p>需要为特定群组配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      groups: {
+        oc_xxx: { requireMention: false },
+      },
+    },
+  },
+}
+</code></pre><h3 id="仅允许特定群组">仅允许特定群组<a hidden class="anchor" aria-hidden="true" href="#仅允许特定群组">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      groupPolicy: &#34;allowlist&#34;,
+      // 群组 ID 格式为 oc_xxx
+      groupAllowFrom: [&#34;oc_xxx&#34;, &#34;oc_yyy&#34;],
+    },
+  },
+}
+</code></pre><h3 id="仅允许特定成员在群组中发信发送者白名单">仅允许特定成员在群组中发信（发送者白名单）<a hidden class="anchor" aria-hidden="true" href="#仅允许特定成员在群组中发信发送者白名单">#</a></h3>
+<p>除群组白名单外，该群组内<strong>所有消息</strong>均按发送者 open_id 校验：仅 <code>groups.&lt;chat_id&gt;.allowFrom</code> 中列出的用户消息会被处理，其他成员的消息会被忽略（此为发送者级白名单，不仅针对 /reset、/new 等控制命令）。</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;oc_xxx&#34;],
+      groups: {
+        oc_xxx: {
+          // 用户 open_id 格式为 ou_xxx
+          allowFrom: [&#34;ou_user1&#34;, &#34;ou_user2&#34;],
+        },
+      },
+    },
+  },
+}
+</code></pre><hr>
+<h2 id="获取群组用户-id">获取群组/用户 ID<a hidden class="anchor" aria-hidden="true" href="#获取群组用户-id">#</a></h2>
+<h3 id="获取群组-idchat_id">获取群组 ID（chat_id）<a hidden class="anchor" aria-hidden="true" href="#获取群组-idchat_id">#</a></h3>
+<p>群组 ID 格式为 <code>oc_xxx</code>，可以通过以下方式获取：</p>
+<p><strong>方法一</strong>（推荐）：</p>
+<ol>
+<li>启动网关并在群组中 @机器人发消息</li>
+<li>运行 <code>openclaw logs --follow</code> 查看日志中的 <code>chat_id</code></li>
+</ol>
+<p><strong>方法二</strong>：
+使用飞书 API 调试工具获取机器人所在群组列表。</p>
+<h3 id="获取用户-idopen_id">获取用户 ID（open_id）<a hidden class="anchor" aria-hidden="true" href="#获取用户-idopen_id">#</a></h3>
+<p>用户 ID 格式为 <code>ou_xxx</code>，可以通过以下方式获取：</p>
+<p><strong>方法一</strong>（推荐）：</p>
+<ol>
+<li>启动网关并给机器人发消息</li>
+<li>运行 <code>openclaw logs --follow</code> 查看日志中的 <code>open_id</code></li>
+</ol>
+<p><strong>方法二</strong>：
+查看配对请求列表，其中包含用户的 Open ID：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw pairing list feishu
+</span></span></code></pre></div><hr>
+<h2 id="常用命令">常用命令<a hidden class="anchor" aria-hidden="true" href="#常用命令">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>命令</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>/status</code></td>
+          <td>查看机器人状态</td>
+      </tr>
+      <tr>
+          <td><code>/reset</code></td>
+          <td>重置对话会话</td>
+      </tr>
+      <tr>
+          <td><code>/model</code></td>
+          <td>查看/切换模型</td>
+      </tr>
+  </tbody>
+</table>
+<blockquote>
+<p>注意：飞书目前不支持原生命令菜单，命令需要以文本形式发送。</p>
+</blockquote>
+<h2 id="网关管理命令">网关管理命令<a hidden class="anchor" aria-hidden="true" href="#网关管理命令">#</a></h2>
+<p>在配置和使用飞书渠道时，您可能需要使用以下网关管理命令：</p>
+<table>
+  <thead>
+      <tr>
+          <th>命令</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>openclaw gateway status</code></td>
+          <td>查看网关运行状态</td>
+      </tr>
+      <tr>
+          <td><code>openclaw gateway install</code></td>
+          <td>安装/启动网关服务</td>
+      </tr>
+      <tr>
+          <td><code>openclaw gateway stop</code></td>
+          <td>停止网关服务</td>
+      </tr>
+      <tr>
+          <td><code>openclaw gateway restart</code></td>
+          <td>重启网关服务</td>
+      </tr>
+      <tr>
+          <td><code>openclaw logs --follow</code></td>
+          <td>实时查看日志输出</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="机器人在群组中不响应">机器人在群组中不响应<a hidden class="anchor" aria-hidden="true" href="#机器人在群组中不响应">#</a></h3>
+<ol>
+<li>检查机器人是否已添加到群组</li>
+<li>检查是否 @了机器人（默认需要 @提及）</li>
+<li>检查 <code>groupPolicy</code> 是否为 <code>&quot;disabled&quot;</code></li>
+<li>查看日志：<code>openclaw logs --follow</code></li>
+</ol>
+<h3 id="机器人收不到消息">机器人收不到消息<a hidden class="anchor" aria-hidden="true" href="#机器人收不到消息">#</a></h3>
+<ol>
+<li>检查应用是否已发布并审批通过</li>
+<li>检查事件订阅是否配置正确（<code>im.message.receive_v1</code>）</li>
+<li>检查是否选择了 <strong>长连接</strong> 模式</li>
+<li>检查应用权限是否完整</li>
+<li>检查网关是否正在运行：<code>openclaw gateway status</code></li>
+<li>查看实时日志：<code>openclaw logs --follow</code></li>
+</ol>
+<h3 id="app-secret-泄露怎么办">App Secret 泄露怎么办<a hidden class="anchor" aria-hidden="true" href="#app-secret-泄露怎么办">#</a></h3>
+<ol>
+<li>在飞书开放平台重置 App Secret</li>
+<li>更新配置文件中的 App Secret</li>
+<li>重启网关</li>
+</ol>
+<h3 id="发送消息失败">发送消息失败<a hidden class="anchor" aria-hidden="true" href="#发送消息失败">#</a></h3>
+<ol>
+<li>检查应用是否有 <code>im:message:send_as_bot</code> 权限</li>
+<li>检查应用是否已发布</li>
+<li>查看日志获取详细错误信息</li>
+</ol>
+<hr>
+<h2 id="高级配置">高级配置<a hidden class="anchor" aria-hidden="true" href="#高级配置">#</a></h2>
+<h3 id="多账号配置">多账号配置<a hidden class="anchor" aria-hidden="true" href="#多账号配置">#</a></h3>
+<p>如果需要管理多个飞书机器人，可配置 <code>defaultAccount</code> 指定出站未显式指定 <code>accountId</code> 时使用的账号：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      defaultAccount: &#34;main&#34;,
+      accounts: {
+        main: {
+          appId: &#34;cli_xxx&#34;,
+          appSecret: &#34;xxx&#34;,
+          botName: &#34;主机器人&#34;,
+        },
+        backup: {
+          appId: &#34;cli_yyy&#34;,
+          appSecret: &#34;yyy&#34;,
+          botName: &#34;备用机器人&#34;,
+          enabled: false, // 暂时禁用
+        },
+      },
+    },
+  },
+}
+</code></pre><h3 id="消息限制">消息限制<a hidden class="anchor" aria-hidden="true" href="#消息限制">#</a></h3>
+<ul>
+<li><code>textChunkLimit</code>：出站文本分块大小（默认 2000 字符）</li>
+<li><code>mediaMaxMb</code>：媒体上传/下载限制（默认 30MB）</li>
+</ul>
+<h3 id="流式输出">流式输出<a hidden class="anchor" aria-hidden="true" href="#流式输出">#</a></h3>
+<p>飞书支持通过交互式卡片实现流式输出，机器人会实时更新卡片内容显示生成进度。默认配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      streaming: true, // 启用流式卡片输出（默认 true）
+      blockStreaming: true, // 启用块级流式（默认 true）
+    },
+  },
+}
+</code></pre><p>如需禁用流式输出（等待完整回复后一次性发送），可设置 <code>streaming: false</code>。</p>
+<h3 id="消息引用">消息引用<a hidden class="anchor" aria-hidden="true" href="#消息引用">#</a></h3>
+<p>在群聊中，机器人的回复可以引用用户发送的原始消息，让对话上下文更加清晰。</p>
+<p>配置选项：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    feishu: {
+      // 账户级别配置（默认 &#34;all&#34;）
+      replyToMode: &#34;all&#34;,
+      groups: {
+        oc_xxx: {
+          // 特定群组可以覆盖
+          replyToMode: &#34;first&#34;,
+        },
+      },
+    },
+  },
+}
+</code></pre><p><code>replyToMode</code> 值说明：</p>
+<table>
+  <thead>
+      <tr>
+          <th>值</th>
+          <th>行为</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>&quot;off&quot;</code></td>
+          <td>不引用原消息（私聊默认值）</td>
+      </tr>
+      <tr>
+          <td><code>&quot;first&quot;</code></td>
+          <td>仅在第一条回复时引用原消息</td>
+      </tr>
+      <tr>
+          <td><code>&quot;all&quot;</code></td>
+          <td>所有回复都引用原消息（群聊默认值）</td>
+      </tr>
+  </tbody>
+</table>
+<blockquote>
+<p>注意：消息引用功能与流式卡片输出（<code>streaming: true</code>）不能同时使用。当启用流式输出时，回复会以卡片形式呈现，不会显示引用。</p>
+</blockquote>
+<h3 id="多-agent-路由">多 Agent 路由<a hidden class="anchor" aria-hidden="true" href="#多-agent-路由">#</a></h3>
+<p>通过 <code>bindings</code> 配置，您可以用一个飞书机器人对接多个不同功能或性格的 Agent。系统会根据用户 ID 或群组 ID 自动将对话分发到对应的 Agent。</p>
+<p>配置示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    list: [
+      { id: &#34;main&#34; },
+      {
+        id: &#34;clawd-fan&#34;,
+        workspace: &#34;/home/user/clawd-fan&#34;,
+        agentDir: &#34;/home/user/.openclaw/agents/clawd-fan/agent&#34;,
+      },
+      {
+        id: &#34;clawd-xi&#34;,
+        workspace: &#34;/home/user/clawd-xi&#34;,
+        agentDir: &#34;/home/user/.openclaw/agents/clawd-xi/agent&#34;,
+      },
+    ],
+  },
+  bindings: [
+    {
+      // 用户 A 的私聊 → main agent
+      agentId: &#34;main&#34;,
+      match: {
+        channel: &#34;feishu&#34;,
+        peer: { kind: &#34;dm&#34;, id: &#34;ou_28b31a88...&#34; },
+      },
+    },
+    {
+      // 用户 B 的私聊 → clawd-fan agent
+      agentId: &#34;clawd-fan&#34;,
+      match: {
+        channel: &#34;feishu&#34;,
+        peer: { kind: &#34;dm&#34;, id: &#34;ou_0fe6b1c9...&#34; },
+      },
+    },
+    {
+      // 某个群组 → clawd-xi agent
+      agentId: &#34;clawd-xi&#34;,
+      match: {
+        channel: &#34;feishu&#34;,
+        peer: { kind: &#34;group&#34;, id: &#34;oc_xxx...&#34; },
+      },
+    },
+  ],
+}
+</code></pre><p>匹配规则说明：</p>
+<table>
+  <thead>
+      <tr>
+          <th>字段</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>agentId</code></td>
+          <td>目标 Agent 的 ID，需要在 <code>agents.list</code> 中定义</td>
+      </tr>
+      <tr>
+          <td><code>match.channel</code></td>
+          <td>渠道类型，这里固定为 <code>&quot;feishu&quot;</code></td>
+      </tr>
+      <tr>
+          <td><code>match.peer.kind</code></td>
+          <td>对话类型：<code>&quot;dm&quot;</code>（私聊）或 <code>&quot;group&quot;</code>（群组）</td>
+      </tr>
+      <tr>
+          <td><code>match.peer.id</code></td>
+          <td>用户 Open ID（<code>ou_xxx</code>）或群组 ID（<code>oc_xxx</code>）</td>
+      </tr>
+  </tbody>
+</table>
+<blockquote>
+<p>获取 ID 的方法：参见上文 <a href="#%E8%8E%B7%E5%8F%96%E7%BE%A4%E7%BB%84%E7%94%A8%E6%88%B7-id">获取群组/用户 ID</a> 章节。</p>
+</blockquote>
+<hr>
+<h2 id="配置参考">配置参考<a hidden class="anchor" aria-hidden="true" href="#配置参考">#</a></h2>
+<p>完整配置请参考：<a href="/gateway/configuration">网关配置</a></p>
+<p>主要选项：</p>
+<table>
+  <thead>
+      <tr>
+          <th>配置项</th>
+          <th>说明</th>
+          <th>默认值</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>channels.feishu.enabled</code></td>
+          <td>启用/禁用渠道</td>
+          <td><code>true</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.domain</code></td>
+          <td>API 域名（<code>feishu</code> 或 <code>lark</code>）</td>
+          <td><code>feishu</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.connectionMode</code></td>
+          <td>事件传输模式（websocket/webhook）</td>
+          <td><code>websocket</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.defaultAccount</code></td>
+          <td>出站路由默认账号 ID</td>
+          <td><code>default</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.verificationToken</code></td>
+          <td>Webhook 模式必填</td>
+          <td>-</td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.webhookPath</code></td>
+          <td>Webhook 路由路径</td>
+          <td><code>/feishu/events</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.webhookHost</code></td>
+          <td>Webhook 监听地址</td>
+          <td><code>127.0.0.1</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.webhookPort</code></td>
+          <td>Webhook 监听端口</td>
+          <td><code>3000</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.accounts.&lt;id&gt;.appId</code></td>
+          <td>应用 App ID</td>
+          <td>-</td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.accounts.&lt;id&gt;.appSecret</code></td>
+          <td>应用 App Secret</td>
+          <td>-</td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.accounts.&lt;id&gt;.domain</code></td>
+          <td>单账号 API 域名覆盖</td>
+          <td><code>feishu</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.dmPolicy</code></td>
+          <td>私聊策略</td>
+          <td><code>pairing</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.allowFrom</code></td>
+          <td>私聊白名单（open_id 列表）</td>
+          <td>-</td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.groupPolicy</code></td>
+          <td>群组策略</td>
+          <td><code>open</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.groupAllowFrom</code></td>
+          <td>群组白名单</td>
+          <td>-</td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.groups.&lt;chat_id&gt;.requireMention</code></td>
+          <td>是否需要 @提及</td>
+          <td><code>true</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.groups.&lt;chat_id&gt;.enabled</code></td>
+          <td>是否启用该群组</td>
+          <td><code>true</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.textChunkLimit</code></td>
+          <td>消息分块大小</td>
+          <td><code>2000</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.mediaMaxMb</code></td>
+          <td>媒体大小限制</td>
+          <td><code>30</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.streaming</code></td>
+          <td>启用流式卡片输出</td>
+          <td><code>true</code></td>
+      </tr>
+      <tr>
+          <td><code>channels.feishu.blockStreaming</code></td>
+          <td>启用块级流式</td>
+          <td><code>true</code></td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="dmpolicy-策略说明">dmPolicy 策略说明<a hidden class="anchor" aria-hidden="true" href="#dmpolicy-策略说明">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>值</th>
+          <th>行为</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>&quot;pairing&quot;</code></td>
+          <td><strong>默认</strong>。未知用户收到配对码，管理员批准后才能对话</td>
+      </tr>
+      <tr>
+          <td><code>&quot;allowlist&quot;</code></td>
+          <td>仅 <code>allowFrom</code> 列表中的用户可对话，其他静默忽略</td>
+      </tr>
+      <tr>
+          <td><code>&quot;open&quot;</code></td>
+          <td>允许所有人对话（需在 allowFrom 中加 <code>&quot;*&quot;</code>）</td>
+      </tr>
+      <tr>
+          <td><code>&quot;disabled&quot;</code></td>
+          <td>完全禁止私聊</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="支持的消息类型">支持的消息类型<a hidden class="anchor" aria-hidden="true" href="#支持的消息类型">#</a></h2>
+<h3 id="接收">接收<a hidden class="anchor" aria-hidden="true" href="#接收">#</a></h3>
+<ul>
+<li>✅ 文本消息</li>
+<li>✅ 富文本（帖子）</li>
+<li>✅ 图片</li>
+<li>✅ 文件</li>
+<li>✅ 音频</li>
+<li>✅ 视频</li>
+<li>✅ 表情包</li>
+</ul>
+<h3 id="发送">发送<a hidden class="anchor" aria-hidden="true" href="#发送">#</a></h3>
+<ul>
+<li>✅ 文本消息</li>
+<li>✅ 图片</li>
+<li>✅ 文件</li>
+<li>✅ 音频</li>
+<li>⚠️ 富文本（部分支持）</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/nodes/audio/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>音频 / 语音消息 — 2026-01-17</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

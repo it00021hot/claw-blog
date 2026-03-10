@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Ansible 安装 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="将 OpenClaw 部署到生产服务器的推荐方式是通过 openclaw-ansible — 一个安全优先架构的自动化安装程序。
+快速开始
+一条命令安装：
+curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
+
+📦 完整指南：github.com/openclaw/openclaw-ansible
+openclaw-ansible 仓库是 Ansible 部署的权威来源。本页是快速概述。
+
+你将获得
+
+🔒 防火墙优先安全：UFW &#43; Docker 隔离（仅 SSH &#43; Tailscale 可访问）
+🔐 Tailscale VPN：安全远程访问，无需公开暴露服务
+🐳 Docker：隔离的沙箱容器，仅绑定 localhost
+🛡️ 纵深防御：4 层安全架构
+🚀 一条命令设置：几分钟内完成部署
+🔧 Systemd 集成：带加固的开机自启动
+
+要求
+
+操作系统：Debian 11&#43; 或 Ubuntu 20.04&#43;
+访问权限：Root 或 sudo 权限
+网络：用于包安装的互联网连接
+Ansible：2.14&#43;（由快速启动脚本自动安装）
+
+安装内容
+Ansible playbook 安装并配置：
+
+Tailscale（用于安全远程访问的 mesh VPN）
+UFW 防火墙（仅允许 SSH &#43; Tailscale 端口）
+Docker CE &#43; Compose V2（用于智能体沙箱）
+Node.js 22.x &#43; pnpm（运行时依赖）
+OpenClaw（基于主机，非容器化）
+Systemd 服务（带安全加固的自动启动）
+
+注意：Gateway 网关直接在主机上运行（不在 Docker 中），但智能体沙箱使用 Docker 进行隔离。详情参见沙箱隔离。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/install/ansible/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/install/ansible/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/install/ansible/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Ansible 安装">
+  <meta property="og:description" content="将 OpenClaw 部署到生产服务器的推荐方式是通过 openclaw-ansible — 一个安全优先架构的自动化安装程序。
+快速开始 一条命令安装：
+curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash 📦 完整指南：github.com/openclaw/openclaw-ansible
+openclaw-ansible 仓库是 Ansible 部署的权威来源。本页是快速概述。
+你将获得 🔒 防火墙优先安全：UFW &#43; Docker 隔离（仅 SSH &#43; Tailscale 可访问） 🔐 Tailscale VPN：安全远程访问，无需公开暴露服务 🐳 Docker：隔离的沙箱容器，仅绑定 localhost 🛡️ 纵深防御：4 层安全架构 🚀 一条命令设置：几分钟内完成部署 🔧 Systemd 集成：带加固的开机自启动 要求 操作系统：Debian 11&#43; 或 Ubuntu 20.04&#43; 访问权限：Root 或 sudo 权限 网络：用于包安装的互联网连接 Ansible：2.14&#43;（由快速启动脚本自动安装） 安装内容 Ansible playbook 安装并配置：
+Tailscale（用于安全远程访问的 mesh VPN） UFW 防火墙（仅允许 SSH &#43; Tailscale 端口） Docker CE &#43; Compose V2（用于智能体沙箱） Node.js 22.x &#43; pnpm（运行时依赖） OpenClaw（基于主机，非容器化） Systemd 服务（带安全加固的自动启动） 注意：Gateway 网关直接在主机上运行（不在 Docker 中），但智能体沙箱使用 Docker 进行隔离。详情参见沙箱隔离。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ansible 安装">
+<meta name="twitter:description" content="将 OpenClaw 部署到生产服务器的推荐方式是通过 openclaw-ansible — 一个安全优先架构的自动化安装程序。
+快速开始
+一条命令安装：
+curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash
+
+📦 完整指南：github.com/openclaw/openclaw-ansible
+openclaw-ansible 仓库是 Ansible 部署的权威来源。本页是快速概述。
+
+你将获得
+
+🔒 防火墙优先安全：UFW &#43; Docker 隔离（仅 SSH &#43; Tailscale 可访问）
+🔐 Tailscale VPN：安全远程访问，无需公开暴露服务
+🐳 Docker：隔离的沙箱容器，仅绑定 localhost
+🛡️ 纵深防御：4 层安全架构
+🚀 一条命令设置：几分钟内完成部署
+🔧 Systemd 集成：带加固的开机自启动
+
+要求
+
+操作系统：Debian 11&#43; 或 Ubuntu 20.04&#43;
+访问权限：Root 或 sudo 权限
+网络：用于包安装的互联网连接
+Ansible：2.14&#43;（由快速启动脚本自动安装）
+
+安装内容
+Ansible playbook 安装并配置：
+
+Tailscale（用于安全远程访问的 mesh VPN）
+UFW 防火墙（仅允许 SSH &#43; Tailscale 端口）
+Docker CE &#43; Compose V2（用于智能体沙箱）
+Node.js 22.x &#43; pnpm（运行时依赖）
+OpenClaw（基于主机，非容器化）
+Systemd 服务（带安全加固的自动启动）
+
+注意：Gateway 网关直接在主机上运行（不在 Docker 中），但智能体沙箱使用 Docker 进行隔离。详情参见沙箱隔离。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Ansible 安装",
+      "item": "/openclaw/install/ansible/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Ansible 安装",
+  "name": "Ansible 安装",
+  "description": "将 OpenClaw 部署到生产服务器的推荐方式是通过 openclaw-ansible — 一个安全优先架构的自动化安装程序。\n快速开始 一条命令安装：\ncurl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash 📦 完整指南：github.com/openclaw/openclaw-ansible\nopenclaw-ansible 仓库是 Ansible 部署的权威来源。本页是快速概述。\n你将获得 🔒 防火墙优先安全：UFW + Docker 隔离（仅 SSH + Tailscale 可访问） 🔐 Tailscale VPN：安全远程访问，无需公开暴露服务 🐳 Docker：隔离的沙箱容器，仅绑定 localhost 🛡️ 纵深防御：4 层安全架构 🚀 一条命令设置：几分钟内完成部署 🔧 Systemd 集成：带加固的开机自启动 要求 操作系统：Debian 11+ 或 Ubuntu 20.04+ 访问权限：Root 或 sudo 权限 网络：用于包安装的互联网连接 Ansible：2.14+（由快速启动脚本自动安装） 安装内容 Ansible playbook 安装并配置：\nTailscale（用于安全远程访问的 mesh VPN） UFW 防火墙（仅允许 SSH + Tailscale 端口） Docker CE + Compose V2（用于智能体沙箱） Node.js 22.x + pnpm（运行时依赖） OpenClaw（基于主机，非容器化） Systemd 服务（带安全加固的自动启动） 注意：Gateway 网关直接在主机上运行（不在 Docker 中），但智能体沙箱使用 Docker 进行隔离。详情参见沙箱隔离。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "将 OpenClaw 部署到生产服务器的推荐方式是通过 openclaw-ansible — 一个安全优先架构的自动化安装程序。\n快速开始 一条命令安装：\ncurl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh | bash 📦 完整指南：github.com/openclaw/openclaw-ansible\nopenclaw-ansible 仓库是 Ansible 部署的权威来源。本页是快速概述。\n你将获得 🔒 防火墙优先安全：UFW + Docker 隔离（仅 SSH + Tailscale 可访问） 🔐 Tailscale VPN：安全远程访问，无需公开暴露服务 🐳 Docker：隔离的沙箱容器，仅绑定 localhost 🛡️ 纵深防御：4 层安全架构 🚀 一条命令设置：几分钟内完成部署 🔧 Systemd 集成：带加固的开机自启动 要求 操作系统：Debian 11+ 或 Ubuntu 20.04+ 访问权限：Root 或 sudo 权限 网络：用于包安装的互联网连接 Ansible：2.14+（由快速启动脚本自动安装） 安装内容 Ansible playbook 安装并配置：\nTailscale（用于安全远程访问的 mesh VPN） UFW 防火墙（仅允许 SSH + Tailscale 端口） Docker CE + Compose V2（用于智能体沙箱） Node.js 22.x + pnpm（运行时依赖） OpenClaw（基于主机，非容器化） Systemd 服务（带安全加固的自动启动） 注意：Gateway 网关直接在主机上运行（不在 Docker 中），但智能体沙箱使用 Docker 进行隔离。详情参见沙箱隔离。\n安装后设置 安装完成后，切换到 openclaw 用户：\nsudo -i -u openclaw 安装后脚本将引导你完成：\n新手引导向导：配置 OpenClaw 设置 提供商登录：连接 WhatsApp/Telegram/Discord/Signal Gateway 网关测试：验证安装 Tailscale 设置：连接到你的 VPN mesh 常用命令 # 检查服务状态 sudo systemctl status openclaw # 查看实时日志 sudo journalctl -u openclaw -f # 重启 Gateway 网关 sudo systemctl restart openclaw # 提供商登录（以 openclaw 用户运行） sudo -i -u openclaw openclaw channels login 安全架构 4 层防御 防火墙（UFW）：仅公开暴露 SSH（22）+ Tailscale（41641/udp） VPN（Tailscale）：Gateway 网关仅通过 VPN mesh 可访问 Docker 隔离：DOCKER-USER iptables 链防止外部端口暴露 Systemd 加固：NoNewPrivileges、PrivateTmp、非特权用户 验证 测试外部攻击面：\nnmap -p- YOUR_SERVER_IP 应该显示仅端口 22（SSH）开放。所有其他服务（Gateway 网关、Docker）都被锁定。\nDocker 可用性 Docker 用于智能体沙箱（隔离的工具执行），而不是用于运行 Gateway 网关本身。Gateway 网关仅绑定到 localhost，通过 Tailscale VPN 访问。\n沙箱配置参见多智能体沙箱与工具。\n手动安装 如果你更喜欢手动控制而非自动化：\n# 1. 安装先决条件 sudo apt update \u0026\u0026 sudo apt install -y ansible git # 2. 克隆仓库 git clone https://github.com/openclaw/openclaw-ansible.git cd openclaw-ansible # 3. 安装 Ansible collections ansible-galaxy collection install -r requirements.yml # 4. 运行 playbook ./run-playbook.sh # 或直接运行（然后手动执行 /tmp/openclaw-setup.sh） # ansible-playbook playbook.yml --ask-become-pass 更新 OpenClaw Ansible 安装程序设置 OpenClaw 为手动更新。标准更新流程参见更新。\n要重新运行 Ansible playbook（例如，用于配置更改）：\ncd openclaw-ansible ./run-playbook.sh 注意：这是幂等的，可以安全地多次运行。\n故障排除 防火墙阻止了我的连接 如果你被锁定：\n确保你可以先通过 Tailscale VPN 访问 SSH 访问（端口 22）始终允许 Gateway 网关仅通过 Tailscale 访问，这是设计如此 服务无法启动 # 检查日志 sudo journalctl -u openclaw -n 100 # 验证权限 sudo ls -la /opt/openclaw # 测试手动启动 sudo -i -u openclaw cd ~/openclaw pnpm start Docker 沙箱问题 # 验证 Docker 正在运行 sudo systemctl status docker # 检查沙箱镜像 sudo docker images | grep openclaw-sandbox # 如果缺失则构建沙箱镜像 cd /opt/openclaw/openclaw sudo -u openclaw ./scripts/sandbox-setup.sh 提供商登录失败 确保你以 openclaw 用户运行：\nsudo -i -u openclaw openclaw channels login 高级配置 详细的安全架构和故障排除：\n安全架构 技术详情 故障排除指南 相关内容 openclaw-ansible — 完整部署指南 Docker — 容器化 Gateway 网关设置 沙箱隔离 — 智能体沙箱配置 多智能体沙箱与工具 — 每个智能体的隔离 ",
+  "wordCount" : "330",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/install/ansible/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Ansible 安装
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b" aria-label="快速开始">快速开始</a></li>
+                <li>
+                    <a href="#%e4%bd%a0%e5%b0%86%e8%8e%b7%e5%be%97" aria-label="你将获得">你将获得</a></li>
+                <li>
+                    <a href="#%e8%a6%81%e6%b1%82" aria-label="要求">要求</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e5%86%85%e5%ae%b9" aria-label="安装内容">安装内容</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85%e5%90%8e%e8%ae%be%e7%bd%ae" aria-label="安装后设置">安装后设置</a><ul>
+                        
+                <li>
+                    <a href="#%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4" aria-label="常用命令">常用命令</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e6%9e%b6%e6%9e%84" aria-label="安全架构">安全架构</a><ul>
+                        
+                <li>
+                    <a href="#4-%e5%b1%82%e9%98%b2%e5%be%a1" aria-label="4 层防御">4 层防御</a></li>
+                <li>
+                    <a href="#%e9%aa%8c%e8%af%81" aria-label="验证">验证</a></li>
+                <li>
+                    <a href="#docker-%e5%8f%af%e7%94%a8%e6%80%a7" aria-label="Docker 可用性">Docker 可用性</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%89%8b%e5%8a%a8%e5%ae%89%e8%a3%85" aria-label="手动安装">手动安装</a></li>
+                <li>
+                    <a href="#%e6%9b%b4%e6%96%b0-openclaw" aria-label="更新 OpenClaw">更新 OpenClaw</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#%e9%98%b2%e7%81%ab%e5%a2%99%e9%98%bb%e6%ad%a2%e4%ba%86%e6%88%91%e7%9a%84%e8%bf%9e%e6%8e%a5" aria-label="防火墙阻止了我的连接">防火墙阻止了我的连接</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e6%97%a0%e6%b3%95%e5%90%af%e5%8a%a8" aria-label="服务无法启动">服务无法启动</a></li>
+                <li>
+                    <a href="#docker-%e6%b2%99%e7%ae%b1%e9%97%ae%e9%a2%98" aria-label="Docker 沙箱问题">Docker 沙箱问题</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e4%be%9b%e5%95%86%e7%99%bb%e5%bd%95%e5%a4%b1%e8%b4%a5" aria-label="提供商登录失败">提供商登录失败</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%ab%98%e7%ba%a7%e9%85%8d%e7%bd%ae" aria-label="高级配置">高级配置</a></li>
+                <li>
+                    <a href="#%e7%9b%b8%e5%85%b3%e5%86%85%e5%ae%b9" aria-label="相关内容">相关内容</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>将 OpenClaw 部署到生产服务器的推荐方式是通过 <strong><a href="https://github.com/openclaw/openclaw-ansible">openclaw-ansible</a></strong> — 一个安全优先架构的自动化安装程序。</p>
+<h2 id="快速开始">快速开始<a hidden class="anchor" aria-hidden="true" href="#快速开始">#</a></h2>
+<p>一条命令安装：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/install.sh <span class="p">|</span> bash
+</span></span></code></pre></div><blockquote>
+<p><strong>📦 完整指南：<a href="https://github.com/openclaw/openclaw-ansible">github.com/openclaw/openclaw-ansible</a></strong></p>
+<p>openclaw-ansible 仓库是 Ansible 部署的权威来源。本页是快速概述。</p>
+</blockquote>
+<h2 id="你将获得">你将获得<a hidden class="anchor" aria-hidden="true" href="#你将获得">#</a></h2>
+<ul>
+<li>🔒 <strong>防火墙优先安全</strong>：UFW + Docker 隔离（仅 SSH + Tailscale 可访问）</li>
+<li>🔐 <strong>Tailscale VPN</strong>：安全远程访问，无需公开暴露服务</li>
+<li>🐳 <strong>Docker</strong>：隔离的沙箱容器，仅绑定 localhost</li>
+<li>🛡️ <strong>纵深防御</strong>：4 层安全架构</li>
+<li>🚀 <strong>一条命令设置</strong>：几分钟内完成部署</li>
+<li>🔧 <strong>Systemd 集成</strong>：带加固的开机自启动</li>
+</ul>
+<h2 id="要求">要求<a hidden class="anchor" aria-hidden="true" href="#要求">#</a></h2>
+<ul>
+<li><strong>操作系统</strong>：Debian 11+ 或 Ubuntu 20.04+</li>
+<li><strong>访问权限</strong>：Root 或 sudo 权限</li>
+<li><strong>网络</strong>：用于包安装的互联网连接</li>
+<li><strong>Ansible</strong>：2.14+（由快速启动脚本自动安装）</li>
+</ul>
+<h2 id="安装内容">安装内容<a hidden class="anchor" aria-hidden="true" href="#安装内容">#</a></h2>
+<p>Ansible playbook 安装并配置：</p>
+<ol>
+<li><strong>Tailscale</strong>（用于安全远程访问的 mesh VPN）</li>
+<li><strong>UFW 防火墙</strong>（仅允许 SSH + Tailscale 端口）</li>
+<li><strong>Docker CE + Compose V2</strong>（用于智能体沙箱）</li>
+<li><strong>Node.js 22.x + pnpm</strong>（运行时依赖）</li>
+<li><strong>OpenClaw</strong>（基于主机，非容器化）</li>
+<li><strong>Systemd 服务</strong>（带安全加固的自动启动）</li>
+</ol>
+<p>注意：Gateway 网关<strong>直接在主机上运行</strong>（不在 Docker 中），但智能体沙箱使用 Docker 进行隔离。详情参见<a href="/gateway/sandboxing">沙箱隔离</a>。</p>
+<h2 id="安装后设置">安装后设置<a hidden class="anchor" aria-hidden="true" href="#安装后设置">#</a></h2>
+<p>安装完成后，切换到 openclaw 用户：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo -i -u openclaw
+</span></span></code></pre></div><p>安装后脚本将引导你完成：</p>
+<ol>
+<li><strong>新手引导向导</strong>：配置 OpenClaw 设置</li>
+<li><strong>提供商登录</strong>：连接 WhatsApp/Telegram/Discord/Signal</li>
+<li><strong>Gateway 网关测试</strong>：验证安装</li>
+<li><strong>Tailscale 设置</strong>：连接到你的 VPN mesh</li>
+</ol>
+<h3 id="常用命令">常用命令<a hidden class="anchor" aria-hidden="true" href="#常用命令">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查服务状态</span>
+</span></span><span class="line"><span class="cl">sudo systemctl status openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看实时日志</span>
+</span></span><span class="line"><span class="cl">sudo journalctl -u openclaw -f
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 重启 Gateway 网关</span>
+</span></span><span class="line"><span class="cl">sudo systemctl restart openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 提供商登录（以 openclaw 用户运行）</span>
+</span></span><span class="line"><span class="cl">sudo -i -u openclaw
+</span></span><span class="line"><span class="cl">openclaw channels login
+</span></span></code></pre></div><h2 id="安全架构">安全架构<a hidden class="anchor" aria-hidden="true" href="#安全架构">#</a></h2>
+<h3 id="4-层防御">4 层防御<a hidden class="anchor" aria-hidden="true" href="#4-层防御">#</a></h3>
+<ol>
+<li><strong>防火墙（UFW）</strong>：仅公开暴露 SSH（22）+ Tailscale（41641/udp）</li>
+<li><strong>VPN（Tailscale）</strong>：Gateway 网关仅通过 VPN mesh 可访问</li>
+<li><strong>Docker 隔离</strong>：DOCKER-USER iptables 链防止外部端口暴露</li>
+<li><strong>Systemd 加固</strong>：NoNewPrivileges、PrivateTmp、非特权用户</li>
+</ol>
+<h3 id="验证">验证<a hidden class="anchor" aria-hidden="true" href="#验证">#</a></h3>
+<p>测试外部攻击面：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nmap -p- YOUR_SERVER_IP
+</span></span></code></pre></div><p>应该显示<strong>仅端口 22</strong>（SSH）开放。所有其他服务（Gateway 网关、Docker）都被锁定。</p>
+<h3 id="docker-可用性">Docker 可用性<a hidden class="anchor" aria-hidden="true" href="#docker-可用性">#</a></h3>
+<p>Docker 用于<strong>智能体沙箱</strong>（隔离的工具执行），而不是用于运行 Gateway 网关本身。Gateway 网关仅绑定到 localhost，通过 Tailscale VPN 访问。</p>
+<p>沙箱配置参见<a href="/tools/multi-agent-sandbox-tools">多智能体沙箱与工具</a>。</p>
+<h2 id="手动安装">手动安装<a hidden class="anchor" aria-hidden="true" href="#手动安装">#</a></h2>
+<p>如果你更喜欢手动控制而非自动化：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 1. 安装先决条件</span>
+</span></span><span class="line"><span class="cl">sudo apt update <span class="o">&amp;&amp;</span> sudo apt install -y ansible git
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 克隆仓库</span>
+</span></span><span class="line"><span class="cl">git clone https://github.com/openclaw/openclaw-ansible.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> openclaw-ansible
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 安装 Ansible collections</span>
+</span></span><span class="line"><span class="cl">ansible-galaxy collection install -r requirements.yml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 4. 运行 playbook</span>
+</span></span><span class="line"><span class="cl">./run-playbook.sh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 或直接运行（然后手动执行 /tmp/openclaw-setup.sh）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ansible-playbook playbook.yml --ask-become-pass</span>
+</span></span></code></pre></div><h2 id="更新-openclaw">更新 OpenClaw<a hidden class="anchor" aria-hidden="true" href="#更新-openclaw">#</a></h2>
+<p>Ansible 安装程序设置 OpenClaw 为手动更新。标准更新流程参见<a href="/install/updating">更新</a>。</p>
+<p>要重新运行 Ansible playbook（例如，用于配置更改）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> openclaw-ansible
+</span></span><span class="line"><span class="cl">./run-playbook.sh
+</span></span></code></pre></div><p>注意：这是幂等的，可以安全地多次运行。</p>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="防火墙阻止了我的连接">防火墙阻止了我的连接<a hidden class="anchor" aria-hidden="true" href="#防火墙阻止了我的连接">#</a></h3>
+<p>如果你被锁定：</p>
+<ul>
+<li>确保你可以先通过 Tailscale VPN 访问</li>
+<li>SSH 访问（端口 22）始终允许</li>
+<li>Gateway 网关<strong>仅</strong>通过 Tailscale 访问，这是设计如此</li>
+</ul>
+<h3 id="服务无法启动">服务无法启动<a hidden class="anchor" aria-hidden="true" href="#服务无法启动">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查日志</span>
+</span></span><span class="line"><span class="cl">sudo journalctl -u openclaw -n <span class="m">100</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 验证权限</span>
+</span></span><span class="line"><span class="cl">sudo ls -la /opt/openclaw
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 测试手动启动</span>
+</span></span><span class="line"><span class="cl">sudo -i -u openclaw
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ~/openclaw
+</span></span><span class="line"><span class="cl">pnpm start
+</span></span></code></pre></div><h3 id="docker-沙箱问题">Docker 沙箱问题<a hidden class="anchor" aria-hidden="true" href="#docker-沙箱问题">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 验证 Docker 正在运行</span>
+</span></span><span class="line"><span class="cl">sudo systemctl status docker
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查沙箱镜像</span>
+</span></span><span class="line"><span class="cl">sudo docker images <span class="p">|</span> grep openclaw-sandbox
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果缺失则构建沙箱镜像</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /opt/openclaw/openclaw
+</span></span><span class="line"><span class="cl">sudo -u openclaw ./scripts/sandbox-setup.sh
+</span></span></code></pre></div><h3 id="提供商登录失败">提供商登录失败<a hidden class="anchor" aria-hidden="true" href="#提供商登录失败">#</a></h3>
+<p>确保你以 <code>openclaw</code> 用户运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo -i -u openclaw
+</span></span><span class="line"><span class="cl">openclaw channels login
+</span></span></code></pre></div><h2 id="高级配置">高级配置<a hidden class="anchor" aria-hidden="true" href="#高级配置">#</a></h2>
+<p>详细的安全架构和故障排除：</p>
+<ul>
+<li><a href="https://docs.openclaw.ai/https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md">安全架构</a></li>
+<li><a href="https://docs.openclaw.ai/https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md">技术详情</a></li>
+<li><a href="https://docs.openclaw.ai/https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md">故障排除指南</a></li>
+</ul>
+<h2 id="相关内容">相关内容<a hidden class="anchor" aria-hidden="true" href="#相关内容">#</a></h2>
+<ul>
+<li><a href="https://github.com/openclaw/openclaw-ansible">openclaw-ansible</a> — 完整部署指南</li>
+<li><a href="/install/docker">Docker</a> — 容器化 Gateway 网关设置</li>
+<li><a href="/gateway/sandboxing">沙箱隔离</a> — 智能体沙箱配置</li>
+<li><a href="/tools/multi-agent-sandbox-tools">多智能体沙箱与工具</a> — 每个智能体的隔离</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/platforms/android/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Android 应用（节点）</span>
+  </a>
+  <a class="next" href="/openclaw/providers/anthropic/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Anthropic（Claude）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

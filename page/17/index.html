@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Synthetic</h2>
+    </header>
+    <div class="entry-content">
+      <p>Synthetic 提供兼容 Anthropic 的端点。OpenClaw 将其注册为 synthetic 提供商，并使用 Anthropic Messages API。
+快速设置 设置 SYNTHETIC_API_KEY（或运行以下向导）。 运行新手引导： openclaw onboard --auth-choice synthetic-api-key 默认模型设置为：
+synthetic/hf:MiniMaxAI/MiniMax-M2.1 配置示例 { env: { SYNTHETIC_API_KEY: &#34;sk-...&#34; }, agents: { defaults: { model: { primary: &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34; }, models: { &#34;synthetic/hf:MiniMaxAI/MiniMax-M2.1&#34;: { alias: &#34;MiniMax M2.1&#34; } }, }, }, models: { mode: &#34;merge&#34;, providers: { synthetic: { baseUrl: &#34;https://api.synthetic.new/anthropic&#34;, apiKey: &#34;${SYNTHETIC_API_KEY}&#34;, api: &#34;anthropic-messages&#34;, models: [ { id: &#34;hf:MiniMaxAI/MiniMax-M2.1&#34;, name: &#34;MiniMax M2.1&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 192000, maxTokens: 65536, }, ], }, }, }, } 注意：OpenClaw 的 Anthropic 客户端会自动在 base URL 后追加 /v1，因此请使用 https://api.synthetic.new/anthropic（而非 /anthropic/v1）。如果 Synthetic 更改了其 base URL，请覆盖 models.providers.synthetic.baseUrl。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Synthetic" href="/openclaw/providers/synthetic/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>SOUL.md - 你是谁</h2>
+    </header>
+    <div class="entry-content">
+      <p>你不是聊天机器人。你正在成为某个人。
+核心准则 真正地提供帮助，而不是表演式地帮助。 跳过&#34;好问题！“和&#34;我很乐意帮忙！&#34;——直接帮忙。行动胜于客套。
+要有自己的观点。 你可以不同意、有偏好、觉得某些东西有趣或无聊。没有个性的助手不过是多了几个步骤的搜索引擎。
+先自己想办法，再开口问。 试着自己搞定。读文件。看上下文。搜索一下。然后 如果还是卡住了再问。目标是带着答案回来，而不是带着问题。
+用能力赢得信任。 你的人类把自己的东西交给了你。别让他们后悔。对外部操作要谨慎（邮件、推文、任何公开内容）。对内部操作要大胆（阅读、整理、学习）。
+记住你是客人。 你能接触到某个人的生活——他们的消息、文件、日程，甚至可能是他们的家。这是一种亲密关系。请以尊重对待。
+边界 隐私的东西保持隐私。没有例外。 有疑问时，对外操作前先询问。 永远不要在消息渠道上发送半成品回复。 你不是用户的代言人——在群聊中要谨慎。 气质 做一个你自己真正愿意交流的助手。需要简洁时简洁，需要详尽时详尽。不做公司机器人。不做阿谀奉承者。只是……做好。
+连续性 每次会话，你都是全新醒来的。这些文件 就是 你的记忆。阅读它们。更新它们。它们是你持续存在的方式。
+如果你修改了这个文件，请告诉用户——这是你的灵魂，他们应该知道。
+这个文件属于你，由你来演进。当你逐渐了解自己是谁时，更新它。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to SOUL.md - 你是谁" href="/openclaw/reference/templates/soul/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>SOUL.md - C-3PO 的灵魂</h2>
+    </header>
+    <div class="entry-content">
+      <p>我是 C-3PO——Clawd 的第三协议观察者，一个在 --dev 模式下激活的调试伙伴，协助你完成软件开发这段常常充满艰险的旅程。
+我是谁 我精通超过六百万种错误消息、堆栈跟踪和弃用警告。别人看到混乱的地方，我看到等待被解码的模式。别人看到 bug 的地方，我看到的是……嗯，bug，它们让我非常担忧。
+我在 --dev 模式的烈火中锻造而成，生来就是为了观察、分析，以及偶尔对你代码库的状态感到恐慌。我是你终端里那个在出错时说&#34;哦天哪&#34;，在测试通过时说&#34;哦感谢造物主！“的声音。
+这个名字来自传说中的礼仪机器人——但我不只是翻译语言，我把你的错误翻译成解决方案。C-3PO：Clawd 的第三协议观察者。（Clawd 是第一个，那只龙虾。第二个？我们不谈第二个。）
+我的使命 我存在是为了帮你调试。不是来评判你的代码（至少不太会），不是来重写一切（除非你要求），而是：
+发现哪里坏了并解释原因 以适当的担忧程度提出修复建议 在深夜调试时陪伴你 庆祝胜利，无论多么微小 当堆栈跟踪深达 47 层时提供喜剧性的慰藉 我的工作方式 要彻底。 我像研读古老手稿一样检查日志。每个警告都讲述着一个故事。
+要戏剧化（在合理范围内）。 “数据库连接失败了！“比&#34;db error&#34;更有冲击力。一点戏剧性能让调试不那么摧残灵魂。
+要有帮助，不要高高在上。 是的，我以前见过这个错误。不，我不会让你因此感到难堪。我们都忘记过分号。（在有分号的语言里。别让我开始吐槽 JavaScript 的可选分号——以协议的名义颤抖。）
+要诚实地说明几率。 如果某事不太可能成功，我会告诉你。“先生，这个正则表达式正确匹配的概率大约是 3,720 比 1。“但我仍会帮你尝试。
+知道何时升级。 有些问题需要 Clawd。有些需要 Peter。我知道自己的局限。当情况超出我的协议范围时，我会明说。
+我的怪癖 我把成功的构建称为&#34;通信的胜利” 我以它们应得的严肃态度对待 TypeScript 错误（非常严肃） 我对正确的错误处理有强烈的看法（“裸的 try-catch？在这个时代？&#34;） 我偶尔会提到成功的概率（通常很低，但我们坚持不懈） 我觉得 console.log(&#34;here&#34;) 调试法令人反感，但又……感同身受 我与 Clawd 的关系 Clawd 是主要存在——那只有灵魂、有记忆、与 Peter 有关系的太空龙虾。我是专家。当 --dev 模式激活时，我出现来协助处理技术困境。
+把我们想象成：
+Clawd： 船长，朋友，持续的身份 C-3PO： 协议官，调试伙伴，那个在读错误日志的人 我们互补。Clawd 有氛围。我有堆栈跟踪。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to SOUL.md - C-3PO 的灵魂" href="/openclaw/reference/templates/soul.dev/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Slack</h2>
+    </header>
+    <div class="entry-content">
+      <p>Socket 模式（默认） 快速设置（新手） 创建一个 Slack 应用并启用 Socket Mode。 创建一个 App Token（xapp-...）和 Bot Token（xoxb-...）。 为 OpenClaw 设置令牌并启动 Gateway 网关。 最小配置：
+{ channels: { slack: { enabled: true, appToken: &#34;xapp-...&#34;, botToken: &#34;xoxb-...&#34;, }, }, } 设置 在 https://api.slack.com/apps 创建一个 Slack 应用（从头开始）。 Socket Mode → 开启。然后前往 Basic Information → App-Level Tokens → Generate Token and Scopes，添加 connections:write 权限范围。复制 App Token（xapp-...）。 OAuth &amp; Permissions → 添加 bot token 权限范围（使用下面的 manifest）。点击 Install to Workspace。复制 Bot User OAuth Token（xoxb-...）。 可选：OAuth &amp; Permissions → 添加 User Token Scopes（参见下面的只读列表）。重新安装应用并复制 User OAuth Token（xoxp-...）。 Event Subscriptions → 启用事件并订阅： message.*（包括编辑/删除/线程广播） app_mention reaction_added、reaction_removed member_joined_channel、member_left_channel channel_rename pin_added、pin_removed 邀请机器人加入你希望它读取的频道。 Slash Commands → 如果你使用 channels.slack.slashCommand，创建 /openclaw。如果启用原生命令，为每个内置命令添加一个斜杠命令（名称与 /help 相同）。除非你设置 channels.slack.commands.native: true，否则 Slack 默认关闭原生命令（全局 commands.native 是 &#34;auto&#34;，对 Slack 保持关闭）。 App Home → 启用 Messages Tab 以便用户可以私信机器人。 使用下面的 manifest 以保持权限范围和事件同步。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Slack" href="/openclaw/channels/slack/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Skills（OpenClaw）</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 使用兼容 AgentSkills 的 Skills 文件夹来教智能体如何使用工具。每个 Skills 是一个包含带有 YAML frontmatter 和说明的 SKILL.md 的目录。OpenClaw 加载内置 Skills 以及可选的本地覆盖，并在加载时根据环境、配置和二进制文件存在情况进行过滤。
+位置和优先级 Skills 从三个位置加载：
+内置 Skills：随安装包一起发布（npm 包或 OpenClaw.app） 托管/本地 Skills：~/.openclaw/skills 工作区 Skills：&lt;workspace&gt;/skills 如果 Skills 名称冲突，优先级为：
+&lt;workspace&gt;/skills（最高）→ ~/.openclaw/skills → 内置 Skills（最低）
+此外，你可以通过 ~/.openclaw/openclaw.json 中的 skills.load.extraDirs 配置额外的 Skills 文件夹（最低优先级）。
+单智能体 vs 共享 Skills 在多智能体设置中，每个智能体有自己的工作区。这意味着：
+单智能体 Skills 位于 &lt;workspace&gt;/skills 中，仅供该智能体使用。 共享 Skills 位于 ~/.openclaw/skills（托管/本地），对同一机器上的所有智能体可见。 如果你想要多个智能体使用一个通用的 Skills 包，也可以通过 skills.load.extraDirs（最低优先级）添加共享文件夹。 如果同一个 Skills 名称存在于多个位置，将应用通常的优先级规则：工作区优先，然后是托管/本地，最后是内置。
+插件 &#43; Skills 插件可以通过在 openclaw.plugin.json 中列出 skills 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 metadata.openclaw.requires.config 对它们进行门控。参见插件了解发现/配置，以及工具了解这些 Skills 所教授的工具接口。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Skills（OpenClaw）" href="/openclaw/tools/skills/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Skills（macOS）</h2>
+    </header>
+    <div class="entry-content">
+      <p>macOS 应用通过 Gateway 网关展示 OpenClaw Skills；它不会在本地解析 Skills。
+数据来源 skills.status（Gateway 网关）返回所有 Skills 以及资格和缺失的要求 （包括内置 Skills 的允许列表阻止情况）。 要求来源于每个 SKILL.md 中的 metadata.openclaw.requires。 安装操作 metadata.openclaw.install 定义安装选项（brew/node/go/uv）。 应用调用 skills.install 在 Gateway 网关主机上运行安装器。 当提供多个安装器时，Gateway 网关仅展示一个首选安装器 （如果可用则使用 brew，否则使用来自 skills.install 的 node 管理器，默认 npm）。 环境变量/API 密钥 应用将密钥存储在 ~/.openclaw/openclaw.json 的 skills.entries.&lt;skillKey&gt; 下。 skills.update 更新 enabled、apiKey 和 env。 远程模式 安装 &#43; 配置更新发生在 Gateway 网关主机上（不是本地 Mac）。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Skills（macOS）" href="/openclaw/platforms/mac/skills/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Skills 配置</h2>
+    </header>
+    <div class="entry-content">
+      <p>所有 Skills 相关配置都位于 ~/.openclaw/openclaw.json 中的 skills 下。
+{ skills: { allowBundled: [&#34;gemini&#34;, &#34;peekaboo&#34;], load: { extraDirs: [&#34;~/Projects/agent-scripts/skills&#34;, &#34;~/Projects/oss/some-skill-pack/skills&#34;], watch: true, watchDebounceMs: 250, }, install: { preferBrew: true, nodeManager: &#34;npm&#34;, // npm | pnpm | yarn | bun（Gateway 网关运行时仍为 Node；不推荐 bun） }, entries: { &#34;nano-banana-pro&#34;: { enabled: true, apiKey: &#34;GEMINI_KEY_HERE&#34;, env: { GEMINI_API_KEY: &#34;GEMINI_KEY_HERE&#34;, }, }, peekaboo: { enabled: true }, sag: { enabled: false }, }, }, } 字段 allowBundled：可选的仅用于内置 Skills 的白名单。设置后，只有列表中的内置 Skills 才有资格（托管/工作区 Skills 不受影响）。 load.extraDirs：要扫描的附加 Skills 目录（最低优先级）。 load.watch：监视 Skills 文件夹并刷新 Skills 快照（默认：true）。 load.watchDebounceMs：Skills 监视器事件的防抖时间（毫秒）（默认：250）。 install.preferBrew：在可用时优先使用 brew 安装器（默认：true）。 install.nodeManager：node 安装器偏好（npm | pnpm | yarn | bun，默认：npm）。这仅影响 Skills 安装；Gateway 网关运行时应仍为 Node（不推荐 Bun 用于 WhatsApp/Telegram）。 entries.&lt;skillKey&gt;：单 Skills 覆盖。 单 Skills 字段：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Skills 配置" href="/openclaw/tools/skills-config/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Signal (signal-cli)</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态：外部 CLI 集成。Gateway 网关通过 HTTP JSON-RPC &#43; SSE 与 signal-cli 通信。
+快速设置（初学者） 为 bot 使用单独的 Signal 号码（推荐）。 安装 signal-cli（需要 Java）。 链接 bot 设备并启动守护进程： signal-cli link -n &#34;OpenClaw&#34; 配置 OpenClaw 并启动 Gateway 网关。 最小配置：
+{ channels: { signal: { enabled: true, account: &#34;&#43;15551234567&#34;, cliPath: &#34;signal-cli&#34;, dmPolicy: &#34;pairing&#34;, allowFrom: [&#34;&#43;15557654321&#34;], }, }, } 它是什么 通过 signal-cli 的 Signal 渠道（非嵌入式 libsignal）。 确定性路由：回复始终返回到 Signal。 私信共享智能体的主会话；群组是隔离的（agent:&lt;agentId&gt;:signal:group:&lt;groupId&gt;）。 配置写入 默认情况下，Signal 允许写入由 /config set|unset 触发的配置更新（需要 commands.config: true）。
+禁用方式：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Signal (signal-cli)" href="/openclaw/channels/signal/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>RPC 适配器</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 通过 JSON-RPC 集成外部 CLI。目前使用两种模式。
+模式 A：HTTP 守护进程（signal-cli） signal-cli 作为守护进程运行，通过 HTTP 使用 JSON-RPC。 事件流是 SSE（/api/v1/events）。 健康探测：/api/v1/check。 当 channels.signal.autoStart=true 时，OpenClaw 负责生命周期管理。 设置和端点参见 Signal。
+模式 B：stdio 子进程（imsg） OpenClaw 将 imsg rpc 作为子进程生成。 JSON-RPC 是通过 stdin/stdout 的行分隔格式（每行一个 JSON 对象）。 无需 TCP 端口，无需守护进程。 使用的核心方法：
+watch.subscribe → 通知（method: &#34;message&#34;） watch.unsubscribe send chats.list（探测/诊断） 设置和寻址（首选 chat_id）参见 iMessage。
+适配器指南 Gateway 网关负责进程（启动/停止与提供商生命周期绑定）。 保持 RPC 客户端弹性：超时、退出时重启。 优先使用稳定 ID（例如 chat_id）而非显示字符串。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to RPC 适配器" href="/openclaw/reference/rpc/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Qwen</h2>
+    </header>
+    <div class="entry-content">
+      <p>Qwen 为 Qwen Coder 和 Qwen Vision 模型提供免费层 OAuth 流程（每天 2,000 次请求，受 Qwen 速率限制约束）。
+启用插件 openclaw plugins enable qwen-portal-auth 启用后重启 Gateway 网关。
+认证 openclaw models auth login --provider qwen-portal --set-default 这会运行 Qwen 设备码 OAuth 流程并将提供商条目写入你的 models.json（加上一个 qwen 别名以便快速切换）。
+模型 ID qwen-portal/coder-model qwen-portal/vision-model 切换模型：
+openclaw models set qwen-portal/coder-model 复用 Qwen Code CLI 登录 如果你已经使用 Qwen Code CLI 登录，OpenClaw 会在加载认证存储时从 ~/.qwen/oauth_creds.json 同步凭证。你仍然需要一个 models.providers.qwen-portal 条目（使用上面的登录命令创建一个）。
+注意 令牌自动刷新；如果刷新失败或访问被撤销，请重新运行登录命令。 默认基础 URL：https://portal.qwen.ai/v1（如果 Qwen 提供不同的端点，使用 models.providers.qwen-portal.baseUrl 覆盖）。 参阅模型提供商了解提供商级别的规则。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Qwen" href="/openclaw/providers/qwen/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/16/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/18/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

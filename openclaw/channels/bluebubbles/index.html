@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>BlueBubbles（macOS REST） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="状态：内置插件，通过 HTTP 与 BlueBubbles macOS 服务器通信。由于其更丰富的 API 和更简便的设置，推荐用于 iMessage 集成，优于旧版 imsg 渠道。
+概述
+
+通过 BlueBubbles 辅助应用在 macOS 上运行（bluebubbles.app）。
+推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。
+OpenClaw 通过其 REST API 与之通信（GET /api/v1/ping、POST /message/text、POST /chat/:id/*）。
+传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。
+附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。
+配对/白名单的工作方式与其他渠道相同（/channels/pairing 等），使用 channels.bluebubbles.allowFrom &#43; 配对码。
+回应作为系统事件呈现，与 Slack/Telegram 类似，智能体可以在回复前&quot;提及&quot;它们。
+高级功能：编辑、撤回、回复线程、消息效果、群组管理。
+
+快速开始
+
+在你的 Mac 上安装 BlueBubbles 服务器（按照 bluebubbles.app/install 的说明操作）。
+在 BlueBubbles 配置中，启用 web API 并设置密码。
+运行 openclaw onboard 并选择 BlueBubbles，或手动配置：
+{
+  channels: {
+    bluebubbles: {
+      enabled: true,
+      serverUrl: &#34;http://192.168.1.100:1234&#34;,
+      password: &#34;example-password&#34;,
+      webhookPath: &#34;/bluebubbles-webhook&#34;,
+    },
+  },
+}
+
+将 BlueBubbles webhook 指向你的 Gateway 网关（示例：https://your-gateway-host:3000/bluebubbles-webhook?password=&lt;password&gt;）。
+启动 Gateway 网关；它将注册 webhook 处理程序并开始配对。
+
+新手引导
+BlueBubbles 可在交互式设置向导中使用：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/channels/bluebubbles/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/channels/bluebubbles/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/channels/bluebubbles/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="BlueBubbles（macOS REST）">
+  <meta property="og:description" content="状态：内置插件，通过 HTTP 与 BlueBubbles macOS 服务器通信。由于其更丰富的 API 和更简便的设置，推荐用于 iMessage 集成，优于旧版 imsg 渠道。
+概述 通过 BlueBubbles 辅助应用在 macOS 上运行（bluebubbles.app）。 推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。 OpenClaw 通过其 REST API 与之通信（GET /api/v1/ping、POST /message/text、POST /chat/:id/*）。 传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。 附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。 配对/白名单的工作方式与其他渠道相同（/channels/pairing 等），使用 channels.bluebubbles.allowFrom &#43; 配对码。 回应作为系统事件呈现，与 Slack/Telegram 类似，智能体可以在回复前&#34;提及&#34;它们。 高级功能：编辑、撤回、回复线程、消息效果、群组管理。 快速开始 在你的 Mac 上安装 BlueBubbles 服务器（按照 bluebubbles.app/install 的说明操作）。 在 BlueBubbles 配置中，启用 web API 并设置密码。 运行 openclaw onboard 并选择 BlueBubbles，或手动配置： { channels: { bluebubbles: { enabled: true, serverUrl: &#34;http://192.168.1.100:1234&#34;, password: &#34;example-password&#34;, webhookPath: &#34;/bluebubbles-webhook&#34;, }, }, } 将 BlueBubbles webhook 指向你的 Gateway 网关（示例：https://your-gateway-host:3000/bluebubbles-webhook?password=&lt;password&gt;）。 启动 Gateway 网关；它将注册 webhook 处理程序并开始配对。 新手引导 BlueBubbles 可在交互式设置向导中使用：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BlueBubbles（macOS REST）">
+<meta name="twitter:description" content="状态：内置插件，通过 HTTP 与 BlueBubbles macOS 服务器通信。由于其更丰富的 API 和更简便的设置，推荐用于 iMessage 集成，优于旧版 imsg 渠道。
+概述
+
+通过 BlueBubbles 辅助应用在 macOS 上运行（bluebubbles.app）。
+推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。
+OpenClaw 通过其 REST API 与之通信（GET /api/v1/ping、POST /message/text、POST /chat/:id/*）。
+传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。
+附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。
+配对/白名单的工作方式与其他渠道相同（/channels/pairing 等），使用 channels.bluebubbles.allowFrom &#43; 配对码。
+回应作为系统事件呈现，与 Slack/Telegram 类似，智能体可以在回复前&quot;提及&quot;它们。
+高级功能：编辑、撤回、回复线程、消息效果、群组管理。
+
+快速开始
+
+在你的 Mac 上安装 BlueBubbles 服务器（按照 bluebubbles.app/install 的说明操作）。
+在 BlueBubbles 配置中，启用 web API 并设置密码。
+运行 openclaw onboard 并选择 BlueBubbles，或手动配置：
+{
+  channels: {
+    bluebubbles: {
+      enabled: true,
+      serverUrl: &#34;http://192.168.1.100:1234&#34;,
+      password: &#34;example-password&#34;,
+      webhookPath: &#34;/bluebubbles-webhook&#34;,
+    },
+  },
+}
+
+将 BlueBubbles webhook 指向你的 Gateway 网关（示例：https://your-gateway-host:3000/bluebubbles-webhook?password=&lt;password&gt;）。
+启动 Gateway 网关；它将注册 webhook 处理程序并开始配对。
+
+新手引导
+BlueBubbles 可在交互式设置向导中使用：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "BlueBubbles（macOS REST）",
+      "item": "/openclaw/channels/bluebubbles/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "BlueBubbles（macOS REST）",
+  "name": "BlueBubbles（macOS REST）",
+  "description": "状态：内置插件，通过 HTTP 与 BlueBubbles macOS 服务器通信。由于其更丰富的 API 和更简便的设置，推荐用于 iMessage 集成，优于旧版 imsg 渠道。\n概述 通过 BlueBubbles 辅助应用在 macOS 上运行（bluebubbles.app）。 推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。 OpenClaw 通过其 REST API 与之通信（GET /api/v1/ping、POST /message/text、POST /chat/:id/*）。 传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。 附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。 配对/白名单的工作方式与其他渠道相同（/channels/pairing 等），使用 channels.bluebubbles.allowFrom + 配对码。 回应作为系统事件呈现，与 Slack/Telegram 类似，智能体可以在回复前\u0026quot;提及\u0026quot;它们。 高级功能：编辑、撤回、回复线程、消息效果、群组管理。 快速开始 在你的 Mac 上安装 BlueBubbles 服务器（按照 bluebubbles.app/install 的说明操作）。 在 BlueBubbles 配置中，启用 web API 并设置密码。 运行 openclaw onboard 并选择 BlueBubbles，或手动配置： { channels: { bluebubbles: { enabled: true, serverUrl: \u0026#34;http://192.168.1.100:1234\u0026#34;, password: \u0026#34;example-password\u0026#34;, webhookPath: \u0026#34;/bluebubbles-webhook\u0026#34;, }, }, } 将 BlueBubbles webhook 指向你的 Gateway 网关（示例：https://your-gateway-host:3000/bluebubbles-webhook?password=\u0026lt;password\u0026gt;）。 启动 Gateway 网关；它将注册 webhook 处理程序并开始配对。 新手引导 BlueBubbles 可在交互式设置向导中使用：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "状态：内置插件，通过 HTTP 与 BlueBubbles macOS 服务器通信。由于其更丰富的 API 和更简便的设置，推荐用于 iMessage 集成，优于旧版 imsg 渠道。\n概述 通过 BlueBubbles 辅助应用在 macOS 上运行（bluebubbles.app）。 推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。 OpenClaw 通过其 REST API 与之通信（GET /api/v1/ping、POST /message/text、POST /chat/:id/*）。 传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。 附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。 配对/白名单的工作方式与其他渠道相同（/channels/pairing 等），使用 channels.bluebubbles.allowFrom + 配对码。 回应作为系统事件呈现，与 Slack/Telegram 类似，智能体可以在回复前\"提及\"它们。 高级功能：编辑、撤回、回复线程、消息效果、群组管理。 快速开始 在你的 Mac 上安装 BlueBubbles 服务器（按照 bluebubbles.app/install 的说明操作）。 在 BlueBubbles 配置中，启用 web API 并设置密码。 运行 openclaw onboard 并选择 BlueBubbles，或手动配置： { channels: { bluebubbles: { enabled: true, serverUrl: \"http://192.168.1.100:1234\", password: \"example-password\", webhookPath: \"/bluebubbles-webhook\", }, }, } 将 BlueBubbles webhook 指向你的 Gateway 网关（示例：https://your-gateway-host:3000/bluebubbles-webhook?password=）。 启动 Gateway 网关；它将注册 webhook 处理程序并开始配对。 新手引导 BlueBubbles 可在交互式设置向导中使用：\nopenclaw onboard 向导会提示输入：\n服务器 URL（必填）：BlueBubbles 服务器地址（例如 http://192.168.1.100:1234） 密码（必填）：来自 BlueBubbles 服务器设置的 API 密码 Webhook 路径（可选）：默认为 /bluebubbles-webhook 私信策略：配对、白名单、开放或禁用 白名单：电话号码、电子邮件或聊天目标 你也可以通过 CLI 添加 BlueBubbles：\nopenclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --password 访问控制（私信 + 群组） 私信：\n默认：channels.bluebubbles.dmPolicy = \"pairing\"。 未知发送者会收到配对码；在批准之前消息会被忽略（配对码 1 小时后过期）。 批准方式： openclaw pairing list bluebubbles openclaw pairing approve bluebubbles 配对是默认的令牌交换方式。详情：配对 群组：\nchannels.bluebubbles.groupPolicy = open | allowlist | disabled（默认：allowlist）。 当设置为 allowlist 时，channels.bluebubbles.groupAllowFrom 控制谁可以在群组中触发。 提及门控（群组） BlueBubbles 支持群聊的提及门控，与 iMessage/WhatsApp 行为一致：\n使用 agents.list[].groupChat.mentionPatterns（或 messages.groupChat.mentionPatterns）检测提及。 当群组启用 requireMention 时，智能体仅在被提及时响应。 来自授权发送者的控制命令会绕过提及门控。 单群组配置：\n{ channels: { bluebubbles: { groupPolicy: \"allowlist\", groupAllowFrom: [\"+15555550123\"], groups: { \"*\": { requireMention: true }, // 所有群组的默认设置 \"iMessage;-;chat123\": { requireMention: false }, // 特定群组的覆盖设置 }, }, }, } 命令门控 控制命令（例如 /config、/model）需要授权。 使用 allowFrom 和 groupAllowFrom 确定命令授权。 授权发送者即使在群组中未被提及也可以运行控制命令。 输入状态 + 已读回执 输入指示器：在响应生成前和生成期间自动发送。 已读回执：由 channels.bluebubbles.sendReadReceipts 控制（默认：true）。 输入指示器：OpenClaw 发送输入开始事件；BlueBubbles 在发送或超时时自动清除输入状态（通过 DELETE 手动停止不可靠）。 { channels: { bluebubbles: { sendReadReceipts: false, // 禁用已读回执 }, }, } 高级操作 BlueBubbles 在配置中启用时支持高级消息操作：\n{ channels: { bluebubbles: { actions: { reactions: true, // tapback（默认：true） edit: true, // 编辑已发送消息（macOS 13+，在 macOS 26 Tahoe 上不可用） unsend: true, // 撤回消息（macOS 13+） reply: true, // 通过消息 GUID 进行回复线程 sendWithEffect: true, // 消息效果（slam、loud 等） renameGroup: true, // 重命名群聊 setGroupIcon: true, // 设置群聊图标/照片（在 macOS 26 Tahoe 上不稳定） addParticipant: true, // 将参与者添加到群组 removeParticipant: true, // 从群组移除参与者 leaveGroup: true, // 离开群聊 sendAttachment: true, // 发送附件/媒体 }, }, }, } 可用操作：\nreact：添加/移除 tapback 回应（messageId、emoji、remove） edit：编辑已发送的消息（messageId、text） unsend：撤回消息（messageId） reply：回复特定消息（messageId、text、to） sendWithEffect：带 iMessage 效果发送（text、to、effectId） renameGroup：重命名群聊（chatGuid、displayName） setGroupIcon：设置群聊图标/照片（chatGuid、media）— 在 macOS 26 Tahoe 上不稳定（API 可能返回成功但图标未同步）。 addParticipant：将某人添加到群组（chatGuid、address） removeParticipant：将某人从群组移除（chatGuid、address） leaveGroup：离开群聊（chatGuid） sendAttachment：发送媒体/文件（to、buffer、filename、asVoice） 语音备忘录：将 asVoice: true 与 MP3 或 CAF 音频一起设置，以 iMessage 语音消息形式发送。BlueBubbles 在发送语音备忘录时会将 MP3 转换为 CAF。 消息 ID（短格式 vs 完整格式） OpenClaw 可能会显示短消息 ID（例如 1、2）以节省 token。\nMessageSid / ReplyToId 可以是短 ID。 MessageSidFull / ReplyToIdFull 包含提供商的完整 ID。 短 ID 存储在内存中；它们可能在重启或缓存清除后过期。 操作接受短或完整的 messageId，但如果短 ID 不再可用将会报错。 对于持久化自动化和存储，请使用完整 ID：\n模板：{{MessageSidFull}}、{{ReplyToIdFull}} 上下文：入站负载中的 MessageSidFull / ReplyToIdFull 参见配置了解模板变量。\n分块流式传输 控制响应是作为单条消息发送还是分块流式传输：\n{ channels: { bluebubbles: { blockStreaming: true, // 启用分块流式传输（默认关闭） }, }, } 媒体 + 限制 入站附件会被下载并存储在媒体缓存中。 媒体上限通过 channels.bluebubbles.mediaMaxMb 设置（默认：8 MB）。 出站文本按 channels.bluebubbles.textChunkLimit 分块（默认：4000 字符）。 配置参考 完整配置：配置\n提供商选项：\nchannels.bluebubbles.enabled：启用/禁用渠道。 channels.bluebubbles.serverUrl：BlueBubbles REST API 基础 URL。 channels.bluebubbles.password：API 密码。 channels.bluebubbles.webhookPath：Webhook 端点路径（默认：/bluebubbles-webhook）。 channels.bluebubbles.dmPolicy：pairing | allowlist | open | disabled（默认：pairing）。 channels.bluebubbles.allowFrom：私信白名单（句柄、电子邮件、E.164 号码、chat_id:*、chat_guid:*）。 channels.bluebubbles.groupPolicy：open | allowlist | disabled（默认：allowlist）。 channels.bluebubbles.groupAllowFrom：群组发送者白名单。 channels.bluebubbles.groups：单群组配置（requireMention 等）。 channels.bluebubbles.sendReadReceipts：发送已读回执（默认：true）。 channels.bluebubbles.blockStreaming：启用分块流式传输（默认：false；流式回复必需）。 channels.bluebubbles.textChunkLimit：出站分块大小（字符）（默认：4000）。 channels.bluebubbles.chunkMode：length（默认）仅在超过 textChunkLimit 时分割；newline 在长度分块前先按空行（段落边界）分割。 channels.bluebubbles.mediaMaxMb：入站媒体上限（MB）（默认：8）。 channels.bluebubbles.historyLimit：上下文的最大群组消息数（0 表示禁用）。 channels.bluebubbles.dmHistoryLimit：私信历史限制。 channels.bluebubbles.actions：启用/禁用特定操作。 channels.bluebubbles.accounts：多账户配置。 相关全局选项：\nagents.list[].groupChat.mentionPatterns（或 messages.groupChat.mentionPatterns）。 messages.responsePrefix。 地址 / 投递目标 优先使用 chat_guid 以获得稳定的路由：\nchat_guid:iMessage;-;+15555550123（群组推荐） chat_id:123 chat_identifier:... 直接句柄：+15555550123、user@example.com 如果直接句柄没有现有的私信聊天，OpenClaw 将通过 POST /api/v1/chat/new 创建一个。这需要启用 BlueBubbles Private API。 安全性 Webhook 请求通过比较 guid/password 查询参数或头部与 channels.bluebubbles.password 进行身份验证。来自 localhost 的请求也会被接受。 保持 API 密码和 webhook 端点的机密性（将它们视为凭证）。 localhost 信任意味着同主机的反向代理可能无意中绕过密码验证。如果你使用代理 Gateway 网关，请在代理处要求身份验证并配置 gateway.trustedProxies。参见 Gateway 网关安全性。 如果将 BlueBubbles 服务器暴露在局域网之外，请启用 HTTPS + 防火墙规则。 故障排除 如果输入/已读事件停止工作，请检查 BlueBubbles webhook 日志并验证 Gateway 网关路径是否与 channels.bluebubbles.webhookPath 匹配。 配对码在一小时后过期；使用 openclaw pairing list bluebubbles 和 openclaw pairing approve bluebubbles 。 回应需要 BlueBubbles private API（POST /api/v1/message/react）；确保服务器版本支持它。 编辑/撤回需要 macOS 13+ 和兼容的 BlueBubbles 服务器版本。在 macOS 26（Tahoe）上，由于 private API 变更，编辑功能目前不可用。 在 macOS 26（Tahoe）上群组图标更新可能不稳定：API 可能返回成功但新图标未同步。 OpenClaw 会根据 BlueBubbles 服务器的 macOS 版本自动隐藏已知不可用的操作。如果在 macOS 26（Tahoe）上编辑仍然显示，请使用 channels.bluebubbles.actions.edit=false 手动禁用。 查看状态/健康信息：openclaw status --all 或 openclaw status --deep。 有关通用渠道工作流参考，请参阅渠道和插件指南。\n",
+  "wordCount" : "554",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/channels/bluebubbles/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      BlueBubbles（macOS REST）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%a6%82%e8%bf%b0" aria-label="概述">概述</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b" aria-label="快速开始">快速开始</a></li>
+                <li>
+                    <a href="#%e6%96%b0%e6%89%8b%e5%bc%95%e5%af%bc" aria-label="新手引导">新手引导</a></li>
+                <li>
+                    <a href="#%e8%ae%bf%e9%97%ae%e6%8e%a7%e5%88%b6%e7%a7%81%e4%bf%a1--%e7%be%a4%e7%bb%84" aria-label="访问控制（私信 &#43; 群组）">访问控制（私信 + 群组）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8f%90%e5%8f%8a%e9%97%a8%e6%8e%a7%e7%be%a4%e7%bb%84" aria-label="提及门控（群组）">提及门控（群组）</a></li>
+                <li>
+                    <a href="#%e5%91%bd%e4%bb%a4%e9%97%a8%e6%8e%a7" aria-label="命令门控">命令门控</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%be%93%e5%85%a5%e7%8a%b6%e6%80%81--%e5%b7%b2%e8%af%bb%e5%9b%9e%e6%89%a7" aria-label="输入状态 &#43; 已读回执">输入状态 + 已读回执</a></li>
+                <li>
+                    <a href="#%e9%ab%98%e7%ba%a7%e6%93%8d%e4%bd%9c" aria-label="高级操作">高级操作</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af-id%e7%9f%ad%e6%a0%bc%e5%bc%8f-vs-%e5%ae%8c%e6%95%b4%e6%a0%bc%e5%bc%8f" aria-label="消息 ID（短格式 vs 完整格式）">消息 ID（短格式 vs 完整格式）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%88%86%e5%9d%97%e6%b5%81%e5%bc%8f%e4%bc%a0%e8%be%93" aria-label="分块流式传输">分块流式传输</a></li>
+                <li>
+                    <a href="#%e5%aa%92%e4%bd%93--%e9%99%90%e5%88%b6" aria-label="媒体 &#43; 限制">媒体 + 限制</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83" aria-label="配置参考">配置参考</a></li>
+                <li>
+                    <a href="#%e5%9c%b0%e5%9d%80--%e6%8a%95%e9%80%92%e7%9b%ae%e6%a0%87" aria-label="地址 / 投递目标">地址 / 投递目标</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e6%80%a7" aria-label="安全性">安全性</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>状态：内置插件，通过 HTTP 与 BlueBubbles macOS 服务器通信。由于其更丰富的 API 和更简便的设置，<strong>推荐用于 iMessage 集成</strong>，优于旧版 imsg 渠道。</p>
+<h2 id="概述">概述<a hidden class="anchor" aria-hidden="true" href="#概述">#</a></h2>
+<ul>
+<li>通过 BlueBubbles 辅助应用在 macOS 上运行（<a href="https://bluebubbles.app">bluebubbles.app</a>）。</li>
+<li>推荐/已测试版本：macOS Sequoia (15)。macOS Tahoe (26) 可用；但在 Tahoe 上编辑功能目前不可用，群组图标更新可能显示成功但实际未同步。</li>
+<li>OpenClaw 通过其 REST API 与之通信（<code>GET /api/v1/ping</code>、<code>POST /message/text</code>、<code>POST /chat/:id/*</code>）。</li>
+<li>传入消息通过 webhook 到达；发出的回复、输入指示器、已读回执和 tapback 均为 REST 调用。</li>
+<li>附件和贴纸作为入站媒体被接收（并在可能时呈现给智能体）。</li>
+<li>配对/白名单的工作方式与其他渠道相同（<code>/channels/pairing</code> 等），使用 <code>channels.bluebubbles.allowFrom</code> + 配对码。</li>
+<li>回应作为系统事件呈现，与 Slack/Telegram 类似，智能体可以在回复前&quot;提及&quot;它们。</li>
+<li>高级功能：编辑、撤回、回复线程、消息效果、群组管理。</li>
+</ul>
+<h2 id="快速开始">快速开始<a hidden class="anchor" aria-hidden="true" href="#快速开始">#</a></h2>
+<ol>
+<li>在你的 Mac 上安装 BlueBubbles 服务器（按照 <a href="https://bluebubbles.app/install">bluebubbles.app/install</a> 的说明操作）。</li>
+<li>在 BlueBubbles 配置中，启用 web API 并设置密码。</li>
+<li>运行 <code>openclaw onboard</code> 并选择 BlueBubbles，或手动配置：
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    bluebubbles: {
+      enabled: true,
+      serverUrl: &#34;http://192.168.1.100:1234&#34;,
+      password: &#34;example-password&#34;,
+      webhookPath: &#34;/bluebubbles-webhook&#34;,
+    },
+  },
+}
+</code></pre></li>
+<li>将 BlueBubbles webhook 指向你的 Gateway 网关（示例：<code>https://your-gateway-host:3000/bluebubbles-webhook?password=&lt;password&gt;</code>）。</li>
+<li>启动 Gateway 网关；它将注册 webhook 处理程序并开始配对。</li>
+</ol>
+<h2 id="新手引导">新手引导<a hidden class="anchor" aria-hidden="true" href="#新手引导">#</a></h2>
+<p>BlueBubbles 可在交互式设置向导中使用：</p>
+<pre tabindex="0"><code>openclaw onboard
+</code></pre><p>向导会提示输入：</p>
+<ul>
+<li><strong>服务器 URL</strong>（必填）：BlueBubbles 服务器地址（例如 <code>http://192.168.1.100:1234</code>）</li>
+<li><strong>密码</strong>（必填）：来自 BlueBubbles 服务器设置的 API 密码</li>
+<li><strong>Webhook 路径</strong>（可选）：默认为 <code>/bluebubbles-webhook</code></li>
+<li><strong>私信策略</strong>：配对、白名单、开放或禁用</li>
+<li><strong>白名单</strong>：电话号码、电子邮件或聊天目标</li>
+</ul>
+<p>你也可以通过 CLI 添加 BlueBubbles：</p>
+<pre tabindex="0"><code>openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --password &lt;password&gt;
+</code></pre><h2 id="访问控制私信--群组">访问控制（私信 + 群组）<a hidden class="anchor" aria-hidden="true" href="#访问控制私信--群组">#</a></h2>
+<p>私信：</p>
+<ul>
+<li>默认：<code>channels.bluebubbles.dmPolicy = &quot;pairing&quot;</code>。</li>
+<li>未知发送者会收到配对码；在批准之前消息会被忽略（配对码 1 小时后过期）。</li>
+<li>批准方式：
+<ul>
+<li><code>openclaw pairing list bluebubbles</code></li>
+<li><code>openclaw pairing approve bluebubbles &lt;CODE&gt;</code></li>
+</ul>
+</li>
+<li>配对是默认的令牌交换方式。详情：<a href="/channels/pairing">配对</a></li>
+</ul>
+<p>群组：</p>
+<ul>
+<li><code>channels.bluebubbles.groupPolicy = open | allowlist | disabled</code>（默认：<code>allowlist</code>）。</li>
+<li>当设置为 <code>allowlist</code> 时，<code>channels.bluebubbles.groupAllowFrom</code> 控制谁可以在群组中触发。</li>
+</ul>
+<h3 id="提及门控群组">提及门控（群组）<a hidden class="anchor" aria-hidden="true" href="#提及门控群组">#</a></h3>
+<p>BlueBubbles 支持群聊的提及门控，与 iMessage/WhatsApp 行为一致：</p>
+<ul>
+<li>使用 <code>agents.list[].groupChat.mentionPatterns</code>（或 <code>messages.groupChat.mentionPatterns</code>）检测提及。</li>
+<li>当群组启用 <code>requireMention</code> 时，智能体仅在被提及时响应。</li>
+<li>来自授权发送者的控制命令会绕过提及门控。</li>
+</ul>
+<p>单群组配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    bluebubbles: {
+      groupPolicy: &#34;allowlist&#34;,
+      groupAllowFrom: [&#34;+15555550123&#34;],
+      groups: {
+        &#34;*&#34;: { requireMention: true }, // 所有群组的默认设置
+        &#34;iMessage;-;chat123&#34;: { requireMention: false }, // 特定群组的覆盖设置
+      },
+    },
+  },
+}
+</code></pre><h3 id="命令门控">命令门控<a hidden class="anchor" aria-hidden="true" href="#命令门控">#</a></h3>
+<ul>
+<li>控制命令（例如 <code>/config</code>、<code>/model</code>）需要授权。</li>
+<li>使用 <code>allowFrom</code> 和 <code>groupAllowFrom</code> 确定命令授权。</li>
+<li>授权发送者即使在群组中未被提及也可以运行控制命令。</li>
+</ul>
+<h2 id="输入状态--已读回执">输入状态 + 已读回执<a hidden class="anchor" aria-hidden="true" href="#输入状态--已读回执">#</a></h2>
+<ul>
+<li><strong>输入指示器</strong>：在响应生成前和生成期间自动发送。</li>
+<li><strong>已读回执</strong>：由 <code>channels.bluebubbles.sendReadReceipts</code> 控制（默认：<code>true</code>）。</li>
+<li><strong>输入指示器</strong>：OpenClaw 发送输入开始事件；BlueBubbles 在发送或超时时自动清除输入状态（通过 DELETE 手动停止不可靠）。</li>
+</ul>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    bluebubbles: {
+      sendReadReceipts: false, // 禁用已读回执
+    },
+  },
+}
+</code></pre><h2 id="高级操作">高级操作<a hidden class="anchor" aria-hidden="true" href="#高级操作">#</a></h2>
+<p>BlueBubbles 在配置中启用时支持高级消息操作：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    bluebubbles: {
+      actions: {
+        reactions: true, // tapback（默认：true）
+        edit: true, // 编辑已发送消息（macOS 13+，在 macOS 26 Tahoe 上不可用）
+        unsend: true, // 撤回消息（macOS 13+）
+        reply: true, // 通过消息 GUID 进行回复线程
+        sendWithEffect: true, // 消息效果（slam、loud 等）
+        renameGroup: true, // 重命名群聊
+        setGroupIcon: true, // 设置群聊图标/照片（在 macOS 26 Tahoe 上不稳定）
+        addParticipant: true, // 将参与者添加到群组
+        removeParticipant: true, // 从群组移除参与者
+        leaveGroup: true, // 离开群聊
+        sendAttachment: true, // 发送附件/媒体
+      },
+    },
+  },
+}
+</code></pre><p>可用操作：</p>
+<ul>
+<li><strong>react</strong>：添加/移除 tapback 回应（<code>messageId</code>、<code>emoji</code>、<code>remove</code>）</li>
+<li><strong>edit</strong>：编辑已发送的消息（<code>messageId</code>、<code>text</code>）</li>
+<li><strong>unsend</strong>：撤回消息（<code>messageId</code>）</li>
+<li><strong>reply</strong>：回复特定消息（<code>messageId</code>、<code>text</code>、<code>to</code>）</li>
+<li><strong>sendWithEffect</strong>：带 iMessage 效果发送（<code>text</code>、<code>to</code>、<code>effectId</code>）</li>
+<li><strong>renameGroup</strong>：重命名群聊（<code>chatGuid</code>、<code>displayName</code>）</li>
+<li><strong>setGroupIcon</strong>：设置群聊图标/照片（<code>chatGuid</code>、<code>media</code>）— 在 macOS 26 Tahoe 上不稳定（API 可能返回成功但图标未同步）。</li>
+<li><strong>addParticipant</strong>：将某人添加到群组（<code>chatGuid</code>、<code>address</code>）</li>
+<li><strong>removeParticipant</strong>：将某人从群组移除（<code>chatGuid</code>、<code>address</code>）</li>
+<li><strong>leaveGroup</strong>：离开群聊（<code>chatGuid</code>）</li>
+<li><strong>sendAttachment</strong>：发送媒体/文件（<code>to</code>、<code>buffer</code>、<code>filename</code>、<code>asVoice</code>）
+<ul>
+<li>语音备忘录：将 <code>asVoice: true</code> 与 <strong>MP3</strong> 或 <strong>CAF</strong> 音频一起设置，以 iMessage 语音消息形式发送。BlueBubbles 在发送语音备忘录时会将 MP3 转换为 CAF。</li>
+</ul>
+</li>
+</ul>
+<h3 id="消息-id短格式-vs-完整格式">消息 ID（短格式 vs 完整格式）<a hidden class="anchor" aria-hidden="true" href="#消息-id短格式-vs-完整格式">#</a></h3>
+<p>OpenClaw 可能会显示<em>短</em>消息 ID（例如 <code>1</code>、<code>2</code>）以节省 token。</p>
+<ul>
+<li><code>MessageSid</code> / <code>ReplyToId</code> 可以是短 ID。</li>
+<li><code>MessageSidFull</code> / <code>ReplyToIdFull</code> 包含提供商的完整 ID。</li>
+<li>短 ID 存储在内存中；它们可能在重启或缓存清除后过期。</li>
+<li>操作接受短或完整的 <code>messageId</code>，但如果短 ID 不再可用将会报错。</li>
+</ul>
+<p>对于持久化自动化和存储，请使用完整 ID：</p>
+<ul>
+<li>模板：<code>{{MessageSidFull}}</code>、<code>{{ReplyToIdFull}}</code></li>
+<li>上下文：入站负载中的 <code>MessageSidFull</code> / <code>ReplyToIdFull</code></li>
+</ul>
+<p>参见<a href="/gateway/configuration">配置</a>了解模板变量。</p>
+<h2 id="分块流式传输">分块流式传输<a hidden class="anchor" aria-hidden="true" href="#分块流式传输">#</a></h2>
+<p>控制响应是作为单条消息发送还是分块流式传输：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    bluebubbles: {
+      blockStreaming: true, // 启用分块流式传输（默认关闭）
+    },
+  },
+}
+</code></pre><h2 id="媒体--限制">媒体 + 限制<a hidden class="anchor" aria-hidden="true" href="#媒体--限制">#</a></h2>
+<ul>
+<li>入站附件会被下载并存储在媒体缓存中。</li>
+<li>媒体上限通过 <code>channels.bluebubbles.mediaMaxMb</code> 设置（默认：8 MB）。</li>
+<li>出站文本按 <code>channels.bluebubbles.textChunkLimit</code> 分块（默认：4000 字符）。</li>
+</ul>
+<h2 id="配置参考">配置参考<a hidden class="anchor" aria-hidden="true" href="#配置参考">#</a></h2>
+<p>完整配置：<a href="/gateway/configuration">配置</a></p>
+<p>提供商选项：</p>
+<ul>
+<li><code>channels.bluebubbles.enabled</code>：启用/禁用渠道。</li>
+<li><code>channels.bluebubbles.serverUrl</code>：BlueBubbles REST API 基础 URL。</li>
+<li><code>channels.bluebubbles.password</code>：API 密码。</li>
+<li><code>channels.bluebubbles.webhookPath</code>：Webhook 端点路径（默认：<code>/bluebubbles-webhook</code>）。</li>
+<li><code>channels.bluebubbles.dmPolicy</code>：<code>pairing | allowlist | open | disabled</code>（默认：<code>pairing</code>）。</li>
+<li><code>channels.bluebubbles.allowFrom</code>：私信白名单（句柄、电子邮件、E.164 号码、<code>chat_id:*</code>、<code>chat_guid:*</code>）。</li>
+<li><code>channels.bluebubbles.groupPolicy</code>：<code>open | allowlist | disabled</code>（默认：<code>allowlist</code>）。</li>
+<li><code>channels.bluebubbles.groupAllowFrom</code>：群组发送者白名单。</li>
+<li><code>channels.bluebubbles.groups</code>：单群组配置（<code>requireMention</code> 等）。</li>
+<li><code>channels.bluebubbles.sendReadReceipts</code>：发送已读回执（默认：<code>true</code>）。</li>
+<li><code>channels.bluebubbles.blockStreaming</code>：启用分块流式传输（默认：<code>false</code>；流式回复必需）。</li>
+<li><code>channels.bluebubbles.textChunkLimit</code>：出站分块大小（字符）（默认：4000）。</li>
+<li><code>channels.bluebubbles.chunkMode</code>：<code>length</code>（默认）仅在超过 <code>textChunkLimit</code> 时分割；<code>newline</code> 在长度分块前先按空行（段落边界）分割。</li>
+<li><code>channels.bluebubbles.mediaMaxMb</code>：入站媒体上限（MB）（默认：8）。</li>
+<li><code>channels.bluebubbles.historyLimit</code>：上下文的最大群组消息数（0 表示禁用）。</li>
+<li><code>channels.bluebubbles.dmHistoryLimit</code>：私信历史限制。</li>
+<li><code>channels.bluebubbles.actions</code>：启用/禁用特定操作。</li>
+<li><code>channels.bluebubbles.accounts</code>：多账户配置。</li>
+</ul>
+<p>相关全局选项：</p>
+<ul>
+<li><code>agents.list[].groupChat.mentionPatterns</code>（或 <code>messages.groupChat.mentionPatterns</code>）。</li>
+<li><code>messages.responsePrefix</code>。</li>
+</ul>
+<h2 id="地址--投递目标">地址 / 投递目标<a hidden class="anchor" aria-hidden="true" href="#地址--投递目标">#</a></h2>
+<p>优先使用 <code>chat_guid</code> 以获得稳定的路由：</p>
+<ul>
+<li><code>chat_guid:iMessage;-;+15555550123</code>（群组推荐）</li>
+<li><code>chat_id:123</code></li>
+<li><code>chat_identifier:...</code></li>
+<li>直接句柄：<code>+15555550123</code>、<code>user@example.com</code>
+<ul>
+<li>如果直接句柄没有现有的私信聊天，OpenClaw 将通过 <code>POST /api/v1/chat/new</code> 创建一个。这需要启用 BlueBubbles Private API。</li>
+</ul>
+</li>
+</ul>
+<h2 id="安全性">安全性<a hidden class="anchor" aria-hidden="true" href="#安全性">#</a></h2>
+<ul>
+<li>Webhook 请求通过比较 <code>guid</code>/<code>password</code> 查询参数或头部与 <code>channels.bluebubbles.password</code> 进行身份验证。来自 <code>localhost</code> 的请求也会被接受。</li>
+<li>保持 API 密码和 webhook 端点的机密性（将它们视为凭证）。</li>
+<li>localhost 信任意味着同主机的反向代理可能无意中绕过密码验证。如果你使用代理 Gateway 网关，请在代理处要求身份验证并配置 <code>gateway.trustedProxies</code>。参见 <a href="/gateway/security#reverse-proxy-configuration">Gateway 网关安全性</a>。</li>
+<li>如果将 BlueBubbles 服务器暴露在局域网之外，请启用 HTTPS + 防火墙规则。</li>
+</ul>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<ul>
+<li>如果输入/已读事件停止工作，请检查 BlueBubbles webhook 日志并验证 Gateway 网关路径是否与 <code>channels.bluebubbles.webhookPath</code> 匹配。</li>
+<li>配对码在一小时后过期；使用 <code>openclaw pairing list bluebubbles</code> 和 <code>openclaw pairing approve bluebubbles &lt;code&gt;</code>。</li>
+<li>回应需要 BlueBubbles private API（<code>POST /api/v1/message/react</code>）；确保服务器版本支持它。</li>
+<li>编辑/撤回需要 macOS 13+ 和兼容的 BlueBubbles 服务器版本。在 macOS 26（Tahoe）上，由于 private API 变更，编辑功能目前不可用。</li>
+<li>在 macOS 26（Tahoe）上群组图标更新可能不稳定：API 可能返回成功但新图标未同步。</li>
+<li>OpenClaw 会根据 BlueBubbles 服务器的 macOS 版本自动隐藏已知不可用的操作。如果在 macOS 26（Tahoe）上编辑仍然显示，请使用 <code>channels.bluebubbles.actions.edit=false</code> 手动禁用。</li>
+<li>查看状态/健康信息：<code>openclaw status --all</code> 或 <code>openclaw status --deep</code>。</li>
+</ul>
+<p>有关通用渠道工作流参考，请参阅<a href="/channels">渠道</a>和<a href="/tools/plugin">插件</a>指南。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/tools/apply-patch/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>apply_patch 工具</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/bonjour/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Bonjour / mDNS 设备发现</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

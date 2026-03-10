@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>多 Gateway 网关（同一主机） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="大多数设置应该使用单个 Gateway 网关，因为一个 Gateway 网关可以处理多个消息连接和智能体。如果你需要更强的隔离或冗余（例如，救援机器人），请使用隔离的配置文件/端口运行多个 Gateway 网关。
+隔离检查清单（必需）
+
+OPENCLAW_CONFIG_PATH — 每个实例的配置文件
+OPENCLAW_STATE_DIR — 每个实例的会话、凭证、缓存
+agents.defaults.workspace — 每个实例的工作区根目录
+gateway.port（或 --port）— 每个实例唯一
+派生端口（浏览器/画布）不得重叠
+
+如果这些是共享的，你将遇到配置竞争和端口冲突。
+推荐：配置文件（--profile）
+配置文件自动限定 OPENCLAW_STATE_DIR &#43; OPENCLAW_CONFIG_PATH 范围并为服务名称添加后缀。
+# main
+openclaw --profile main setup
+openclaw --profile main gateway --port 18789
+
+# rescue
+openclaw --profile rescue setup
+openclaw --profile rescue gateway --port 19001
+按配置文件的服务：
+openclaw --profile main gateway install
+openclaw --profile rescue gateway install
+救援机器人指南
+在同一主机上运行第二个 Gateway 网关，使用独立的：
+
+配置文件/配置
+状态目录
+工作区
+基础端口（加上派生端口）
+
+这使救援机器人与主机器人隔离，以便在主机器人宕机时可以调试或应用配置更改。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/multiple-gateways/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/multiple-gateways/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/multiple-gateways/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="多 Gateway 网关（同一主机）">
+  <meta property="og:description" content="大多数设置应该使用单个 Gateway 网关，因为一个 Gateway 网关可以处理多个消息连接和智能体。如果你需要更强的隔离或冗余（例如，救援机器人），请使用隔离的配置文件/端口运行多个 Gateway 网关。
+隔离检查清单（必需） OPENCLAW_CONFIG_PATH — 每个实例的配置文件 OPENCLAW_STATE_DIR — 每个实例的会话、凭证、缓存 agents.defaults.workspace — 每个实例的工作区根目录 gateway.port（或 --port）— 每个实例唯一 派生端口（浏览器/画布）不得重叠 如果这些是共享的，你将遇到配置竞争和端口冲突。
+推荐：配置文件（--profile） 配置文件自动限定 OPENCLAW_STATE_DIR &#43; OPENCLAW_CONFIG_PATH 范围并为服务名称添加后缀。
+# main openclaw --profile main setup openclaw --profile main gateway --port 18789 # rescue openclaw --profile rescue setup openclaw --profile rescue gateway --port 19001 按配置文件的服务：
+openclaw --profile main gateway install openclaw --profile rescue gateway install 救援机器人指南 在同一主机上运行第二个 Gateway 网关，使用独立的：
+配置文件/配置 状态目录 工作区 基础端口（加上派生端口） 这使救援机器人与主机器人隔离，以便在主机器人宕机时可以调试或应用配置更改。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多 Gateway 网关（同一主机）">
+<meta name="twitter:description" content="大多数设置应该使用单个 Gateway 网关，因为一个 Gateway 网关可以处理多个消息连接和智能体。如果你需要更强的隔离或冗余（例如，救援机器人），请使用隔离的配置文件/端口运行多个 Gateway 网关。
+隔离检查清单（必需）
+
+OPENCLAW_CONFIG_PATH — 每个实例的配置文件
+OPENCLAW_STATE_DIR — 每个实例的会话、凭证、缓存
+agents.defaults.workspace — 每个实例的工作区根目录
+gateway.port（或 --port）— 每个实例唯一
+派生端口（浏览器/画布）不得重叠
+
+如果这些是共享的，你将遇到配置竞争和端口冲突。
+推荐：配置文件（--profile）
+配置文件自动限定 OPENCLAW_STATE_DIR &#43; OPENCLAW_CONFIG_PATH 范围并为服务名称添加后缀。
+# main
+openclaw --profile main setup
+openclaw --profile main gateway --port 18789
+
+# rescue
+openclaw --profile rescue setup
+openclaw --profile rescue gateway --port 19001
+按配置文件的服务：
+openclaw --profile main gateway install
+openclaw --profile rescue gateway install
+救援机器人指南
+在同一主机上运行第二个 Gateway 网关，使用独立的：
+
+配置文件/配置
+状态目录
+工作区
+基础端口（加上派生端口）
+
+这使救援机器人与主机器人隔离，以便在主机器人宕机时可以调试或应用配置更改。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "多 Gateway 网关（同一主机）",
+      "item": "/openclaw/gateway/multiple-gateways/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "多 Gateway 网关（同一主机）",
+  "name": "多 Gateway 网关（同一主机）",
+  "description": "大多数设置应该使用单个 Gateway 网关，因为一个 Gateway 网关可以处理多个消息连接和智能体。如果你需要更强的隔离或冗余（例如，救援机器人），请使用隔离的配置文件/端口运行多个 Gateway 网关。\n隔离检查清单（必需） OPENCLAW_CONFIG_PATH — 每个实例的配置文件 OPENCLAW_STATE_DIR — 每个实例的会话、凭证、缓存 agents.defaults.workspace — 每个实例的工作区根目录 gateway.port（或 --port）— 每个实例唯一 派生端口（浏览器/画布）不得重叠 如果这些是共享的，你将遇到配置竞争和端口冲突。\n推荐：配置文件（--profile） 配置文件自动限定 OPENCLAW_STATE_DIR + OPENCLAW_CONFIG_PATH 范围并为服务名称添加后缀。\n# main openclaw --profile main setup openclaw --profile main gateway --port 18789 # rescue openclaw --profile rescue setup openclaw --profile rescue gateway --port 19001 按配置文件的服务：\nopenclaw --profile main gateway install openclaw --profile rescue gateway install 救援机器人指南 在同一主机上运行第二个 Gateway 网关，使用独立的：\n配置文件/配置 状态目录 工作区 基础端口（加上派生端口） 这使救援机器人与主机器人隔离，以便在主机器人宕机时可以调试或应用配置更改。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "大多数设置应该使用单个 Gateway 网关，因为一个 Gateway 网关可以处理多个消息连接和智能体。如果你需要更强的隔离或冗余（例如，救援机器人），请使用隔离的配置文件/端口运行多个 Gateway 网关。\n隔离检查清单（必需） OPENCLAW_CONFIG_PATH — 每个实例的配置文件 OPENCLAW_STATE_DIR — 每个实例的会话、凭证、缓存 agents.defaults.workspace — 每个实例的工作区根目录 gateway.port（或 --port）— 每个实例唯一 派生端口（浏览器/画布）不得重叠 如果这些是共享的，你将遇到配置竞争和端口冲突。\n推荐：配置文件（--profile） 配置文件自动限定 OPENCLAW_STATE_DIR + OPENCLAW_CONFIG_PATH 范围并为服务名称添加后缀。\n# main openclaw --profile main setup openclaw --profile main gateway --port 18789 # rescue openclaw --profile rescue setup openclaw --profile rescue gateway --port 19001 按配置文件的服务：\nopenclaw --profile main gateway install openclaw --profile rescue gateway install 救援机器人指南 在同一主机上运行第二个 Gateway 网关，使用独立的：\n配置文件/配置 状态目录 工作区 基础端口（加上派生端口） 这使救援机器人与主机器人隔离，以便在主机器人宕机时可以调试或应用配置更改。\n端口间距：在基础端口之间至少留出 20 个端口，这样派生的浏览器/画布/CDP 端口永远不会冲突。\n如何安装（救援机器人） # 主机器人（现有或新建，不带 --profile 参数） # 运行在端口 18789 + Chrome CDC/Canvas/... 端口 openclaw onboard openclaw gateway install # 救援机器人（隔离的配置文件 + 端口） openclaw --profile rescue onboard # 注意： # - 工作区名称默认会添加 -rescue 后缀 # - 端口应至少为 18789 + 20 个端口， # 最好选择完全不同的基础端口，如 19789， # - 其余的新手引导与正常相同 # 安装服务（如果在新手引导期间没有自动完成） openclaw --profile rescue gateway install 端口映射（派生） 基础端口 = gateway.port（或 OPENCLAW_GATEWAY_PORT / --port）。\n浏览器控制服务端口 = 基础 + 2（仅 loopback） canvasHost.port = 基础 + 4 浏览器配置文件 CDP 端口从 browser.controlPort + 9 .. + 108 自动分配 如果你在配置或环境变量中覆盖了这些，必须确保每个实例都唯一。\n浏览器/CDP 注意事项（常见陷阱） 不要在多个实例上将 browser.cdpUrl 固定为相同的值。 每个实例需要自己的浏览器控制端口和 CDP 范围（从其 Gateway 网关端口派生）。 如果你需要显式的 CDP 端口，请为每个实例设置 browser.profiles..cdpPort。 远程 Chrome：使用 browser.profiles..cdpUrl（每个配置文件，每个实例）。 手动环境变量示例 OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \\ OPENCLAW_STATE_DIR=~/.openclaw-main \\ openclaw gateway --port 18789 OPENCLAW_CONFIG_PATH=~/.openclaw/rescue.json \\ OPENCLAW_STATE_DIR=~/.openclaw-rescue \\ openclaw gateway --port 19001 快速检查 openclaw --profile main status openclaw --profile rescue status openclaw --profile rescue browser status ",
+  "wordCount" : "205",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/multiple-gateways/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      多 Gateway 网关（同一主机）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%9a%94%e7%a6%bb%e6%a3%80%e6%9f%a5%e6%b8%85%e5%8d%95%e5%bf%85%e9%9c%80" aria-label="隔离检查清单（必需）">隔离检查清单（必需）</a></li>
+                <li>
+                    <a href="#%e6%8e%a8%e8%8d%90%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6--profile" aria-label="推荐：配置文件（--profile）">推荐：配置文件（--profile）</a></li>
+                <li>
+                    <a href="#%e6%95%91%e6%8f%b4%e6%9c%ba%e5%99%a8%e4%ba%ba%e6%8c%87%e5%8d%97" aria-label="救援机器人指南">救援机器人指南</a><ul>
+                        
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e5%ae%89%e8%a3%85%e6%95%91%e6%8f%b4%e6%9c%ba%e5%99%a8%e4%ba%ba" aria-label="如何安装（救援机器人）">如何安装（救援机器人）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%ab%af%e5%8f%a3%e6%98%a0%e5%b0%84%e6%b4%be%e7%94%9f" aria-label="端口映射（派生）">端口映射（派生）</a></li>
+                <li>
+                    <a href="#%e6%b5%8f%e8%a7%88%e5%99%a8cdp-%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9%e5%b8%b8%e8%a7%81%e9%99%b7%e9%98%b1" aria-label="浏览器/CDP 注意事项（常见陷阱）">浏览器/CDP 注意事项（常见陷阱）</a></li>
+                <li>
+                    <a href="#%e6%89%8b%e5%8a%a8%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f%e7%a4%ba%e4%be%8b" aria-label="手动环境变量示例">手动环境变量示例</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e6%a3%80%e6%9f%a5" aria-label="快速检查">快速检查</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>大多数设置应该使用单个 Gateway 网关，因为一个 Gateway 网关可以处理多个消息连接和智能体。如果你需要更强的隔离或冗余（例如，救援机器人），请使用隔离的配置文件/端口运行多个 Gateway 网关。</p>
+<h2 id="隔离检查清单必需">隔离检查清单（必需）<a hidden class="anchor" aria-hidden="true" href="#隔离检查清单必需">#</a></h2>
+<ul>
+<li><code>OPENCLAW_CONFIG_PATH</code> — 每个实例的配置文件</li>
+<li><code>OPENCLAW_STATE_DIR</code> — 每个实例的会话、凭证、缓存</li>
+<li><code>agents.defaults.workspace</code> — 每个实例的工作区根目录</li>
+<li><code>gateway.port</code>（或 <code>--port</code>）— 每个实例唯一</li>
+<li>派生端口（浏览器/画布）不得重叠</li>
+</ul>
+<p>如果这些是共享的，你将遇到配置竞争和端口冲突。</p>
+<h2 id="推荐配置文件--profile">推荐：配置文件（<code>--profile</code>）<a hidden class="anchor" aria-hidden="true" href="#推荐配置文件--profile">#</a></h2>
+<p>配置文件自动限定 <code>OPENCLAW_STATE_DIR</code> + <code>OPENCLAW_CONFIG_PATH</code> 范围并为服务名称添加后缀。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># main</span>
+</span></span><span class="line"><span class="cl">openclaw --profile main setup
+</span></span><span class="line"><span class="cl">openclaw --profile main gateway --port <span class="m">18789</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># rescue</span>
+</span></span><span class="line"><span class="cl">openclaw --profile rescue setup
+</span></span><span class="line"><span class="cl">openclaw --profile rescue gateway --port <span class="m">19001</span>
+</span></span></code></pre></div><p>按配置文件的服务：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw --profile main gateway install
+</span></span><span class="line"><span class="cl">openclaw --profile rescue gateway install
+</span></span></code></pre></div><h2 id="救援机器人指南">救援机器人指南<a hidden class="anchor" aria-hidden="true" href="#救援机器人指南">#</a></h2>
+<p>在同一主机上运行第二个 Gateway 网关，使用独立的：</p>
+<ul>
+<li>配置文件/配置</li>
+<li>状态目录</li>
+<li>工作区</li>
+<li>基础端口（加上派生端口）</li>
+</ul>
+<p>这使救援机器人与主机器人隔离，以便在主机器人宕机时可以调试或应用配置更改。</p>
+<p>端口间距：在基础端口之间至少留出 20 个端口，这样派生的浏览器/画布/CDP 端口永远不会冲突。</p>
+<h3 id="如何安装救援机器人">如何安装（救援机器人）<a hidden class="anchor" aria-hidden="true" href="#如何安装救援机器人">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 主机器人（现有或新建，不带 --profile 参数）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 运行在端口 18789 + Chrome CDC/Canvas/... 端口</span>
+</span></span><span class="line"><span class="cl">openclaw onboard
+</span></span><span class="line"><span class="cl">openclaw gateway install
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 救援机器人（隔离的配置文件 + 端口）</span>
+</span></span><span class="line"><span class="cl">openclaw --profile rescue onboard
+</span></span><span class="line"><span class="cl"><span class="c1"># 注意：</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># - 工作区名称默认会添加 -rescue 后缀</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># - 端口应至少为 18789 + 20 个端口，</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   最好选择完全不同的基础端口，如 19789，</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># - 其余的新手引导与正常相同</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 安装服务（如果在新手引导期间没有自动完成）</span>
+</span></span><span class="line"><span class="cl">openclaw --profile rescue gateway install
+</span></span></code></pre></div><h2 id="端口映射派生">端口映射（派生）<a hidden class="anchor" aria-hidden="true" href="#端口映射派生">#</a></h2>
+<p>基础端口 = <code>gateway.port</code>（或 <code>OPENCLAW_GATEWAY_PORT</code> / <code>--port</code>）。</p>
+<ul>
+<li>浏览器控制服务端口 = 基础 + 2（仅 loopback）</li>
+<li><code>canvasHost.port = 基础 + 4</code></li>
+<li>浏览器配置文件 CDP 端口从 <code>browser.controlPort + 9 .. + 108</code> 自动分配</li>
+</ul>
+<p>如果你在配置或环境变量中覆盖了这些，必须确保每个实例都唯一。</p>
+<h2 id="浏览器cdp-注意事项常见陷阱">浏览器/CDP 注意事项（常见陷阱）<a hidden class="anchor" aria-hidden="true" href="#浏览器cdp-注意事项常见陷阱">#</a></h2>
+<ul>
+<li><strong>不要</strong>在多个实例上将 <code>browser.cdpUrl</code> 固定为相同的值。</li>
+<li>每个实例需要自己的浏览器控制端口和 CDP 范围（从其 Gateway 网关端口派生）。</li>
+<li>如果你需要显式的 CDP 端口，请为每个实例设置 <code>browser.profiles.&lt;name&gt;.cdpPort</code>。</li>
+<li>远程 Chrome：使用 <code>browser.profiles.&lt;name&gt;.cdpUrl</code>（每个配置文件，每个实例）。</li>
+</ul>
+<h2 id="手动环境变量示例">手动环境变量示例<a hidden class="anchor" aria-hidden="true" href="#手动环境变量示例">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">OPENCLAW_CONFIG_PATH</span><span class="o">=</span>~/.openclaw/main.json <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_STATE_DIR</span><span class="o">=</span>~/.openclaw-main <span class="se">\
+</span></span></span><span class="line"><span class="cl">openclaw gateway --port <span class="m">18789</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_CONFIG_PATH</span><span class="o">=</span>~/.openclaw/rescue.json <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_STATE_DIR</span><span class="o">=</span>~/.openclaw-rescue <span class="se">\
+</span></span></span><span class="line"><span class="cl">openclaw gateway --port <span class="m">19001</span>
+</span></span></code></pre></div><h2 id="快速检查">快速检查<a hidden class="anchor" aria-hidden="true" href="#快速检查">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw --profile main status
+</span></span><span class="line"><span class="cl">openclaw --profile rescue status
+</span></span><span class="line"><span class="cl">openclaw --profile rescue browser status
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/concepts/presence/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>在线状态</span>
+  </a>
+  <a class="next" href="/openclaw/tools/multi-agent-sandbox-tools/">
+    <span class="title">Next »</span>
+    <br>
+    <span>多智能体沙箱与工具配置</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

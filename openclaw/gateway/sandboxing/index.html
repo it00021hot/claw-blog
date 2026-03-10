@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>沙箱隔离 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 可以在 Docker 容器内运行工具以减少影响范围。
+这是可选的，由配置控制（agents.defaults.sandbox 或 agents.list[].sandbox）。如果沙箱隔离关闭，工具在主机上运行。
+Gateway 网关保留在主机上；启用时工具执行在隔离的沙箱中运行。
+这不是完美的安全边界，但当模型做出愚蠢行为时，它实质性地限制了文件系统和进程访问。
+什么会被沙箱隔离
+
+工具执行（exec、read、write、edit、apply_patch、process 等）。
+可选的沙箱浏览器（agents.defaults.sandbox.browser）。
+
+默认情况下，当浏览器工具需要时，沙箱浏览器会自动启动（确保 CDP 可达）。
+通过 agents.defaults.sandbox.browser.autoStart 和 agents.defaults.sandbox.browser.autoStartTimeoutMs 配置。
+agents.defaults.sandbox.browser.allowHostControl 允许沙箱会话显式定位主机浏览器。
+可选的允许列表限制 target: &quot;custom&quot;：allowedControlUrls、allowedControlHosts、allowedControlPorts。
+
+
+
+不被沙箱隔离：
+
+Gateway 网关进程本身。
+任何明确允许在主机上运行的工具（例如 tools.elevated）。
+
+提权 exec 在主机上运行并绕过沙箱隔离。
+如果沙箱隔离关闭，tools.elevated 不会改变执行（已经在主机上）。参见提权模式。
+
+
+
+模式
+agents.defaults.sandbox.mode 控制何时使用沙箱隔离：
+
+&quot;off&quot;：不使用沙箱隔离。
+&quot;non-main&quot;：仅沙箱隔离非主会话（如果你想让普通聊天在主机上运行，这是默认值）。
+&quot;all&quot;：每个会话都在沙箱中运行。
+注意：&quot;non-main&quot; 基于 session.mainKey（默认 &quot;main&quot;），而不是智能体 ID。
+群组/频道会话使用它们自己的键，因此它们算作非主会话并将被沙箱隔离。
+
+作用域
+agents.defaults.sandbox.scope 控制创建多少容器：
+
+&quot;session&quot;（默认）：每个会话一个容器。
+&quot;agent&quot;：每个智能体一个容器。
+&quot;shared&quot;：所有沙箱会话共享一个容器。
+
+工作区访问
+agents.defaults.sandbox.workspaceAccess 控制沙箱可以看到什么：
+
+&quot;none&quot;（默认）：工具看到 ~/.openclaw/sandboxes 下的沙箱工作区。
+&quot;ro&quot;：以只读方式在 /agent 挂载智能体工作区（禁用 write/edit/apply_patch）。
+&quot;rw&quot;：以读写方式在 /workspace 挂载智能体工作区。
+
+入站媒体被复制到活动沙箱工作区（media/inbound/*）。
+Skills 注意事项：read 工具以沙箱为根。使用 workspaceAccess: &quot;none&quot; 时，OpenClaw 将符合条件的 Skills 镜像到沙箱工作区（.../skills）以便可以读取。使用 &quot;rw&quot; 时，工作区 Skills 可从 /workspace/skills 读取。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/sandboxing/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/sandboxing/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/sandboxing/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="沙箱隔离">
+  <meta property="og:description" content="OpenClaw 可以在 Docker 容器内运行工具以减少影响范围。 这是可选的，由配置控制（agents.defaults.sandbox 或 agents.list[].sandbox）。如果沙箱隔离关闭，工具在主机上运行。 Gateway 网关保留在主机上；启用时工具执行在隔离的沙箱中运行。
+这不是完美的安全边界，但当模型做出愚蠢行为时，它实质性地限制了文件系统和进程访问。
+什么会被沙箱隔离 工具执行（exec、read、write、edit、apply_patch、process 等）。 可选的沙箱浏览器（agents.defaults.sandbox.browser）。 默认情况下，当浏览器工具需要时，沙箱浏览器会自动启动（确保 CDP 可达）。 通过 agents.defaults.sandbox.browser.autoStart 和 agents.defaults.sandbox.browser.autoStartTimeoutMs 配置。 agents.defaults.sandbox.browser.allowHostControl 允许沙箱会话显式定位主机浏览器。 可选的允许列表限制 target: &#34;custom&#34;：allowedControlUrls、allowedControlHosts、allowedControlPorts。 不被沙箱隔离：
+Gateway 网关进程本身。 任何明确允许在主机上运行的工具（例如 tools.elevated）。 提权 exec 在主机上运行并绕过沙箱隔离。 如果沙箱隔离关闭，tools.elevated 不会改变执行（已经在主机上）。参见提权模式。 模式 agents.defaults.sandbox.mode 控制何时使用沙箱隔离：
+&#34;off&#34;：不使用沙箱隔离。 &#34;non-main&#34;：仅沙箱隔离非主会话（如果你想让普通聊天在主机上运行，这是默认值）。 &#34;all&#34;：每个会话都在沙箱中运行。 注意：&#34;non-main&#34; 基于 session.mainKey（默认 &#34;main&#34;），而不是智能体 ID。 群组/频道会话使用它们自己的键，因此它们算作非主会话并将被沙箱隔离。 作用域 agents.defaults.sandbox.scope 控制创建多少容器：
+&#34;session&#34;（默认）：每个会话一个容器。 &#34;agent&#34;：每个智能体一个容器。 &#34;shared&#34;：所有沙箱会话共享一个容器。 工作区访问 agents.defaults.sandbox.workspaceAccess 控制沙箱可以看到什么：
+&#34;none&#34;（默认）：工具看到 ~/.openclaw/sandboxes 下的沙箱工作区。 &#34;ro&#34;：以只读方式在 /agent 挂载智能体工作区（禁用 write/edit/apply_patch）。 &#34;rw&#34;：以读写方式在 /workspace 挂载智能体工作区。 入站媒体被复制到活动沙箱工作区（media/inbound/*）。 Skills 注意事项：read 工具以沙箱为根。使用 workspaceAccess: &#34;none&#34; 时，OpenClaw 将符合条件的 Skills 镜像到沙箱工作区（.../skills）以便可以读取。使用 &#34;rw&#34; 时，工作区 Skills 可从 /workspace/skills 读取。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="沙箱隔离">
+<meta name="twitter:description" content="OpenClaw 可以在 Docker 容器内运行工具以减少影响范围。
+这是可选的，由配置控制（agents.defaults.sandbox 或 agents.list[].sandbox）。如果沙箱隔离关闭，工具在主机上运行。
+Gateway 网关保留在主机上；启用时工具执行在隔离的沙箱中运行。
+这不是完美的安全边界，但当模型做出愚蠢行为时，它实质性地限制了文件系统和进程访问。
+什么会被沙箱隔离
+
+工具执行（exec、read、write、edit、apply_patch、process 等）。
+可选的沙箱浏览器（agents.defaults.sandbox.browser）。
+
+默认情况下，当浏览器工具需要时，沙箱浏览器会自动启动（确保 CDP 可达）。
+通过 agents.defaults.sandbox.browser.autoStart 和 agents.defaults.sandbox.browser.autoStartTimeoutMs 配置。
+agents.defaults.sandbox.browser.allowHostControl 允许沙箱会话显式定位主机浏览器。
+可选的允许列表限制 target: &quot;custom&quot;：allowedControlUrls、allowedControlHosts、allowedControlPorts。
+
+
+
+不被沙箱隔离：
+
+Gateway 网关进程本身。
+任何明确允许在主机上运行的工具（例如 tools.elevated）。
+
+提权 exec 在主机上运行并绕过沙箱隔离。
+如果沙箱隔离关闭，tools.elevated 不会改变执行（已经在主机上）。参见提权模式。
+
+
+
+模式
+agents.defaults.sandbox.mode 控制何时使用沙箱隔离：
+
+&quot;off&quot;：不使用沙箱隔离。
+&quot;non-main&quot;：仅沙箱隔离非主会话（如果你想让普通聊天在主机上运行，这是默认值）。
+&quot;all&quot;：每个会话都在沙箱中运行。
+注意：&quot;non-main&quot; 基于 session.mainKey（默认 &quot;main&quot;），而不是智能体 ID。
+群组/频道会话使用它们自己的键，因此它们算作非主会话并将被沙箱隔离。
+
+作用域
+agents.defaults.sandbox.scope 控制创建多少容器：
+
+&quot;session&quot;（默认）：每个会话一个容器。
+&quot;agent&quot;：每个智能体一个容器。
+&quot;shared&quot;：所有沙箱会话共享一个容器。
+
+工作区访问
+agents.defaults.sandbox.workspaceAccess 控制沙箱可以看到什么：
+
+&quot;none&quot;（默认）：工具看到 ~/.openclaw/sandboxes 下的沙箱工作区。
+&quot;ro&quot;：以只读方式在 /agent 挂载智能体工作区（禁用 write/edit/apply_patch）。
+&quot;rw&quot;：以读写方式在 /workspace 挂载智能体工作区。
+
+入站媒体被复制到活动沙箱工作区（media/inbound/*）。
+Skills 注意事项：read 工具以沙箱为根。使用 workspaceAccess: &quot;none&quot; 时，OpenClaw 将符合条件的 Skills 镜像到沙箱工作区（.../skills）以便可以读取。使用 &quot;rw&quot; 时，工作区 Skills 可从 /workspace/skills 读取。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "沙箱隔离",
+      "item": "/openclaw/gateway/sandboxing/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "沙箱隔离",
+  "name": "沙箱隔离",
+  "description": "OpenClaw 可以在 Docker 容器内运行工具以减少影响范围。 这是可选的，由配置控制（agents.defaults.sandbox 或 agents.list[].sandbox）。如果沙箱隔离关闭，工具在主机上运行。 Gateway 网关保留在主机上；启用时工具执行在隔离的沙箱中运行。\n这不是完美的安全边界，但当模型做出愚蠢行为时，它实质性地限制了文件系统和进程访问。\n什么会被沙箱隔离 工具执行（exec、read、write、edit、apply_patch、process 等）。 可选的沙箱浏览器（agents.defaults.sandbox.browser）。 默认情况下，当浏览器工具需要时，沙箱浏览器会自动启动（确保 CDP 可达）。 通过 agents.defaults.sandbox.browser.autoStart 和 agents.defaults.sandbox.browser.autoStartTimeoutMs 配置。 agents.defaults.sandbox.browser.allowHostControl 允许沙箱会话显式定位主机浏览器。 可选的允许列表限制 target: \u0026quot;custom\u0026quot;：allowedControlUrls、allowedControlHosts、allowedControlPorts。 不被沙箱隔离：\nGateway 网关进程本身。 任何明确允许在主机上运行的工具（例如 tools.elevated）。 提权 exec 在主机上运行并绕过沙箱隔离。 如果沙箱隔离关闭，tools.elevated 不会改变执行（已经在主机上）。参见提权模式。 模式 agents.defaults.sandbox.mode 控制何时使用沙箱隔离：\n\u0026quot;off\u0026quot;：不使用沙箱隔离。 \u0026quot;non-main\u0026quot;：仅沙箱隔离非主会话（如果你想让普通聊天在主机上运行，这是默认值）。 \u0026quot;all\u0026quot;：每个会话都在沙箱中运行。 注意：\u0026quot;non-main\u0026quot; 基于 session.mainKey（默认 \u0026quot;main\u0026quot;），而不是智能体 ID。 群组/频道会话使用它们自己的键，因此它们算作非主会话并将被沙箱隔离。 作用域 agents.defaults.sandbox.scope 控制创建多少容器：\n\u0026quot;session\u0026quot;（默认）：每个会话一个容器。 \u0026quot;agent\u0026quot;：每个智能体一个容器。 \u0026quot;shared\u0026quot;：所有沙箱会话共享一个容器。 工作区访问 agents.defaults.sandbox.workspaceAccess 控制沙箱可以看到什么：\n\u0026quot;none\u0026quot;（默认）：工具看到 ~/.openclaw/sandboxes 下的沙箱工作区。 \u0026quot;ro\u0026quot;：以只读方式在 /agent 挂载智能体工作区（禁用 write/edit/apply_patch）。 \u0026quot;rw\u0026quot;：以读写方式在 /workspace 挂载智能体工作区。 入站媒体被复制到活动沙箱工作区（media/inbound/*）。 Skills 注意事项：read 工具以沙箱为根。使用 workspaceAccess: \u0026quot;none\u0026quot; 时，OpenClaw 将符合条件的 Skills 镜像到沙箱工作区（.../skills）以便可以读取。使用 \u0026quot;rw\u0026quot; 时，工作区 Skills 可从 /workspace/skills 读取。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 可以在 Docker 容器内运行工具以减少影响范围。 这是可选的，由配置控制（agents.defaults.sandbox 或 agents.list[].sandbox）。如果沙箱隔离关闭，工具在主机上运行。 Gateway 网关保留在主机上；启用时工具执行在隔离的沙箱中运行。\n这不是完美的安全边界，但当模型做出愚蠢行为时，它实质性地限制了文件系统和进程访问。\n什么会被沙箱隔离 工具执行（exec、read、write、edit、apply_patch、process 等）。 可选的沙箱浏览器（agents.defaults.sandbox.browser）。 默认情况下，当浏览器工具需要时，沙箱浏览器会自动启动（确保 CDP 可达）。 通过 agents.defaults.sandbox.browser.autoStart 和 agents.defaults.sandbox.browser.autoStartTimeoutMs 配置。 agents.defaults.sandbox.browser.allowHostControl 允许沙箱会话显式定位主机浏览器。 可选的允许列表限制 target: \"custom\"：allowedControlUrls、allowedControlHosts、allowedControlPorts。 不被沙箱隔离：\nGateway 网关进程本身。 任何明确允许在主机上运行的工具（例如 tools.elevated）。 提权 exec 在主机上运行并绕过沙箱隔离。 如果沙箱隔离关闭，tools.elevated 不会改变执行（已经在主机上）。参见提权模式。 模式 agents.defaults.sandbox.mode 控制何时使用沙箱隔离：\n\"off\"：不使用沙箱隔离。 \"non-main\"：仅沙箱隔离非主会话（如果你想让普通聊天在主机上运行，这是默认值）。 \"all\"：每个会话都在沙箱中运行。 注意：\"non-main\" 基于 session.mainKey（默认 \"main\"），而不是智能体 ID。 群组/频道会话使用它们自己的键，因此它们算作非主会话并将被沙箱隔离。 作用域 agents.defaults.sandbox.scope 控制创建多少容器：\n\"session\"（默认）：每个会话一个容器。 \"agent\"：每个智能体一个容器。 \"shared\"：所有沙箱会话共享一个容器。 工作区访问 agents.defaults.sandbox.workspaceAccess 控制沙箱可以看到什么：\n\"none\"（默认）：工具看到 ~/.openclaw/sandboxes 下的沙箱工作区。 \"ro\"：以只读方式在 /agent 挂载智能体工作区（禁用 write/edit/apply_patch）。 \"rw\"：以读写方式在 /workspace 挂载智能体工作区。 入站媒体被复制到活动沙箱工作区（media/inbound/*）。 Skills 注意事项：read 工具以沙箱为根。使用 workspaceAccess: \"none\" 时，OpenClaw 将符合条件的 Skills 镜像到沙箱工作区（.../skills）以便可以读取。使用 \"rw\" 时，工作区 Skills 可从 /workspace/skills 读取。\n自定义绑定挂载 agents.defaults.sandbox.docker.binds 将额外的主机目录挂载到容器中。 格式：host:container:mode（例如 \"/home/user/source:/source:rw\"）。\n全局和每智能体的绑定是合并的（不是替换）。在 scope: \"shared\" 下，每智能体的绑定被忽略。\n示例（只读源码 + docker 套接字）：\n{ agents: { defaults: { sandbox: { docker: { binds: [\"/home/user/source:/source:ro\", \"/var/run/docker.sock:/var/run/docker.sock\"], }, }, }, list: [ { id: \"build\", sandbox: { docker: { binds: [\"/mnt/cache:/cache:rw\"], }, }, }, ], }, } 安全注意事项：\n绑定绕过沙箱文件系统：它们以你设置的任何模式（:ro 或 :rw）暴露主机路径。 敏感挂载（例如 docker.sock、密钥、SSH 密钥）应该是 :ro，除非绝对必要。 如果你只需要对工作区的读取访问，请结合 workspaceAccess: \"ro\"；绑定模式保持独立。 参见沙箱 vs 工具策略 vs 提权了解绑定如何与工具策略和提权 exec 交互。 镜像 + 设置 默认镜像：openclaw-sandbox:bookworm-slim\n构建一次：\nscripts/sandbox-setup.sh 注意：默认镜像不包含 Node。如果 Skills 需要 Node（或其他运行时），要么构建自定义镜像，要么通过 sandbox.docker.setupCommand 安装（需要网络出口 + 可写根 + root 用户）。\n沙箱浏览器镜像：\nscripts/sandbox-browser-setup.sh 默认情况下，沙箱容器运行时没有网络。 通过 agents.defaults.sandbox.docker.network 覆盖。\nDocker 安装和容器化 Gateway 网关在此： Docker\nsetupCommand（一次性容器设置） setupCommand 在沙箱容器创建后运行一次（不是每次运行）。 它通过 sh -lc 在容器内执行。\n路径：\n全局：agents.defaults.sandbox.docker.setupCommand 每智能体：agents.list[].sandbox.docker.setupCommand 常见陷阱：\n默认 docker.network 是 \"none\"（无出口），因此包安装会失败。 readOnlyRoot: true 阻止写入；设置 readOnlyRoot: false 或构建自定义镜像。 user 必须是 root 才能安装包（省略 user 或设置 user: \"0:0\"）。 沙箱 exec 不继承主机 process.env。使用 agents.defaults.sandbox.docker.env（或自定义镜像）设置 Skills API 密钥。 工具策略 + 逃逸通道 工具允许/拒绝策略仍在沙箱规则之前应用。如果工具在全局或每智能体被拒绝，沙箱隔离不会恢复它。\ntools.elevated 是一个显式的逃逸通道，在主机上运行 exec。 /exec 指令仅适用于授权发送者并按会话持久化；要硬禁用 exec，使用工具策略拒绝（参见沙箱 vs 工具策略 vs 提权）。\n调试：\n使用 openclaw sandbox explain 检查生效的沙箱模式、工具策略和修复配置键。 参见沙箱 vs 工具策略 vs 提权了解\"为什么被阻止？“的心智模型。 保持锁定。 多智能体覆盖 每个智能体可以覆盖沙箱 + 工具： agents.list[].sandbox 和 agents.list[].tools（加上 agents.list[].tools.sandbox.tools 用于沙箱工具策略）。 参见多智能体沙箱与工具了解优先级。\n最小启用示例 { agents: { defaults: { sandbox: { mode: \"non-main\", scope: \"session\", workspaceAccess: \"none\", }, }, }, } 相关文档 沙箱配置 多智能体沙箱与工具 安全 ",
+  "wordCount" : "271",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/sandboxing/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      沙箱隔离
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e4%bc%9a%e8%a2%ab%e6%b2%99%e7%ae%b1%e9%9a%94%e7%a6%bb" aria-label="什么会被沙箱隔离">什么会被沙箱隔离</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%bc%8f" aria-label="模式">模式</a></li>
+                <li>
+                    <a href="#%e4%bd%9c%e7%94%a8%e5%9f%9f" aria-label="作用域">作用域</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e4%bd%9c%e5%8c%ba%e8%ae%bf%e9%97%ae" aria-label="工作区访问">工作区访问</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e7%bb%91%e5%ae%9a%e6%8c%82%e8%bd%bd" aria-label="自定义绑定挂载">自定义绑定挂载</a></li>
+                <li>
+                    <a href="#%e9%95%9c%e5%83%8f--%e8%ae%be%e7%bd%ae" aria-label="镜像 &#43; 设置">镜像 + 设置</a></li>
+                <li>
+                    <a href="#setupcommand%e4%b8%80%e6%ac%a1%e6%80%a7%e5%ae%b9%e5%99%a8%e8%ae%be%e7%bd%ae" aria-label="setupCommand（一次性容器设置）">setupCommand（一次性容器设置）</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e7%ad%96%e7%95%a5--%e9%80%83%e9%80%b8%e9%80%9a%e9%81%93" aria-label="工具策略 &#43; 逃逸通道">工具策略 + 逃逸通道</a></li>
+                <li>
+                    <a href="#%e5%a4%9a%e6%99%ba%e8%83%bd%e4%bd%93%e8%a6%86%e7%9b%96" aria-label="多智能体覆盖">多智能体覆盖</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e5%b0%8f%e5%90%af%e7%94%a8%e7%a4%ba%e4%be%8b" aria-label="最小启用示例">最小启用示例</a></li>
+                <li>
+                    <a href="#%e7%9b%b8%e5%85%b3%e6%96%87%e6%a1%a3" aria-label="相关文档">相关文档</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 可以<strong>在 Docker 容器内运行工具</strong>以减少影响范围。
+这是<strong>可选的</strong>，由配置控制（<code>agents.defaults.sandbox</code> 或 <code>agents.list[].sandbox</code>）。如果沙箱隔离关闭，工具在主机上运行。
+Gateway 网关保留在主机上；启用时工具执行在隔离的沙箱中运行。</p>
+<p>这不是完美的安全边界，但当模型做出愚蠢行为时，它实质性地限制了文件系统和进程访问。</p>
+<h2 id="什么会被沙箱隔离">什么会被沙箱隔离<a hidden class="anchor" aria-hidden="true" href="#什么会被沙箱隔离">#</a></h2>
+<ul>
+<li>工具执行（<code>exec</code>、<code>read</code>、<code>write</code>、<code>edit</code>、<code>apply_patch</code>、<code>process</code> 等）。</li>
+<li>可选的沙箱浏览器（<code>agents.defaults.sandbox.browser</code>）。
+<ul>
+<li>默认情况下，当浏览器工具需要时，沙箱浏览器会自动启动（确保 CDP 可达）。
+通过 <code>agents.defaults.sandbox.browser.autoStart</code> 和 <code>agents.defaults.sandbox.browser.autoStartTimeoutMs</code> 配置。</li>
+<li><code>agents.defaults.sandbox.browser.allowHostControl</code> 允许沙箱会话显式定位主机浏览器。</li>
+<li>可选的允许列表限制 <code>target: &quot;custom&quot;</code>：<code>allowedControlUrls</code>、<code>allowedControlHosts</code>、<code>allowedControlPorts</code>。</li>
+</ul>
+</li>
+</ul>
+<p>不被沙箱隔离：</p>
+<ul>
+<li>Gateway 网关进程本身。</li>
+<li>任何明确允许在主机上运行的工具（例如 <code>tools.elevated</code>）。
+<ul>
+<li><strong>提权 exec 在主机上运行并绕过沙箱隔离。</strong></li>
+<li>如果沙箱隔离关闭，<code>tools.elevated</code> 不会改变执行（已经在主机上）。参见<a href="/tools/elevated">提权模式</a>。</li>
+</ul>
+</li>
+</ul>
+<h2 id="模式">模式<a hidden class="anchor" aria-hidden="true" href="#模式">#</a></h2>
+<p><code>agents.defaults.sandbox.mode</code> 控制<strong>何时</strong>使用沙箱隔离：</p>
+<ul>
+<li><code>&quot;off&quot;</code>：不使用沙箱隔离。</li>
+<li><code>&quot;non-main&quot;</code>：仅沙箱隔离<strong>非主</strong>会话（如果你想让普通聊天在主机上运行，这是默认值）。</li>
+<li><code>&quot;all&quot;</code>：每个会话都在沙箱中运行。
+注意：<code>&quot;non-main&quot;</code> 基于 <code>session.mainKey</code>（默认 <code>&quot;main&quot;</code>），而不是智能体 ID。
+群组/频道会话使用它们自己的键，因此它们算作非主会话并将被沙箱隔离。</li>
+</ul>
+<h2 id="作用域">作用域<a hidden class="anchor" aria-hidden="true" href="#作用域">#</a></h2>
+<p><code>agents.defaults.sandbox.scope</code> 控制<strong>创建多少容器</strong>：</p>
+<ul>
+<li><code>&quot;session&quot;</code>（默认）：每个会话一个容器。</li>
+<li><code>&quot;agent&quot;</code>：每个智能体一个容器。</li>
+<li><code>&quot;shared&quot;</code>：所有沙箱会话共享一个容器。</li>
+</ul>
+<h2 id="工作区访问">工作区访问<a hidden class="anchor" aria-hidden="true" href="#工作区访问">#</a></h2>
+<p><code>agents.defaults.sandbox.workspaceAccess</code> 控制<strong>沙箱可以看到什么</strong>：</p>
+<ul>
+<li><code>&quot;none&quot;</code>（默认）：工具看到 <code>~/.openclaw/sandboxes</code> 下的沙箱工作区。</li>
+<li><code>&quot;ro&quot;</code>：以只读方式在 <code>/agent</code> 挂载智能体工作区（禁用 <code>write</code>/<code>edit</code>/<code>apply_patch</code>）。</li>
+<li><code>&quot;rw&quot;</code>：以读写方式在 <code>/workspace</code> 挂载智能体工作区。</li>
+</ul>
+<p>入站媒体被复制到活动沙箱工作区（<code>media/inbound/*</code>）。
+Skills 注意事项：<code>read</code> 工具以沙箱为根。使用 <code>workspaceAccess: &quot;none&quot;</code> 时，OpenClaw 将符合条件的 Skills 镜像到沙箱工作区（<code>.../skills</code>）以便可以读取。使用 <code>&quot;rw&quot;</code> 时，工作区 Skills 可从 <code>/workspace/skills</code> 读取。</p>
+<h2 id="自定义绑定挂载">自定义绑定挂载<a hidden class="anchor" aria-hidden="true" href="#自定义绑定挂载">#</a></h2>
+<p><code>agents.defaults.sandbox.docker.binds</code> 将额外的主机目录挂载到容器中。
+格式：<code>host:container:mode</code>（例如 <code>&quot;/home/user/source:/source:rw&quot;</code>）。</p>
+<p>全局和每智能体的绑定是<strong>合并</strong>的（不是替换）。在 <code>scope: &quot;shared&quot;</code> 下，每智能体的绑定被忽略。</p>
+<p>示例（只读源码 + docker 套接字）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      sandbox: {
+        docker: {
+          binds: [&#34;/home/user/source:/source:ro&#34;, &#34;/var/run/docker.sock:/var/run/docker.sock&#34;],
+        },
+      },
+    },
+    list: [
+      {
+        id: &#34;build&#34;,
+        sandbox: {
+          docker: {
+            binds: [&#34;/mnt/cache:/cache:rw&#34;],
+          },
+        },
+      },
+    ],
+  },
+}
+</code></pre><p>安全注意事项：</p>
+<ul>
+<li>绑定绕过沙箱文件系统：它们以你设置的任何模式（<code>:ro</code> 或 <code>:rw</code>）暴露主机路径。</li>
+<li>敏感挂载（例如 <code>docker.sock</code>、密钥、SSH 密钥）应该是 <code>:ro</code>，除非绝对必要。</li>
+<li>如果你只需要对工作区的读取访问，请结合 <code>workspaceAccess: &quot;ro&quot;</code>；绑定模式保持独立。</li>
+<li>参见<a href="/gateway/sandbox-vs-tool-policy-vs-elevated">沙箱 vs 工具策略 vs 提权</a>了解绑定如何与工具策略和提权 exec 交互。</li>
+</ul>
+<h2 id="镜像--设置">镜像 + 设置<a hidden class="anchor" aria-hidden="true" href="#镜像--设置">#</a></h2>
+<p>默认镜像：<code>openclaw-sandbox:bookworm-slim</code></p>
+<p>构建一次：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">scripts/sandbox-setup.sh
+</span></span></code></pre></div><p>注意：默认镜像<strong>不</strong>包含 Node。如果 Skills 需要 Node（或其他运行时），要么构建自定义镜像，要么通过 <code>sandbox.docker.setupCommand</code> 安装（需要网络出口 + 可写根 + root 用户）。</p>
+<p>沙箱浏览器镜像：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">scripts/sandbox-browser-setup.sh
+</span></span></code></pre></div><p>默认情况下，沙箱容器运行时<strong>没有网络</strong>。
+通过 <code>agents.defaults.sandbox.docker.network</code> 覆盖。</p>
+<p>Docker 安装和容器化 Gateway 网关在此：
+<a href="/install/docker">Docker</a></p>
+<h2 id="setupcommand一次性容器设置">setupCommand（一次性容器设置）<a hidden class="anchor" aria-hidden="true" href="#setupcommand一次性容器设置">#</a></h2>
+<p><code>setupCommand</code> 在沙箱容器创建后<strong>运行一次</strong>（不是每次运行）。
+它通过 <code>sh -lc</code> 在容器内执行。</p>
+<p>路径：</p>
+<ul>
+<li>全局：<code>agents.defaults.sandbox.docker.setupCommand</code></li>
+<li>每智能体：<code>agents.list[].sandbox.docker.setupCommand</code></li>
+</ul>
+<p>常见陷阱：</p>
+<ul>
+<li>默认 <code>docker.network</code> 是 <code>&quot;none&quot;</code>（无出口），因此包安装会失败。</li>
+<li><code>readOnlyRoot: true</code> 阻止写入；设置 <code>readOnlyRoot: false</code> 或构建自定义镜像。</li>
+<li><code>user</code> 必须是 root 才能安装包（省略 <code>user</code> 或设置 <code>user: &quot;0:0&quot;</code>）。</li>
+<li>沙箱 exec <strong>不</strong>继承主机 <code>process.env</code>。使用 <code>agents.defaults.sandbox.docker.env</code>（或自定义镜像）设置 Skills API 密钥。</li>
+</ul>
+<h2 id="工具策略--逃逸通道">工具策略 + 逃逸通道<a hidden class="anchor" aria-hidden="true" href="#工具策略--逃逸通道">#</a></h2>
+<p>工具允许/拒绝策略仍在沙箱规则之前应用。如果工具在全局或每智能体被拒绝，沙箱隔离不会恢复它。</p>
+<p><code>tools.elevated</code> 是一个显式的逃逸通道，在主机上运行 <code>exec</code>。
+<code>/exec</code> 指令仅适用于授权发送者并按会话持久化；要硬禁用 <code>exec</code>，使用工具策略拒绝（参见<a href="/gateway/sandbox-vs-tool-policy-vs-elevated">沙箱 vs 工具策略 vs 提权</a>）。</p>
+<p>调试：</p>
+<ul>
+<li>使用 <code>openclaw sandbox explain</code> 检查生效的沙箱模式、工具策略和修复配置键。</li>
+<li>参见<a href="/gateway/sandbox-vs-tool-policy-vs-elevated">沙箱 vs 工具策略 vs 提权</a>了解&quot;为什么被阻止？&ldquo;的心智模型。
+保持锁定。</li>
+</ul>
+<h2 id="多智能体覆盖">多智能体覆盖<a hidden class="anchor" aria-hidden="true" href="#多智能体覆盖">#</a></h2>
+<p>每个智能体可以覆盖沙箱 + 工具：
+<code>agents.list[].sandbox</code> 和 <code>agents.list[].tools</code>（加上 <code>agents.list[].tools.sandbox.tools</code> 用于沙箱工具策略）。
+参见<a href="/tools/multi-agent-sandbox-tools">多智能体沙箱与工具</a>了解优先级。</p>
+<h2 id="最小启用示例">最小启用示例<a hidden class="anchor" aria-hidden="true" href="#最小启用示例">#</a></h2>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: &#34;non-main&#34;,
+        scope: &#34;session&#34;,
+        workspaceAccess: &#34;none&#34;,
+      },
+    },
+  },
+}
+</code></pre><h2 id="相关文档">相关文档<a hidden class="anchor" aria-hidden="true" href="#相关文档">#</a></h2>
+<ul>
+<li><a href="/gateway/configuration#agentsdefaults-sandbox">沙箱配置</a></li>
+<li><a href="/tools/multi-agent-sandbox-tools">多智能体沙箱与工具</a></li>
+<li><a href="/gateway/security">安全</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/gateway/sandbox-vs-tool-policy-vs-elevated/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>沙箱 vs 工具策略 vs 提权</span>
+  </a>
+  <a class="next" href="/openclaw/concepts/streaming/">
+    <span class="title">Next »</span>
+    <br>
+    <span>流式传输 &#43; 分块</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

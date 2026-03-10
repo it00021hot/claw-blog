@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>文本转语音（TTS） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 可以使用 ElevenLabs、OpenAI 或 Edge TTS 将出站回复转换为音频。它可以在任何 OpenClaw 能发送音频的地方工作；Telegram 会显示圆形语音消息气泡。
+支持的服务
+
+ElevenLabs（主要或备用提供商）
+OpenAI（主要或备用提供商；也用于摘要）
+Edge TTS（主要或备用提供商；使用 node-edge-tts，无 API 密钥时为默认）
+
+Edge TTS 注意事项
+Edge TTS 通过 node-edge-tts 库使用 Microsoft Edge 的在线神经网络 TTS 服务。它是托管服务（非本地），使用 Microsoft 的端点，不需要 API 密钥。node-edge-tts 公开了语音配置选项和输出格式，但并非所有选项都被 Edge 服务支持。citeturn2search0
+由于 Edge TTS 是一个没有公布 SLA 或配额的公共 Web 服务，请将其视为尽力而为。如果你需要有保证的限制和支持，请使用 OpenAI 或 ElevenLabs。Microsoft 的语音 REST API 记录了每个请求 10 分钟的音频限制；Edge TTS 没有公布限制，所以假设类似或更低的限制。citeturn0search3
+可选密钥
+如果你想使用 OpenAI 或 ElevenLabs：
+
+ELEVENLABS_API_KEY（或 XI_API_KEY）
+OPENAI_API_KEY
+
+Edge TTS 不需要 API 密钥。如果没有找到 API 密钥，OpenClaw 默认使用 Edge TTS（除非通过 messages.tts.edge.enabled=false 禁用）。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tts/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tts/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tts/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="文本转语音（TTS）">
+  <meta property="og:description" content="OpenClaw 可以使用 ElevenLabs、OpenAI 或 Edge TTS 将出站回复转换为音频。它可以在任何 OpenClaw 能发送音频的地方工作；Telegram 会显示圆形语音消息气泡。
+支持的服务 ElevenLabs（主要或备用提供商） OpenAI（主要或备用提供商；也用于摘要） Edge TTS（主要或备用提供商；使用 node-edge-tts，无 API 密钥时为默认） Edge TTS 注意事项 Edge TTS 通过 node-edge-tts 库使用 Microsoft Edge 的在线神经网络 TTS 服务。它是托管服务（非本地），使用 Microsoft 的端点，不需要 API 密钥。node-edge-tts 公开了语音配置选项和输出格式，但并非所有选项都被 Edge 服务支持。citeturn2search0
+由于 Edge TTS 是一个没有公布 SLA 或配额的公共 Web 服务，请将其视为尽力而为。如果你需要有保证的限制和支持，请使用 OpenAI 或 ElevenLabs。Microsoft 的语音 REST API 记录了每个请求 10 分钟的音频限制；Edge TTS 没有公布限制，所以假设类似或更低的限制。citeturn0search3
+可选密钥 如果你想使用 OpenAI 或 ElevenLabs：
+ELEVENLABS_API_KEY（或 XI_API_KEY） OPENAI_API_KEY Edge TTS 不需要 API 密钥。如果没有找到 API 密钥，OpenClaw 默认使用 Edge TTS（除非通过 messages.tts.edge.enabled=false 禁用）。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="文本转语音（TTS）">
+<meta name="twitter:description" content="OpenClaw 可以使用 ElevenLabs、OpenAI 或 Edge TTS 将出站回复转换为音频。它可以在任何 OpenClaw 能发送音频的地方工作；Telegram 会显示圆形语音消息气泡。
+支持的服务
+
+ElevenLabs（主要或备用提供商）
+OpenAI（主要或备用提供商；也用于摘要）
+Edge TTS（主要或备用提供商；使用 node-edge-tts，无 API 密钥时为默认）
+
+Edge TTS 注意事项
+Edge TTS 通过 node-edge-tts 库使用 Microsoft Edge 的在线神经网络 TTS 服务。它是托管服务（非本地），使用 Microsoft 的端点，不需要 API 密钥。node-edge-tts 公开了语音配置选项和输出格式，但并非所有选项都被 Edge 服务支持。citeturn2search0
+由于 Edge TTS 是一个没有公布 SLA 或配额的公共 Web 服务，请将其视为尽力而为。如果你需要有保证的限制和支持，请使用 OpenAI 或 ElevenLabs。Microsoft 的语音 REST API 记录了每个请求 10 分钟的音频限制；Edge TTS 没有公布限制，所以假设类似或更低的限制。citeturn0search3
+可选密钥
+如果你想使用 OpenAI 或 ElevenLabs：
+
+ELEVENLABS_API_KEY（或 XI_API_KEY）
+OPENAI_API_KEY
+
+Edge TTS 不需要 API 密钥。如果没有找到 API 密钥，OpenClaw 默认使用 Edge TTS（除非通过 messages.tts.edge.enabled=false 禁用）。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "/openclaw/"
+    }
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "文本转语音（TTS）",
+      "item": "/openclaw/tts/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "文本转语音（TTS）",
+  "name": "文本转语音（TTS）",
+  "description": "OpenClaw 可以使用 ElevenLabs、OpenAI 或 Edge TTS 将出站回复转换为音频。它可以在任何 OpenClaw 能发送音频的地方工作；Telegram 会显示圆形语音消息气泡。\n支持的服务 ElevenLabs（主要或备用提供商） OpenAI（主要或备用提供商；也用于摘要） Edge TTS（主要或备用提供商；使用 node-edge-tts，无 API 密钥时为默认） Edge TTS 注意事项 Edge TTS 通过 node-edge-tts 库使用 Microsoft Edge 的在线神经网络 TTS 服务。它是托管服务（非本地），使用 Microsoft 的端点，不需要 API 密钥。node-edge-tts 公开了语音配置选项和输出格式，但并非所有选项都被 Edge 服务支持。citeturn2search0\n由于 Edge TTS 是一个没有公布 SLA 或配额的公共 Web 服务，请将其视为尽力而为。如果你需要有保证的限制和支持，请使用 OpenAI 或 ElevenLabs。Microsoft 的语音 REST API 记录了每个请求 10 分钟的音频限制；Edge TTS 没有公布限制，所以假设类似或更低的限制。citeturn0search3\n可选密钥 如果你想使用 OpenAI 或 ElevenLabs：\nELEVENLABS_API_KEY（或 XI_API_KEY） OPENAI_API_KEY Edge TTS 不需要 API 密钥。如果没有找到 API 密钥，OpenClaw 默认使用 Edge TTS（除非通过 messages.tts.edge.enabled=false 禁用）。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 可以使用 ElevenLabs、OpenAI 或 Edge TTS 将出站回复转换为音频。它可以在任何 OpenClaw 能发送音频的地方工作；Telegram 会显示圆形语音消息气泡。\n支持的服务 ElevenLabs（主要或备用提供商） OpenAI（主要或备用提供商；也用于摘要） Edge TTS（主要或备用提供商；使用 node-edge-tts，无 API 密钥时为默认） Edge TTS 注意事项 Edge TTS 通过 node-edge-tts 库使用 Microsoft Edge 的在线神经网络 TTS 服务。它是托管服务（非本地），使用 Microsoft 的端点，不需要 API 密钥。node-edge-tts 公开了语音配置选项和输出格式，但并非所有选项都被 Edge 服务支持。citeturn2search0\n由于 Edge TTS 是一个没有公布 SLA 或配额的公共 Web 服务，请将其视为尽力而为。如果你需要有保证的限制和支持，请使用 OpenAI 或 ElevenLabs。Microsoft 的语音 REST API 记录了每个请求 10 分钟的音频限制；Edge TTS 没有公布限制，所以假设类似或更低的限制。citeturn0search3\n可选密钥 如果你想使用 OpenAI 或 ElevenLabs：\nELEVENLABS_API_KEY（或 XI_API_KEY） OPENAI_API_KEY Edge TTS 不需要 API 密钥。如果没有找到 API 密钥，OpenClaw 默认使用 Edge TTS（除非通过 messages.tts.edge.enabled=false 禁用）。\n如果配置了多个提供商，首先使用选定的提供商，其他作为备用选项。自动摘要使用配置的 summaryModel（或 agents.defaults.model.primary），所以如果你启用摘要，该提供商也必须经过认证。\n服务链接 OpenAI 文本转语音指南 OpenAI 音频 API 参考 ElevenLabs 文本转语音 ElevenLabs 认证 node-edge-tts Microsoft 语音输出格式 默认启用吗？ 不是。自动 TTS 默认关闭。在配置中使用 messages.tts.auto 或在每个会话中使用 /tts always（别名：/tts on）启用它。\n一旦 TTS 开启，Edge TTS 是默认启用的，并在没有 OpenAI 或 ElevenLabs API 密钥时自动使用。\n配置 TTS 配置位于 openclaw.json 中的 messages.tts 下。完整 schema 在 Gateway 网关配置中。\n最小配置（启用 + 提供商） { messages: { tts: { auto: \"always\", provider: \"elevenlabs\", }, }, } OpenAI 主要，ElevenLabs 备用 { messages: { tts: { auto: \"always\", provider: \"openai\", summaryModel: \"openai/gpt-4.1-mini\", modelOverrides: { enabled: true, }, openai: { apiKey: \"openai_api_key\", model: \"gpt-4o-mini-tts\", voice: \"alloy\", }, elevenlabs: { apiKey: \"elevenlabs_api_key\", baseUrl: \"https://api.elevenlabs.io\", voiceId: \"voice_id\", modelId: \"eleven_multilingual_v2\", seed: 42, applyTextNormalization: \"auto\", languageCode: \"en\", voiceSettings: { stability: 0.5, similarityBoost: 0.75, style: 0.0, useSpeakerBoost: true, speed: 1.0, }, }, }, }, } Edge TTS 主要（无 API 密钥） { messages: { tts: { auto: \"always\", provider: \"edge\", edge: { enabled: true, voice: \"en-US-MichelleNeural\", lang: \"en-US\", outputFormat: \"audio-24khz-48kbitrate-mono-mp3\", rate: \"+10%\", pitch: \"-5%\", }, }, }, } 禁用 Edge TTS { messages: { tts: { edge: { enabled: false, }, }, }, } 自定义限制 + 偏好路径 { messages: { tts: { auto: \"always\", maxTextLength: 4000, timeoutMs: 30000, prefsPath: \"~/.openclaw/settings/tts.json\", }, }, } 仅在收到语音消息后用音频回复 { messages: { tts: { auto: \"inbound\", }, }, } 禁用长回复的自动摘要 { messages: { tts: { auto: \"always\", }, }, } 然后运行：\n/tts summary off 字段说明 auto：自动 TTS 模式（off、always、inbound、tagged）。 inbound 仅在收到语音消息后发送音频。 tagged 仅在回复包含 [[tts]] 标签时发送音频。 enabled：旧版开关（doctor 将其迁移到 auto）。 mode：\"final\"（默认）或 \"all\"（包括工具/分块回复）。 provider：\"elevenlabs\"、\"openai\" 或 \"edge\"（自动备用）。 如果 provider 未设置，OpenClaw 优先选择 openai（如果有密钥），然后是 elevenlabs（如果有密钥），否则是 edge。 summaryModel：用于自动摘要的可选廉价模型；默认为 agents.defaults.model.primary。 接受 provider/model 或配置的模型别名。 modelOverrides：允许模型发出 TTS 指令（默认开启）。 maxTextLength：TTS 输入的硬性上限（字符）。超出时 /tts audio 会失败。 timeoutMs：请求超时（毫秒）。 prefsPath：覆盖本地偏好 JSON 路径（提供商/限制/摘要）。 apiKey 值回退到环境变量（ELEVENLABS_API_KEY/XI_API_KEY、OPENAI_API_KEY）。 elevenlabs.baseUrl：覆盖 ElevenLabs API 基础 URL。 elevenlabs.voiceSettings： stability、similarityBoost、style：0..1 useSpeakerBoost：true|false speed：0.5..2.0（1.0 = 正常） elevenlabs.applyTextNormalization：auto|on|off elevenlabs.languageCode：2 字母 ISO 639-1（例如 en、de） elevenlabs.seed：整数 0..4294967295（尽力确定性） edge.enabled：允许 Edge TTS 使用（默认 true；无 API 密钥）。 edge.voice：Edge 神经网络语音名称（例如 en-US-MichelleNeural）。 edge.lang：语言代码（例如 en-US）。 edge.outputFormat：Edge 输出格式（例如 audio-24khz-48kbitrate-mono-mp3）。 有效值参见 Microsoft 语音输出格式；并非所有格式都被 Edge 支持。 edge.rate / edge.pitch / edge.volume：百分比字符串（例如 +10%、-5%）。 edge.saveSubtitles：在音频文件旁边写入 JSON 字幕。 edge.proxy：Edge TTS 请求的代理 URL。 edge.timeoutMs：请求超时覆盖（毫秒）。 模型驱动覆盖（默认开启） 默认情况下，模型可以为单个回复发出 TTS 指令。当 messages.tts.auto 为 tagged 时，需要这些指令来触发音频。\n启用后，模型可以发出 [[tts:...]] 指令来覆盖单个回复的语音，加上可选的 [[tts:text]]...[[/tts:text]] 块来提供表达性标签（笑声、唱歌提示等），这些仅应出现在音频中。\n示例回复负载：\nHere you go. [[tts:provider=elevenlabs voiceId=pMsXgVXv3BLzUgSXRplE model=eleven_v3 speed=1.1]] [[tts:text]](laughs) Read the song once more.[[/tts:text]] 可用指令键（启用时）：\nprovider（openai | elevenlabs | edge） voice（OpenAI 语音）或 voiceId（ElevenLabs） model（OpenAI TTS 模型或 ElevenLabs 模型 ID） stability、similarityBoost、style、speed、useSpeakerBoost applyTextNormalization（auto|on|off） languageCode（ISO 639-1） seed 禁用所有模型覆盖：\n{ messages: { tts: { modelOverrides: { enabled: false, }, }, }, } 可选白名单（禁用特定覆盖同时保持标签启用）：\n{ messages: { tts: { modelOverrides: { enabled: true, allowProvider: false, allowSeed: false, }, }, }, } 单用户偏好 斜杠命令将本地覆盖写入 prefsPath（默认：~/.openclaw/settings/tts.json，可通过 OPENCLAW_TTS_PREFS 或 messages.tts.prefsPath 覆盖）。\n存储的字段：\nenabled provider maxLength（摘要阈值；默认 1500 字符） summarize（默认 true） 这些为该主机覆盖 messages.tts.*。\n输出格式（固定） Telegram：Opus 语音消息（ElevenLabs 的 opus_48000_64，OpenAI 的 opus）。 48kHz / 64kbps 是语音消息的良好权衡，圆形气泡所必需。 其他渠道：MP3（ElevenLabs 的 mp3_44100_128，OpenAI 的 mp3）。 44.1kHz / 128kbps 是语音清晰度的默认平衡。 Edge TTS：使用 edge.outputFormat（默认 audio-24khz-48kbitrate-mono-mp3）。 node-edge-tts 接受 outputFormat，但并非所有格式都可从 Edge 服务获得。citeturn2search0 输出格式值遵循 Microsoft 语音输出格式（包括 Ogg/WebM Opus）。citeturn1search0 Telegram sendVoice 接受 OGG/MP3/M4A；如果你需要有保证的 Opus 语音消息，请使用 OpenAI/ElevenLabs。citeturn1search1 如果配置的 Edge 输出格式失败，OpenClaw 会使用 MP3 重试。 OpenAI/ElevenLabs 格式是固定的；Telegram 期望 Opus 以获得语音消息用户体验。\n自动 TTS 行为 启用后，OpenClaw：\n如果回复已包含媒体或 MEDIA: 指令，则跳过 TTS。 跳过非常短的回复（\u003c 10 字符）。 启用时使用 agents.defaults.model.primary（或 summaryModel）对长回复进行摘要。 将生成的音频附加到回复中。 如果回复超过 maxLength 且摘要关闭（或没有摘要模型的 API 密钥），则跳过音频并发送正常的文本回复。\n流程图 回复 -\u003e TTS 启用？ 否 -\u003e 发送文本 是 -\u003e 有媒体 / MEDIA: / 太短？ 是 -\u003e 发送文本 否 -\u003e 长度 \u003e 限制？ 否 -\u003e TTS -\u003e 附加音频 是 -\u003e 摘要启用？ 否 -\u003e 发送文本 是 -\u003e 摘要（summaryModel 或 agents.defaults.model.primary） -\u003e TTS -\u003e 附加音频 斜杠命令用法 只有一个命令：/tts。参见斜杠命令了解启用详情。\nDiscord 注意：/tts 是 Discord 的内置命令，所以 OpenClaw 在那里注册 /voice 作为原生命令。文本 /tts ... 仍然有效。\n/tts off /tts always /tts inbound /tts tagged /tts status /tts provider openai /tts limit 2000 /tts summary off /tts audio Hello from OpenClaw 注意事项：\n命令需要授权发送者（白名单/所有者规则仍然适用）。 必须启用 commands.text 或原生命令注册。 off|always|inbound|tagged 是单会话开关（/tts on 是 /tts always 的别名）。 limit 和 summary 存储在本地偏好中，不在主配置中。 /tts audio 生成一次性音频回复（不会开启 TTS）。 智能体工具 tts 工具将文本转换为语音并返回 MEDIA: 路径。当结果与 Telegram 兼容时，工具包含 [[audio_as_voice]]，以便 Telegram 发送语音气泡。\nGateway 网关 RPC Gateway 网关方法：\ntts.status tts.enable tts.disable tts.convert tts.setProvider tts.providers ",
+  "wordCount" : "680",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/tts/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/openclaw/">OpenClaw 🦞</a></div>
+    <h1 class="post-title entry-hint-parent">
+      文本转语音（TTS）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%94%af%e6%8c%81%e7%9a%84%e6%9c%8d%e5%8a%a1" aria-label="支持的服务">支持的服务</a><ul>
+                        
+                <li>
+                    <a href="#edge-tts-%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="Edge TTS 注意事项">Edge TTS 注意事项</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%af%e9%80%89%e5%af%86%e9%92%a5" aria-label="可选密钥">可选密钥</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e9%93%be%e6%8e%a5" aria-label="服务链接">服务链接</a></li>
+                <li>
+                    <a href="#%e9%bb%98%e8%ae%a4%e5%90%af%e7%94%a8%e5%90%97" aria-label="默认启用吗？">默认启用吗？</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae" aria-label="配置">配置</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9c%80%e5%b0%8f%e9%85%8d%e7%bd%ae%e5%90%af%e7%94%a8--%e6%8f%90%e4%be%9b%e5%95%86" aria-label="最小配置（启用 &#43; 提供商）">最小配置（启用 + 提供商）</a></li>
+                <li>
+                    <a href="#openai-%e4%b8%bb%e8%a6%81elevenlabs-%e5%a4%87%e7%94%a8" aria-label="OpenAI 主要，ElevenLabs 备用">OpenAI 主要，ElevenLabs 备用</a></li>
+                <li>
+                    <a href="#edge-tts-%e4%b8%bb%e8%a6%81%e6%97%a0-api-%e5%af%86%e9%92%a5" aria-label="Edge TTS 主要（无 API 密钥）">Edge TTS 主要（无 API 密钥）</a></li>
+                <li>
+                    <a href="#%e7%a6%81%e7%94%a8-edge-tts" aria-label="禁用 Edge TTS">禁用 Edge TTS</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e9%99%90%e5%88%b6--%e5%81%8f%e5%a5%bd%e8%b7%af%e5%be%84" aria-label="自定义限制 &#43; 偏好路径">自定义限制 + 偏好路径</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e5%9c%a8%e6%94%b6%e5%88%b0%e8%af%ad%e9%9f%b3%e6%b6%88%e6%81%af%e5%90%8e%e7%94%a8%e9%9f%b3%e9%a2%91%e5%9b%9e%e5%a4%8d" aria-label="仅在收到语音消息后用音频回复">仅在收到语音消息后用音频回复</a></li>
+                <li>
+                    <a href="#%e7%a6%81%e7%94%a8%e9%95%bf%e5%9b%9e%e5%a4%8d%e7%9a%84%e8%87%aa%e5%8a%a8%e6%91%98%e8%a6%81" aria-label="禁用长回复的自动摘要">禁用长回复的自动摘要</a></li>
+                <li>
+                    <a href="#%e5%ad%97%e6%ae%b5%e8%af%b4%e6%98%8e" aria-label="字段说明">字段说明</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%9e%8b%e9%a9%b1%e5%8a%a8%e8%a6%86%e7%9b%96%e9%bb%98%e8%ae%a4%e5%bc%80%e5%90%af" aria-label="模型驱动覆盖（默认开启）">模型驱动覆盖（默认开启）</a></li>
+                <li>
+                    <a href="#%e5%8d%95%e7%94%a8%e6%88%b7%e5%81%8f%e5%a5%bd" aria-label="单用户偏好">单用户偏好</a></li>
+                <li>
+                    <a href="#%e8%be%93%e5%87%ba%e6%a0%bc%e5%bc%8f%e5%9b%ba%e5%ae%9a" aria-label="输出格式（固定）">输出格式（固定）</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%8a%a8-tts-%e8%a1%8c%e4%b8%ba" aria-label="自动 TTS 行为">自动 TTS 行为</a></li>
+                <li>
+                    <a href="#%e6%b5%81%e7%a8%8b%e5%9b%be" aria-label="流程图">流程图</a></li>
+                <li>
+                    <a href="#%e6%96%9c%e6%9d%a0%e5%91%bd%e4%bb%a4%e7%94%a8%e6%b3%95" aria-label="斜杠命令用法">斜杠命令用法</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e5%b7%a5%e5%85%b7" aria-label="智能体工具">智能体工具</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3-rpc" aria-label="Gateway 网关 RPC">Gateway 网关 RPC</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 可以使用 ElevenLabs、OpenAI 或 Edge TTS 将出站回复转换为音频。它可以在任何 OpenClaw 能发送音频的地方工作；Telegram 会显示圆形语音消息气泡。</p>
+<h2 id="支持的服务">支持的服务<a hidden class="anchor" aria-hidden="true" href="#支持的服务">#</a></h2>
+<ul>
+<li><strong>ElevenLabs</strong>（主要或备用提供商）</li>
+<li><strong>OpenAI</strong>（主要或备用提供商；也用于摘要）</li>
+<li><strong>Edge TTS</strong>（主要或备用提供商；使用 <code>node-edge-tts</code>，无 API 密钥时为默认）</li>
+</ul>
+<h3 id="edge-tts-注意事项">Edge TTS 注意事项<a hidden class="anchor" aria-hidden="true" href="#edge-tts-注意事项">#</a></h3>
+<p>Edge TTS 通过 <code>node-edge-tts</code> 库使用 Microsoft Edge 的在线神经网络 TTS 服务。它是托管服务（非本地），使用 Microsoft 的端点，不需要 API 密钥。<code>node-edge-tts</code> 公开了语音配置选项和输出格式，但并非所有选项都被 Edge 服务支持。citeturn2search0</p>
+<p>由于 Edge TTS 是一个没有公布 SLA 或配额的公共 Web 服务，请将其视为尽力而为。如果你需要有保证的限制和支持，请使用 OpenAI 或 ElevenLabs。Microsoft 的语音 REST API 记录了每个请求 10 分钟的音频限制；Edge TTS 没有公布限制，所以假设类似或更低的限制。citeturn0search3</p>
+<h2 id="可选密钥">可选密钥<a hidden class="anchor" aria-hidden="true" href="#可选密钥">#</a></h2>
+<p>如果你想使用 OpenAI 或 ElevenLabs：</p>
+<ul>
+<li><code>ELEVENLABS_API_KEY</code>（或 <code>XI_API_KEY</code>）</li>
+<li><code>OPENAI_API_KEY</code></li>
+</ul>
+<p>Edge TTS <strong>不</strong>需要 API 密钥。如果没有找到 API 密钥，OpenClaw 默认使用 Edge TTS（除非通过 <code>messages.tts.edge.enabled=false</code> 禁用）。</p>
+<p>如果配置了多个提供商，首先使用选定的提供商，其他作为备用选项。自动摘要使用配置的 <code>summaryModel</code>（或 <code>agents.defaults.model.primary</code>），所以如果你启用摘要，该提供商也必须经过认证。</p>
+<h2 id="服务链接">服务链接<a hidden class="anchor" aria-hidden="true" href="#服务链接">#</a></h2>
+<ul>
+<li><a href="https://platform.openai.com/docs/guides/text-to-speech">OpenAI 文本转语音指南</a></li>
+<li><a href="https://platform.openai.com/docs/api-reference/audio">OpenAI 音频 API 参考</a></li>
+<li><a href="https://elevenlabs.io/docs/api-reference/text-to-speech">ElevenLabs 文本转语音</a></li>
+<li><a href="https://elevenlabs.io/docs/api-reference/authentication">ElevenLabs 认证</a></li>
+<li><a href="https://github.com/SchneeHertz/node-edge-tts">node-edge-tts</a></li>
+<li><a href="https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech#audio-outputs">Microsoft 语音输出格式</a></li>
+</ul>
+<h2 id="默认启用吗">默认启用吗？<a hidden class="anchor" aria-hidden="true" href="#默认启用吗">#</a></h2>
+<p>不是。自动 TTS 默认<strong>关闭</strong>。在配置中使用 <code>messages.tts.auto</code> 或在每个会话中使用 <code>/tts always</code>（别名：<code>/tts on</code>）启用它。</p>
+<p>一旦 TTS 开启，Edge TTS <strong>是</strong>默认启用的，并在没有 OpenAI 或 ElevenLabs API 密钥时自动使用。</p>
+<h2 id="配置">配置<a hidden class="anchor" aria-hidden="true" href="#配置">#</a></h2>
+<p>TTS 配置位于 <code>openclaw.json</code> 中的 <code>messages.tts</code> 下。完整 schema 在 <a href="/gateway/configuration">Gateway 网关配置</a>中。</p>
+<h3 id="最小配置启用--提供商">最小配置（启用 + 提供商）<a hidden class="anchor" aria-hidden="true" href="#最小配置启用--提供商">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      auto: &#34;always&#34;,
+      provider: &#34;elevenlabs&#34;,
+    },
+  },
+}
+</code></pre><h3 id="openai-主要elevenlabs-备用">OpenAI 主要，ElevenLabs 备用<a hidden class="anchor" aria-hidden="true" href="#openai-主要elevenlabs-备用">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      auto: &#34;always&#34;,
+      provider: &#34;openai&#34;,
+      summaryModel: &#34;openai/gpt-4.1-mini&#34;,
+      modelOverrides: {
+        enabled: true,
+      },
+      openai: {
+        apiKey: &#34;openai_api_key&#34;,
+        model: &#34;gpt-4o-mini-tts&#34;,
+        voice: &#34;alloy&#34;,
+      },
+      elevenlabs: {
+        apiKey: &#34;elevenlabs_api_key&#34;,
+        baseUrl: &#34;https://api.elevenlabs.io&#34;,
+        voiceId: &#34;voice_id&#34;,
+        modelId: &#34;eleven_multilingual_v2&#34;,
+        seed: 42,
+        applyTextNormalization: &#34;auto&#34;,
+        languageCode: &#34;en&#34;,
+        voiceSettings: {
+          stability: 0.5,
+          similarityBoost: 0.75,
+          style: 0.0,
+          useSpeakerBoost: true,
+          speed: 1.0,
+        },
+      },
+    },
+  },
+}
+</code></pre><h3 id="edge-tts-主要无-api-密钥">Edge TTS 主要（无 API 密钥）<a hidden class="anchor" aria-hidden="true" href="#edge-tts-主要无-api-密钥">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      auto: &#34;always&#34;,
+      provider: &#34;edge&#34;,
+      edge: {
+        enabled: true,
+        voice: &#34;en-US-MichelleNeural&#34;,
+        lang: &#34;en-US&#34;,
+        outputFormat: &#34;audio-24khz-48kbitrate-mono-mp3&#34;,
+        rate: &#34;+10%&#34;,
+        pitch: &#34;-5%&#34;,
+      },
+    },
+  },
+}
+</code></pre><h3 id="禁用-edge-tts">禁用 Edge TTS<a hidden class="anchor" aria-hidden="true" href="#禁用-edge-tts">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      edge: {
+        enabled: false,
+      },
+    },
+  },
+}
+</code></pre><h3 id="自定义限制--偏好路径">自定义限制 + 偏好路径<a hidden class="anchor" aria-hidden="true" href="#自定义限制--偏好路径">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      auto: &#34;always&#34;,
+      maxTextLength: 4000,
+      timeoutMs: 30000,
+      prefsPath: &#34;~/.openclaw/settings/tts.json&#34;,
+    },
+  },
+}
+</code></pre><h3 id="仅在收到语音消息后用音频回复">仅在收到语音消息后用音频回复<a hidden class="anchor" aria-hidden="true" href="#仅在收到语音消息后用音频回复">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      auto: &#34;inbound&#34;,
+    },
+  },
+}
+</code></pre><h3 id="禁用长回复的自动摘要">禁用长回复的自动摘要<a hidden class="anchor" aria-hidden="true" href="#禁用长回复的自动摘要">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      auto: &#34;always&#34;,
+    },
+  },
+}
+</code></pre><p>然后运行：</p>
+<pre tabindex="0"><code>/tts summary off
+</code></pre><h3 id="字段说明">字段说明<a hidden class="anchor" aria-hidden="true" href="#字段说明">#</a></h3>
+<ul>
+<li><code>auto</code>：自动 TTS 模式（<code>off</code>、<code>always</code>、<code>inbound</code>、<code>tagged</code>）。
+<ul>
+<li><code>inbound</code> 仅在收到语音消息后发送音频。</li>
+<li><code>tagged</code> 仅在回复包含 <code>[[tts]]</code> 标签时发送音频。</li>
+</ul>
+</li>
+<li><code>enabled</code>：旧版开关（doctor 将其迁移到 <code>auto</code>）。</li>
+<li><code>mode</code>：<code>&quot;final&quot;</code>（默认）或 <code>&quot;all&quot;</code>（包括工具/分块回复）。</li>
+<li><code>provider</code>：<code>&quot;elevenlabs&quot;</code>、<code>&quot;openai&quot;</code> 或 <code>&quot;edge&quot;</code>（自动备用）。</li>
+<li>如果 <code>provider</code> <strong>未设置</strong>，OpenClaw 优先选择 <code>openai</code>（如果有密钥），然后是 <code>elevenlabs</code>（如果有密钥），否则是 <code>edge</code>。</li>
+<li><code>summaryModel</code>：用于自动摘要的可选廉价模型；默认为 <code>agents.defaults.model.primary</code>。
+<ul>
+<li>接受 <code>provider/model</code> 或配置的模型别名。</li>
+</ul>
+</li>
+<li><code>modelOverrides</code>：允许模型发出 TTS 指令（默认开启）。</li>
+<li><code>maxTextLength</code>：TTS 输入的硬性上限（字符）。超出时 <code>/tts audio</code> 会失败。</li>
+<li><code>timeoutMs</code>：请求超时（毫秒）。</li>
+<li><code>prefsPath</code>：覆盖本地偏好 JSON 路径（提供商/限制/摘要）。</li>
+<li><code>apiKey</code> 值回退到环境变量（<code>ELEVENLABS_API_KEY</code>/<code>XI_API_KEY</code>、<code>OPENAI_API_KEY</code>）。</li>
+<li><code>elevenlabs.baseUrl</code>：覆盖 ElevenLabs API 基础 URL。</li>
+<li><code>elevenlabs.voiceSettings</code>：
+<ul>
+<li><code>stability</code>、<code>similarityBoost</code>、<code>style</code>：<code>0..1</code></li>
+<li><code>useSpeakerBoost</code>：<code>true|false</code></li>
+<li><code>speed</code>：<code>0.5..2.0</code>（1.0 = 正常）</li>
+</ul>
+</li>
+<li><code>elevenlabs.applyTextNormalization</code>：<code>auto|on|off</code></li>
+<li><code>elevenlabs.languageCode</code>：2 字母 ISO 639-1（例如 <code>en</code>、<code>de</code>）</li>
+<li><code>elevenlabs.seed</code>：整数 <code>0..4294967295</code>（尽力确定性）</li>
+<li><code>edge.enabled</code>：允许 Edge TTS 使用（默认 <code>true</code>；无 API 密钥）。</li>
+<li><code>edge.voice</code>：Edge 神经网络语音名称（例如 <code>en-US-MichelleNeural</code>）。</li>
+<li><code>edge.lang</code>：语言代码（例如 <code>en-US</code>）。</li>
+<li><code>edge.outputFormat</code>：Edge 输出格式（例如 <code>audio-24khz-48kbitrate-mono-mp3</code>）。
+<ul>
+<li>有效值参见 Microsoft 语音输出格式；并非所有格式都被 Edge 支持。</li>
+</ul>
+</li>
+<li><code>edge.rate</code> / <code>edge.pitch</code> / <code>edge.volume</code>：百分比字符串（例如 <code>+10%</code>、<code>-5%</code>）。</li>
+<li><code>edge.saveSubtitles</code>：在音频文件旁边写入 JSON 字幕。</li>
+<li><code>edge.proxy</code>：Edge TTS 请求的代理 URL。</li>
+<li><code>edge.timeoutMs</code>：请求超时覆盖（毫秒）。</li>
+</ul>
+<h2 id="模型驱动覆盖默认开启">模型驱动覆盖（默认开启）<a hidden class="anchor" aria-hidden="true" href="#模型驱动覆盖默认开启">#</a></h2>
+<p>默认情况下，模型<strong>可以</strong>为单个回复发出 TTS 指令。当 <code>messages.tts.auto</code> 为 <code>tagged</code> 时，需要这些指令来触发音频。</p>
+<p>启用后，模型可以发出 <code>[[tts:...]]</code> 指令来覆盖单个回复的语音，加上可选的 <code>[[tts:text]]...[[/tts:text]]</code> 块来提供表达性标签（笑声、唱歌提示等），这些仅应出现在音频中。</p>
+<p>示例回复负载：</p>
+<pre tabindex="0"><code>Here you go.
+
+[[tts:provider=elevenlabs voiceId=pMsXgVXv3BLzUgSXRplE model=eleven_v3 speed=1.1]]
+[[tts:text]](laughs) Read the song once more.[[/tts:text]]
+</code></pre><p>可用指令键（启用时）：</p>
+<ul>
+<li><code>provider</code>（<code>openai</code> | <code>elevenlabs</code> | <code>edge</code>）</li>
+<li><code>voice</code>（OpenAI 语音）或 <code>voiceId</code>（ElevenLabs）</li>
+<li><code>model</code>（OpenAI TTS 模型或 ElevenLabs 模型 ID）</li>
+<li><code>stability</code>、<code>similarityBoost</code>、<code>style</code>、<code>speed</code>、<code>useSpeakerBoost</code></li>
+<li><code>applyTextNormalization</code>（<code>auto|on|off</code>）</li>
+<li><code>languageCode</code>（ISO 639-1）</li>
+<li><code>seed</code></li>
+</ul>
+<p>禁用所有模型覆盖：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      modelOverrides: {
+        enabled: false,
+      },
+    },
+  },
+}
+</code></pre><p>可选白名单（禁用特定覆盖同时保持标签启用）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      modelOverrides: {
+        enabled: true,
+        allowProvider: false,
+        allowSeed: false,
+      },
+    },
+  },
+}
+</code></pre><h2 id="单用户偏好">单用户偏好<a hidden class="anchor" aria-hidden="true" href="#单用户偏好">#</a></h2>
+<p>斜杠命令将本地覆盖写入 <code>prefsPath</code>（默认：<code>~/.openclaw/settings/tts.json</code>，可通过 <code>OPENCLAW_TTS_PREFS</code> 或 <code>messages.tts.prefsPath</code> 覆盖）。</p>
+<p>存储的字段：</p>
+<ul>
+<li><code>enabled</code></li>
+<li><code>provider</code></li>
+<li><code>maxLength</code>（摘要阈值；默认 1500 字符）</li>
+<li><code>summarize</code>（默认 <code>true</code>）</li>
+</ul>
+<p>这些为该主机覆盖 <code>messages.tts.*</code>。</p>
+<h2 id="输出格式固定">输出格式（固定）<a hidden class="anchor" aria-hidden="true" href="#输出格式固定">#</a></h2>
+<ul>
+<li><strong>Telegram</strong>：Opus 语音消息（ElevenLabs 的 <code>opus_48000_64</code>，OpenAI 的 <code>opus</code>）。
+<ul>
+<li>48kHz / 64kbps 是语音消息的良好权衡，圆形气泡所必需。</li>
+</ul>
+</li>
+<li><strong>其他渠道</strong>：MP3（ElevenLabs 的 <code>mp3_44100_128</code>，OpenAI 的 <code>mp3</code>）。
+<ul>
+<li>44.1kHz / 128kbps 是语音清晰度的默认平衡。</li>
+</ul>
+</li>
+<li><strong>Edge TTS</strong>：使用 <code>edge.outputFormat</code>（默认 <code>audio-24khz-48kbitrate-mono-mp3</code>）。
+<ul>
+<li><code>node-edge-tts</code> 接受 <code>outputFormat</code>，但并非所有格式都可从 Edge 服务获得。citeturn2search0</li>
+<li>输出格式值遵循 Microsoft 语音输出格式（包括 Ogg/WebM Opus）。citeturn1search0</li>
+<li>Telegram <code>sendVoice</code> 接受 OGG/MP3/M4A；如果你需要有保证的 Opus 语音消息，请使用 OpenAI/ElevenLabs。citeturn1search1</li>
+<li>如果配置的 Edge 输出格式失败，OpenClaw 会使用 MP3 重试。</li>
+</ul>
+</li>
+</ul>
+<p>OpenAI/ElevenLabs 格式是固定的；Telegram 期望 Opus 以获得语音消息用户体验。</p>
+<h2 id="自动-tts-行为">自动 TTS 行为<a hidden class="anchor" aria-hidden="true" href="#自动-tts-行为">#</a></h2>
+<p>启用后，OpenClaw：</p>
+<ul>
+<li>如果回复已包含媒体或 <code>MEDIA:</code> 指令，则跳过 TTS。</li>
+<li>跳过非常短的回复（&lt; 10 字符）。</li>
+<li>启用时使用 <code>agents.defaults.model.primary</code>（或 <code>summaryModel</code>）对长回复进行摘要。</li>
+<li>将生成的音频附加到回复中。</li>
+</ul>
+<p>如果回复超过 <code>maxLength</code> 且摘要关闭（或没有摘要模型的 API 密钥），则跳过音频并发送正常的文本回复。</p>
+<h2 id="流程图">流程图<a hidden class="anchor" aria-hidden="true" href="#流程图">#</a></h2>
+<pre tabindex="0"><code>回复 -&gt; TTS 启用？
+  否  -&gt; 发送文本
+  是  -&gt; 有媒体 / MEDIA: / 太短？
+          是 -&gt; 发送文本
+          否 -&gt; 长度 &gt; 限制？
+                   否  -&gt; TTS -&gt; 附加音频
+                   是  -&gt; 摘要启用？
+                            否  -&gt; 发送文本
+                            是  -&gt; 摘要（summaryModel 或 agents.defaults.model.primary）
+                                      -&gt; TTS -&gt; 附加音频
+</code></pre><h2 id="斜杠命令用法">斜杠命令用法<a hidden class="anchor" aria-hidden="true" href="#斜杠命令用法">#</a></h2>
+<p>只有一个命令：<code>/tts</code>。参见<a href="/tools/slash-commands">斜杠命令</a>了解启用详情。</p>
+<p>Discord 注意：<code>/tts</code> 是 Discord 的内置命令，所以 OpenClaw 在那里注册 <code>/voice</code> 作为原生命令。文本 <code>/tts ...</code> 仍然有效。</p>
+<pre tabindex="0"><code>/tts off
+/tts always
+/tts inbound
+/tts tagged
+/tts status
+/tts provider openai
+/tts limit 2000
+/tts summary off
+/tts audio Hello from OpenClaw
+</code></pre><p>注意事项：</p>
+<ul>
+<li>命令需要授权发送者（白名单/所有者规则仍然适用）。</li>
+<li>必须启用 <code>commands.text</code> 或原生命令注册。</li>
+<li><code>off|always|inbound|tagged</code> 是单会话开关（<code>/tts on</code> 是 <code>/tts always</code> 的别名）。</li>
+<li><code>limit</code> 和 <code>summary</code> 存储在本地偏好中，不在主配置中。</li>
+<li><code>/tts audio</code> 生成一次性音频回复（不会开启 TTS）。</li>
+</ul>
+<h2 id="智能体工具">智能体工具<a hidden class="anchor" aria-hidden="true" href="#智能体工具">#</a></h2>
+<p><code>tts</code> 工具将文本转换为语音并返回 <code>MEDIA:</code> 路径。当结果与 Telegram 兼容时，工具包含 <code>[[audio_as_voice]]</code>，以便 Telegram 发送语音气泡。</p>
+<h2 id="gateway-网关-rpc">Gateway 网关 RPC<a hidden class="anchor" aria-hidden="true" href="#gateway-网关-rpc">#</a></h2>
+<p>Gateway 网关方法：</p>
+<ul>
+<li><code>tts.status</code></li>
+<li><code>tts.enable</code></li>
+<li><code>tts.disable</code></li>
+<li><code>tts.convert</code></li>
+<li><code>tts.setProvider</code></li>
+<li><code>tts.providers</code></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/gateway/troubleshooting/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>故障排除 🔧</span>
+  </a>
+  <a class="next" href="/openclaw/start/hubs/">
+    <span class="title">Next »</span>
+    <br>
+    <span>文档导航中心</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

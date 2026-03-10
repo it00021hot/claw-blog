@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>OpenResponses Gateway 网关集成计划 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="背景
+OpenClaw Gateway 网关目前在 /v1/chat/completions 暴露了一个最小的 OpenAI 兼容 Chat Completions 端点（参见 OpenAI Chat Completions）。
+Open Responses 是基于 OpenAI Responses API 的开放推理标准。它专为智能体工作流设计，使用基于项目的输入加语义流式事件。OpenResponses 规范定义的是 /v1/responses，而不是 /v1/chat/completions。
+目标
+
+添加一个遵循 OpenResponses 语义的 /v1/responses 端点。
+保留 Chat Completions 作为兼容层，易于禁用并最终移除。
+使用隔离的、可复用的 schema 标准化验证和解析。
+
+非目标
+
+第一阶段完全实现 OpenResponses 功能（图片、文件、托管工具）。
+替换内部智能体执行逻辑或工具编排。
+在第一阶段更改现有的 /v1/chat/completions 行为。
+
+研究摘要
+来源：OpenResponses OpenAPI、OpenResponses 规范网站和 Hugging Face 博客文章。
+提取的关键点：
+
+POST /v1/responses 接受 CreateResponseBody 字段，如 model、input（字符串或 ItemParam[]）、instructions、tools、tool_choice、stream、max_output_tokens 和 max_tool_calls。
+ItemParam 是以下类型的可区分联合：
+
+具有角色 system、developer、user、assistant 的 message 项
+function_call 和 function_call_output
+reasoning
+item_reference
+
+
+成功响应返回带有 object: &quot;response&quot;、status 和 output 项的 ResponseResource。
+流式传输使用语义事件，如：
+
+response.created、response.in_progress、response.completed、response.failed
+response.output_item.added、response.output_item.done
+response.content_part.added、response.content_part.done
+response.output_text.delta、response.output_text.done
+
+
+规范要求：
+
+Content-Type: text/event-stream
+event: 必须匹配 JSON type 字段
+终止事件必须是字面量 [DONE]
+
+
+Reasoning 项可能暴露 content、encrypted_content 和 summary。
+HF 示例在请求中包含 OpenResponses-Version: latest（可选头部）。
+
+提议的架构
+
+添加 src/gateway/open-responses.schema.ts，仅包含 Zod schema（无 gateway 导入）。
+添加 src/gateway/openresponses-http.ts（或 open-responses-http.ts）用于 /v1/responses。
+保持 src/gateway/openai-http.ts 不变，作为遗留兼容适配器。
+添加配置 gateway.http.endpoints.responses.enabled（默认 false）。
+保持 gateway.http.endpoints.chatCompletions.enabled 独立；允许两个端点分别切换。
+当 Chat Completions 启用时发出启动警告，以表明其遗留状态。
+
+Chat Completions 弃用路径
+
+保持严格的模块边界：responses 和 chat completions 之间不共享 schema 类型。
+通过配置使 Chat Completions 成为可选，这样无需代码更改即可禁用。
+一旦 /v1/responses 稳定，更新文档将 Chat Completions 标记为遗留。
+可选的未来步骤：将 Chat Completions 请求映射到 Responses 处理器，以便更简单地移除。
+
+第一阶段支持子集
+
+接受 input 为字符串或带有消息角色和 function_call_output 的 ItemParam[]。
+将 system 和 developer 消息提取到 extraSystemPrompt 中。
+使用最近的 user 或 function_call_output 作为智能体运行的当前消息。
+对不支持的内容部分（图片/文件）返回 invalid_request_error 拒绝。
+返回带有 output_text 内容的单个助手消息。
+返回带有零值的 usage，直到 token 计数接入。
+
+验证策略（无 SDK）
+
+为以下支持子集实现 Zod schema：
+
+CreateResponseBody
+ItemParam &#43; 消息内容部分联合
+ResponseResource
+Gateway 网关使用的流式事件形状
+
+
+将 schema 保存在单个隔离模块中，以避免漂移并允许未来代码生成。
+
+流式实现（第一阶段）
+
+带有 event: 和 data: 的 SSE 行。
+所需序列（最小可行）：
+
+response.created
+response.output_item.added
+response.content_part.added
+response.output_text.delta（根据需要重复）
+response.output_text.done
+response.content_part.done
+response.completed
+[DONE]
+
+
+
+测试和验证计划
+
+为 /v1/responses 添加端到端覆盖：
+
+需要认证
+非流式响应形状
+流式事件顺序和 [DONE]
+使用头部和 user 的会话路由
+
+
+保持 src/gateway/openai-http.e2e.test.ts 不变。
+手动：用 stream: true curl /v1/responses 并验证事件顺序和终止 [DONE]。
+
+文档更新（后续）
+
+为 /v1/responses 使用和示例添加新文档页面。
+更新 /gateway/openai-http-api，添加遗留说明和指向 /v1/responses 的指针。
+">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/experiments/plans/openresponses-gateway/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/experiments/plans/openresponses-gateway/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/experiments/plans/openresponses-gateway/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="OpenResponses Gateway 网关集成计划">
+  <meta property="og:description" content="背景 OpenClaw Gateway 网关目前在 /v1/chat/completions 暴露了一个最小的 OpenAI 兼容 Chat Completions 端点（参见 OpenAI Chat Completions）。
+Open Responses 是基于 OpenAI Responses API 的开放推理标准。它专为智能体工作流设计，使用基于项目的输入加语义流式事件。OpenResponses 规范定义的是 /v1/responses，而不是 /v1/chat/completions。
+目标 添加一个遵循 OpenResponses 语义的 /v1/responses 端点。 保留 Chat Completions 作为兼容层，易于禁用并最终移除。 使用隔离的、可复用的 schema 标准化验证和解析。 非目标 第一阶段完全实现 OpenResponses 功能（图片、文件、托管工具）。 替换内部智能体执行逻辑或工具编排。 在第一阶段更改现有的 /v1/chat/completions 行为。 研究摘要 来源：OpenResponses OpenAPI、OpenResponses 规范网站和 Hugging Face 博客文章。
+提取的关键点：
+POST /v1/responses 接受 CreateResponseBody 字段，如 model、input（字符串或 ItemParam[]）、instructions、tools、tool_choice、stream、max_output_tokens 和 max_tool_calls。 ItemParam 是以下类型的可区分联合： 具有角色 system、developer、user、assistant 的 message 项 function_call 和 function_call_output reasoning item_reference 成功响应返回带有 object: &#34;response&#34;、status 和 output 项的 ResponseResource。 流式传输使用语义事件，如： response.created、response.in_progress、response.completed、response.failed response.output_item.added、response.output_item.done response.content_part.added、response.content_part.done response.output_text.delta、response.output_text.done 规范要求： Content-Type: text/event-stream event: 必须匹配 JSON type 字段 终止事件必须是字面量 [DONE] Reasoning 项可能暴露 content、encrypted_content 和 summary。 HF 示例在请求中包含 OpenResponses-Version: latest（可选头部）。 提议的架构 添加 src/gateway/open-responses.schema.ts，仅包含 Zod schema（无 gateway 导入）。 添加 src/gateway/openresponses-http.ts（或 open-responses-http.ts）用于 /v1/responses。 保持 src/gateway/openai-http.ts 不变，作为遗留兼容适配器。 添加配置 gateway.http.endpoints.responses.enabled（默认 false）。 保持 gateway.http.endpoints.chatCompletions.enabled 独立；允许两个端点分别切换。 当 Chat Completions 启用时发出启动警告，以表明其遗留状态。 Chat Completions 弃用路径 保持严格的模块边界：responses 和 chat completions 之间不共享 schema 类型。 通过配置使 Chat Completions 成为可选，这样无需代码更改即可禁用。 一旦 /v1/responses 稳定，更新文档将 Chat Completions 标记为遗留。 可选的未来步骤：将 Chat Completions 请求映射到 Responses 处理器，以便更简单地移除。 第一阶段支持子集 接受 input 为字符串或带有消息角色和 function_call_output 的 ItemParam[]。 将 system 和 developer 消息提取到 extraSystemPrompt 中。 使用最近的 user 或 function_call_output 作为智能体运行的当前消息。 对不支持的内容部分（图片/文件）返回 invalid_request_error 拒绝。 返回带有 output_text 内容的单个助手消息。 返回带有零值的 usage，直到 token 计数接入。 验证策略（无 SDK） 为以下支持子集实现 Zod schema： CreateResponseBody ItemParam &#43; 消息内容部分联合 ResponseResource Gateway 网关使用的流式事件形状 将 schema 保存在单个隔离模块中，以避免漂移并允许未来代码生成。 流式实现（第一阶段） 带有 event: 和 data: 的 SSE 行。 所需序列（最小可行）： response.created response.output_item.added response.content_part.added response.output_text.delta（根据需要重复） response.output_text.done response.content_part.done response.completed [DONE] 测试和验证计划 为 /v1/responses 添加端到端覆盖： 需要认证 非流式响应形状 流式事件顺序和 [DONE] 使用头部和 user 的会话路由 保持 src/gateway/openai-http.e2e.test.ts 不变。 手动：用 stream: true curl /v1/responses 并验证事件顺序和终止 [DONE]。 文档更新（后续） 为 /v1/responses 使用和示例添加新文档页面。 更新 /gateway/openai-http-api，添加遗留说明和指向 /v1/responses 的指针。 ">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenResponses Gateway 网关集成计划">
+<meta name="twitter:description" content="背景
+OpenClaw Gateway 网关目前在 /v1/chat/completions 暴露了一个最小的 OpenAI 兼容 Chat Completions 端点（参见 OpenAI Chat Completions）。
+Open Responses 是基于 OpenAI Responses API 的开放推理标准。它专为智能体工作流设计，使用基于项目的输入加语义流式事件。OpenResponses 规范定义的是 /v1/responses，而不是 /v1/chat/completions。
+目标
+
+添加一个遵循 OpenResponses 语义的 /v1/responses 端点。
+保留 Chat Completions 作为兼容层，易于禁用并最终移除。
+使用隔离的、可复用的 schema 标准化验证和解析。
+
+非目标
+
+第一阶段完全实现 OpenResponses 功能（图片、文件、托管工具）。
+替换内部智能体执行逻辑或工具编排。
+在第一阶段更改现有的 /v1/chat/completions 行为。
+
+研究摘要
+来源：OpenResponses OpenAPI、OpenResponses 规范网站和 Hugging Face 博客文章。
+提取的关键点：
+
+POST /v1/responses 接受 CreateResponseBody 字段，如 model、input（字符串或 ItemParam[]）、instructions、tools、tool_choice、stream、max_output_tokens 和 max_tool_calls。
+ItemParam 是以下类型的可区分联合：
+
+具有角色 system、developer、user、assistant 的 message 项
+function_call 和 function_call_output
+reasoning
+item_reference
+
+
+成功响应返回带有 object: &quot;response&quot;、status 和 output 项的 ResponseResource。
+流式传输使用语义事件，如：
+
+response.created、response.in_progress、response.completed、response.failed
+response.output_item.added、response.output_item.done
+response.content_part.added、response.content_part.done
+response.output_text.delta、response.output_text.done
+
+
+规范要求：
+
+Content-Type: text/event-stream
+event: 必须匹配 JSON type 字段
+终止事件必须是字面量 [DONE]
+
+
+Reasoning 项可能暴露 content、encrypted_content 和 summary。
+HF 示例在请求中包含 OpenResponses-Version: latest（可选头部）。
+
+提议的架构
+
+添加 src/gateway/open-responses.schema.ts，仅包含 Zod schema（无 gateway 导入）。
+添加 src/gateway/openresponses-http.ts（或 open-responses-http.ts）用于 /v1/responses。
+保持 src/gateway/openai-http.ts 不变，作为遗留兼容适配器。
+添加配置 gateway.http.endpoints.responses.enabled（默认 false）。
+保持 gateway.http.endpoints.chatCompletions.enabled 独立；允许两个端点分别切换。
+当 Chat Completions 启用时发出启动警告，以表明其遗留状态。
+
+Chat Completions 弃用路径
+
+保持严格的模块边界：responses 和 chat completions 之间不共享 schema 类型。
+通过配置使 Chat Completions 成为可选，这样无需代码更改即可禁用。
+一旦 /v1/responses 稳定，更新文档将 Chat Completions 标记为遗留。
+可选的未来步骤：将 Chat Completions 请求映射到 Responses 处理器，以便更简单地移除。
+
+第一阶段支持子集
+
+接受 input 为字符串或带有消息角色和 function_call_output 的 ItemParam[]。
+将 system 和 developer 消息提取到 extraSystemPrompt 中。
+使用最近的 user 或 function_call_output 作为智能体运行的当前消息。
+对不支持的内容部分（图片/文件）返回 invalid_request_error 拒绝。
+返回带有 output_text 内容的单个助手消息。
+返回带有零值的 usage，直到 token 计数接入。
+
+验证策略（无 SDK）
+
+为以下支持子集实现 Zod schema：
+
+CreateResponseBody
+ItemParam &#43; 消息内容部分联合
+ResponseResource
+Gateway 网关使用的流式事件形状
+
+
+将 schema 保存在单个隔离模块中，以避免漂移并允许未来代码生成。
+
+流式实现（第一阶段）
+
+带有 event: 和 data: 的 SSE 行。
+所需序列（最小可行）：
+
+response.created
+response.output_item.added
+response.content_part.added
+response.output_text.delta（根据需要重复）
+response.output_text.done
+response.content_part.done
+response.completed
+[DONE]
+
+
+
+测试和验证计划
+
+为 /v1/responses 添加端到端覆盖：
+
+需要认证
+非流式响应形状
+流式事件顺序和 [DONE]
+使用头部和 user 的会话路由
+
+
+保持 src/gateway/openai-http.e2e.test.ts 不变。
+手动：用 stream: true curl /v1/responses 并验证事件顺序和终止 [DONE]。
+
+文档更新（后续）
+
+为 /v1/responses 使用和示例添加新文档页面。
+更新 /gateway/openai-http-api，添加遗留说明和指向 /v1/responses 的指针。
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "OpenResponses Gateway 网关集成计划",
+      "item": "/openclaw/experiments/plans/openresponses-gateway/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "OpenResponses Gateway 网关集成计划",
+  "name": "OpenResponses Gateway 网关集成计划",
+  "description": "背景 OpenClaw Gateway 网关目前在 /v1/chat/completions 暴露了一个最小的 OpenAI 兼容 Chat Completions 端点（参见 OpenAI Chat Completions）。\nOpen Responses 是基于 OpenAI Responses API 的开放推理标准。它专为智能体工作流设计，使用基于项目的输入加语义流式事件。OpenResponses 规范定义的是 /v1/responses，而不是 /v1/chat/completions。\n目标 添加一个遵循 OpenResponses 语义的 /v1/responses 端点。 保留 Chat Completions 作为兼容层，易于禁用并最终移除。 使用隔离的、可复用的 schema 标准化验证和解析。 非目标 第一阶段完全实现 OpenResponses 功能（图片、文件、托管工具）。 替换内部智能体执行逻辑或工具编排。 在第一阶段更改现有的 /v1/chat/completions 行为。 研究摘要 来源：OpenResponses OpenAPI、OpenResponses 规范网站和 Hugging Face 博客文章。\n提取的关键点：\nPOST /v1/responses 接受 CreateResponseBody 字段，如 model、input（字符串或 ItemParam[]）、instructions、tools、tool_choice、stream、max_output_tokens 和 max_tool_calls。 ItemParam 是以下类型的可区分联合： 具有角色 system、developer、user、assistant 的 message 项 function_call 和 function_call_output reasoning item_reference 成功响应返回带有 object: \u0026quot;response\u0026quot;、status 和 output 项的 ResponseResource。 流式传输使用语义事件，如： response.created、response.in_progress、response.completed、response.failed response.output_item.added、response.output_item.done response.content_part.added、response.content_part.done response.output_text.delta、response.output_text.done 规范要求： Content-Type: text/event-stream event: 必须匹配 JSON type 字段 终止事件必须是字面量 [DONE] Reasoning 项可能暴露 content、encrypted_content 和 summary。 HF 示例在请求中包含 OpenResponses-Version: latest（可选头部）。 提议的架构 添加 src/gateway/open-responses.schema.ts，仅包含 Zod schema（无 gateway 导入）。 添加 src/gateway/openresponses-http.ts（或 open-responses-http.ts）用于 /v1/responses。 保持 src/gateway/openai-http.ts 不变，作为遗留兼容适配器。 添加配置 gateway.http.endpoints.responses.enabled（默认 false）。 保持 gateway.http.endpoints.chatCompletions.enabled 独立；允许两个端点分别切换。 当 Chat Completions 启用时发出启动警告，以表明其遗留状态。 Chat Completions 弃用路径 保持严格的模块边界：responses 和 chat completions 之间不共享 schema 类型。 通过配置使 Chat Completions 成为可选，这样无需代码更改即可禁用。 一旦 /v1/responses 稳定，更新文档将 Chat Completions 标记为遗留。 可选的未来步骤：将 Chat Completions 请求映射到 Responses 处理器，以便更简单地移除。 第一阶段支持子集 接受 input 为字符串或带有消息角色和 function_call_output 的 ItemParam[]。 将 system 和 developer 消息提取到 extraSystemPrompt 中。 使用最近的 user 或 function_call_output 作为智能体运行的当前消息。 对不支持的内容部分（图片/文件）返回 invalid_request_error 拒绝。 返回带有 output_text 内容的单个助手消息。 返回带有零值的 usage，直到 token 计数接入。 验证策略（无 SDK） 为以下支持子集实现 Zod schema： CreateResponseBody ItemParam + 消息内容部分联合 ResponseResource Gateway 网关使用的流式事件形状 将 schema 保存在单个隔离模块中，以避免漂移并允许未来代码生成。 流式实现（第一阶段） 带有 event: 和 data: 的 SSE 行。 所需序列（最小可行）： response.created response.output_item.added response.content_part.added response.output_text.delta（根据需要重复） response.output_text.done response.content_part.done response.completed [DONE] 测试和验证计划 为 /v1/responses 添加端到端覆盖： 需要认证 非流式响应形状 流式事件顺序和 [DONE] 使用头部和 user 的会话路由 保持 src/gateway/openai-http.e2e.test.ts 不变。 手动：用 stream: true curl /v1/responses 并验证事件顺序和终止 [DONE]。 文档更新（后续） 为 /v1/responses 使用和示例添加新文档页面。 更新 /gateway/openai-http-api，添加遗留说明和指向 /v1/responses 的指针。 ",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "背景 OpenClaw Gateway 网关目前在 /v1/chat/completions 暴露了一个最小的 OpenAI 兼容 Chat Completions 端点（参见 OpenAI Chat Completions）。\nOpen Responses 是基于 OpenAI Responses API 的开放推理标准。它专为智能体工作流设计，使用基于项目的输入加语义流式事件。OpenResponses 规范定义的是 /v1/responses，而不是 /v1/chat/completions。\n目标 添加一个遵循 OpenResponses 语义的 /v1/responses 端点。 保留 Chat Completions 作为兼容层，易于禁用并最终移除。 使用隔离的、可复用的 schema 标准化验证和解析。 非目标 第一阶段完全实现 OpenResponses 功能（图片、文件、托管工具）。 替换内部智能体执行逻辑或工具编排。 在第一阶段更改现有的 /v1/chat/completions 行为。 研究摘要 来源：OpenResponses OpenAPI、OpenResponses 规范网站和 Hugging Face 博客文章。\n提取的关键点：\nPOST /v1/responses 接受 CreateResponseBody 字段，如 model、input（字符串或 ItemParam[]）、instructions、tools、tool_choice、stream、max_output_tokens 和 max_tool_calls。 ItemParam 是以下类型的可区分联合： 具有角色 system、developer、user、assistant 的 message 项 function_call 和 function_call_output reasoning item_reference 成功响应返回带有 object: \"response\"、status 和 output 项的 ResponseResource。 流式传输使用语义事件，如： response.created、response.in_progress、response.completed、response.failed response.output_item.added、response.output_item.done response.content_part.added、response.content_part.done response.output_text.delta、response.output_text.done 规范要求： Content-Type: text/event-stream event: 必须匹配 JSON type 字段 终止事件必须是字面量 [DONE] Reasoning 项可能暴露 content、encrypted_content 和 summary。 HF 示例在请求中包含 OpenResponses-Version: latest（可选头部）。 提议的架构 添加 src/gateway/open-responses.schema.ts，仅包含 Zod schema（无 gateway 导入）。 添加 src/gateway/openresponses-http.ts（或 open-responses-http.ts）用于 /v1/responses。 保持 src/gateway/openai-http.ts 不变，作为遗留兼容适配器。 添加配置 gateway.http.endpoints.responses.enabled（默认 false）。 保持 gateway.http.endpoints.chatCompletions.enabled 独立；允许两个端点分别切换。 当 Chat Completions 启用时发出启动警告，以表明其遗留状态。 Chat Completions 弃用路径 保持严格的模块边界：responses 和 chat completions 之间不共享 schema 类型。 通过配置使 Chat Completions 成为可选，这样无需代码更改即可禁用。 一旦 /v1/responses 稳定，更新文档将 Chat Completions 标记为遗留。 可选的未来步骤：将 Chat Completions 请求映射到 Responses 处理器，以便更简单地移除。 第一阶段支持子集 接受 input 为字符串或带有消息角色和 function_call_output 的 ItemParam[]。 将 system 和 developer 消息提取到 extraSystemPrompt 中。 使用最近的 user 或 function_call_output 作为智能体运行的当前消息。 对不支持的内容部分（图片/文件）返回 invalid_request_error 拒绝。 返回带有 output_text 内容的单个助手消息。 返回带有零值的 usage，直到 token 计数接入。 验证策略（无 SDK） 为以下支持子集实现 Zod schema： CreateResponseBody ItemParam + 消息内容部分联合 ResponseResource Gateway 网关使用的流式事件形状 将 schema 保存在单个隔离模块中，以避免漂移并允许未来代码生成。 流式实现（第一阶段） 带有 event: 和 data: 的 SSE 行。 所需序列（最小可行）： response.created response.output_item.added response.content_part.added response.output_text.delta（根据需要重复） response.output_text.done response.content_part.done response.completed [DONE] 测试和验证计划 为 /v1/responses 添加端到端覆盖： 需要认证 非流式响应形状 流式事件顺序和 [DONE] 使用头部和 user 的会话路由 保持 src/gateway/openai-http.e2e.test.ts 不变。 手动：用 stream: true curl /v1/responses 并验证事件顺序和终止 [DONE]。 文档更新（后续） 为 /v1/responses 使用和示例添加新文档页面。 更新 /gateway/openai-http-api，添加遗留说明和指向 /v1/responses 的指针。 ",
+  "wordCount" : "245",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/experiments/plans/openresponses-gateway/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      OpenResponses Gateway 网关集成计划
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87" aria-label="目标">目标</a></li>
+                <li>
+                    <a href="#%e9%9d%9e%e7%9b%ae%e6%a0%87" aria-label="非目标">非目标</a></li>
+                <li>
+                    <a href="#%e7%a0%94%e7%a9%b6%e6%91%98%e8%a6%81" aria-label="研究摘要">研究摘要</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e8%ae%ae%e7%9a%84%e6%9e%b6%e6%9e%84" aria-label="提议的架构">提议的架构</a></li>
+                <li>
+                    <a href="#chat-completions-%e5%bc%83%e7%94%a8%e8%b7%af%e5%be%84" aria-label="Chat Completions 弃用路径">Chat Completions 弃用路径</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%80%e9%98%b6%e6%ae%b5%e6%94%af%e6%8c%81%e5%ad%90%e9%9b%86" aria-label="第一阶段支持子集">第一阶段支持子集</a></li>
+                <li>
+                    <a href="#%e9%aa%8c%e8%af%81%e7%ad%96%e7%95%a5%e6%97%a0-sdk" aria-label="验证策略（无 SDK）">验证策略（无 SDK）</a></li>
+                <li>
+                    <a href="#%e6%b5%81%e5%bc%8f%e5%ae%9e%e7%8e%b0%e7%ac%ac%e4%b8%80%e9%98%b6%e6%ae%b5" aria-label="流式实现（第一阶段）">流式实现（第一阶段）</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e5%92%8c%e9%aa%8c%e8%af%81%e8%ae%a1%e5%88%92" aria-label="测试和验证计划">测试和验证计划</a></li>
+                <li>
+                    <a href="#%e6%96%87%e6%a1%a3%e6%9b%b4%e6%96%b0%e5%90%8e%e7%bb%ad" aria-label="文档更新（后续）">文档更新（后续）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h2>
+<p>OpenClaw Gateway 网关目前在 <code>/v1/chat/completions</code> 暴露了一个最小的 OpenAI 兼容 Chat Completions 端点（参见 <a href="/gateway/openai-http-api">OpenAI Chat Completions</a>）。</p>
+<p>Open Responses 是基于 OpenAI Responses API 的开放推理标准。它专为智能体工作流设计，使用基于项目的输入加语义流式事件。OpenResponses 规范定义的是 <code>/v1/responses</code>，而不是 <code>/v1/chat/completions</code>。</p>
+<h2 id="目标">目标<a hidden class="anchor" aria-hidden="true" href="#目标">#</a></h2>
+<ul>
+<li>添加一个遵循 OpenResponses 语义的 <code>/v1/responses</code> 端点。</li>
+<li>保留 Chat Completions 作为兼容层，易于禁用并最终移除。</li>
+<li>使用隔离的、可复用的 schema 标准化验证和解析。</li>
+</ul>
+<h2 id="非目标">非目标<a hidden class="anchor" aria-hidden="true" href="#非目标">#</a></h2>
+<ul>
+<li>第一阶段完全实现 OpenResponses 功能（图片、文件、托管工具）。</li>
+<li>替换内部智能体执行逻辑或工具编排。</li>
+<li>在第一阶段更改现有的 <code>/v1/chat/completions</code> 行为。</li>
+</ul>
+<h2 id="研究摘要">研究摘要<a hidden class="anchor" aria-hidden="true" href="#研究摘要">#</a></h2>
+<p>来源：OpenResponses OpenAPI、OpenResponses 规范网站和 Hugging Face 博客文章。</p>
+<p>提取的关键点：</p>
+<ul>
+<li><code>POST /v1/responses</code> 接受 <code>CreateResponseBody</code> 字段，如 <code>model</code>、<code>input</code>（字符串或 <code>ItemParam[]</code>）、<code>instructions</code>、<code>tools</code>、<code>tool_choice</code>、<code>stream</code>、<code>max_output_tokens</code> 和 <code>max_tool_calls</code>。</li>
+<li><code>ItemParam</code> 是以下类型的可区分联合：
+<ul>
+<li>具有角色 <code>system</code>、<code>developer</code>、<code>user</code>、<code>assistant</code> 的 <code>message</code> 项</li>
+<li><code>function_call</code> 和 <code>function_call_output</code></li>
+<li><code>reasoning</code></li>
+<li><code>item_reference</code></li>
+</ul>
+</li>
+<li>成功响应返回带有 <code>object: &quot;response&quot;</code>、<code>status</code> 和 <code>output</code> 项的 <code>ResponseResource</code>。</li>
+<li>流式传输使用语义事件，如：
+<ul>
+<li><code>response.created</code>、<code>response.in_progress</code>、<code>response.completed</code>、<code>response.failed</code></li>
+<li><code>response.output_item.added</code>、<code>response.output_item.done</code></li>
+<li><code>response.content_part.added</code>、<code>response.content_part.done</code></li>
+<li><code>response.output_text.delta</code>、<code>response.output_text.done</code></li>
+</ul>
+</li>
+<li>规范要求：
+<ul>
+<li><code>Content-Type: text/event-stream</code></li>
+<li><code>event:</code> 必须匹配 JSON <code>type</code> 字段</li>
+<li>终止事件必须是字面量 <code>[DONE]</code></li>
+</ul>
+</li>
+<li>Reasoning 项可能暴露 <code>content</code>、<code>encrypted_content</code> 和 <code>summary</code>。</li>
+<li>HF 示例在请求中包含 <code>OpenResponses-Version: latest</code>（可选头部）。</li>
+</ul>
+<h2 id="提议的架构">提议的架构<a hidden class="anchor" aria-hidden="true" href="#提议的架构">#</a></h2>
+<ul>
+<li>添加 <code>src/gateway/open-responses.schema.ts</code>，仅包含 Zod schema（无 gateway 导入）。</li>
+<li>添加 <code>src/gateway/openresponses-http.ts</code>（或 <code>open-responses-http.ts</code>）用于 <code>/v1/responses</code>。</li>
+<li>保持 <code>src/gateway/openai-http.ts</code> 不变，作为遗留兼容适配器。</li>
+<li>添加配置 <code>gateway.http.endpoints.responses.enabled</code>（默认 <code>false</code>）。</li>
+<li>保持 <code>gateway.http.endpoints.chatCompletions.enabled</code> 独立；允许两个端点分别切换。</li>
+<li>当 Chat Completions 启用时发出启动警告，以表明其遗留状态。</li>
+</ul>
+<h2 id="chat-completions-弃用路径">Chat Completions 弃用路径<a hidden class="anchor" aria-hidden="true" href="#chat-completions-弃用路径">#</a></h2>
+<ul>
+<li>保持严格的模块边界：responses 和 chat completions 之间不共享 schema 类型。</li>
+<li>通过配置使 Chat Completions 成为可选，这样无需代码更改即可禁用。</li>
+<li>一旦 <code>/v1/responses</code> 稳定，更新文档将 Chat Completions 标记为遗留。</li>
+<li>可选的未来步骤：将 Chat Completions 请求映射到 Responses 处理器，以便更简单地移除。</li>
+</ul>
+<h2 id="第一阶段支持子集">第一阶段支持子集<a hidden class="anchor" aria-hidden="true" href="#第一阶段支持子集">#</a></h2>
+<ul>
+<li>接受 <code>input</code> 为字符串或带有消息角色和 <code>function_call_output</code> 的 <code>ItemParam[]</code>。</li>
+<li>将 system 和 developer 消息提取到 <code>extraSystemPrompt</code> 中。</li>
+<li>使用最近的 <code>user</code> 或 <code>function_call_output</code> 作为智能体运行的当前消息。</li>
+<li>对不支持的内容部分（图片/文件）返回 <code>invalid_request_error</code> 拒绝。</li>
+<li>返回带有 <code>output_text</code> 内容的单个助手消息。</li>
+<li>返回带有零值的 <code>usage</code>，直到 token 计数接入。</li>
+</ul>
+<h2 id="验证策略无-sdk">验证策略（无 SDK）<a hidden class="anchor" aria-hidden="true" href="#验证策略无-sdk">#</a></h2>
+<ul>
+<li>为以下支持子集实现 Zod schema：
+<ul>
+<li><code>CreateResponseBody</code></li>
+<li><code>ItemParam</code> + 消息内容部分联合</li>
+<li><code>ResponseResource</code></li>
+<li>Gateway 网关使用的流式事件形状</li>
+</ul>
+</li>
+<li>将 schema 保存在单个隔离模块中，以避免漂移并允许未来代码生成。</li>
+</ul>
+<h2 id="流式实现第一阶段">流式实现（第一阶段）<a hidden class="anchor" aria-hidden="true" href="#流式实现第一阶段">#</a></h2>
+<ul>
+<li>带有 <code>event:</code> 和 <code>data:</code> 的 SSE 行。</li>
+<li>所需序列（最小可行）：
+<ul>
+<li><code>response.created</code></li>
+<li><code>response.output_item.added</code></li>
+<li><code>response.content_part.added</code></li>
+<li><code>response.output_text.delta</code>（根据需要重复）</li>
+<li><code>response.output_text.done</code></li>
+<li><code>response.content_part.done</code></li>
+<li><code>response.completed</code></li>
+<li><code>[DONE]</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="测试和验证计划">测试和验证计划<a hidden class="anchor" aria-hidden="true" href="#测试和验证计划">#</a></h2>
+<ul>
+<li>为 <code>/v1/responses</code> 添加端到端覆盖：
+<ul>
+<li>需要认证</li>
+<li>非流式响应形状</li>
+<li>流式事件顺序和 <code>[DONE]</code></li>
+<li>使用头部和 <code>user</code> 的会话路由</li>
+</ul>
+</li>
+<li>保持 <code>src/gateway/openai-http.e2e.test.ts</code> 不变。</li>
+<li>手动：用 <code>stream: true</code> curl <code>/v1/responses</code> 并验证事件顺序和终止 <code>[DONE]</code>。</li>
+</ul>
+<h2 id="文档更新后续">文档更新（后续）<a hidden class="anchor" aria-hidden="true" href="#文档更新后续">#</a></h2>
+<ul>
+<li>为 <code>/v1/responses</code> 使用和示例添加新文档页面。</li>
+<li>更新 <code>/gateway/openai-http-api</code>，添加遗留说明和指向 <code>/v1/responses</code> 的指针。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/gateway/openresponses-http-api/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>OpenResponses API（HTTP）</span>
+  </a>
+  <a class="next" href="/openclaw/providers/openrouter/">
+    <span class="title">Next »</span>
+    <br>
+    <span>OpenRouter</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

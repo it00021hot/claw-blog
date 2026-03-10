@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>新手引导（macOS 应用） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="本文档描述当前的首次运行新手引导流程。目标是流畅的&quot;第 0 天&quot;体验：选择 Gateway 网关运行位置、连接认证、运行向导，然后让智能体自行引导。
+页面顺序（当前）
+
+欢迎 &#43; 安全提示
+Gateway 网关选择（本地 / 远程 / 稍后配置）
+认证（Anthropic OAuth） — 仅限本地
+设置向导（Gateway 网关驱动）
+权限（TCC 提示）
+CLI（可选）
+新手引导聊天（专用会话）
+就绪
+
+1) 欢迎 &#43; 安全提示
+阅读显示的安全提示并相应决定。
+2) 本地 vs 远程
+Gateway 网关在哪里运行？
+
+本地（此 Mac）： 新手引导可以在本地运行 OAuth 流程并写入凭证。
+远程（通过 SSH/Tailnet）： 新手引导不会在本地运行 OAuth；凭证必须存在于 Gateway 网关主机上。
+稍后配置： 跳过设置并保持应用未配置状态。
+
+Gateway 网关认证提示：
+
+向导现在即使对于 loopback 也会生成令牌，因此本地 WS 客户端必须认证。
+如果你禁用认证，任何本地进程都可以连接；仅在完全受信任的机器上使用。
+对于多机器访问或非 loopback 绑定，使用令牌。
+
+3) 仅限本地的认证（Anthropic OAuth）
+macOS 应用支持 Anthropic OAuth（Claude Pro/Max）。流程：
+
+打开浏览器进行 OAuth（PKCE）
+要求用户粘贴 code#state 值
+将凭证写入 ~/.openclaw/credentials/oauth.json
+
+其他提供商（OpenAI、自定义 API）目前通过环境变量或配置文件配置。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/start/onboarding/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/start/onboarding/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/start/onboarding/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="新手引导（macOS 应用）">
+  <meta property="og:description" content="本文档描述当前的首次运行新手引导流程。目标是流畅的&#34;第 0 天&#34;体验：选择 Gateway 网关运行位置、连接认证、运行向导，然后让智能体自行引导。
+页面顺序（当前） 欢迎 &#43; 安全提示 Gateway 网关选择（本地 / 远程 / 稍后配置） 认证（Anthropic OAuth） — 仅限本地 设置向导（Gateway 网关驱动） 权限（TCC 提示） CLI（可选） 新手引导聊天（专用会话） 就绪 1) 欢迎 &#43; 安全提示 阅读显示的安全提示并相应决定。
+2) 本地 vs 远程 Gateway 网关在哪里运行？
+本地（此 Mac）： 新手引导可以在本地运行 OAuth 流程并写入凭证。 远程（通过 SSH/Tailnet）： 新手引导不会在本地运行 OAuth；凭证必须存在于 Gateway 网关主机上。 稍后配置： 跳过设置并保持应用未配置状态。 Gateway 网关认证提示：
+向导现在即使对于 loopback 也会生成令牌，因此本地 WS 客户端必须认证。 如果你禁用认证，任何本地进程都可以连接；仅在完全受信任的机器上使用。 对于多机器访问或非 loopback 绑定，使用令牌。 3) 仅限本地的认证（Anthropic OAuth） macOS 应用支持 Anthropic OAuth（Claude Pro/Max）。流程：
+打开浏览器进行 OAuth（PKCE） 要求用户粘贴 code#state 值 将凭证写入 ~/.openclaw/credentials/oauth.json 其他提供商（OpenAI、自定义 API）目前通过环境变量或配置文件配置。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="新手引导（macOS 应用）">
+<meta name="twitter:description" content="本文档描述当前的首次运行新手引导流程。目标是流畅的&quot;第 0 天&quot;体验：选择 Gateway 网关运行位置、连接认证、运行向导，然后让智能体自行引导。
+页面顺序（当前）
+
+欢迎 &#43; 安全提示
+Gateway 网关选择（本地 / 远程 / 稍后配置）
+认证（Anthropic OAuth） — 仅限本地
+设置向导（Gateway 网关驱动）
+权限（TCC 提示）
+CLI（可选）
+新手引导聊天（专用会话）
+就绪
+
+1) 欢迎 &#43; 安全提示
+阅读显示的安全提示并相应决定。
+2) 本地 vs 远程
+Gateway 网关在哪里运行？
+
+本地（此 Mac）： 新手引导可以在本地运行 OAuth 流程并写入凭证。
+远程（通过 SSH/Tailnet）： 新手引导不会在本地运行 OAuth；凭证必须存在于 Gateway 网关主机上。
+稍后配置： 跳过设置并保持应用未配置状态。
+
+Gateway 网关认证提示：
+
+向导现在即使对于 loopback 也会生成令牌，因此本地 WS 客户端必须认证。
+如果你禁用认证，任何本地进程都可以连接；仅在完全受信任的机器上使用。
+对于多机器访问或非 loopback 绑定，使用令牌。
+
+3) 仅限本地的认证（Anthropic OAuth）
+macOS 应用支持 Anthropic OAuth（Claude Pro/Max）。流程：
+
+打开浏览器进行 OAuth（PKCE）
+要求用户粘贴 code#state 值
+将凭证写入 ~/.openclaw/credentials/oauth.json
+
+其他提供商（OpenAI、自定义 API）目前通过环境变量或配置文件配置。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "新手引导（macOS 应用）",
+      "item": "/openclaw/start/onboarding/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "新手引导（macOS 应用）",
+  "name": "新手引导（macOS 应用）",
+  "description": "本文档描述当前的首次运行新手引导流程。目标是流畅的\u0026quot;第 0 天\u0026quot;体验：选择 Gateway 网关运行位置、连接认证、运行向导，然后让智能体自行引导。\n页面顺序（当前） 欢迎 + 安全提示 Gateway 网关选择（本地 / 远程 / 稍后配置） 认证（Anthropic OAuth） — 仅限本地 设置向导（Gateway 网关驱动） 权限（TCC 提示） CLI（可选） 新手引导聊天（专用会话） 就绪 1) 欢迎 + 安全提示 阅读显示的安全提示并相应决定。\n2) 本地 vs 远程 Gateway 网关在哪里运行？\n本地（此 Mac）： 新手引导可以在本地运行 OAuth 流程并写入凭证。 远程（通过 SSH/Tailnet）： 新手引导不会在本地运行 OAuth；凭证必须存在于 Gateway 网关主机上。 稍后配置： 跳过设置并保持应用未配置状态。 Gateway 网关认证提示：\n向导现在即使对于 loopback 也会生成令牌，因此本地 WS 客户端必须认证。 如果你禁用认证，任何本地进程都可以连接；仅在完全受信任的机器上使用。 对于多机器访问或非 loopback 绑定，使用令牌。 3) 仅限本地的认证（Anthropic OAuth） macOS 应用支持 Anthropic OAuth（Claude Pro/Max）。流程：\n打开浏览器进行 OAuth（PKCE） 要求用户粘贴 code#state 值 将凭证写入 ~/.openclaw/credentials/oauth.json 其他提供商（OpenAI、自定义 API）目前通过环境变量或配置文件配置。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "本文档描述当前的首次运行新手引导流程。目标是流畅的\"第 0 天\"体验：选择 Gateway 网关运行位置、连接认证、运行向导，然后让智能体自行引导。\n页面顺序（当前） 欢迎 + 安全提示 Gateway 网关选择（本地 / 远程 / 稍后配置） 认证（Anthropic OAuth） — 仅限本地 设置向导（Gateway 网关驱动） 权限（TCC 提示） CLI（可选） 新手引导聊天（专用会话） 就绪 1) 欢迎 + 安全提示 阅读显示的安全提示并相应决定。\n2) 本地 vs 远程 Gateway 网关在哪里运行？\n本地（此 Mac）： 新手引导可以在本地运行 OAuth 流程并写入凭证。 远程（通过 SSH/Tailnet）： 新手引导不会在本地运行 OAuth；凭证必须存在于 Gateway 网关主机上。 稍后配置： 跳过设置并保持应用未配置状态。 Gateway 网关认证提示：\n向导现在即使对于 loopback 也会生成令牌，因此本地 WS 客户端必须认证。 如果你禁用认证，任何本地进程都可以连接；仅在完全受信任的机器上使用。 对于多机器访问或非 loopback 绑定，使用令牌。 3) 仅限本地的认证（Anthropic OAuth） macOS 应用支持 Anthropic OAuth（Claude Pro/Max）。流程：\n打开浏览器进行 OAuth（PKCE） 要求用户粘贴 code#state 值 将凭证写入 ~/.openclaw/credentials/oauth.json 其他提供商（OpenAI、自定义 API）目前通过环境变量或配置文件配置。\n4) 设置向导（Gateway 网关驱动） 应用可以运行与 CLI 相同的设置向导。这使新手引导与 Gateway 网关端行为保持同步，避免在 SwiftUI 中重复逻辑。\n5) 权限 新手引导请求以下所需的 TCC 权限：\n通知 辅助功能 屏幕录制 麦克风 / 语音识别 自动化（AppleScript） 6) CLI（可选） 应用可以通过 npm/pnpm 安装全局 openclaw CLI，以便终端工作流和 launchd 任务开箱即用。\n7) 新手引导聊天（专用会话） 设置完成后，应用会打开一个专用的新手引导聊天会话，让智能体可以自我介绍并指导后续步骤。这使首次运行指导与你的正常对话分开。\n智能体引导仪式 在首次智能体运行时，OpenClaw 会引导一个工作区（默认 ~/.openclaw/workspace）：\n初始化 AGENTS.md、BOOTSTRAP.md、IDENTITY.md、USER.md 运行简短的问答仪式（一次一个问题） 将身份 + 偏好写入 IDENTITY.md、USER.md、SOUL.md 完成后删除 BOOTSTRAP.md，使其只运行一次 可选：Gmail 钩子（手动） Gmail Pub/Sub 设置目前是手动步骤。使用：\nopenclaw webhooks gmail setup --account you@gmail.com 参阅 /automation/gmail-pubsub 了解详情。\n远程模式说明 当 Gateway 网关在另一台机器上运行时，凭证和工作区文件存储在该主机上。如果你需要在远程模式下使用 OAuth，请在 Gateway 网关主机上创建：\n~/.openclaw/credentials/oauth.json ~/.openclaw/agents//agent/auth-profiles.json ",
+  "wordCount" : "148",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/start/onboarding/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      新手引导（macOS 应用）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%a1%b5%e9%9d%a2%e9%a1%ba%e5%ba%8f%e5%bd%93%e5%89%8d" aria-label="页面顺序（当前）">页面顺序（当前）</a></li>
+                <li>
+                    <a href="#1-%e6%ac%a2%e8%bf%8e--%e5%ae%89%e5%85%a8%e6%8f%90%e7%a4%ba" aria-label="1) 欢迎 &#43; 安全提示">1) 欢迎 + 安全提示</a></li>
+                <li>
+                    <a href="#2-%e6%9c%ac%e5%9c%b0-vs-%e8%bf%9c%e7%a8%8b" aria-label="2) 本地 vs 远程">2) 本地 vs 远程</a></li>
+                <li>
+                    <a href="#3-%e4%bb%85%e9%99%90%e6%9c%ac%e5%9c%b0%e7%9a%84%e8%ae%a4%e8%af%81anthropic-oauth" aria-label="3) 仅限本地的认证（Anthropic OAuth）">3) 仅限本地的认证（Anthropic OAuth）</a></li>
+                <li>
+                    <a href="#4-%e8%ae%be%e7%bd%ae%e5%90%91%e5%af%bcgateway-%e7%bd%91%e5%85%b3%e9%a9%b1%e5%8a%a8" aria-label="4) 设置向导（Gateway 网关驱动）">4) 设置向导（Gateway 网关驱动）</a></li>
+                <li>
+                    <a href="#5-%e6%9d%83%e9%99%90" aria-label="5) 权限">5) 权限</a></li>
+                <li>
+                    <a href="#6-cli%e5%8f%af%e9%80%89" aria-label="6) CLI（可选）">6) CLI（可选）</a></li>
+                <li>
+                    <a href="#7-%e6%96%b0%e6%89%8b%e5%bc%95%e5%af%bc%e8%81%8a%e5%a4%a9%e4%b8%93%e7%94%a8%e4%bc%9a%e8%af%9d" aria-label="7) 新手引导聊天（专用会话）">7) 新手引导聊天（专用会话）</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e5%bc%95%e5%af%bc%e4%bb%aa%e5%bc%8f" aria-label="智能体引导仪式">智能体引导仪式</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e9%80%89gmail-%e9%92%a9%e5%ad%90%e6%89%8b%e5%8a%a8" aria-label="可选：Gmail 钩子（手动）">可选：Gmail 钩子（手动）</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b%e6%a8%a1%e5%bc%8f%e8%af%b4%e6%98%8e" aria-label="远程模式说明">远程模式说明</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本文档描述<strong>当前</strong>的首次运行新手引导流程。目标是流畅的&quot;第 0 天&quot;体验：选择 Gateway 网关运行位置、连接认证、运行向导，然后让智能体自行引导。</p>
+<h2 id="页面顺序当前">页面顺序（当前）<a hidden class="anchor" aria-hidden="true" href="#页面顺序当前">#</a></h2>
+<ol>
+<li>欢迎 + 安全提示</li>
+<li><strong>Gateway 网关选择</strong>（本地 / 远程 / 稍后配置）</li>
+<li><strong>认证（Anthropic OAuth）</strong> — 仅限本地</li>
+<li><strong>设置向导</strong>（Gateway 网关驱动）</li>
+<li><strong>权限</strong>（TCC 提示）</li>
+<li><strong>CLI</strong>（可选）</li>
+<li><strong>新手引导聊天</strong>（专用会话）</li>
+<li>就绪</li>
+</ol>
+<h2 id="1-欢迎--安全提示">1) 欢迎 + 安全提示<a hidden class="anchor" aria-hidden="true" href="#1-欢迎--安全提示">#</a></h2>
+<p>阅读显示的安全提示并相应决定。</p>
+<h2 id="2-本地-vs-远程">2) 本地 vs 远程<a hidden class="anchor" aria-hidden="true" href="#2-本地-vs-远程">#</a></h2>
+<p><strong>Gateway 网关</strong>在哪里运行？</p>
+<ul>
+<li><strong>本地（此 Mac）：</strong> 新手引导可以在本地运行 OAuth 流程并写入凭证。</li>
+<li><strong>远程（通过 SSH/Tailnet）：</strong> 新手引导<strong>不会</strong>在本地运行 OAuth；凭证必须存在于 Gateway 网关主机上。</li>
+<li><strong>稍后配置：</strong> 跳过设置并保持应用未配置状态。</li>
+</ul>
+<p>Gateway 网关认证提示：</p>
+<ul>
+<li>向导现在即使对于 loopback 也会生成<strong>令牌</strong>，因此本地 WS 客户端必须认证。</li>
+<li>如果你禁用认证，任何本地进程都可以连接；仅在完全受信任的机器上使用。</li>
+<li>对于多机器访问或非 loopback 绑定，使用<strong>令牌</strong>。</li>
+</ul>
+<h2 id="3-仅限本地的认证anthropic-oauth">3) 仅限本地的认证（Anthropic OAuth）<a hidden class="anchor" aria-hidden="true" href="#3-仅限本地的认证anthropic-oauth">#</a></h2>
+<p>macOS 应用支持 Anthropic OAuth（Claude Pro/Max）。流程：</p>
+<ul>
+<li>打开浏览器进行 OAuth（PKCE）</li>
+<li>要求用户粘贴 <code>code#state</code> 值</li>
+<li>将凭证写入 <code>~/.openclaw/credentials/oauth.json</code></li>
+</ul>
+<p>其他提供商（OpenAI、自定义 API）目前通过环境变量或配置文件配置。</p>
+<h2 id="4-设置向导gateway-网关驱动">4) 设置向导（Gateway 网关驱动）<a hidden class="anchor" aria-hidden="true" href="#4-设置向导gateway-网关驱动">#</a></h2>
+<p>应用可以运行与 CLI 相同的设置向导。这使新手引导与 Gateway 网关端行为保持同步，避免在 SwiftUI 中重复逻辑。</p>
+<h2 id="5-权限">5) 权限<a hidden class="anchor" aria-hidden="true" href="#5-权限">#</a></h2>
+<p>新手引导请求以下所需的 TCC 权限：</p>
+<ul>
+<li>通知</li>
+<li>辅助功能</li>
+<li>屏幕录制</li>
+<li>麦克风 / 语音识别</li>
+<li>自动化（AppleScript）</li>
+</ul>
+<h2 id="6-cli可选">6) CLI（可选）<a hidden class="anchor" aria-hidden="true" href="#6-cli可选">#</a></h2>
+<p>应用可以通过 npm/pnpm 安装全局 <code>openclaw</code> CLI，以便终端工作流和 launchd 任务开箱即用。</p>
+<h2 id="7-新手引导聊天专用会话">7) 新手引导聊天（专用会话）<a hidden class="anchor" aria-hidden="true" href="#7-新手引导聊天专用会话">#</a></h2>
+<p>设置完成后，应用会打开一个专用的新手引导聊天会话，让智能体可以自我介绍并指导后续步骤。这使首次运行指导与你的正常对话分开。</p>
+<h2 id="智能体引导仪式">智能体引导仪式<a hidden class="anchor" aria-hidden="true" href="#智能体引导仪式">#</a></h2>
+<p>在首次智能体运行时，OpenClaw 会引导一个工作区（默认 <code>~/.openclaw/workspace</code>）：</p>
+<ul>
+<li>初始化 <code>AGENTS.md</code>、<code>BOOTSTRAP.md</code>、<code>IDENTITY.md</code>、<code>USER.md</code></li>
+<li>运行简短的问答仪式（一次一个问题）</li>
+<li>将身份 + 偏好写入 <code>IDENTITY.md</code>、<code>USER.md</code>、<code>SOUL.md</code></li>
+<li>完成后删除 <code>BOOTSTRAP.md</code>，使其只运行一次</li>
+</ul>
+<h2 id="可选gmail-钩子手动">可选：Gmail 钩子（手动）<a hidden class="anchor" aria-hidden="true" href="#可选gmail-钩子手动">#</a></h2>
+<p>Gmail Pub/Sub 设置目前是手动步骤。使用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw webhooks gmail setup --account you@gmail.com
+</span></span></code></pre></div><p>参阅 <a href="/automation/gmail-pubsub">/automation/gmail-pubsub</a> 了解详情。</p>
+<h2 id="远程模式说明">远程模式说明<a hidden class="anchor" aria-hidden="true" href="#远程模式说明">#</a></h2>
+<p>当 Gateway 网关在另一台机器上运行时，凭证和工作区文件存储在<strong>该主机上</strong>。如果你需要在远程模式下使用 OAuth，请在 Gateway 网关主机上创建：</p>
+<ul>
+<li><code>~/.openclaw/credentials/oauth.json</code></li>
+<li><code>~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json</code></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/experiments/onboarding-config-protocol/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>新手引导 &#43; 配置协议</span>
+  </a>
+  <a class="next" href="/openclaw/start/wizard/">
+    <span class="title">Next »</span>
+    <br>
+    <span>新手引导向导（CLI）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

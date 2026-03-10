@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Skills（OpenClaw） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 使用兼容 AgentSkills 的 Skills 文件夹来教智能体如何使用工具。每个 Skills 是一个包含带有 YAML frontmatter 和说明的 SKILL.md 的目录。OpenClaw 加载内置 Skills 以及可选的本地覆盖，并在加载时根据环境、配置和二进制文件存在情况进行过滤。
+位置和优先级
+Skills 从三个位置加载：
+
+内置 Skills：随安装包一起发布（npm 包或 OpenClaw.app）
+托管/本地 Skills：~/.openclaw/skills
+工作区 Skills：&lt;workspace&gt;/skills
+
+如果 Skills 名称冲突，优先级为：
+&lt;workspace&gt;/skills（最高）→ ~/.openclaw/skills → 内置 Skills（最低）
+此外，你可以通过 ~/.openclaw/openclaw.json 中的 skills.load.extraDirs 配置额外的 Skills 文件夹（最低优先级）。
+单智能体 vs 共享 Skills
+在多智能体设置中，每个智能体有自己的工作区。这意味着：
+
+单智能体 Skills 位于 &lt;workspace&gt;/skills 中，仅供该智能体使用。
+共享 Skills 位于 ~/.openclaw/skills（托管/本地），对同一机器上的所有智能体可见。
+如果你想要多个智能体使用一个通用的 Skills 包，也可以通过 skills.load.extraDirs（最低优先级）添加共享文件夹。
+
+如果同一个 Skills 名称存在于多个位置，将应用通常的优先级规则：工作区优先，然后是托管/本地，最后是内置。
+插件 &#43; Skills
+插件可以通过在 openclaw.plugin.json 中列出 skills 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 metadata.openclaw.requires.config 对它们进行门控。参见插件了解发现/配置，以及工具了解这些 Skills 所教授的工具接口。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tools/skills/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tools/skills/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tools/skills/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Skills（OpenClaw）">
+  <meta property="og:description" content="OpenClaw 使用兼容 AgentSkills 的 Skills 文件夹来教智能体如何使用工具。每个 Skills 是一个包含带有 YAML frontmatter 和说明的 SKILL.md 的目录。OpenClaw 加载内置 Skills 以及可选的本地覆盖，并在加载时根据环境、配置和二进制文件存在情况进行过滤。
+位置和优先级 Skills 从三个位置加载：
+内置 Skills：随安装包一起发布（npm 包或 OpenClaw.app） 托管/本地 Skills：~/.openclaw/skills 工作区 Skills：&lt;workspace&gt;/skills 如果 Skills 名称冲突，优先级为：
+&lt;workspace&gt;/skills（最高）→ ~/.openclaw/skills → 内置 Skills（最低）
+此外，你可以通过 ~/.openclaw/openclaw.json 中的 skills.load.extraDirs 配置额外的 Skills 文件夹（最低优先级）。
+单智能体 vs 共享 Skills 在多智能体设置中，每个智能体有自己的工作区。这意味着：
+单智能体 Skills 位于 &lt;workspace&gt;/skills 中，仅供该智能体使用。 共享 Skills 位于 ~/.openclaw/skills（托管/本地），对同一机器上的所有智能体可见。 如果你想要多个智能体使用一个通用的 Skills 包，也可以通过 skills.load.extraDirs（最低优先级）添加共享文件夹。 如果同一个 Skills 名称存在于多个位置，将应用通常的优先级规则：工作区优先，然后是托管/本地，最后是内置。
+插件 &#43; Skills 插件可以通过在 openclaw.plugin.json 中列出 skills 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 metadata.openclaw.requires.config 对它们进行门控。参见插件了解发现/配置，以及工具了解这些 Skills 所教授的工具接口。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Skills（OpenClaw）">
+<meta name="twitter:description" content="OpenClaw 使用兼容 AgentSkills 的 Skills 文件夹来教智能体如何使用工具。每个 Skills 是一个包含带有 YAML frontmatter 和说明的 SKILL.md 的目录。OpenClaw 加载内置 Skills 以及可选的本地覆盖，并在加载时根据环境、配置和二进制文件存在情况进行过滤。
+位置和优先级
+Skills 从三个位置加载：
+
+内置 Skills：随安装包一起发布（npm 包或 OpenClaw.app）
+托管/本地 Skills：~/.openclaw/skills
+工作区 Skills：&lt;workspace&gt;/skills
+
+如果 Skills 名称冲突，优先级为：
+&lt;workspace&gt;/skills（最高）→ ~/.openclaw/skills → 内置 Skills（最低）
+此外，你可以通过 ~/.openclaw/openclaw.json 中的 skills.load.extraDirs 配置额外的 Skills 文件夹（最低优先级）。
+单智能体 vs 共享 Skills
+在多智能体设置中，每个智能体有自己的工作区。这意味着：
+
+单智能体 Skills 位于 &lt;workspace&gt;/skills 中，仅供该智能体使用。
+共享 Skills 位于 ~/.openclaw/skills（托管/本地），对同一机器上的所有智能体可见。
+如果你想要多个智能体使用一个通用的 Skills 包，也可以通过 skills.load.extraDirs（最低优先级）添加共享文件夹。
+
+如果同一个 Skills 名称存在于多个位置，将应用通常的优先级规则：工作区优先，然后是托管/本地，最后是内置。
+插件 &#43; Skills
+插件可以通过在 openclaw.plugin.json 中列出 skills 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 metadata.openclaw.requires.config 对它们进行门控。参见插件了解发现/配置，以及工具了解这些 Skills 所教授的工具接口。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Skills（OpenClaw）",
+      "item": "/openclaw/tools/skills/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Skills（OpenClaw）",
+  "name": "Skills（OpenClaw）",
+  "description": "OpenClaw 使用兼容 AgentSkills 的 Skills 文件夹来教智能体如何使用工具。每个 Skills 是一个包含带有 YAML frontmatter 和说明的 SKILL.md 的目录。OpenClaw 加载内置 Skills 以及可选的本地覆盖，并在加载时根据环境、配置和二进制文件存在情况进行过滤。\n位置和优先级 Skills 从三个位置加载：\n内置 Skills：随安装包一起发布（npm 包或 OpenClaw.app） 托管/本地 Skills：~/.openclaw/skills 工作区 Skills：\u0026lt;workspace\u0026gt;/skills 如果 Skills 名称冲突，优先级为：\n\u0026lt;workspace\u0026gt;/skills（最高）→ ~/.openclaw/skills → 内置 Skills（最低）\n此外，你可以通过 ~/.openclaw/openclaw.json 中的 skills.load.extraDirs 配置额外的 Skills 文件夹（最低优先级）。\n单智能体 vs 共享 Skills 在多智能体设置中，每个智能体有自己的工作区。这意味着：\n单智能体 Skills 位于 \u0026lt;workspace\u0026gt;/skills 中，仅供该智能体使用。 共享 Skills 位于 ~/.openclaw/skills（托管/本地），对同一机器上的所有智能体可见。 如果你想要多个智能体使用一个通用的 Skills 包，也可以通过 skills.load.extraDirs（最低优先级）添加共享文件夹。 如果同一个 Skills 名称存在于多个位置，将应用通常的优先级规则：工作区优先，然后是托管/本地，最后是内置。\n插件 + Skills 插件可以通过在 openclaw.plugin.json 中列出 skills 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 metadata.openclaw.requires.config 对它们进行门控。参见插件了解发现/配置，以及工具了解这些 Skills 所教授的工具接口。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 使用兼容 AgentSkills 的 Skills 文件夹来教智能体如何使用工具。每个 Skills 是一个包含带有 YAML frontmatter 和说明的 SKILL.md 的目录。OpenClaw 加载内置 Skills 以及可选的本地覆盖，并在加载时根据环境、配置和二进制文件存在情况进行过滤。\n位置和优先级 Skills 从三个位置加载：\n内置 Skills：随安装包一起发布（npm 包或 OpenClaw.app） 托管/本地 Skills：~/.openclaw/skills 工作区 Skills：/skills 如果 Skills 名称冲突，优先级为：\n/skills（最高）→ ~/.openclaw/skills → 内置 Skills（最低）\n此外，你可以通过 ~/.openclaw/openclaw.json 中的 skills.load.extraDirs 配置额外的 Skills 文件夹（最低优先级）。\n单智能体 vs 共享 Skills 在多智能体设置中，每个智能体有自己的工作区。这意味着：\n单智能体 Skills 位于 /skills 中，仅供该智能体使用。 共享 Skills 位于 ~/.openclaw/skills（托管/本地），对同一机器上的所有智能体可见。 如果你想要多个智能体使用一个通用的 Skills 包，也可以通过 skills.load.extraDirs（最低优先级）添加共享文件夹。 如果同一个 Skills 名称存在于多个位置，将应用通常的优先级规则：工作区优先，然后是托管/本地，最后是内置。\n插件 + Skills 插件可以通过在 openclaw.plugin.json 中列出 skills 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 metadata.openclaw.requires.config 对它们进行门控。参见插件了解发现/配置，以及工具了解这些 Skills 所教授的工具接口。\nClawHub（安装 + 同步） ClawHub 是 OpenClaw 的公共 Skills 注册表。浏览 https://clawhub.com。使用它来发现、安装、更新和备份 Skills。完整指南：ClawHub。\n常见流程：\n将 Skills 安装到你的工作区： clawhub install 更新所有已安装的 Skills： clawhub update --all 同步（扫描 + 发布更新）： clawhub sync --all 默认情况下，clawhub 安装到当前工作目录下的 ./skills（或回退到配置的 OpenClaw 工作区）。OpenClaw 在下一个会话中将其识别为 /skills。\n安全注意事项 将第三方 Skills 视为不受信任的代码。启用前请阅读它们。 对于不受信任的输入和高风险工具，优先使用沙箱隔离运行。参见沙箱隔离。 skills.entries.*.env 和 skills.entries.*.apiKey 为该智能体轮次将秘密注入到宿主机进程中（而非沙箱）。将秘密保持在提示词和日志之外。 有关更广泛的威胁模型和检查清单，参见安全性。 格式（AgentSkills + Pi 兼容） SKILL.md 必须至少包含：\n--- name: nano-banana-pro description: Generate or edit images via Gemini 3 Pro Image --- 注意事项：\n我们遵循 AgentSkills 规范的布局/意图。 内嵌智能体使用的解析器仅支持单行 frontmatter 键。 metadata 应该是单行 JSON 对象。 在说明中使用 {baseDir} 来引用 Skills 文件夹路径。 可选的 frontmatter 键： homepage — 在 macOS Skills UI 中显示为\"Website\"的 URL（也支持通过 metadata.openclaw.homepage）。\nuser-invocable — true|false（默认：true）。当为 true 时，Skills 作为用户斜杠命令暴露。\ndisable-model-invocation — true|false（默认：false）。当为 true 时，Skills 从模型提示词中排除（仍可通过用户调用使用）。\ncommand-dispatch — tool（可选）。当设置为 tool 时，斜杠命令绕过模型直接调度到工具。\ncommand-tool — 当设置 command-dispatch: tool 时要调用的工具名称。\ncommand-arg-mode — raw（默认）。对于工具调度，将原始参数字符串转发到工具（无核心解析）。\n工具使用以下参数调用： { command: \"\", commandName: \"\", skillName: \"\" }。\n门控（加载时过滤） OpenClaw 使用 metadata（单行 JSON）在加载时过滤 Skills：\n--- name: nano-banana-pro description: Generate or edit images via Gemini 3 Pro Image metadata: { \"openclaw\": { \"requires\": { \"bins\": [\"uv\"], \"env\": [\"GEMINI_API_KEY\"], \"config\": [\"browser.enabled\"] }, \"primaryEnv\": \"GEMINI_API_KEY\", }, } --- metadata.openclaw 下的字段：\nalways: true — 始终包含该 Skills（跳过其他门控）。 emoji — macOS Skills UI 使用的可选表情符号。 homepage — 在 macOS Skills UI 中显示为\"Website\"的可选 URL。 os — 可选的平台列表（darwin、linux、win32）。如果设置，该 Skills 仅在这些操作系统上有资格。 requires.bins — 列表；每个都必须存在于 PATH 中。 requires.anyBins — 列表；至少一个必须存在于 PATH 中。 requires.env — 列表；环境变量必须存在或在配置中提供。 requires.config — openclaw.json 路径列表，必须为真值。 primaryEnv — 与 skills.entries..apiKey 关联的环境变量名称。 install — macOS Skills UI 使用的可选安装器规格数组（brew/node/go/uv/download）。 沙箱隔离注意事项：\nrequires.bins 在 Skills 加载时在宿主机上检查。 如果智能体处于沙箱隔离状态，二进制文件也必须存在于容器内部。通过 agents.defaults.sandbox.docker.setupCommand（或自定义镜像）安装它。setupCommand 在容器创建后运行一次。包安装还需要网络出口、可写的根文件系统和沙箱中的 root 用户。示例：summarize Skills（skills/summarize/SKILL.md）需要 summarize CLI 在沙箱容器中才能运行。 安装器示例：\n--- name: gemini description: Use Gemini CLI for coding assistance and Google search lookups. metadata: { \"openclaw\": { \"emoji\": \"♊️\", \"requires\": { \"bins\": [\"gemini\"] }, \"install\": [ { \"id\": \"brew\", \"kind\": \"brew\", \"formula\": \"gemini-cli\", \"bins\": [\"gemini\"], \"label\": \"Install Gemini CLI (brew)\", }, ], }, } --- 注意事项：\n如果列出了多个安装器，Gateway 网关会选择单个首选选项（可用时选择 brew，否则选择 node）。 如果所有安装器都是 download，OpenClaw 会列出每个条目，以便你查看可用的构件。 安装器规格可以包含 os: [\"darwin\"|\"linux\"|\"win32\"] 按平台过滤选项。 Node 安装遵循 openclaw.json 中的 skills.install.nodeManager（默认：npm；选项：npm/pnpm/yarn/bun）。这仅影响 Skills 安装；Gateway 网关运行时应仍为 Node（不推荐 Bun 用于 WhatsApp/Telegram）。 Go 安装：如果缺少 go 且 brew 可用，Gateway 网关会首先通过 Homebrew 安装 Go，并在可能时将 GOBIN 设置为 Homebrew 的 bin。 Download 安装：url（必填）、archive（tar.gz | tar.bz2 | zip）、extract（默认：检测到归档时自动）、stripComponents、targetDir（默认：~/.openclaw/tools/）。 如果没有 metadata.openclaw，该 Skills 始终有资格（除非在配置中禁用或被 skills.allowBundled 阻止用于内置 Skills）。\n配置覆盖（~/.openclaw/openclaw.json） 内置/托管 Skills 可以被切换并提供环境变量值：\n{ skills: { entries: { \"nano-banana-pro\": { enabled: true, apiKey: \"GEMINI_KEY_HERE\", env: { GEMINI_API_KEY: \"GEMINI_KEY_HERE\", }, config: { endpoint: \"https://example.invalid\", model: \"nano-pro\", }, }, peekaboo: { enabled: true }, sag: { enabled: false }, }, }, } 注意：如果 Skills 名称包含连字符，请用引号括起键名（JSON5 允许带引号的键名）。\n配置键默认匹配 Skills 名称。如果 Skills 定义了 metadata.openclaw.skillKey，请在 skills.entries 下使用该键。\n规则：\nenabled: false 禁用该 Skills，即使它是内置/已安装的。 env：仅在变量在进程中尚未设置时注入。 apiKey：为声明 metadata.openclaw.primaryEnv 的 Skills 提供的便捷字段。 config：用于自定义单 Skills 字段的可选容器；自定义键必须放在这里。 allowBundled：可选的仅用于内置 Skills 的白名单。如果设置，只有列表中的内置 Skills 才有资格（托管/工作区 Skills 不受影响）。 环境变量注入（每次智能体运行） 当智能体运行开始时，OpenClaw：\n读取 Skills 元数据。 将任何 skills.entries..env 或 skills.entries..apiKey 应用到 process.env。 使用有资格的 Skills 构建系统提示词。 在运行结束后恢复原始环境。 这是限定于智能体运行范围内的，不是全局 shell 环境。\n会话快照（性能） OpenClaw 在会话开始时对有资格的 Skills 进行快照，并在同一会话的后续轮次中重用该列表。对 Skills 或配置的更改在下一个新会话中生效。\n当 Skills 监视器启用或出现新的有资格的远程节点时，Skills 也可以在会话中刷新（见下文）。将此视为热重载：刷新后的列表会在下一个智能体轮次被获取。\n远程 macOS 节点（Linux Gateway 网关） 如果 Gateway 网关运行在 Linux 上但连接了一个允许 system.run 的 macOS 节点（Exec 批准安全设置未设为 deny），当所需的二进制文件存在于该节点上时，OpenClaw 可以将仅限 macOS 的 Skills 视为有资格。智能体应通过 nodes 工具（通常是 nodes.run）执行这些 Skills。\n这依赖于节点报告其命令支持以及通过 system.run 进行的二进制文件探测。如果 macOS 节点稍后离线，Skills 仍然可见；调用可能会失败，直到节点重新连接。\nSkills 监视器（自动刷新） 默认情况下，OpenClaw 监视 Skills 文件夹，并在 SKILL.md 文件更改时更新 Skills 快照。在 skills.load 下配置：\n{ skills: { load: { watch: true, watchDebounceMs: 250, }, }, } Token 影响（Skills 列表） 当 Skills 有资格时，OpenClaw 将可用 Skills 的紧凑 XML 列表注入到系统提示词中（通过 pi-coding-agent 中的 formatSkillsForPrompt）。成本是确定性的：\n基础开销（仅当 ≥1 个 Skills 时）： 195 字符。 每个 Skills： 97 字符 + XML 转义的 、 和 值的长度。 公式（字符）：\ntotal = 195 + Σ (97 + len(name_escaped) + len(description_escaped) + len(location_escaped)) 注意事项：\nXML 转义将 \u0026 \u003c \u003e \" ' 扩展为实体（\u0026amp;、\u0026lt; 等），增加长度。 Token 数量因模型分词器而异。粗略的 OpenAI 风格估计是 ~4 字符/token，所以每个 Skills 97 字符 ≈ 24 token 加上你的实际字段长度。 托管 Skills 生命周期 OpenClaw 作为安装的一部分（npm 包或 OpenClaw.app）发布一组基线 Skills 作为内置 Skills。~/.openclaw/skills 用于本地覆盖（例如，在不更改内置副本的情况下固定/修补 Skills）。工作区 Skills 由用户拥有，在名称冲突时覆盖两者。\n配置参考 参见 Skills 配置了解完整的配置 schema。\n寻找更多 Skills？ 浏览 https://clawhub.com。\n",
+  "wordCount" : "665",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/tools/skills/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Skills（OpenClaw）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%bd%8d%e7%bd%ae%e5%92%8c%e4%bc%98%e5%85%88%e7%ba%a7" aria-label="位置和优先级">位置和优先级</a></li>
+                <li>
+                    <a href="#%e5%8d%95%e6%99%ba%e8%83%bd%e4%bd%93-vs-%e5%85%b1%e4%ba%ab-skills" aria-label="单智能体 vs 共享 Skills">单智能体 vs 共享 Skills</a></li>
+                <li>
+                    <a href="#%e6%8f%92%e4%bb%b6--skills" aria-label="插件 &#43; Skills">插件 + Skills</a></li>
+                <li>
+                    <a href="#clawhub%e5%ae%89%e8%a3%85--%e5%90%8c%e6%ad%a5" aria-label="ClawHub（安装 &#43; 同步）">ClawHub（安装 + 同步）</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="安全注意事项">安全注意事项</a></li>
+                <li>
+                    <a href="#%e6%a0%bc%e5%bc%8fagentskills--pi-%e5%85%bc%e5%ae%b9" aria-label="格式（AgentSkills &#43; Pi 兼容）">格式（AgentSkills + Pi 兼容）</a></li>
+                <li>
+                    <a href="#%e9%97%a8%e6%8e%a7%e5%8a%a0%e8%bd%bd%e6%97%b6%e8%bf%87%e6%bb%a4" aria-label="门控（加载时过滤）">门控（加载时过滤）</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e8%a6%86%e7%9b%96openclawopenclawjson" aria-label="配置覆盖（~/.openclaw/openclaw.json）">配置覆盖（~/.openclaw/openclaw.json）</a></li>
+                <li>
+                    <a href="#%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f%e6%b3%a8%e5%85%a5%e6%af%8f%e6%ac%a1%e6%99%ba%e8%83%bd%e4%bd%93%e8%bf%90%e8%a1%8c" aria-label="环境变量注入（每次智能体运行）">环境变量注入（每次智能体运行）</a></li>
+                <li>
+                    <a href="#%e4%bc%9a%e8%af%9d%e5%bf%ab%e7%85%a7%e6%80%a7%e8%83%bd" aria-label="会话快照（性能）">会话快照（性能）</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b-macos-%e8%8a%82%e7%82%b9linux-gateway-%e7%bd%91%e5%85%b3" aria-label="远程 macOS 节点（Linux Gateway 网关）">远程 macOS 节点（Linux Gateway 网关）</a></li>
+                <li>
+                    <a href="#skills-%e7%9b%91%e8%a7%86%e5%99%a8%e8%87%aa%e5%8a%a8%e5%88%b7%e6%96%b0" aria-label="Skills 监视器（自动刷新）">Skills 监视器（自动刷新）</a></li>
+                <li>
+                    <a href="#token-%e5%bd%b1%e5%93%8dskills-%e5%88%97%e8%a1%a8" aria-label="Token 影响（Skills 列表）">Token 影响（Skills 列表）</a></li>
+                <li>
+                    <a href="#%e6%89%98%e7%ae%a1-skills-%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f" aria-label="托管 Skills 生命周期">托管 Skills 生命周期</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e5%8f%82%e8%80%83" aria-label="配置参考">配置参考</a></li>
+                <li>
+                    <a href="#%e5%af%bb%e6%89%be%e6%9b%b4%e5%a4%9a-skills" aria-label="寻找更多 Skills？">寻找更多 Skills？</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 使用<strong>兼容 <a href="https://agentskills.io">AgentSkills</a></strong> 的 Skills 文件夹来教智能体如何使用工具。每个 Skills 是一个包含带有 YAML frontmatter 和说明的 <code>SKILL.md</code> 的目录。OpenClaw 加载<strong>内置 Skills</strong> 以及可选的本地覆盖，并在加载时根据环境、配置和二进制文件存在情况进行过滤。</p>
+<h2 id="位置和优先级">位置和优先级<a hidden class="anchor" aria-hidden="true" href="#位置和优先级">#</a></h2>
+<p>Skills 从<strong>三个</strong>位置加载：</p>
+<ol>
+<li><strong>内置 Skills</strong>：随安装包一起发布（npm 包或 OpenClaw.app）</li>
+<li><strong>托管/本地 Skills</strong>：<code>~/.openclaw/skills</code></li>
+<li><strong>工作区 Skills</strong>：<code>&lt;workspace&gt;/skills</code></li>
+</ol>
+<p>如果 Skills 名称冲突，优先级为：</p>
+<p><code>&lt;workspace&gt;/skills</code>（最高）→ <code>~/.openclaw/skills</code> → 内置 Skills（最低）</p>
+<p>此外，你可以通过 <code>~/.openclaw/openclaw.json</code> 中的 <code>skills.load.extraDirs</code> 配置额外的 Skills 文件夹（最低优先级）。</p>
+<h2 id="单智能体-vs-共享-skills">单智能体 vs 共享 Skills<a hidden class="anchor" aria-hidden="true" href="#单智能体-vs-共享-skills">#</a></h2>
+<p>在<strong>多智能体</strong>设置中，每个智能体有自己的工作区。这意味着：</p>
+<ul>
+<li><strong>单智能体 Skills</strong> 位于 <code>&lt;workspace&gt;/skills</code> 中，仅供该智能体使用。</li>
+<li><strong>共享 Skills</strong> 位于 <code>~/.openclaw/skills</code>（托管/本地），对同一机器上的<strong>所有智能体</strong>可见。</li>
+<li>如果你想要多个智能体使用一个通用的 Skills 包，也可以通过 <code>skills.load.extraDirs</code>（最低优先级）添加<strong>共享文件夹</strong>。</li>
+</ul>
+<p>如果同一个 Skills 名称存在于多个位置，将应用通常的优先级规则：工作区优先，然后是托管/本地，最后是内置。</p>
+<h2 id="插件--skills">插件 + Skills<a hidden class="anchor" aria-hidden="true" href="#插件--skills">#</a></h2>
+<p>插件可以通过在 <code>openclaw.plugin.json</code> 中列出 <code>skills</code> 目录（相对于插件根目录的路径）来发布自己的 Skills。插件 Skills 在插件启用时加载，并参与正常的 Skills 优先级规则。你可以通过插件配置条目上的 <code>metadata.openclaw.requires.config</code> 对它们进行门控。参见<a href="/tools/plugin">插件</a>了解发现/配置，以及<a href="/tools">工具</a>了解这些 Skills 所教授的工具接口。</p>
+<h2 id="clawhub安装--同步">ClawHub（安装 + 同步）<a hidden class="anchor" aria-hidden="true" href="#clawhub安装--同步">#</a></h2>
+<p>ClawHub 是 OpenClaw 的公共 Skills 注册表。浏览 <a href="https://clawhub.com">https://clawhub.com</a>。使用它来发现、安装、更新和备份 Skills。完整指南：<a href="/tools/clawhub">ClawHub</a>。</p>
+<p>常见流程：</p>
+<ul>
+<li>将 Skills 安装到你的工作区：
+<ul>
+<li><code>clawhub install &lt;skill-slug&gt;</code></li>
+</ul>
+</li>
+<li>更新所有已安装的 Skills：
+<ul>
+<li><code>clawhub update --all</code></li>
+</ul>
+</li>
+<li>同步（扫描 + 发布更新）：
+<ul>
+<li><code>clawhub sync --all</code></li>
+</ul>
+</li>
+</ul>
+<p>默认情况下，<code>clawhub</code> 安装到当前工作目录下的 <code>./skills</code>（或回退到配置的 OpenClaw 工作区）。OpenClaw 在下一个会话中将其识别为 <code>&lt;workspace&gt;/skills</code>。</p>
+<h2 id="安全注意事项">安全注意事项<a hidden class="anchor" aria-hidden="true" href="#安全注意事项">#</a></h2>
+<ul>
+<li>将第三方 Skills 视为<strong>不受信任的代码</strong>。启用前请阅读它们。</li>
+<li>对于不受信任的输入和高风险工具，优先使用沙箱隔离运行。参见<a href="/gateway/sandboxing">沙箱隔离</a>。</li>
+<li><code>skills.entries.*.env</code> 和 <code>skills.entries.*.apiKey</code> 为该智能体轮次将秘密注入到<strong>宿主机</strong>进程中（而非沙箱）。将秘密保持在提示词和日志之外。</li>
+<li>有关更广泛的威胁模型和检查清单，参见<a href="/gateway/security">安全性</a>。</li>
+</ul>
+<h2 id="格式agentskills--pi-兼容">格式（AgentSkills + Pi 兼容）<a hidden class="anchor" aria-hidden="true" href="#格式agentskills--pi-兼容">#</a></h2>
+<p><code>SKILL.md</code> 必须至少包含：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">name: nano-banana-pro
+</span></span><span class="line"><span class="cl">description: Generate or edit images via Gemini 3 Pro Image
+</span></span><span class="line"><span class="cl">---
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>我们遵循 AgentSkills 规范的布局/意图。</li>
+<li>内嵌智能体使用的解析器仅支持<strong>单行</strong> frontmatter 键。</li>
+<li><code>metadata</code> 应该是<strong>单行 JSON 对象</strong>。</li>
+<li>在说明中使用 <code>{baseDir}</code> 来引用 Skills 文件夹路径。</li>
+<li>可选的 frontmatter 键：
+<ul>
+<li>
+<p><code>homepage</code> — 在 macOS Skills UI 中显示为&quot;Website&quot;的 URL（也支持通过 <code>metadata.openclaw.homepage</code>）。</p>
+</li>
+<li>
+<p><code>user-invocable</code> — <code>true|false</code>（默认：<code>true</code>）。当为 <code>true</code> 时，Skills 作为用户斜杠命令暴露。</p>
+</li>
+<li>
+<p><code>disable-model-invocation</code> — <code>true|false</code>（默认：<code>false</code>）。当为 <code>true</code> 时，Skills 从模型提示词中排除（仍可通过用户调用使用）。</p>
+</li>
+<li>
+<p><code>command-dispatch</code> — <code>tool</code>（可选）。当设置为 <code>tool</code> 时，斜杠命令绕过模型直接调度到工具。</p>
+</li>
+<li>
+<p><code>command-tool</code> — 当设置 <code>command-dispatch: tool</code> 时要调用的工具名称。</p>
+</li>
+<li>
+<p><code>command-arg-mode</code> — <code>raw</code>（默认）。对于工具调度，将原始参数字符串转发到工具（无核心解析）。</p>
+<p>工具使用以下参数调用：
+<code>{ command: &quot;&lt;raw args&gt;&quot;, commandName: &quot;&lt;slash command&gt;&quot;, skillName: &quot;&lt;skill name&gt;&quot; }</code>。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="门控加载时过滤">门控（加载时过滤）<a hidden class="anchor" aria-hidden="true" href="#门控加载时过滤">#</a></h2>
+<p>OpenClaw 使用 <code>metadata</code>（单行 JSON）<strong>在加载时过滤 Skills</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">name: nano-banana-pro
+</span></span><span class="line"><span class="cl">description: Generate or edit images via Gemini 3 Pro Image
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    &#34;openclaw&#34;:
+</span></span><span class="line"><span class="cl">      {
+</span></span><span class="line"><span class="cl">        &#34;requires&#34;: { &#34;bins&#34;: [&#34;uv&#34;], &#34;env&#34;: [&#34;GEMINI_API_KEY&#34;], &#34;config&#34;: [&#34;browser.enabled&#34;] },
+</span></span><span class="line"><span class="cl">        &#34;primaryEnv&#34;: &#34;GEMINI_API_KEY&#34;,
+</span></span><span class="line"><span class="cl">      },
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">---
+</span></span></code></pre></div><p><code>metadata.openclaw</code> 下的字段：</p>
+<ul>
+<li><code>always: true</code> — 始终包含该 Skills（跳过其他门控）。</li>
+<li><code>emoji</code> — macOS Skills UI 使用的可选表情符号。</li>
+<li><code>homepage</code> — 在 macOS Skills UI 中显示为&quot;Website&quot;的可选 URL。</li>
+<li><code>os</code> — 可选的平台列表（<code>darwin</code>、<code>linux</code>、<code>win32</code>）。如果设置，该 Skills 仅在这些操作系统上有资格。</li>
+<li><code>requires.bins</code> — 列表；每个都必须存在于 <code>PATH</code> 中。</li>
+<li><code>requires.anyBins</code> — 列表；至少一个必须存在于 <code>PATH</code> 中。</li>
+<li><code>requires.env</code> — 列表；环境变量必须存在<strong>或</strong>在配置中提供。</li>
+<li><code>requires.config</code> — <code>openclaw.json</code> 路径列表，必须为真值。</li>
+<li><code>primaryEnv</code> — 与 <code>skills.entries.&lt;name&gt;.apiKey</code> 关联的环境变量名称。</li>
+<li><code>install</code> — macOS Skills UI 使用的可选安装器规格数组（brew/node/go/uv/download）。</li>
+</ul>
+<p>沙箱隔离注意事项：</p>
+<ul>
+<li><code>requires.bins</code> 在 Skills 加载时在<strong>宿主机</strong>上检查。</li>
+<li>如果智能体处于沙箱隔离状态，二进制文件也必须存在于<strong>容器内部</strong>。通过 <code>agents.defaults.sandbox.docker.setupCommand</code>（或自定义镜像）安装它。<code>setupCommand</code> 在容器创建后运行一次。包安装还需要网络出口、可写的根文件系统和沙箱中的 root 用户。示例：<code>summarize</code> Skills（<code>skills/summarize/SKILL.md</code>）需要 <code>summarize</code> CLI 在沙箱容器中才能运行。</li>
+</ul>
+<p>安装器示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">name: gemini
+</span></span><span class="line"><span class="cl">description: Use Gemini CLI for coding assistance and Google search lookups.
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    &#34;openclaw&#34;:
+</span></span><span class="line"><span class="cl">      {
+</span></span><span class="line"><span class="cl">        &#34;emoji&#34;: &#34;♊️&#34;,
+</span></span><span class="line"><span class="cl">        &#34;requires&#34;: { &#34;bins&#34;: [&#34;gemini&#34;] },
+</span></span><span class="line"><span class="cl">        &#34;install&#34;:
+</span></span><span class="line"><span class="cl">          [
+</span></span><span class="line"><span class="cl">            {
+</span></span><span class="line"><span class="cl">              &#34;id&#34;: &#34;brew&#34;,
+</span></span><span class="line"><span class="cl">              &#34;kind&#34;: &#34;brew&#34;,
+</span></span><span class="line"><span class="cl">              &#34;formula&#34;: &#34;gemini-cli&#34;,
+</span></span><span class="line"><span class="cl">              &#34;bins&#34;: [&#34;gemini&#34;],
+</span></span><span class="line"><span class="cl">              &#34;label&#34;: &#34;Install Gemini CLI (brew)&#34;,
+</span></span><span class="line"><span class="cl">            },
+</span></span><span class="line"><span class="cl">          ],
+</span></span><span class="line"><span class="cl">      },
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">---
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>如果列出了多个安装器，Gateway 网关会选择<strong>单个</strong>首选选项（可用时选择 brew，否则选择 node）。</li>
+<li>如果所有安装器都是 <code>download</code>，OpenClaw 会列出每个条目，以便你查看可用的构件。</li>
+<li>安装器规格可以包含 <code>os: [&quot;darwin&quot;|&quot;linux&quot;|&quot;win32&quot;]</code> 按平台过滤选项。</li>
+<li>Node 安装遵循 <code>openclaw.json</code> 中的 <code>skills.install.nodeManager</code>（默认：npm；选项：npm/pnpm/yarn/bun）。这仅影响 <strong>Skills 安装</strong>；Gateway 网关运行时应仍为 Node（不推荐 Bun 用于 WhatsApp/Telegram）。</li>
+<li>Go 安装：如果缺少 <code>go</code> 且 <code>brew</code> 可用，Gateway 网关会首先通过 Homebrew 安装 Go，并在可能时将 <code>GOBIN</code> 设置为 Homebrew 的 <code>bin</code>。</li>
+<li>Download 安装：<code>url</code>（必填）、<code>archive</code>（<code>tar.gz</code> | <code>tar.bz2</code> | <code>zip</code>）、<code>extract</code>（默认：检测到归档时自动）、<code>stripComponents</code>、<code>targetDir</code>（默认：<code>~/.openclaw/tools/&lt;skillKey&gt;</code>）。</li>
+</ul>
+<p>如果没有 <code>metadata.openclaw</code>，该 Skills 始终有资格（除非在配置中禁用或被 <code>skills.allowBundled</code> 阻止用于内置 Skills）。</p>
+<h2 id="配置覆盖openclawopenclawjson">配置覆盖（<code>~/.openclaw/openclaw.json</code>）<a hidden class="anchor" aria-hidden="true" href="#配置覆盖openclawopenclawjson">#</a></h2>
+<p>内置/托管 Skills 可以被切换并提供环境变量值：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  skills: {
+    entries: {
+      &#34;nano-banana-pro&#34;: {
+        enabled: true,
+        apiKey: &#34;GEMINI_KEY_HERE&#34;,
+        env: {
+          GEMINI_API_KEY: &#34;GEMINI_KEY_HERE&#34;,
+        },
+        config: {
+          endpoint: &#34;https://example.invalid&#34;,
+          model: &#34;nano-pro&#34;,
+        },
+      },
+      peekaboo: { enabled: true },
+      sag: { enabled: false },
+    },
+  },
+}
+</code></pre><p>注意：如果 Skills 名称包含连字符，请用引号括起键名（JSON5 允许带引号的键名）。</p>
+<p>配置键默认匹配 <strong>Skills 名称</strong>。如果 Skills 定义了 <code>metadata.openclaw.skillKey</code>，请在 <code>skills.entries</code> 下使用该键。</p>
+<p>规则：</p>
+<ul>
+<li><code>enabled: false</code> 禁用该 Skills，即使它是内置/已安装的。</li>
+<li><code>env</code>：<strong>仅在</strong>变量在进程中尚未设置时注入。</li>
+<li><code>apiKey</code>：为声明 <code>metadata.openclaw.primaryEnv</code> 的 Skills 提供的便捷字段。</li>
+<li><code>config</code>：用于自定义单 Skills 字段的可选容器；自定义键必须放在这里。</li>
+<li><code>allowBundled</code>：可选的仅用于<strong>内置</strong> Skills 的白名单。如果设置，只有列表中的内置 Skills 才有资格（托管/工作区 Skills 不受影响）。</li>
+</ul>
+<h2 id="环境变量注入每次智能体运行">环境变量注入（每次智能体运行）<a hidden class="anchor" aria-hidden="true" href="#环境变量注入每次智能体运行">#</a></h2>
+<p>当智能体运行开始时，OpenClaw：</p>
+<ol>
+<li>读取 Skills 元数据。</li>
+<li>将任何 <code>skills.entries.&lt;key&gt;.env</code> 或 <code>skills.entries.&lt;key&gt;.apiKey</code> 应用到 <code>process.env</code>。</li>
+<li>使用<strong>有资格的</strong> Skills 构建系统提示词。</li>
+<li>在运行结束后恢复原始环境。</li>
+</ol>
+<p>这是<strong>限定于智能体运行范围内的</strong>，不是全局 shell 环境。</p>
+<h2 id="会话快照性能">会话快照（性能）<a hidden class="anchor" aria-hidden="true" href="#会话快照性能">#</a></h2>
+<p>OpenClaw 在<strong>会话开始时</strong>对有资格的 Skills 进行快照，并在同一会话的后续轮次中重用该列表。对 Skills 或配置的更改在下一个新会话中生效。</p>
+<p>当 Skills 监视器启用或出现新的有资格的远程节点时，Skills 也可以在会话中刷新（见下文）。将此视为<strong>热重载</strong>：刷新后的列表会在下一个智能体轮次被获取。</p>
+<h2 id="远程-macos-节点linux-gateway-网关">远程 macOS 节点（Linux Gateway 网关）<a hidden class="anchor" aria-hidden="true" href="#远程-macos-节点linux-gateway-网关">#</a></h2>
+<p>如果 Gateway 网关运行在 Linux 上但连接了一个<strong>允许 <code>system.run</code> 的 macOS 节点</strong>（Exec 批准安全设置未设为 <code>deny</code>），当所需的二进制文件存在于该节点上时，OpenClaw 可以将仅限 macOS 的 Skills 视为有资格。智能体应通过 <code>nodes</code> 工具（通常是 <code>nodes.run</code>）执行这些 Skills。</p>
+<p>这依赖于节点报告其命令支持以及通过 <code>system.run</code> 进行的二进制文件探测。如果 macOS 节点稍后离线，Skills 仍然可见；调用可能会失败，直到节点重新连接。</p>
+<h2 id="skills-监视器自动刷新">Skills 监视器（自动刷新）<a hidden class="anchor" aria-hidden="true" href="#skills-监视器自动刷新">#</a></h2>
+<p>默认情况下，OpenClaw 监视 Skills 文件夹，并在 <code>SKILL.md</code> 文件更改时更新 Skills 快照。在 <code>skills.load</code> 下配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  skills: {
+    load: {
+      watch: true,
+      watchDebounceMs: 250,
+    },
+  },
+}
+</code></pre><h2 id="token-影响skills-列表">Token 影响（Skills 列表）<a hidden class="anchor" aria-hidden="true" href="#token-影响skills-列表">#</a></h2>
+<p>当 Skills 有资格时，OpenClaw 将可用 Skills 的紧凑 XML 列表注入到系统提示词中（通过 <code>pi-coding-agent</code> 中的 <code>formatSkillsForPrompt</code>）。成本是确定性的：</p>
+<ul>
+<li><strong>基础开销（仅当 ≥1 个 Skills 时）：</strong> 195 字符。</li>
+<li><strong>每个 Skills：</strong> 97 字符 + XML 转义的 <code>&lt;name&gt;</code>、<code>&lt;description&gt;</code> 和 <code>&lt;location&gt;</code> 值的长度。</li>
+</ul>
+<p>公式（字符）：</p>
+<pre tabindex="0"><code>total = 195 + Σ (97 + len(name_escaped) + len(description_escaped) + len(location_escaped))
+</code></pre><p>注意事项：</p>
+<ul>
+<li>XML 转义将 <code>&amp; &lt; &gt; &quot; '</code> 扩展为实体（<code>&amp;amp;</code>、<code>&amp;lt;</code> 等），增加长度。</li>
+<li>Token 数量因模型分词器而异。粗略的 OpenAI 风格估计是 ~4 字符/token，所以<strong>每个 Skills 97 字符 ≈ 24 token</strong> 加上你的实际字段长度。</li>
+</ul>
+<h2 id="托管-skills-生命周期">托管 Skills 生命周期<a hidden class="anchor" aria-hidden="true" href="#托管-skills-生命周期">#</a></h2>
+<p>OpenClaw 作为安装的一部分（npm 包或 OpenClaw.app）发布一组基线 Skills 作为<strong>内置 Skills</strong>。<code>~/.openclaw/skills</code> 用于本地覆盖（例如，在不更改内置副本的情况下固定/修补 Skills）。工作区 Skills 由用户拥有，在名称冲突时覆盖两者。</p>
+<h2 id="配置参考">配置参考<a hidden class="anchor" aria-hidden="true" href="#配置参考">#</a></h2>
+<p>参见 <a href="/tools/skills-config">Skills 配置</a>了解完整的配置 schema。</p>
+<h2 id="寻找更多-skills">寻找更多 Skills？<a hidden class="anchor" aria-hidden="true" href="#寻找更多-skills">#</a></h2>
+<p>浏览 <a href="https://clawhub.com">https://clawhub.com</a>。</p>
+<hr>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/platforms/mac/skills/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Skills（macOS）</span>
+  </a>
+  <a class="next" href="/openclaw/channels/slack/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Slack</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

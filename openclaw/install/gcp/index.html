@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标
+使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，具有持久状态、内置二进制文件和安全的重启行为。
+如果你想要&quot;OpenClaw 24/7 大约 $5-12/月&quot;，这是在 Google Cloud 上的可靠设置。
+价格因机器类型和区域而异；选择适合你工作负载的最小 VM，如果遇到 OOM 则扩容。
+我们在做什么（简单说明）？
+
+创建 GCP 项目并启用计费
+创建 Compute Engine VM
+安装 Docker（隔离的应用运行时）
+在 Docker 中启动 OpenClaw Gateway 网关
+在主机上持久化 ~/.openclaw &#43; ~/.openclaw/workspace（重启/重建后仍保留）
+通过 SSH 隧道从你的笔记本电脑访问控制 UI
+
+Gateway 网关可以通过以下方式访问：
+
+从你的笔记本电脑进行 SSH 端口转发
+如果你自己管理防火墙和令牌，可以直接暴露端口
+
+本指南使用 GCP Compute Engine 上的 Debian。
+Ubuntu 也可以；请相应地映射软件包。
+有关通用 Docker 流程，请参阅 Docker。
+
+快速路径（有经验的运维人员）
+
+创建 GCP 项目 &#43; 启用 Compute Engine API
+创建 Compute Engine VM（e2-small，Debian 12，20GB）
+SSH 进入 VM
+安装 Docker
+克隆 OpenClaw 仓库
+创建持久化主机目录
+配置 .env 和 docker-compose.yml
+内置所需二进制文件、构建并启动
+
+
+你需要什么
+
+GCP 账户（e2-micro 符合免费层条件）
+已安装 gcloud CLI（或使用 Cloud Console）
+从你的笔记本电脑 SSH 访问
+对 SSH &#43; 复制/粘贴有基本了解
+约 20-30 分钟
+Docker 和 Docker Compose
+模型认证凭证
+可选的提供商凭证
+
+WhatsApp QR
+Telegram bot token
+Gmail OAuth
+
+
+
+
+1) 安装 gcloud CLI（或使用 Console）
+选项 A：gcloud CLI（推荐用于自动化）">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/install/gcp/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/install/gcp/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/install/gcp/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南）">
+  <meta property="og:description" content="目标 使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，具有持久状态、内置二进制文件和安全的重启行为。
+如果你想要&#34;OpenClaw 24/7 大约 $5-12/月&#34;，这是在 Google Cloud 上的可靠设置。 价格因机器类型和区域而异；选择适合你工作负载的最小 VM，如果遇到 OOM 则扩容。
+我们在做什么（简单说明）？ 创建 GCP 项目并启用计费 创建 Compute Engine VM 安装 Docker（隔离的应用运行时） 在 Docker 中启动 OpenClaw Gateway 网关 在主机上持久化 ~/.openclaw &#43; ~/.openclaw/workspace（重启/重建后仍保留） 通过 SSH 隧道从你的笔记本电脑访问控制 UI Gateway 网关可以通过以下方式访问：
+从你的笔记本电脑进行 SSH 端口转发 如果你自己管理防火墙和令牌，可以直接暴露端口 本指南使用 GCP Compute Engine 上的 Debian。 Ubuntu 也可以；请相应地映射软件包。 有关通用 Docker 流程，请参阅 Docker。
+快速路径（有经验的运维人员） 创建 GCP 项目 &#43; 启用 Compute Engine API 创建 Compute Engine VM（e2-small，Debian 12，20GB） SSH 进入 VM 安装 Docker 克隆 OpenClaw 仓库 创建持久化主机目录 配置 .env 和 docker-compose.yml 内置所需二进制文件、构建并启动 你需要什么 GCP 账户（e2-micro 符合免费层条件） 已安装 gcloud CLI（或使用 Cloud Console） 从你的笔记本电脑 SSH 访问 对 SSH &#43; 复制/粘贴有基本了解 约 20-30 分钟 Docker 和 Docker Compose 模型认证凭证 可选的提供商凭证 WhatsApp QR Telegram bot token Gmail OAuth 1) 安装 gcloud CLI（或使用 Console） 选项 A：gcloud CLI（推荐用于自动化）">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南）">
+<meta name="twitter:description" content="目标
+使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，具有持久状态、内置二进制文件和安全的重启行为。
+如果你想要&quot;OpenClaw 24/7 大约 $5-12/月&quot;，这是在 Google Cloud 上的可靠设置。
+价格因机器类型和区域而异；选择适合你工作负载的最小 VM，如果遇到 OOM 则扩容。
+我们在做什么（简单说明）？
+
+创建 GCP 项目并启用计费
+创建 Compute Engine VM
+安装 Docker（隔离的应用运行时）
+在 Docker 中启动 OpenClaw Gateway 网关
+在主机上持久化 ~/.openclaw &#43; ~/.openclaw/workspace（重启/重建后仍保留）
+通过 SSH 隧道从你的笔记本电脑访问控制 UI
+
+Gateway 网关可以通过以下方式访问：
+
+从你的笔记本电脑进行 SSH 端口转发
+如果你自己管理防火墙和令牌，可以直接暴露端口
+
+本指南使用 GCP Compute Engine 上的 Debian。
+Ubuntu 也可以；请相应地映射软件包。
+有关通用 Docker 流程，请参阅 Docker。
+
+快速路径（有经验的运维人员）
+
+创建 GCP 项目 &#43; 启用 Compute Engine API
+创建 Compute Engine VM（e2-small，Debian 12，20GB）
+SSH 进入 VM
+安装 Docker
+克隆 OpenClaw 仓库
+创建持久化主机目录
+配置 .env 和 docker-compose.yml
+内置所需二进制文件、构建并启动
+
+
+你需要什么
+
+GCP 账户（e2-micro 符合免费层条件）
+已安装 gcloud CLI（或使用 Cloud Console）
+从你的笔记本电脑 SSH 访问
+对 SSH &#43; 复制/粘贴有基本了解
+约 20-30 分钟
+Docker 和 Docker Compose
+模型认证凭证
+可选的提供商凭证
+
+WhatsApp QR
+Telegram bot token
+Gmail OAuth
+
+
+
+
+1) 安装 gcloud CLI（或使用 Console）
+选项 A：gcloud CLI（推荐用于自动化）">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南）",
+      "item": "/openclaw/install/gcp/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南）",
+  "name": "在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南）",
+  "description": "目标 使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，具有持久状态、内置二进制文件和安全的重启行为。\n如果你想要\u0026quot;OpenClaw 24/7 大约 $5-12/月\u0026quot;，这是在 Google Cloud 上的可靠设置。 价格因机器类型和区域而异；选择适合你工作负载的最小 VM，如果遇到 OOM 则扩容。\n我们在做什么（简单说明）？ 创建 GCP 项目并启用计费 创建 Compute Engine VM 安装 Docker（隔离的应用运行时） 在 Docker 中启动 OpenClaw Gateway 网关 在主机上持久化 ~/.openclaw + ~/.openclaw/workspace（重启/重建后仍保留） 通过 SSH 隧道从你的笔记本电脑访问控制 UI Gateway 网关可以通过以下方式访问：\n从你的笔记本电脑进行 SSH 端口转发 如果你自己管理防火墙和令牌，可以直接暴露端口 本指南使用 GCP Compute Engine 上的 Debian。 Ubuntu 也可以；请相应地映射软件包。 有关通用 Docker 流程，请参阅 Docker。\n快速路径（有经验的运维人员） 创建 GCP 项目 + 启用 Compute Engine API 创建 Compute Engine VM（e2-small，Debian 12，20GB） SSH 进入 VM 安装 Docker 克隆 OpenClaw 仓库 创建持久化主机目录 配置 .env 和 docker-compose.yml 内置所需二进制文件、构建并启动 你需要什么 GCP 账户（e2-micro 符合免费层条件） 已安装 gcloud CLI（或使用 Cloud Console） 从你的笔记本电脑 SSH 访问 对 SSH + 复制/粘贴有基本了解 约 20-30 分钟 Docker 和 Docker Compose 模型认证凭证 可选的提供商凭证 WhatsApp QR Telegram bot token Gmail OAuth 1) 安装 gcloud CLI（或使用 Console） 选项 A：gcloud CLI（推荐用于自动化）\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标 使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，具有持久状态、内置二进制文件和安全的重启行为。\n如果你想要\"OpenClaw 24/7 大约 $5-12/月\"，这是在 Google Cloud 上的可靠设置。 价格因机器类型和区域而异；选择适合你工作负载的最小 VM，如果遇到 OOM 则扩容。\n我们在做什么（简单说明）？ 创建 GCP 项目并启用计费 创建 Compute Engine VM 安装 Docker（隔离的应用运行时） 在 Docker 中启动 OpenClaw Gateway 网关 在主机上持久化 ~/.openclaw + ~/.openclaw/workspace（重启/重建后仍保留） 通过 SSH 隧道从你的笔记本电脑访问控制 UI Gateway 网关可以通过以下方式访问：\n从你的笔记本电脑进行 SSH 端口转发 如果你自己管理防火墙和令牌，可以直接暴露端口 本指南使用 GCP Compute Engine 上的 Debian。 Ubuntu 也可以；请相应地映射软件包。 有关通用 Docker 流程，请参阅 Docker。\n快速路径（有经验的运维人员） 创建 GCP 项目 + 启用 Compute Engine API 创建 Compute Engine VM（e2-small，Debian 12，20GB） SSH 进入 VM 安装 Docker 克隆 OpenClaw 仓库 创建持久化主机目录 配置 .env 和 docker-compose.yml 内置所需二进制文件、构建并启动 你需要什么 GCP 账户（e2-micro 符合免费层条件） 已安装 gcloud CLI（或使用 Cloud Console） 从你的笔记本电脑 SSH 访问 对 SSH + 复制/粘贴有基本了解 约 20-30 分钟 Docker 和 Docker Compose 模型认证凭证 可选的提供商凭证 WhatsApp QR Telegram bot token Gmail OAuth 1) 安装 gcloud CLI（或使用 Console） 选项 A：gcloud CLI（推荐用于自动化）\n从 https://cloud.google.com/sdk/docs/install 安装\n初始化并认证：\ngcloud init gcloud auth login 选项 B：Cloud Console\n所有步骤都可以通过 https://console.cloud.google.com 的 Web UI 完成\n2) 创建 GCP 项目 CLI：\ngcloud projects create my-openclaw-project --name=\"OpenClaw Gateway\" gcloud config set project my-openclaw-project 在 https://console.cloud.google.com/billing 启用计费（Compute Engine 必需）。\n启用 Compute Engine API：\ngcloud services enable compute.googleapis.com Console：\n转到 IAM \u0026 Admin \u003e Create Project 命名并创建 为项目启用计费 导航到 APIs \u0026 Services \u003e Enable APIs \u003e 搜索 “Compute Engine API” \u003e Enable 3) 创建 VM 机器类型：\n类型 配置 成本 说明 e2-small 2 vCPU，2GB RAM ~$12/月 推荐 e2-micro 2 vCPU（共享），1GB RAM 符合免费层 负载下可能 OOM CLI：\ngcloud compute instances create openclaw-gateway \\ --zone=us-central1-a \\ --machine-type=e2-small \\ --boot-disk-size=20GB \\ --image-family=debian-12 \\ --image-project=debian-cloud Console：\n转到 Compute Engine \u003e VM instances \u003e Create instance Name：openclaw-gateway Region：us-central1，Zone：us-central1-a Machine type：e2-small Boot disk：Debian 12，20GB Create 4) SSH 进入 VM CLI：\ngcloud compute ssh openclaw-gateway --zone=us-central1-a Console：\n在 Compute Engine 仪表板中点击 VM 旁边的\"SSH\"按钮。\n注意：VM 创建后 SSH 密钥传播可能需要 1-2 分钟。如果连接被拒绝，请等待并重试。\n5) 安装 Docker（在 VM 上） sudo apt-get update sudo apt-get install -y git curl ca-certificates curl -fsSL https://get.docker.com | sudo sh sudo usermod -aG docker $USER 注销并重新登录以使组更改生效：\nexit 然后重新 SSH 登录：\ngcloud compute ssh openclaw-gateway --zone=us-central1-a 验证：\ndocker --version docker compose version 6) 克隆 OpenClaw 仓库 git clone https://github.com/openclaw/openclaw.git cd openclaw 本指南假设你将构建自定义镜像以保证二进制文件持久化。\n7) 创建持久化主机目录 Docker 容器是临时的。 所有长期状态必须存在于主机上。\nmkdir -p ~/.openclaw mkdir -p ~/.openclaw/workspace 8) 配置环境变量 在仓库根目录创建 .env。\nOPENCLAW_IMAGE=openclaw:latest OPENCLAW_GATEWAY_TOKEN=change-me-now OPENCLAW_GATEWAY_BIND=lan OPENCLAW_GATEWAY_PORT=18789 OPENCLAW_CONFIG_DIR=/home/$USER/.openclaw OPENCLAW_WORKSPACE_DIR=/home/$USER/.openclaw/workspace GOG_KEYRING_PASSWORD=change-me-now XDG_CONFIG_HOME=/home/node/.openclaw 生成强密钥：\nopenssl rand -hex 32 不要提交此文件。\n9) Docker Compose 配置 创建或更新 docker-compose.yml。\nservices: openclaw-gateway: image: ${OPENCLAW_IMAGE} build: . restart: unless-stopped env_file: - .env environment: - HOME=/home/node - NODE_ENV=production - TERM=xterm-256color - OPENCLAW_GATEWAY_BIND=${OPENCLAW_GATEWAY_BIND} - OPENCLAW_GATEWAY_PORT=${OPENCLAW_GATEWAY_PORT} - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN} - GOG_KEYRING_PASSWORD=${GOG_KEYRING_PASSWORD} - XDG_CONFIG_HOME=${XDG_CONFIG_HOME} - PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin volumes: - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace ports: # 推荐：在 VM 上保持 Gateway 网关仅绑定 loopback；通过 SSH 隧道访问。 # 要公开暴露，移除 `127.0.0.1:` 前缀并相应配置防火墙。 - \"127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789\" # 可选：仅当你针对此 VM 运行 iOS/Android 节点并需要 Canvas 主机时。 # 如果你公开暴露此端口，请阅读 /gateway/security 并相应配置防火墙。 # - \"18793:18793\" command: [ \"node\", \"dist/index.js\", \"gateway\", \"--bind\", \"${OPENCLAW_GATEWAY_BIND}\", \"--port\", \"${OPENCLAW_GATEWAY_PORT}\", ] 10) 将所需二进制文件内置到镜像中（关键） 在运行中的容器内安装二进制文件是一个陷阱。 任何在运行时安装的内容在重启后都会丢失。\n所有 Skills 所需的外部二进制文件必须在镜像构建时安装。\n以下示例仅显示三个常见的二进制文件：\ngog 用于 Gmail 访问 goplaces 用于 Google Places wacli 用于 WhatsApp 这些是示例，不是完整列表。 你可以使用相同的模式安装任意数量的二进制文件。\n如果你以后添加依赖额外二进制文件的新 Skills，你必须：\n更新 Dockerfile 重建镜像 重启容器 示例 Dockerfile\nFROM node:22-bookworm RUN apt-get update \u0026\u0026 apt-get install -y socat \u0026\u0026 rm -rf /var/lib/apt/lists/* # 示例二进制文件 1：Gmail CLI RUN curl -L https://github.com/steipete/gog/releases/latest/download/gog_Linux_x86_64.tar.gz \\ | tar -xz -C /usr/local/bin \u0026\u0026 chmod +x /usr/local/bin/gog # 示例二进制文件 2：Google Places CLI RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_Linux_x86_64.tar.gz \\ | tar -xz -C /usr/local/bin \u0026\u0026 chmod +x /usr/local/bin/goplaces # 示例二进制文件 3：WhatsApp CLI RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli_Linux_x86_64.tar.gz \\ | tar -xz -C /usr/local/bin \u0026\u0026 chmod +x /usr/local/bin/wacli # 使用相同的模式在下面添加更多二进制文件 WORKDIR /app COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./ COPY ui/package.json ./ui/package.json COPY scripts ./scripts RUN corepack enable RUN pnpm install --frozen-lockfile COPY . . RUN pnpm build RUN pnpm ui:install RUN pnpm ui:build ENV NODE_ENV=production CMD [\"node\",\"dist/index.js\"] 11) 构建并启动 docker compose build docker compose up -d openclaw-gateway 验证二进制文件：\ndocker compose exec openclaw-gateway which gog docker compose exec openclaw-gateway which goplaces docker compose exec openclaw-gateway which wacli 预期输出：\n/usr/local/bin/gog /usr/local/bin/goplaces /usr/local/bin/wacli 12) 验证 Gateway 网关 docker compose logs -f openclaw-gateway 成功：\n[gateway] listening on ws://0.0.0.0:18789 13) 从你的笔记本电脑访问 创建 SSH 隧道以转发 Gateway 网关端口：\ngcloud compute ssh openclaw-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789 在浏览器中打开：\nhttp://127.0.0.1:18789/\n粘贴你的 Gateway 网关令牌。\n什么持久化在哪里（真实来源） OpenClaw 在 Docker 中运行，但 Docker 不是真实来源。 所有长期状态必须在重启、重建和重启后仍然存在。\n组件 位置 持久化机制 说明 Gateway 网关配置 /home/node/.openclaw/ 主机卷挂载 包括 openclaw.json、令牌 模型认证配置文件 /home/node/.openclaw/ 主机卷挂载 OAuth 令牌、API 密钥 Skill 配置 /home/node/.openclaw/skills/ 主机卷挂载 Skill 级别状态 智能体工作区 /home/node/.openclaw/workspace/ 主机卷挂载 代码和智能体产物 WhatsApp 会话 /home/node/.openclaw/ 主机卷挂载 保留 QR 登录 Gmail 密钥环 /home/node/.openclaw/ 主机卷 + 密码 需要 GOG_KEYRING_PASSWORD 外部二进制文件 /usr/local/bin/ Docker 镜像 必须在构建时内置 Node 运行时 容器文件系统 Docker 镜像 每次镜像构建时重建 OS 包 容器文件系统 Docker 镜像 不要在运行时安装 Docker 容器 临时 可重启 可以安全销毁 更新 在 VM 上更新 OpenClaw：\ncd ~/openclaw git pull docker compose build docker compose up -d 故障排除 SSH 连接被拒绝\nVM 创建后 SSH 密钥传播可能需要 1-2 分钟。等待并重试。\nOS Login 问题\n检查你的 OS Login 配置文件：\ngcloud compute os-login describe-profile 确保你的账户具有所需的 IAM 权限（Compute OS Login 或 Compute OS Admin Login）。\n内存不足（OOM）\n如果使用 e2-micro 并遇到 OOM，升级到 e2-small 或 e2-medium：\n# 首先停止 VM gcloud compute instances stop openclaw-gateway --zone=us-central1-a # 更改机器类型 gcloud compute instances set-machine-type openclaw-gateway \\ --zone=us-central1-a \\ --machine-type=e2-small # 启动 VM gcloud compute instances start openclaw-gateway --zone=us-central1-a 服务账户（安全最佳实践） 对于个人使用，你的默认用户账户就可以。\n对于自动化或 CI/CD 管道，创建具有最小权限的专用服务账户：\n创建服务账户：\ngcloud iam service-accounts create openclaw-deploy \\ --display-name=\"OpenClaw Deployment\" 授予 Compute Instance Admin 角色（或更窄的自定义角色）：\ngcloud projects add-iam-policy-binding my-openclaw-project \\ --member=\"serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com\" \\ --role=\"roles/compute.instanceAdmin.v1\" 避免为自动化使用 Owner 角色。使用最小权限原则。\n参阅 https://cloud.google.com/iam/docs/understanding-roles 了解 IAM 角色详情。\n下一步 设置消息渠道：渠道 将本地设备配对为节点：节点 配置 Gateway 网关：Gateway 网关配置 ",
+  "wordCount" : "845",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/install/gcp/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      在 GCP Compute Engine 上运行 OpenClaw（Docker，生产 VPS 指南）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87" aria-label="目标">目标</a></li>
+                <li>
+                    <a href="#%e6%88%91%e4%bb%ac%e5%9c%a8%e5%81%9a%e4%bb%80%e4%b9%88%e7%ae%80%e5%8d%95%e8%af%b4%e6%98%8e" aria-label="我们在做什么（简单说明）？">我们在做什么（简单说明）？</a></li>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e8%b7%af%e5%be%84%e6%9c%89%e7%bb%8f%e9%aa%8c%e7%9a%84%e8%bf%90%e7%bb%b4%e4%ba%ba%e5%91%98" aria-label="快速路径（有经验的运维人员）">快速路径（有经验的运维人员）</a></li>
+                <li>
+                    <a href="#%e4%bd%a0%e9%9c%80%e8%a6%81%e4%bb%80%e4%b9%88" aria-label="你需要什么">你需要什么</a></li>
+                <li>
+                    <a href="#1-%e5%ae%89%e8%a3%85-gcloud-cli%e6%88%96%e4%bd%bf%e7%94%a8-console" aria-label="1) 安装 gcloud CLI（或使用 Console）">1) 安装 gcloud CLI（或使用 Console）</a></li>
+                <li>
+                    <a href="#2-%e5%88%9b%e5%bb%ba-gcp-%e9%a1%b9%e7%9b%ae" aria-label="2) 创建 GCP 项目">2) 创建 GCP 项目</a></li>
+                <li>
+                    <a href="#3-%e5%88%9b%e5%bb%ba-vm" aria-label="3) 创建 VM">3) 创建 VM</a></li>
+                <li>
+                    <a href="#4-ssh-%e8%bf%9b%e5%85%a5-vm" aria-label="4) SSH 进入 VM">4) SSH 进入 VM</a></li>
+                <li>
+                    <a href="#5-%e5%ae%89%e8%a3%85-docker%e5%9c%a8-vm-%e4%b8%8a" aria-label="5) 安装 Docker（在 VM 上）">5) 安装 Docker（在 VM 上）</a></li>
+                <li>
+                    <a href="#6-%e5%85%8b%e9%9a%86-openclaw-%e4%bb%93%e5%ba%93" aria-label="6) 克隆 OpenClaw 仓库">6) 克隆 OpenClaw 仓库</a></li>
+                <li>
+                    <a href="#7-%e5%88%9b%e5%bb%ba%e6%8c%81%e4%b9%85%e5%8c%96%e4%b8%bb%e6%9c%ba%e7%9b%ae%e5%bd%95" aria-label="7) 创建持久化主机目录">7) 创建持久化主机目录</a></li>
+                <li>
+                    <a href="#8-%e9%85%8d%e7%bd%ae%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" aria-label="8) 配置环境变量">8) 配置环境变量</a></li>
+                <li>
+                    <a href="#9-docker-compose-%e9%85%8d%e7%bd%ae" aria-label="9) Docker Compose 配置">9) Docker Compose 配置</a></li>
+                <li>
+                    <a href="#10-%e5%b0%86%e6%89%80%e9%9c%80%e4%ba%8c%e8%bf%9b%e5%88%b6%e6%96%87%e4%bb%b6%e5%86%85%e7%bd%ae%e5%88%b0%e9%95%9c%e5%83%8f%e4%b8%ad%e5%85%b3%e9%94%ae" aria-label="10) 将所需二进制文件内置到镜像中（关键）">10) 将所需二进制文件内置到镜像中（关键）</a></li>
+                <li>
+                    <a href="#11-%e6%9e%84%e5%bb%ba%e5%b9%b6%e5%90%af%e5%8a%a8" aria-label="11) 构建并启动">11) 构建并启动</a></li>
+                <li>
+                    <a href="#12-%e9%aa%8c%e8%af%81-gateway-%e7%bd%91%e5%85%b3" aria-label="12) 验证 Gateway 网关">12) 验证 Gateway 网关</a></li>
+                <li>
+                    <a href="#13-%e4%bb%8e%e4%bd%a0%e7%9a%84%e7%ac%94%e8%ae%b0%e6%9c%ac%e7%94%b5%e8%84%91%e8%ae%bf%e9%97%ae" aria-label="13) 从你的笔记本电脑访问">13) 从你的笔记本电脑访问</a></li>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e6%8c%81%e4%b9%85%e5%8c%96%e5%9c%a8%e5%93%aa%e9%87%8c%e7%9c%9f%e5%ae%9e%e6%9d%a5%e6%ba%90" aria-label="什么持久化在哪里（真实来源）">什么持久化在哪里（真实来源）</a></li>
+                <li>
+                    <a href="#%e6%9b%b4%e6%96%b0" aria-label="更新">更新</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e8%b4%a6%e6%88%b7%e5%ae%89%e5%85%a8%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5" aria-label="服务账户（安全最佳实践）">服务账户（安全最佳实践）</a></li>
+                <li>
+                    <a href="#%e4%b8%8b%e4%b8%80%e6%ad%a5" aria-label="下一步">下一步</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="目标">目标<a hidden class="anchor" aria-hidden="true" href="#目标">#</a></h2>
+<p>使用 Docker 在 GCP Compute Engine VM 上运行持久化的 OpenClaw Gateway 网关，具有持久状态、内置二进制文件和安全的重启行为。</p>
+<p>如果你想要&quot;OpenClaw 24/7 大约 $5-12/月&quot;，这是在 Google Cloud 上的可靠设置。
+价格因机器类型和区域而异；选择适合你工作负载的最小 VM，如果遇到 OOM 则扩容。</p>
+<h2 id="我们在做什么简单说明">我们在做什么（简单说明）？<a hidden class="anchor" aria-hidden="true" href="#我们在做什么简单说明">#</a></h2>
+<ul>
+<li>创建 GCP 项目并启用计费</li>
+<li>创建 Compute Engine VM</li>
+<li>安装 Docker（隔离的应用运行时）</li>
+<li>在 Docker 中启动 OpenClaw Gateway 网关</li>
+<li>在主机上持久化 <code>~/.openclaw</code> + <code>~/.openclaw/workspace</code>（重启/重建后仍保留）</li>
+<li>通过 SSH 隧道从你的笔记本电脑访问控制 UI</li>
+</ul>
+<p>Gateway 网关可以通过以下方式访问：</p>
+<ul>
+<li>从你的笔记本电脑进行 SSH 端口转发</li>
+<li>如果你自己管理防火墙和令牌，可以直接暴露端口</li>
+</ul>
+<p>本指南使用 GCP Compute Engine 上的 Debian。
+Ubuntu 也可以；请相应地映射软件包。
+有关通用 Docker 流程，请参阅 <a href="/install/docker">Docker</a>。</p>
+<hr>
+<h2 id="快速路径有经验的运维人员">快速路径（有经验的运维人员）<a hidden class="anchor" aria-hidden="true" href="#快速路径有经验的运维人员">#</a></h2>
+<ol>
+<li>创建 GCP 项目 + 启用 Compute Engine API</li>
+<li>创建 Compute Engine VM（e2-small，Debian 12，20GB）</li>
+<li>SSH 进入 VM</li>
+<li>安装 Docker</li>
+<li>克隆 OpenClaw 仓库</li>
+<li>创建持久化主机目录</li>
+<li>配置 <code>.env</code> 和 <code>docker-compose.yml</code></li>
+<li>内置所需二进制文件、构建并启动</li>
+</ol>
+<hr>
+<h2 id="你需要什么">你需要什么<a hidden class="anchor" aria-hidden="true" href="#你需要什么">#</a></h2>
+<ul>
+<li>GCP 账户（e2-micro 符合免费层条件）</li>
+<li>已安装 gcloud CLI（或使用 Cloud Console）</li>
+<li>从你的笔记本电脑 SSH 访问</li>
+<li>对 SSH + 复制/粘贴有基本了解</li>
+<li>约 20-30 分钟</li>
+<li>Docker 和 Docker Compose</li>
+<li>模型认证凭证</li>
+<li>可选的提供商凭证
+<ul>
+<li>WhatsApp QR</li>
+<li>Telegram bot token</li>
+<li>Gmail OAuth</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="1-安装-gcloud-cli或使用-console">1) 安装 gcloud CLI（或使用 Console）<a hidden class="anchor" aria-hidden="true" href="#1-安装-gcloud-cli或使用-console">#</a></h2>
+<p><strong>选项 A：gcloud CLI</strong>（推荐用于自动化）</p>
+<p>从 <a href="https://cloud.google.com/sdk/docs/install">https://cloud.google.com/sdk/docs/install</a> 安装</p>
+<p>初始化并认证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud init
+</span></span><span class="line"><span class="cl">gcloud auth login
+</span></span></code></pre></div><p><strong>选项 B：Cloud Console</strong></p>
+<p>所有步骤都可以通过 <a href="https://console.cloud.google.com">https://console.cloud.google.com</a> 的 Web UI 完成</p>
+<hr>
+<h2 id="2-创建-gcp-项目">2) 创建 GCP 项目<a hidden class="anchor" aria-hidden="true" href="#2-创建-gcp-项目">#</a></h2>
+<p><strong>CLI：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud projects create my-openclaw-project --name<span class="o">=</span><span class="s2">&#34;OpenClaw Gateway&#34;</span>
+</span></span><span class="line"><span class="cl">gcloud config <span class="nb">set</span> project my-openclaw-project
+</span></span></code></pre></div><p>在 <a href="https://console.cloud.google.com/billing">https://console.cloud.google.com/billing</a> 启用计费（Compute Engine 必需）。</p>
+<p>启用 Compute Engine API：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud services <span class="nb">enable</span> compute.googleapis.com
+</span></span></code></pre></div><p><strong>Console：</strong></p>
+<ol>
+<li>转到 IAM &amp; Admin &gt; Create Project</li>
+<li>命名并创建</li>
+<li>为项目启用计费</li>
+<li>导航到 APIs &amp; Services &gt; Enable APIs &gt; 搜索 &ldquo;Compute Engine API&rdquo; &gt; Enable</li>
+</ol>
+<hr>
+<h2 id="3-创建-vm">3) 创建 VM<a hidden class="anchor" aria-hidden="true" href="#3-创建-vm">#</a></h2>
+<p><strong>机器类型：</strong></p>
+<table>
+  <thead>
+      <tr>
+          <th>类型</th>
+          <th>配置</th>
+          <th>成本</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>e2-small</td>
+          <td>2 vCPU，2GB RAM</td>
+          <td>~$12/月</td>
+          <td>推荐</td>
+      </tr>
+      <tr>
+          <td>e2-micro</td>
+          <td>2 vCPU（共享），1GB RAM</td>
+          <td>符合免费层</td>
+          <td>负载下可能 OOM</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>CLI：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud compute instances create openclaw-gateway <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --zone<span class="o">=</span>us-central1-a <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --machine-type<span class="o">=</span>e2-small <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --boot-disk-size<span class="o">=</span>20GB <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --image-family<span class="o">=</span>debian-12 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --image-project<span class="o">=</span>debian-cloud
+</span></span></code></pre></div><p><strong>Console：</strong></p>
+<ol>
+<li>转到 Compute Engine &gt; VM instances &gt; Create instance</li>
+<li>Name：<code>openclaw-gateway</code></li>
+<li>Region：<code>us-central1</code>，Zone：<code>us-central1-a</code></li>
+<li>Machine type：<code>e2-small</code></li>
+<li>Boot disk：Debian 12，20GB</li>
+<li>Create</li>
+</ol>
+<hr>
+<h2 id="4-ssh-进入-vm">4) SSH 进入 VM<a hidden class="anchor" aria-hidden="true" href="#4-ssh-进入-vm">#</a></h2>
+<p><strong>CLI：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud compute ssh openclaw-gateway --zone<span class="o">=</span>us-central1-a
+</span></span></code></pre></div><p><strong>Console：</strong></p>
+<p>在 Compute Engine 仪表板中点击 VM 旁边的&quot;SSH&quot;按钮。</p>
+<p>注意：VM 创建后 SSH 密钥传播可能需要 1-2 分钟。如果连接被拒绝，请等待并重试。</p>
+<hr>
+<h2 id="5-安装-docker在-vm-上">5) 安装 Docker（在 VM 上）<a hidden class="anchor" aria-hidden="true" href="#5-安装-docker在-vm-上">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get update
+</span></span><span class="line"><span class="cl">sudo apt-get install -y git curl ca-certificates
+</span></span><span class="line"><span class="cl">curl -fsSL https://get.docker.com <span class="p">|</span> sudo sh
+</span></span><span class="line"><span class="cl">sudo usermod -aG docker <span class="nv">$USER</span>
+</span></span></code></pre></div><p>注销并重新登录以使组更改生效：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">exit</span>
+</span></span></code></pre></div><p>然后重新 SSH 登录：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud compute ssh openclaw-gateway --zone<span class="o">=</span>us-central1-a
+</span></span></code></pre></div><p>验证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker --version
+</span></span><span class="line"><span class="cl">docker compose version
+</span></span></code></pre></div><hr>
+<h2 id="6-克隆-openclaw-仓库">6) 克隆 OpenClaw 仓库<a hidden class="anchor" aria-hidden="true" href="#6-克隆-openclaw-仓库">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/openclaw/openclaw.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> openclaw
+</span></span></code></pre></div><p>本指南假设你将构建自定义镜像以保证二进制文件持久化。</p>
+<hr>
+<h2 id="7-创建持久化主机目录">7) 创建持久化主机目录<a hidden class="anchor" aria-hidden="true" href="#7-创建持久化主机目录">#</a></h2>
+<p>Docker 容器是临时的。
+所有长期状态必须存在于主机上。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p ~/.openclaw
+</span></span><span class="line"><span class="cl">mkdir -p ~/.openclaw/workspace
+</span></span></code></pre></div><hr>
+<h2 id="8-配置环境变量">8) 配置环境变量<a hidden class="anchor" aria-hidden="true" href="#8-配置环境变量">#</a></h2>
+<p>在仓库根目录创建 <code>.env</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">OPENCLAW_IMAGE</span><span class="o">=</span>openclaw:latest
+</span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_GATEWAY_TOKEN</span><span class="o">=</span>change-me-now
+</span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_GATEWAY_BIND</span><span class="o">=</span>lan
+</span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_GATEWAY_PORT</span><span class="o">=</span><span class="m">18789</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_CONFIG_DIR</span><span class="o">=</span>/home/<span class="nv">$USER</span>/.openclaw
+</span></span><span class="line"><span class="cl"><span class="nv">OPENCLAW_WORKSPACE_DIR</span><span class="o">=</span>/home/<span class="nv">$USER</span>/.openclaw/workspace
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">GOG_KEYRING_PASSWORD</span><span class="o">=</span>change-me-now
+</span></span><span class="line"><span class="cl"><span class="nv">XDG_CONFIG_HOME</span><span class="o">=</span>/home/node/.openclaw
+</span></span></code></pre></div><p>生成强密钥：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl rand -hex <span class="m">32</span>
+</span></span></code></pre></div><p><strong>不要提交此文件。</strong></p>
+<hr>
+<h2 id="9-docker-compose-配置">9) Docker Compose 配置<a hidden class="anchor" aria-hidden="true" href="#9-docker-compose-配置">#</a></h2>
+<p>创建或更新 <code>docker-compose.yml</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">openclaw-gateway</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">${OPENCLAW_IMAGE}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">unless-stopped</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">env_file</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">.env</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">HOME=/home/node</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">NODE_ENV=production</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">TERM=xterm-256color</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">OPENCLAW_GATEWAY_BIND=${OPENCLAW_GATEWAY_BIND}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">OPENCLAW_GATEWAY_PORT=${OPENCLAW_GATEWAY_PORT}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">GOG_KEYRING_PASSWORD=${GOG_KEYRING_PASSWORD}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">XDG_CONFIG_HOME=${XDG_CONFIG_HOME}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 推荐：在 VM 上保持 Gateway 网关仅绑定 loopback；通过 SSH 隧道访问。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 要公开暴露，移除 `127.0.0.1:` 前缀并相应配置防火墙。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 可选：仅当你针对此 VM 运行 iOS/Android 节点并需要 Canvas 主机时。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 如果你公开暴露此端口，请阅读 /gateway/security 并相应配置防火墙。</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># - &#34;18793:18793&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">[</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;node&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;dist/index.js&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;gateway&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;--bind&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;${OPENCLAW_GATEWAY_BIND}&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;--port&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;${OPENCLAW_GATEWAY_PORT}&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></div><hr>
+<h2 id="10-将所需二进制文件内置到镜像中关键">10) 将所需二进制文件内置到镜像中（关键）<a hidden class="anchor" aria-hidden="true" href="#10-将所需二进制文件内置到镜像中关键">#</a></h2>
+<p>在运行中的容器内安装二进制文件是一个陷阱。
+任何在运行时安装的内容在重启后都会丢失。</p>
+<p>所有 Skills 所需的外部二进制文件必须在镜像构建时安装。</p>
+<p>以下示例仅显示三个常见的二进制文件：</p>
+<ul>
+<li><code>gog</code> 用于 Gmail 访问</li>
+<li><code>goplaces</code> 用于 Google Places</li>
+<li><code>wacli</code> 用于 WhatsApp</li>
+</ul>
+<p>这些是示例，不是完整列表。
+你可以使用相同的模式安装任意数量的二进制文件。</p>
+<p>如果你以后添加依赖额外二进制文件的新 Skills，你必须：</p>
+<ol>
+<li>更新 Dockerfile</li>
+<li>重建镜像</li>
+<li>重启容器</li>
+</ol>
+<p><strong>示例 Dockerfile</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">node:22-bookworm</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> apt-get update <span class="o">&amp;&amp;</span> apt-get install -y socat <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 示例二进制文件 1：Gmail CLI</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> curl -L https://github.com/steipete/gog/releases/latest/download/gog_Linux_x86_64.tar.gz <span class="se">\
+</span></span></span><span class="line"><span class="cl">  <span class="p">|</span> tar -xz -C /usr/local/bin <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/gog<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 示例二进制文件 2：Google Places CLI</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_Linux_x86_64.tar.gz <span class="se">\
+</span></span></span><span class="line"><span class="cl">  <span class="p">|</span> tar -xz -C /usr/local/bin <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/goplaces<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 示例二进制文件 3：WhatsApp CLI</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> curl -L https://github.com/steipete/wacli/releases/latest/download/wacli_Linux_x86_64.tar.gz <span class="se">\
+</span></span></span><span class="line"><span class="cl">  <span class="p">|</span> tar -xz -C /usr/local/bin <span class="o">&amp;&amp;</span> chmod +x /usr/local/bin/wacli<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 使用相同的模式在下面添加更多二进制文件</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> ui/package.json ./ui/package.json<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> scripts ./scripts<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> corepack enable<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> pnpm install --frozen-lockfile<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> . .<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> pnpm build<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> pnpm ui:install<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> pnpm ui:build<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">ENV</span> <span class="nv">NODE_ENV</span><span class="o">=</span>production
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;node&#34;</span><span class="p">,</span><span class="s2">&#34;dist/index.js&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></div><hr>
+<h2 id="11-构建并启动">11) 构建并启动<a hidden class="anchor" aria-hidden="true" href="#11-构建并启动">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker compose build
+</span></span><span class="line"><span class="cl">docker compose up -d openclaw-gateway
+</span></span></code></pre></div><p>验证二进制文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker compose <span class="nb">exec</span> openclaw-gateway which gog
+</span></span><span class="line"><span class="cl">docker compose <span class="nb">exec</span> openclaw-gateway which goplaces
+</span></span><span class="line"><span class="cl">docker compose <span class="nb">exec</span> openclaw-gateway which wacli
+</span></span></code></pre></div><p>预期输出：</p>
+<pre tabindex="0"><code>/usr/local/bin/gog
+/usr/local/bin/goplaces
+/usr/local/bin/wacli
+</code></pre><hr>
+<h2 id="12-验证-gateway-网关">12) 验证 Gateway 网关<a hidden class="anchor" aria-hidden="true" href="#12-验证-gateway-网关">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker compose logs -f openclaw-gateway
+</span></span></code></pre></div><p>成功：</p>
+<pre tabindex="0"><code>[gateway] listening on ws://0.0.0.0:18789
+</code></pre><hr>
+<h2 id="13-从你的笔记本电脑访问">13) 从你的笔记本电脑访问<a hidden class="anchor" aria-hidden="true" href="#13-从你的笔记本电脑访问">#</a></h2>
+<p>创建 SSH 隧道以转发 Gateway 网关端口：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud compute ssh openclaw-gateway --zone<span class="o">=</span>us-central1-a -- -L 18789:127.0.0.1:18789
+</span></span></code></pre></div><p>在浏览器中打开：</p>
+<p><code>http://127.0.0.1:18789/</code></p>
+<p>粘贴你的 Gateway 网关令牌。</p>
+<hr>
+<h2 id="什么持久化在哪里真实来源">什么持久化在哪里（真实来源）<a hidden class="anchor" aria-hidden="true" href="#什么持久化在哪里真实来源">#</a></h2>
+<p>OpenClaw 在 Docker 中运行，但 Docker 不是真实来源。
+所有长期状态必须在重启、重建和重启后仍然存在。</p>
+<table>
+  <thead>
+      <tr>
+          <th>组件</th>
+          <th>位置</th>
+          <th>持久化机制</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Gateway 网关配置</td>
+          <td><code>/home/node/.openclaw/</code></td>
+          <td>主机卷挂载</td>
+          <td>包括 <code>openclaw.json</code>、令牌</td>
+      </tr>
+      <tr>
+          <td>模型认证配置文件</td>
+          <td><code>/home/node/.openclaw/</code></td>
+          <td>主机卷挂载</td>
+          <td>OAuth 令牌、API 密钥</td>
+      </tr>
+      <tr>
+          <td>Skill 配置</td>
+          <td><code>/home/node/.openclaw/skills/</code></td>
+          <td>主机卷挂载</td>
+          <td>Skill 级别状态</td>
+      </tr>
+      <tr>
+          <td>智能体工作区</td>
+          <td><code>/home/node/.openclaw/workspace/</code></td>
+          <td>主机卷挂载</td>
+          <td>代码和智能体产物</td>
+      </tr>
+      <tr>
+          <td>WhatsApp 会话</td>
+          <td><code>/home/node/.openclaw/</code></td>
+          <td>主机卷挂载</td>
+          <td>保留 QR 登录</td>
+      </tr>
+      <tr>
+          <td>Gmail 密钥环</td>
+          <td><code>/home/node/.openclaw/</code></td>
+          <td>主机卷 + 密码</td>
+          <td>需要 <code>GOG_KEYRING_PASSWORD</code></td>
+      </tr>
+      <tr>
+          <td>外部二进制文件</td>
+          <td><code>/usr/local/bin/</code></td>
+          <td>Docker 镜像</td>
+          <td>必须在构建时内置</td>
+      </tr>
+      <tr>
+          <td>Node 运行时</td>
+          <td>容器文件系统</td>
+          <td>Docker 镜像</td>
+          <td>每次镜像构建时重建</td>
+      </tr>
+      <tr>
+          <td>OS 包</td>
+          <td>容器文件系统</td>
+          <td>Docker 镜像</td>
+          <td>不要在运行时安装</td>
+      </tr>
+      <tr>
+          <td>Docker 容器</td>
+          <td>临时</td>
+          <td>可重启</td>
+          <td>可以安全销毁</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="更新">更新<a hidden class="anchor" aria-hidden="true" href="#更新">#</a></h2>
+<p>在 VM 上更新 OpenClaw：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> ~/openclaw
+</span></span><span class="line"><span class="cl">git pull
+</span></span><span class="line"><span class="cl">docker compose build
+</span></span><span class="line"><span class="cl">docker compose up -d
+</span></span></code></pre></div><hr>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<p><strong>SSH 连接被拒绝</strong></p>
+<p>VM 创建后 SSH 密钥传播可能需要 1-2 分钟。等待并重试。</p>
+<p><strong>OS Login 问题</strong></p>
+<p>检查你的 OS Login 配置文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud compute os-login describe-profile
+</span></span></code></pre></div><p>确保你的账户具有所需的 IAM 权限（Compute OS Login 或 Compute OS Admin Login）。</p>
+<p><strong>内存不足（OOM）</strong></p>
+<p>如果使用 e2-micro 并遇到 OOM，升级到 e2-small 或 e2-medium：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 首先停止 VM</span>
+</span></span><span class="line"><span class="cl">gcloud compute instances stop openclaw-gateway --zone<span class="o">=</span>us-central1-a
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 更改机器类型</span>
+</span></span><span class="line"><span class="cl">gcloud compute instances set-machine-type openclaw-gateway <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --zone<span class="o">=</span>us-central1-a <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --machine-type<span class="o">=</span>e2-small
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动 VM</span>
+</span></span><span class="line"><span class="cl">gcloud compute instances start openclaw-gateway --zone<span class="o">=</span>us-central1-a
+</span></span></code></pre></div><hr>
+<h2 id="服务账户安全最佳实践">服务账户（安全最佳实践）<a hidden class="anchor" aria-hidden="true" href="#服务账户安全最佳实践">#</a></h2>
+<p>对于个人使用，你的默认用户账户就可以。</p>
+<p>对于自动化或 CI/CD 管道，创建具有最小权限的专用服务账户：</p>
+<ol>
+<li>
+<p>创建服务账户：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud iam service-accounts create openclaw-deploy <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --display-name<span class="o">=</span><span class="s2">&#34;OpenClaw Deployment&#34;</span>
+</span></span></code></pre></div></li>
+<li>
+<p>授予 Compute Instance Admin 角色（或更窄的自定义角色）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud projects add-iam-policy-binding my-openclaw-project <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --member<span class="o">=</span><span class="s2">&#34;serviceAccount:openclaw-deploy@my-openclaw-project.iam.gserviceaccount.com&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --role<span class="o">=</span><span class="s2">&#34;roles/compute.instanceAdmin.v1&#34;</span>
+</span></span></code></pre></div></li>
+</ol>
+<p>避免为自动化使用 Owner 角色。使用最小权限原则。</p>
+<p>参阅 <a href="https://cloud.google.com/iam/docs/understanding-roles">https://cloud.google.com/iam/docs/understanding-roles</a> 了解 IAM 角色详情。</p>
+<hr>
+<h2 id="下一步">下一步<a hidden class="anchor" aria-hidden="true" href="#下一步">#</a></h2>
+<ul>
+<li>设置消息渠道：<a href="/channels">渠道</a></li>
+<li>将本地设备配对为节点：<a href="/nodes">节点</a></li>
+<li>配置 Gateway 网关：<a href="/gateway/configuration">Gateway 网关配置</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/platforms/digitalocean/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>在 DigitalOcean 上运行 OpenClaw</span>
+  </a>
+  <a class="next" href="/openclaw/install/hetzner/">
+    <span class="title">Next »</span>
+    <br>
+    <span>在 Hetzner 上运行 OpenClaw（Docker，生产 VPS 指南）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

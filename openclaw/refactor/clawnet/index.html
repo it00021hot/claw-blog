@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Clawnet 重构（协议 &#43; 认证统一） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="嗨
+嗨 Peter — 方向很好；这将解锁更简单的用户体验 &#43; 更强的安全性。
+目的
+单一、严谨的文档用于：
+
+当前状态：协议、流程、信任边界。
+痛点：审批、多跳路由、UI 重复。
+提议的新状态：一个协议、作用域角色、统一的认证/配对、TLS 固定。
+身份模型：稳定 ID &#43; 可爱的别名。
+迁移计划、风险、开放问题。
+
+目标（来自讨论）
+
+所有客户端使用一个协议（mac 应用、CLI、iOS、Android、无头节点）。
+每个网络参与者都经过认证 &#43; 配对。
+角色清晰：节点 vs 操作者。
+中央审批路由到用户所在位置。
+所有远程流量使用 TLS 加密 &#43; 可选固定。
+最小化代码重复。
+单台机器应该只显示一次（无 UI/节点重复条目）。
+
+非目标（明确）
+
+移除能力分离（仍需要最小权限）。
+不经作用域检查就暴露完整的 Gateway 网关控制平面。
+使认证依赖于人类标签（别名仍然是非安全性的）。
+
+
+当前状态（现状）
+两个协议
+1) Gateway 网关 WebSocket（控制平面）
+
+完整 API 表面：配置、渠道、模型、会话、智能体运行、日志、节点等。
+默认绑定：loopback。通过 SSH/Tailscale 远程访问。
+认证：通过 connect 的令牌/密码。
+无 TLS 固定（依赖 loopback/隧道）。
+代码：
+
+src/gateway/server/ws-connection/message-handler.ts
+src/gateway/client.ts
+docs/gateway/protocol.md
+
+
+
+2) Bridge（节点传输）
+
+窄允许列表表面，节点身份 &#43; 配对。
+TCP 上的 JSONL；可选 TLS &#43; 证书指纹固定。
+TLS 在设备发现 TXT 中公布指纹。
+代码：
+
+src/infra/bridge/server/connection.ts
+src/gateway/server-bridge.ts
+src/node-host/bridge-client.ts
+docs/gateway/bridge-protocol.md
+
+
+
+当前的控制平面客户端
+
+CLI → 通过 callGateway（src/gateway/call.ts）连接 Gateway 网关 WS。
+macOS 应用 UI → Gateway 网关 WS（GatewayConnection）。
+Web 控制 UI → Gateway 网关 WS。
+ACP → Gateway 网关 WS。
+浏览器控制使用自己的 HTTP 控制服务器。
+
+当前的节点
+
+macOS 应用在节点模式下连接到 Gateway 网关 bridge（MacNodeBridgeSession）。
+iOS/Android 应用连接到 Gateway 网关 bridge。
+配对 &#43; 每节点令牌存储在 Gateway 网关上。
+
+当前审批流程（exec）
+
+智能体通过 Gateway 网关使用 system.run。
+Gateway 网关通过 bridge 调用节点。
+节点运行时决定审批。
+UI 提示由 mac 应用显示（当节点 == mac 应用时）。
+节点向 Gateway 网关返回 invoke-res。
+多跳，UI 绑定到节点主机。
+
+当前的在线状态 &#43; 身份
+
+来自 WS 客户端的 Gateway 网关在线状态条目。
+来自 bridge 的节点在线状态条目。
+mac 应用可能为同一台机器显示两个条目（UI &#43; 节点）。
+节点身份存储在配对存储中；UI 身份是分开的。
+
+
+问题/痛点
+
+需要维护两个协议栈（WS &#43; Bridge）。
+远程节点上的审批：提示出现在节点主机上，而不是用户所在位置。
+TLS 固定仅存在于 bridge；WS 依赖 SSH/Tailscale。
+身份重复：同一台机器显示为多个实例。
+角色模糊：UI &#43; 节点 &#43; CLI 能力没有明确分离。
+
+
+提议的新状态（Clawnet）
+一个协议，两个角色
+带有角色 &#43; 作用域的单一 WS 协议。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/refactor/clawnet/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/refactor/clawnet/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/refactor/clawnet/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Clawnet 重构（协议 &#43; 认证统一）">
+  <meta property="og:description" content="嗨 嗨 Peter — 方向很好；这将解锁更简单的用户体验 &#43; 更强的安全性。
+目的 单一、严谨的文档用于：
+当前状态：协议、流程、信任边界。 痛点：审批、多跳路由、UI 重复。 提议的新状态：一个协议、作用域角色、统一的认证/配对、TLS 固定。 身份模型：稳定 ID &#43; 可爱的别名。 迁移计划、风险、开放问题。 目标（来自讨论） 所有客户端使用一个协议（mac 应用、CLI、iOS、Android、无头节点）。 每个网络参与者都经过认证 &#43; 配对。 角色清晰：节点 vs 操作者。 中央审批路由到用户所在位置。 所有远程流量使用 TLS 加密 &#43; 可选固定。 最小化代码重复。 单台机器应该只显示一次（无 UI/节点重复条目）。 非目标（明确） 移除能力分离（仍需要最小权限）。 不经作用域检查就暴露完整的 Gateway 网关控制平面。 使认证依赖于人类标签（别名仍然是非安全性的）。 当前状态（现状） 两个协议 1) Gateway 网关 WebSocket（控制平面） 完整 API 表面：配置、渠道、模型、会话、智能体运行、日志、节点等。 默认绑定：loopback。通过 SSH/Tailscale 远程访问。 认证：通过 connect 的令牌/密码。 无 TLS 固定（依赖 loopback/隧道）。 代码： src/gateway/server/ws-connection/message-handler.ts src/gateway/client.ts docs/gateway/protocol.md 2) Bridge（节点传输） 窄允许列表表面，节点身份 &#43; 配对。 TCP 上的 JSONL；可选 TLS &#43; 证书指纹固定。 TLS 在设备发现 TXT 中公布指纹。 代码： src/infra/bridge/server/connection.ts src/gateway/server-bridge.ts src/node-host/bridge-client.ts docs/gateway/bridge-protocol.md 当前的控制平面客户端 CLI → 通过 callGateway（src/gateway/call.ts）连接 Gateway 网关 WS。 macOS 应用 UI → Gateway 网关 WS（GatewayConnection）。 Web 控制 UI → Gateway 网关 WS。 ACP → Gateway 网关 WS。 浏览器控制使用自己的 HTTP 控制服务器。 当前的节点 macOS 应用在节点模式下连接到 Gateway 网关 bridge（MacNodeBridgeSession）。 iOS/Android 应用连接到 Gateway 网关 bridge。 配对 &#43; 每节点令牌存储在 Gateway 网关上。 当前审批流程（exec） 智能体通过 Gateway 网关使用 system.run。 Gateway 网关通过 bridge 调用节点。 节点运行时决定审批。 UI 提示由 mac 应用显示（当节点 == mac 应用时）。 节点向 Gateway 网关返回 invoke-res。 多跳，UI 绑定到节点主机。 当前的在线状态 &#43; 身份 来自 WS 客户端的 Gateway 网关在线状态条目。 来自 bridge 的节点在线状态条目。 mac 应用可能为同一台机器显示两个条目（UI &#43; 节点）。 节点身份存储在配对存储中；UI 身份是分开的。 问题/痛点 需要维护两个协议栈（WS &#43; Bridge）。 远程节点上的审批：提示出现在节点主机上，而不是用户所在位置。 TLS 固定仅存在于 bridge；WS 依赖 SSH/Tailscale。 身份重复：同一台机器显示为多个实例。 角色模糊：UI &#43; 节点 &#43; CLI 能力没有明确分离。 提议的新状态（Clawnet） 一个协议，两个角色 带有角色 &#43; 作用域的单一 WS 协议。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Clawnet 重构（协议 &#43; 认证统一）">
+<meta name="twitter:description" content="嗨
+嗨 Peter — 方向很好；这将解锁更简单的用户体验 &#43; 更强的安全性。
+目的
+单一、严谨的文档用于：
+
+当前状态：协议、流程、信任边界。
+痛点：审批、多跳路由、UI 重复。
+提议的新状态：一个协议、作用域角色、统一的认证/配对、TLS 固定。
+身份模型：稳定 ID &#43; 可爱的别名。
+迁移计划、风险、开放问题。
+
+目标（来自讨论）
+
+所有客户端使用一个协议（mac 应用、CLI、iOS、Android、无头节点）。
+每个网络参与者都经过认证 &#43; 配对。
+角色清晰：节点 vs 操作者。
+中央审批路由到用户所在位置。
+所有远程流量使用 TLS 加密 &#43; 可选固定。
+最小化代码重复。
+单台机器应该只显示一次（无 UI/节点重复条目）。
+
+非目标（明确）
+
+移除能力分离（仍需要最小权限）。
+不经作用域检查就暴露完整的 Gateway 网关控制平面。
+使认证依赖于人类标签（别名仍然是非安全性的）。
+
+
+当前状态（现状）
+两个协议
+1) Gateway 网关 WebSocket（控制平面）
+
+完整 API 表面：配置、渠道、模型、会话、智能体运行、日志、节点等。
+默认绑定：loopback。通过 SSH/Tailscale 远程访问。
+认证：通过 connect 的令牌/密码。
+无 TLS 固定（依赖 loopback/隧道）。
+代码：
+
+src/gateway/server/ws-connection/message-handler.ts
+src/gateway/client.ts
+docs/gateway/protocol.md
+
+
+
+2) Bridge（节点传输）
+
+窄允许列表表面，节点身份 &#43; 配对。
+TCP 上的 JSONL；可选 TLS &#43; 证书指纹固定。
+TLS 在设备发现 TXT 中公布指纹。
+代码：
+
+src/infra/bridge/server/connection.ts
+src/gateway/server-bridge.ts
+src/node-host/bridge-client.ts
+docs/gateway/bridge-protocol.md
+
+
+
+当前的控制平面客户端
+
+CLI → 通过 callGateway（src/gateway/call.ts）连接 Gateway 网关 WS。
+macOS 应用 UI → Gateway 网关 WS（GatewayConnection）。
+Web 控制 UI → Gateway 网关 WS。
+ACP → Gateway 网关 WS。
+浏览器控制使用自己的 HTTP 控制服务器。
+
+当前的节点
+
+macOS 应用在节点模式下连接到 Gateway 网关 bridge（MacNodeBridgeSession）。
+iOS/Android 应用连接到 Gateway 网关 bridge。
+配对 &#43; 每节点令牌存储在 Gateway 网关上。
+
+当前审批流程（exec）
+
+智能体通过 Gateway 网关使用 system.run。
+Gateway 网关通过 bridge 调用节点。
+节点运行时决定审批。
+UI 提示由 mac 应用显示（当节点 == mac 应用时）。
+节点向 Gateway 网关返回 invoke-res。
+多跳，UI 绑定到节点主机。
+
+当前的在线状态 &#43; 身份
+
+来自 WS 客户端的 Gateway 网关在线状态条目。
+来自 bridge 的节点在线状态条目。
+mac 应用可能为同一台机器显示两个条目（UI &#43; 节点）。
+节点身份存储在配对存储中；UI 身份是分开的。
+
+
+问题/痛点
+
+需要维护两个协议栈（WS &#43; Bridge）。
+远程节点上的审批：提示出现在节点主机上，而不是用户所在位置。
+TLS 固定仅存在于 bridge；WS 依赖 SSH/Tailscale。
+身份重复：同一台机器显示为多个实例。
+角色模糊：UI &#43; 节点 &#43; CLI 能力没有明确分离。
+
+
+提议的新状态（Clawnet）
+一个协议，两个角色
+带有角色 &#43; 作用域的单一 WS 协议。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Clawnet 重构（协议 + 认证统一）",
+      "item": "/openclaw/refactor/clawnet/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Clawnet 重构（协议 + 认证统一）",
+  "name": "Clawnet 重构（协议 \u002b 认证统一）",
+  "description": "嗨 嗨 Peter — 方向很好；这将解锁更简单的用户体验 + 更强的安全性。\n目的 单一、严谨的文档用于：\n当前状态：协议、流程、信任边界。 痛点：审批、多跳路由、UI 重复。 提议的新状态：一个协议、作用域角色、统一的认证/配对、TLS 固定。 身份模型：稳定 ID + 可爱的别名。 迁移计划、风险、开放问题。 目标（来自讨论） 所有客户端使用一个协议（mac 应用、CLI、iOS、Android、无头节点）。 每个网络参与者都经过认证 + 配对。 角色清晰：节点 vs 操作者。 中央审批路由到用户所在位置。 所有远程流量使用 TLS 加密 + 可选固定。 最小化代码重复。 单台机器应该只显示一次（无 UI/节点重复条目）。 非目标（明确） 移除能力分离（仍需要最小权限）。 不经作用域检查就暴露完整的 Gateway 网关控制平面。 使认证依赖于人类标签（别名仍然是非安全性的）。 当前状态（现状） 两个协议 1) Gateway 网关 WebSocket（控制平面） 完整 API 表面：配置、渠道、模型、会话、智能体运行、日志、节点等。 默认绑定：loopback。通过 SSH/Tailscale 远程访问。 认证：通过 connect 的令牌/密码。 无 TLS 固定（依赖 loopback/隧道）。 代码： src/gateway/server/ws-connection/message-handler.ts src/gateway/client.ts docs/gateway/protocol.md 2) Bridge（节点传输） 窄允许列表表面，节点身份 + 配对。 TCP 上的 JSONL；可选 TLS + 证书指纹固定。 TLS 在设备发现 TXT 中公布指纹。 代码： src/infra/bridge/server/connection.ts src/gateway/server-bridge.ts src/node-host/bridge-client.ts docs/gateway/bridge-protocol.md 当前的控制平面客户端 CLI → 通过 callGateway（src/gateway/call.ts）连接 Gateway 网关 WS。 macOS 应用 UI → Gateway 网关 WS（GatewayConnection）。 Web 控制 UI → Gateway 网关 WS。 ACP → Gateway 网关 WS。 浏览器控制使用自己的 HTTP 控制服务器。 当前的节点 macOS 应用在节点模式下连接到 Gateway 网关 bridge（MacNodeBridgeSession）。 iOS/Android 应用连接到 Gateway 网关 bridge。 配对 + 每节点令牌存储在 Gateway 网关上。 当前审批流程（exec） 智能体通过 Gateway 网关使用 system.run。 Gateway 网关通过 bridge 调用节点。 节点运行时决定审批。 UI 提示由 mac 应用显示（当节点 == mac 应用时）。 节点向 Gateway 网关返回 invoke-res。 多跳，UI 绑定到节点主机。 当前的在线状态 + 身份 来自 WS 客户端的 Gateway 网关在线状态条目。 来自 bridge 的节点在线状态条目。 mac 应用可能为同一台机器显示两个条目（UI + 节点）。 节点身份存储在配对存储中；UI 身份是分开的。 问题/痛点 需要维护两个协议栈（WS + Bridge）。 远程节点上的审批：提示出现在节点主机上，而不是用户所在位置。 TLS 固定仅存在于 bridge；WS 依赖 SSH/Tailscale。 身份重复：同一台机器显示为多个实例。 角色模糊：UI + 节点 + CLI 能力没有明确分离。 提议的新状态（Clawnet） 一个协议，两个角色 带有角色 + 作用域的单一 WS 协议。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "嗨 嗨 Peter — 方向很好；这将解锁更简单的用户体验 + 更强的安全性。\n目的 单一、严谨的文档用于：\n当前状态：协议、流程、信任边界。 痛点：审批、多跳路由、UI 重复。 提议的新状态：一个协议、作用域角色、统一的认证/配对、TLS 固定。 身份模型：稳定 ID + 可爱的别名。 迁移计划、风险、开放问题。 目标（来自讨论） 所有客户端使用一个协议（mac 应用、CLI、iOS、Android、无头节点）。 每个网络参与者都经过认证 + 配对。 角色清晰：节点 vs 操作者。 中央审批路由到用户所在位置。 所有远程流量使用 TLS 加密 + 可选固定。 最小化代码重复。 单台机器应该只显示一次（无 UI/节点重复条目）。 非目标（明确） 移除能力分离（仍需要最小权限）。 不经作用域检查就暴露完整的 Gateway 网关控制平面。 使认证依赖于人类标签（别名仍然是非安全性的）。 当前状态（现状） 两个协议 1) Gateway 网关 WebSocket（控制平面） 完整 API 表面：配置、渠道、模型、会话、智能体运行、日志、节点等。 默认绑定：loopback。通过 SSH/Tailscale 远程访问。 认证：通过 connect 的令牌/密码。 无 TLS 固定（依赖 loopback/隧道）。 代码： src/gateway/server/ws-connection/message-handler.ts src/gateway/client.ts docs/gateway/protocol.md 2) Bridge（节点传输） 窄允许列表表面，节点身份 + 配对。 TCP 上的 JSONL；可选 TLS + 证书指纹固定。 TLS 在设备发现 TXT 中公布指纹。 代码： src/infra/bridge/server/connection.ts src/gateway/server-bridge.ts src/node-host/bridge-client.ts docs/gateway/bridge-protocol.md 当前的控制平面客户端 CLI → 通过 callGateway（src/gateway/call.ts）连接 Gateway 网关 WS。 macOS 应用 UI → Gateway 网关 WS（GatewayConnection）。 Web 控制 UI → Gateway 网关 WS。 ACP → Gateway 网关 WS。 浏览器控制使用自己的 HTTP 控制服务器。 当前的节点 macOS 应用在节点模式下连接到 Gateway 网关 bridge（MacNodeBridgeSession）。 iOS/Android 应用连接到 Gateway 网关 bridge。 配对 + 每节点令牌存储在 Gateway 网关上。 当前审批流程（exec） 智能体通过 Gateway 网关使用 system.run。 Gateway 网关通过 bridge 调用节点。 节点运行时决定审批。 UI 提示由 mac 应用显示（当节点 == mac 应用时）。 节点向 Gateway 网关返回 invoke-res。 多跳，UI 绑定到节点主机。 当前的在线状态 + 身份 来自 WS 客户端的 Gateway 网关在线状态条目。 来自 bridge 的节点在线状态条目。 mac 应用可能为同一台机器显示两个条目（UI + 节点）。 节点身份存储在配对存储中；UI 身份是分开的。 问题/痛点 需要维护两个协议栈（WS + Bridge）。 远程节点上的审批：提示出现在节点主机上，而不是用户所在位置。 TLS 固定仅存在于 bridge；WS 依赖 SSH/Tailscale。 身份重复：同一台机器显示为多个实例。 角色模糊：UI + 节点 + CLI 能力没有明确分离。 提议的新状态（Clawnet） 一个协议，两个角色 带有角色 + 作用域的单一 WS 协议。\n角色：node（能力宿主） 角色：operator（控制平面） 操作者的可选作用域： operator.read（状态 + 查看） operator.write（智能体运行、发送） operator.admin（配置、渠道、模型） 角色行为 Node\n可以注册能力（caps、commands、permissions）。 可以接收 invoke 命令（system.run、camera.*、canvas.*、screen.record 等）。 可以发送事件：voice.transcript、agent.request、chat.subscribe。 不能调用配置/模型/渠道/会话/智能体控制平面 API。 Operator\n完整控制平面 API，受作用域限制。 接收所有审批。 不直接执行 OS 操作；路由到节点。 关键规则 角色是按连接的，不是按设备。一个设备可以分别打开两个角色。\n统一认证 + 配对 客户端身份 每个客户端提供：\ndeviceId（稳定的，从设备密钥派生）。 displayName（人类名称）。 role + scope + caps + commands。 配对流程（统一） 客户端未认证连接。 Gateway 网关为该 deviceId 创建配对请求。 操作者收到提示；批准/拒绝。 Gateway 网关颁发绑定到以下内容的凭证： 设备公钥 角色 作用域 能力/命令 客户端持久化令牌，重新认证连接。 设备绑定认证（避免 bearer 令牌重放） 首选：设备密钥对。\n设备一次性生成密钥对。 deviceId = fingerprint(publicKey)。 Gateway 网关发送 nonce；设备签名；Gateway 网关验证。 令牌颁发给公钥（所有权证明），而不是字符串。 替代方案：\nmTLS（客户端证书）：最强，运维复杂度更高。 短期 bearer 令牌仅作为临时阶段（早期轮换 + 撤销）。 静默批准（SSH 启发式） 精确定义以避免薄弱环节。优选其一：\n仅限本地：当客户端通过 loopback/Unix socket 连接时自动配对。 通过 SSH 质询：Gateway 网关颁发 nonce；客户端通过获取它来证明 SSH。 物理存在窗口：在 Gateway 网关主机 UI 上本地批准后，允许在短窗口内（例如 10 分钟）自动配对。 始终记录 + 记录自动批准。\nTLS 无处不在（开发 + 生产） 复用现有 bridge TLS 使用当前 TLS 运行时 + 指纹固定：\nsrc/infra/bridge/server/tls.ts src/node-host/bridge-client.ts 中的指纹验证逻辑 应用于 WS WS 服务器使用相同的证书/密钥 + 指纹支持 TLS。 WS 客户端可以固定指纹（可选）。 设备发现为所有端点公布 TLS + 指纹。 设备发现仅是定位器提示；永远不是信任锚。 为什么 减少对 SSH/Tailscale 的机密性依赖。 默认情况下使远程移动连接安全。 审批重新设计（集中化） 当前 审批发生在节点主机上（mac 应用节点运行时）。提示出现在节点运行的地方。\n提议 审批是 Gateway 网关托管的，UI 传递给操作者客户端。\n新流程 Gateway 网关接收 system.run 意图（智能体）。 Gateway 网关创建审批记录：approval.requested。 操作者 UI 显示提示。 审批决定发送到 Gateway 网关：approval.resolve。 如果批准，Gateway 网关调用节点命令。 节点执行，返回 invoke-res。 审批语义（加固） 广播到所有操作者；只有活跃的 UI 显示模态框（其他显示 toast）。 先解决者获胜；Gateway 网关拒绝后续解决为已结算。 默认超时：N 秒后拒绝（例如 60 秒），记录原因。 解决需要 operator.approvals 作用域。 好处 提示出现在用户所在位置（mac/手机）。 远程节点的一致审批。 节点运行时保持无头；无 UI 依赖。 角色清晰示例 iPhone 应用 Node 角色用于：麦克风、相机、语音聊天、位置、一键通话。 可选的 operator.read 用于状态和聊天视图。 可选的 operator.write/admin 仅在明确启用时。 macOS 应用 默认是 Operator 角色（控制 UI）。 启用\"Mac 节点\"时是 Node 角色（system.run、屏幕、相机）。 两个连接使用相同的 deviceId → 合并的 UI 条目。 CLI 始终是 Operator 角色。 作用域按子命令派生： status、logs → read agent、message → write config、channels → admin 审批 + 配对 → operator.approvals / operator.pairing 身份 + 别名 稳定 ID 认证必需；永不改变。 首选：\n密钥对指纹（公钥哈希）。 可爱别名（龙虾主题） 仅人类标签。\n示例：scarlet-claw、saltwave、mantis-pinch。 存储在 Gateway 网关注册表中，可编辑。 冲突处理：-2、-3。 UI 分组 跨角色的相同 deviceId → 单个\"实例\"行：\n徽章：operator、node。 显示能力 + 最后在线。 迁移策略 阶段 0：记录 + 对齐 发布此文档。 盘点所有协议调用 + 审批流程。 阶段 1：向 WS 添加角色/作用域 用 role、scope、deviceId 扩展 connect 参数。 为 node 角色添加允许列表限制。 阶段 2：Bridge 兼容性 保持 bridge 运行。 并行添加 WS node 支持。 通过配置标志限制功能。 阶段 3：中央审批 在 WS 中添加审批请求 + 解决事件。 更新 mac 应用 UI 以提示 + 响应。 节点运行时停止提示 UI。 阶段 4：TLS 统一 使用 bridge TLS 运行时为 WS 添加 TLS 配置。 向客户端添加固定。 阶段 5：弃用 bridge 将 iOS/Android/mac 节点迁移到 WS。 保持 bridge 作为后备；稳定后移除。 阶段 6：设备绑定认证 所有非本地连接都需要基于密钥的身份。 添加撤销 + 轮换 UI。 安全说明 角色/允许列表在 Gateway 网关边界强制执行。 没有客户端可以在没有 operator 作用域的情况下获得\"完整\"API。 所有连接都需要配对。 TLS + 固定减少移动设备的 MITM 风险。 SSH 静默批准是便利措施；仍然记录 + 可撤销。 设备发现永远不是信任锚。 能力声明通过按平台/类型的服务器允许列表验证。 流式传输 + 大型负载（节点媒体） WS 控制平面对于小消息没问题，但节点还做：\n相机剪辑 屏幕录制 音频流 选项：\nWS 二进制帧 + 分块 + 背压规则。 单独的流式端点（仍然是 TLS + 认证）。 对于媒体密集型命令保持 bridge 更长时间，最后迁移。 在实现前选择一个以避免漂移。\n能力 + 命令策略 节点报告的 caps/commands 被视为声明。 Gateway 网关强制执行每平台允许列表。 任何新命令都需要操作者批准或显式允许列表更改。 用时间戳审计更改。 审计 + 速率限制 记录：配对请求、批准/拒绝、令牌颁发/轮换/撤销。 速率限制配对垃圾和审批提示。 协议卫生 显式协议版本 + 错误代码。 重连规则 + 心跳策略。 在线状态 TTL 和最后在线语义。 开放问题 同时运行两个角色的单个设备：令牌模型\n建议每个角色单独的令牌（node vs operator）。 相同的 deviceId；不同的作用域；更清晰的撤销。 操作者作用域粒度\nread/write/admin + approvals + pairing（最小可行）。 以后考虑每功能作用域。 令牌轮换 + 撤销 UX\n角色更改时自动轮换。 按 deviceId + 角色撤销的 UI。 设备发现\n扩展当前 Bonjour TXT 以包含 WS TLS 指纹 + 角色提示。 仅作为定位器提示处理。 跨网络审批\n广播到所有操作者客户端；活跃的 UI 显示模态框。 先响应者获胜；Gateway 网关强制原子性。 总结（TL;DR） 当前：WS 控制平面 + Bridge 节点传输。 痛点：审批 + 重复 + 两个栈。 提议：一个带有显式角色 + 作用域的 WS 协议，统一配对 + TLS 固定，Gateway 网关托管的审批，稳定设备 ID + 可爱别名。 结果：更简单的 UX，更强的安全性，更少的重复，更好的移动路由。 ",
+  "wordCount" : "657",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/refactor/clawnet/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Clawnet 重构（协议 &#43; 认证统一）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul><ul>
+                <li>
+                    <a href="#%e5%97%a8" aria-label="嗨">嗨</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e7%9a%84" aria-label="目的">目的</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87%e6%9d%a5%e8%87%aa%e8%ae%a8%e8%ae%ba" aria-label="目标（来自讨论）">目标（来自讨论）</a></li>
+                <li>
+                    <a href="#%e9%9d%9e%e7%9b%ae%e6%a0%87%e6%98%8e%e7%a1%ae" aria-label="非目标（明确）">非目标（明确）</a></li></ul>
+                    
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d%e7%8a%b6%e6%80%81%e7%8e%b0%e7%8a%b6" aria-label="当前状态（现状）">当前状态（现状）</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%a4%e4%b8%aa%e5%8d%8f%e8%ae%ae" aria-label="两个协议">两个协议</a><ul>
+                        
+                <li>
+                    <a href="#1-gateway-%e7%bd%91%e5%85%b3-websocket%e6%8e%a7%e5%88%b6%e5%b9%b3%e9%9d%a2" aria-label="1) Gateway 网关 WebSocket（控制平面）">1) Gateway 网关 WebSocket（控制平面）</a></li>
+                <li>
+                    <a href="#2-bridge%e8%8a%82%e7%82%b9%e4%bc%a0%e8%be%93" aria-label="2) Bridge（节点传输）">2) Bridge（节点传输）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d%e7%9a%84%e6%8e%a7%e5%88%b6%e5%b9%b3%e9%9d%a2%e5%ae%a2%e6%88%b7%e7%ab%af" aria-label="当前的控制平面客户端">当前的控制平面客户端</a></li>
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d%e7%9a%84%e8%8a%82%e7%82%b9" aria-label="当前的节点">当前的节点</a></li>
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d%e5%ae%a1%e6%89%b9%e6%b5%81%e7%a8%8bexec" aria-label="当前审批流程（exec）">当前审批流程（exec）</a></li>
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d%e7%9a%84%e5%9c%a8%e7%ba%bf%e7%8a%b6%e6%80%81--%e8%ba%ab%e4%bb%bd" aria-label="当前的在线状态 &#43; 身份">当前的在线状态 + 身份</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%97%ae%e9%a2%98%e7%97%9b%e7%82%b9" aria-label="问题/痛点">问题/痛点</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e8%ae%ae%e7%9a%84%e6%96%b0%e7%8a%b6%e6%80%81clawnet" aria-label="提议的新状态（Clawnet）">提议的新状态（Clawnet）</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%80%e4%b8%aa%e5%8d%8f%e8%ae%ae%e4%b8%a4%e4%b8%aa%e8%a7%92%e8%89%b2" aria-label="一个协议，两个角色">一个协议，两个角色</a><ul>
+                        
+                <li>
+                    <a href="#%e8%a7%92%e8%89%b2%e8%a1%8c%e4%b8%ba" aria-label="角色行为">角色行为</a></li>
+                <li>
+                    <a href="#%e5%85%b3%e9%94%ae%e8%a7%84%e5%88%99" aria-label="关键规则">关键规则</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e7%bb%9f%e4%b8%80%e8%ae%a4%e8%af%81--%e9%85%8d%e5%af%b9" aria-label="统一认证 &#43; 配对">统一认证 + 配对</a><ul>
+                        
+                <li>
+                    <a href="#%e5%ae%a2%e6%88%b7%e7%ab%af%e8%ba%ab%e4%bb%bd" aria-label="客户端身份">客户端身份</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e5%af%b9%e6%b5%81%e7%a8%8b%e7%bb%9f%e4%b8%80" aria-label="配对流程（统一）">配对流程（统一）</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e5%a4%87%e7%bb%91%e5%ae%9a%e8%ae%a4%e8%af%81%e9%81%bf%e5%85%8d-bearer-%e4%bb%a4%e7%89%8c%e9%87%8d%e6%94%be" aria-label="设备绑定认证（避免 bearer 令牌重放）">设备绑定认证（避免 bearer 令牌重放）</a></li>
+                <li>
+                    <a href="#%e9%9d%99%e9%bb%98%e6%89%b9%e5%87%86ssh-%e5%90%af%e5%8f%91%e5%bc%8f" aria-label="静默批准（SSH 启发式）">静默批准（SSH 启发式）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#tls-%e6%97%a0%e5%a4%84%e4%b8%8d%e5%9c%a8%e5%bc%80%e5%8f%91--%e7%94%9f%e4%ba%a7" aria-label="TLS 无处不在（开发 &#43; 生产）">TLS 无处不在（开发 + 生产）</a><ul>
+                        
+                <li>
+                    <a href="#%e5%a4%8d%e7%94%a8%e7%8e%b0%e6%9c%89-bridge-tls" aria-label="复用现有 bridge TLS">复用现有 bridge TLS</a></li>
+                <li>
+                    <a href="#%e5%ba%94%e7%94%a8%e4%ba%8e-ws" aria-label="应用于 WS">应用于 WS</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88" aria-label="为什么">为什么</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%a1%e6%89%b9%e9%87%8d%e6%96%b0%e8%ae%be%e8%ae%a1%e9%9b%86%e4%b8%ad%e5%8c%96" aria-label="审批重新设计（集中化）">审批重新设计（集中化）</a><ul>
+                        
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d" aria-label="当前">当前</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e8%ae%ae" aria-label="提议">提议</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%b0%e6%b5%81%e7%a8%8b" aria-label="新流程">新流程</a></li>
+                <li>
+                    <a href="#%e5%ae%a1%e6%89%b9%e8%af%ad%e4%b9%89%e5%8a%a0%e5%9b%ba" aria-label="审批语义（加固）">审批语义（加固）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%a5%bd%e5%a4%84" aria-label="好处">好处</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%a7%92%e8%89%b2%e6%b8%85%e6%99%b0%e7%a4%ba%e4%be%8b" aria-label="角色清晰示例">角色清晰示例</a><ul>
+                        
+                <li>
+                    <a href="#iphone-%e5%ba%94%e7%94%a8" aria-label="iPhone 应用">iPhone 应用</a></li>
+                <li>
+                    <a href="#macos-%e5%ba%94%e7%94%a8" aria-label="macOS 应用">macOS 应用</a></li>
+                <li>
+                    <a href="#cli" aria-label="CLI">CLI</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%ba%ab%e4%bb%bd--%e5%88%ab%e5%90%8d" aria-label="身份 &#43; 别名">身份 + 别名</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a8%b3%e5%ae%9a-id" aria-label="稳定 ID">稳定 ID</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e7%88%b1%e5%88%ab%e5%90%8d%e9%be%99%e8%99%be%e4%b8%bb%e9%a2%98" aria-label="可爱别名（龙虾主题）">可爱别名（龙虾主题）</a></li>
+                <li>
+                    <a href="#ui-%e5%88%86%e7%bb%84" aria-label="UI 分组">UI 分组</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%bf%81%e7%a7%bb%e7%ad%96%e7%95%a5" aria-label="迁移策略">迁移策略</a><ul>
+                        
+                <li>
+                    <a href="#%e9%98%b6%e6%ae%b5-0%e8%ae%b0%e5%bd%95--%e5%af%b9%e9%bd%90" aria-label="阶段 0：记录 &#43; 对齐">阶段 0：记录 + 对齐</a></li>
+                <li>
+                    <a href="#%e9%98%b6%e6%ae%b5-1%e5%90%91-ws-%e6%b7%bb%e5%8a%a0%e8%a7%92%e8%89%b2%e4%bd%9c%e7%94%a8%e5%9f%9f" aria-label="阶段 1：向 WS 添加角色/作用域">阶段 1：向 WS 添加角色/作用域</a></li>
+                <li>
+                    <a href="#%e9%98%b6%e6%ae%b5-2bridge-%e5%85%bc%e5%ae%b9%e6%80%a7" aria-label="阶段 2：Bridge 兼容性">阶段 2：Bridge 兼容性</a></li>
+                <li>
+                    <a href="#%e9%98%b6%e6%ae%b5-3%e4%b8%ad%e5%a4%ae%e5%ae%a1%e6%89%b9" aria-label="阶段 3：中央审批">阶段 3：中央审批</a></li>
+                <li>
+                    <a href="#%e9%98%b6%e6%ae%b5-4tls-%e7%bb%9f%e4%b8%80" aria-label="阶段 4：TLS 统一">阶段 4：TLS 统一</a></li>
+                <li>
+                    <a href="#%e9%98%b6%e6%ae%b5-5%e5%bc%83%e7%94%a8-bridge" aria-label="阶段 5：弃用 bridge">阶段 5：弃用 bridge</a></li>
+                <li>
+                    <a href="#%e9%98%b6%e6%ae%b5-6%e8%ae%be%e5%a4%87%e7%bb%91%e5%ae%9a%e8%ae%a4%e8%af%81" aria-label="阶段 6：设备绑定认证">阶段 6：设备绑定认证</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e8%af%b4%e6%98%8e" aria-label="安全说明">安全说明</a></li>
+                <li>
+                    <a href="#%e6%b5%81%e5%bc%8f%e4%bc%a0%e8%be%93--%e5%a4%a7%e5%9e%8b%e8%b4%9f%e8%bd%bd%e8%8a%82%e7%82%b9%e5%aa%92%e4%bd%93" aria-label="流式传输 &#43; 大型负载（节点媒体）">流式传输 + 大型负载（节点媒体）</a></li>
+                <li>
+                    <a href="#%e8%83%bd%e5%8a%9b--%e5%91%bd%e4%bb%a4%e7%ad%96%e7%95%a5" aria-label="能力 &#43; 命令策略">能力 + 命令策略</a></li>
+                <li>
+                    <a href="#%e5%ae%a1%e8%ae%a1--%e9%80%9f%e7%8e%87%e9%99%90%e5%88%b6" aria-label="审计 &#43; 速率限制">审计 + 速率限制</a></li>
+                <li>
+                    <a href="#%e5%8d%8f%e8%ae%ae%e5%8d%ab%e7%94%9f" aria-label="协议卫生">协议卫生</a></li>
+                <li>
+                    <a href="#%e5%bc%80%e6%94%be%e9%97%ae%e9%a2%98" aria-label="开放问题">开放问题</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93tldr" aria-label="总结（TL;DR）">总结（TL;DR）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="嗨">嗨<a hidden class="anchor" aria-hidden="true" href="#嗨">#</a></h2>
+<p>嗨 Peter — 方向很好；这将解锁更简单的用户体验 + 更强的安全性。</p>
+<h2 id="目的">目的<a hidden class="anchor" aria-hidden="true" href="#目的">#</a></h2>
+<p>单一、严谨的文档用于：</p>
+<ul>
+<li>当前状态：协议、流程、信任边界。</li>
+<li>痛点：审批、多跳路由、UI 重复。</li>
+<li>提议的新状态：一个协议、作用域角色、统一的认证/配对、TLS 固定。</li>
+<li>身份模型：稳定 ID + 可爱的别名。</li>
+<li>迁移计划、风险、开放问题。</li>
+</ul>
+<h2 id="目标来自讨论">目标（来自讨论）<a hidden class="anchor" aria-hidden="true" href="#目标来自讨论">#</a></h2>
+<ul>
+<li>所有客户端使用一个协议（mac 应用、CLI、iOS、Android、无头节点）。</li>
+<li>每个网络参与者都经过认证 + 配对。</li>
+<li>角色清晰：节点 vs 操作者。</li>
+<li>中央审批路由到用户所在位置。</li>
+<li>所有远程流量使用 TLS 加密 + 可选固定。</li>
+<li>最小化代码重复。</li>
+<li>单台机器应该只显示一次（无 UI/节点重复条目）。</li>
+</ul>
+<h2 id="非目标明确">非目标（明确）<a hidden class="anchor" aria-hidden="true" href="#非目标明确">#</a></h2>
+<ul>
+<li>移除能力分离（仍需要最小权限）。</li>
+<li>不经作用域检查就暴露完整的 Gateway 网关控制平面。</li>
+<li>使认证依赖于人类标签（别名仍然是非安全性的）。</li>
+</ul>
+<hr>
+<h1 id="当前状态现状">当前状态（现状）<a hidden class="anchor" aria-hidden="true" href="#当前状态现状">#</a></h1>
+<h2 id="两个协议">两个协议<a hidden class="anchor" aria-hidden="true" href="#两个协议">#</a></h2>
+<h3 id="1-gateway-网关-websocket控制平面">1) Gateway 网关 WebSocket（控制平面）<a hidden class="anchor" aria-hidden="true" href="#1-gateway-网关-websocket控制平面">#</a></h3>
+<ul>
+<li>完整 API 表面：配置、渠道、模型、会话、智能体运行、日志、节点等。</li>
+<li>默认绑定：loopback。通过 SSH/Tailscale 远程访问。</li>
+<li>认证：通过 <code>connect</code> 的令牌/密码。</li>
+<li>无 TLS 固定（依赖 loopback/隧道）。</li>
+<li>代码：
+<ul>
+<li><code>src/gateway/server/ws-connection/message-handler.ts</code></li>
+<li><code>src/gateway/client.ts</code></li>
+<li><code>docs/gateway/protocol.md</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="2-bridge节点传输">2) Bridge（节点传输）<a hidden class="anchor" aria-hidden="true" href="#2-bridge节点传输">#</a></h3>
+<ul>
+<li>窄允许列表表面，节点身份 + 配对。</li>
+<li>TCP 上的 JSONL；可选 TLS + 证书指纹固定。</li>
+<li>TLS 在设备发现 TXT 中公布指纹。</li>
+<li>代码：
+<ul>
+<li><code>src/infra/bridge/server/connection.ts</code></li>
+<li><code>src/gateway/server-bridge.ts</code></li>
+<li><code>src/node-host/bridge-client.ts</code></li>
+<li><code>docs/gateway/bridge-protocol.md</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="当前的控制平面客户端">当前的控制平面客户端<a hidden class="anchor" aria-hidden="true" href="#当前的控制平面客户端">#</a></h2>
+<ul>
+<li>CLI → 通过 <code>callGateway</code>（<code>src/gateway/call.ts</code>）连接 Gateway 网关 WS。</li>
+<li>macOS 应用 UI → Gateway 网关 WS（<code>GatewayConnection</code>）。</li>
+<li>Web 控制 UI → Gateway 网关 WS。</li>
+<li>ACP → Gateway 网关 WS。</li>
+<li>浏览器控制使用自己的 HTTP 控制服务器。</li>
+</ul>
+<h2 id="当前的节点">当前的节点<a hidden class="anchor" aria-hidden="true" href="#当前的节点">#</a></h2>
+<ul>
+<li>macOS 应用在节点模式下连接到 Gateway 网关 bridge（<code>MacNodeBridgeSession</code>）。</li>
+<li>iOS/Android 应用连接到 Gateway 网关 bridge。</li>
+<li>配对 + 每节点令牌存储在 Gateway 网关上。</li>
+</ul>
+<h2 id="当前审批流程exec">当前审批流程（exec）<a hidden class="anchor" aria-hidden="true" href="#当前审批流程exec">#</a></h2>
+<ul>
+<li>智能体通过 Gateway 网关使用 <code>system.run</code>。</li>
+<li>Gateway 网关通过 bridge 调用节点。</li>
+<li>节点运行时决定审批。</li>
+<li>UI 提示由 mac 应用显示（当节点 == mac 应用时）。</li>
+<li>节点向 Gateway 网关返回 <code>invoke-res</code>。</li>
+<li>多跳，UI 绑定到节点主机。</li>
+</ul>
+<h2 id="当前的在线状态--身份">当前的在线状态 + 身份<a hidden class="anchor" aria-hidden="true" href="#当前的在线状态--身份">#</a></h2>
+<ul>
+<li>来自 WS 客户端的 Gateway 网关在线状态条目。</li>
+<li>来自 bridge 的节点在线状态条目。</li>
+<li>mac 应用可能为同一台机器显示两个条目（UI + 节点）。</li>
+<li>节点身份存储在配对存储中；UI 身份是分开的。</li>
+</ul>
+<hr>
+<h1 id="问题痛点">问题/痛点<a hidden class="anchor" aria-hidden="true" href="#问题痛点">#</a></h1>
+<ul>
+<li>需要维护两个协议栈（WS + Bridge）。</li>
+<li>远程节点上的审批：提示出现在节点主机上，而不是用户所在位置。</li>
+<li>TLS 固定仅存在于 bridge；WS 依赖 SSH/Tailscale。</li>
+<li>身份重复：同一台机器显示为多个实例。</li>
+<li>角色模糊：UI + 节点 + CLI 能力没有明确分离。</li>
+</ul>
+<hr>
+<h1 id="提议的新状态clawnet">提议的新状态（Clawnet）<a hidden class="anchor" aria-hidden="true" href="#提议的新状态clawnet">#</a></h1>
+<h2 id="一个协议两个角色">一个协议，两个角色<a hidden class="anchor" aria-hidden="true" href="#一个协议两个角色">#</a></h2>
+<p>带有角色 + 作用域的单一 WS 协议。</p>
+<ul>
+<li><strong>角色：node</strong>（能力宿主）</li>
+<li><strong>角色：operator</strong>（控制平面）</li>
+<li>操作者的可选<strong>作用域</strong>：
+<ul>
+<li><code>operator.read</code>（状态 + 查看）</li>
+<li><code>operator.write</code>（智能体运行、发送）</li>
+<li><code>operator.admin</code>（配置、渠道、模型）</li>
+</ul>
+</li>
+</ul>
+<h3 id="角色行为">角色行为<a hidden class="anchor" aria-hidden="true" href="#角色行为">#</a></h3>
+<p><strong>Node</strong></p>
+<ul>
+<li>可以注册能力（<code>caps</code>、<code>commands</code>、permissions）。</li>
+<li>可以接收 <code>invoke</code> 命令（<code>system.run</code>、<code>camera.*</code>、<code>canvas.*</code>、<code>screen.record</code> 等）。</li>
+<li>可以发送事件：<code>voice.transcript</code>、<code>agent.request</code>、<code>chat.subscribe</code>。</li>
+<li>不能调用配置/模型/渠道/会话/智能体控制平面 API。</li>
+</ul>
+<p><strong>Operator</strong></p>
+<ul>
+<li>完整控制平面 API，受作用域限制。</li>
+<li>接收所有审批。</li>
+<li>不直接执行 OS 操作；路由到节点。</li>
+</ul>
+<h3 id="关键规则">关键规则<a hidden class="anchor" aria-hidden="true" href="#关键规则">#</a></h3>
+<p>角色是按连接的，不是按设备。一个设备可以分别打开两个角色。</p>
+<hr>
+<h1 id="统一认证--配对">统一认证 + 配对<a hidden class="anchor" aria-hidden="true" href="#统一认证--配对">#</a></h1>
+<h2 id="客户端身份">客户端身份<a hidden class="anchor" aria-hidden="true" href="#客户端身份">#</a></h2>
+<p>每个客户端提供：</p>
+<ul>
+<li><code>deviceId</code>（稳定的，从设备密钥派生）。</li>
+<li><code>displayName</code>（人类名称）。</li>
+<li><code>role</code> + <code>scope</code> + <code>caps</code> + <code>commands</code>。</li>
+</ul>
+<h2 id="配对流程统一">配对流程（统一）<a hidden class="anchor" aria-hidden="true" href="#配对流程统一">#</a></h2>
+<ul>
+<li>客户端未认证连接。</li>
+<li>Gateway 网关为该 <code>deviceId</code> 创建<strong>配对请求</strong>。</li>
+<li>操作者收到提示；批准/拒绝。</li>
+<li>Gateway 网关颁发绑定到以下内容的凭证：
+<ul>
+<li>设备公钥</li>
+<li>角色</li>
+<li>作用域</li>
+<li>能力/命令</li>
+</ul>
+</li>
+<li>客户端持久化令牌，重新认证连接。</li>
+</ul>
+<h2 id="设备绑定认证避免-bearer-令牌重放">设备绑定认证（避免 bearer 令牌重放）<a hidden class="anchor" aria-hidden="true" href="#设备绑定认证避免-bearer-令牌重放">#</a></h2>
+<p>首选：设备密钥对。</p>
+<ul>
+<li>设备一次性生成密钥对。</li>
+<li><code>deviceId = fingerprint(publicKey)</code>。</li>
+<li>Gateway 网关发送 nonce；设备签名；Gateway 网关验证。</li>
+<li>令牌颁发给公钥（所有权证明），而不是字符串。</li>
+</ul>
+<p>替代方案：</p>
+<ul>
+<li>mTLS（客户端证书）：最强，运维复杂度更高。</li>
+<li>短期 bearer 令牌仅作为临时阶段（早期轮换 + 撤销）。</li>
+</ul>
+<h2 id="静默批准ssh-启发式">静默批准（SSH 启发式）<a hidden class="anchor" aria-hidden="true" href="#静默批准ssh-启发式">#</a></h2>
+<p>精确定义以避免薄弱环节。优选其一：</p>
+<ul>
+<li><strong>仅限本地</strong>：当客户端通过 loopback/Unix socket 连接时自动配对。</li>
+<li><strong>通过 SSH 质询</strong>：Gateway 网关颁发 nonce；客户端通过获取它来证明 SSH。</li>
+<li><strong>物理存在窗口</strong>：在 Gateway 网关主机 UI 上本地批准后，允许在短窗口内（例如 10 分钟）自动配对。</li>
+</ul>
+<p>始终记录 + 记录自动批准。</p>
+<hr>
+<h1 id="tls-无处不在开发--生产">TLS 无处不在（开发 + 生产）<a hidden class="anchor" aria-hidden="true" href="#tls-无处不在开发--生产">#</a></h1>
+<h2 id="复用现有-bridge-tls">复用现有 bridge TLS<a hidden class="anchor" aria-hidden="true" href="#复用现有-bridge-tls">#</a></h2>
+<p>使用当前 TLS 运行时 + 指纹固定：</p>
+<ul>
+<li><code>src/infra/bridge/server/tls.ts</code></li>
+<li><code>src/node-host/bridge-client.ts</code> 中的指纹验证逻辑</li>
+</ul>
+<h2 id="应用于-ws">应用于 WS<a hidden class="anchor" aria-hidden="true" href="#应用于-ws">#</a></h2>
+<ul>
+<li>WS 服务器使用相同的证书/密钥 + 指纹支持 TLS。</li>
+<li>WS 客户端可以固定指纹（可选）。</li>
+<li>设备发现为所有端点公布 TLS + 指纹。
+<ul>
+<li>设备发现仅是定位器提示；永远不是信任锚。</li>
+</ul>
+</li>
+</ul>
+<h2 id="为什么">为什么<a hidden class="anchor" aria-hidden="true" href="#为什么">#</a></h2>
+<ul>
+<li>减少对 SSH/Tailscale 的机密性依赖。</li>
+<li>默认情况下使远程移动连接安全。</li>
+</ul>
+<hr>
+<h1 id="审批重新设计集中化">审批重新设计（集中化）<a hidden class="anchor" aria-hidden="true" href="#审批重新设计集中化">#</a></h1>
+<h2 id="当前">当前<a hidden class="anchor" aria-hidden="true" href="#当前">#</a></h2>
+<p>审批发生在节点主机上（mac 应用节点运行时）。提示出现在节点运行的地方。</p>
+<h2 id="提议">提议<a hidden class="anchor" aria-hidden="true" href="#提议">#</a></h2>
+<p>审批是 <strong>Gateway 网关托管的</strong>，UI 传递给操作者客户端。</p>
+<h3 id="新流程">新流程<a hidden class="anchor" aria-hidden="true" href="#新流程">#</a></h3>
+<ol>
+<li>Gateway 网关接收 <code>system.run</code> 意图（智能体）。</li>
+<li>Gateway 网关创建审批记录：<code>approval.requested</code>。</li>
+<li>操作者 UI 显示提示。</li>
+<li>审批决定发送到 Gateway 网关：<code>approval.resolve</code>。</li>
+<li>如果批准，Gateway 网关调用节点命令。</li>
+<li>节点执行，返回 <code>invoke-res</code>。</li>
+</ol>
+<h3 id="审批语义加固">审批语义（加固）<a hidden class="anchor" aria-hidden="true" href="#审批语义加固">#</a></h3>
+<ul>
+<li>广播到所有操作者；只有活跃的 UI 显示模态框（其他显示 toast）。</li>
+<li>先解决者获胜；Gateway 网关拒绝后续解决为已结算。</li>
+<li>默认超时：N 秒后拒绝（例如 60 秒），记录原因。</li>
+<li>解决需要 <code>operator.approvals</code> 作用域。</li>
+</ul>
+<h2 id="好处">好处<a hidden class="anchor" aria-hidden="true" href="#好处">#</a></h2>
+<ul>
+<li>提示出现在用户所在位置（mac/手机）。</li>
+<li>远程节点的一致审批。</li>
+<li>节点运行时保持无头；无 UI 依赖。</li>
+</ul>
+<hr>
+<h1 id="角色清晰示例">角色清晰示例<a hidden class="anchor" aria-hidden="true" href="#角色清晰示例">#</a></h1>
+<h2 id="iphone-应用">iPhone 应用<a hidden class="anchor" aria-hidden="true" href="#iphone-应用">#</a></h2>
+<ul>
+<li><strong>Node 角色</strong>用于：麦克风、相机、语音聊天、位置、一键通话。</li>
+<li>可选的 <strong>operator.read</strong> 用于状态和聊天视图。</li>
+<li>可选的 <strong>operator.write/admin</strong> 仅在明确启用时。</li>
+</ul>
+<h2 id="macos-应用">macOS 应用<a hidden class="anchor" aria-hidden="true" href="#macos-应用">#</a></h2>
+<ul>
+<li>默认是 Operator 角色（控制 UI）。</li>
+<li>启用&quot;Mac 节点&quot;时是 Node 角色（system.run、屏幕、相机）。</li>
+<li>两个连接使用相同的 deviceId → 合并的 UI 条目。</li>
+</ul>
+<h2 id="cli">CLI<a hidden class="anchor" aria-hidden="true" href="#cli">#</a></h2>
+<ul>
+<li>始终是 Operator 角色。</li>
+<li>作用域按子命令派生：
+<ul>
+<li><code>status</code>、<code>logs</code> → read</li>
+<li><code>agent</code>、<code>message</code> → write</li>
+<li><code>config</code>、<code>channels</code> → admin</li>
+<li>审批 + 配对 → <code>operator.approvals</code> / <code>operator.pairing</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="身份--别名">身份 + 别名<a hidden class="anchor" aria-hidden="true" href="#身份--别名">#</a></h1>
+<h2 id="稳定-id">稳定 ID<a hidden class="anchor" aria-hidden="true" href="#稳定-id">#</a></h2>
+<p>认证必需；永不改变。
+首选：</p>
+<ul>
+<li>密钥对指纹（公钥哈希）。</li>
+</ul>
+<h2 id="可爱别名龙虾主题">可爱别名（龙虾主题）<a hidden class="anchor" aria-hidden="true" href="#可爱别名龙虾主题">#</a></h2>
+<p>仅人类标签。</p>
+<ul>
+<li>示例：<code>scarlet-claw</code>、<code>saltwave</code>、<code>mantis-pinch</code>。</li>
+<li>存储在 Gateway 网关注册表中，可编辑。</li>
+<li>冲突处理：<code>-2</code>、<code>-3</code>。</li>
+</ul>
+<h2 id="ui-分组">UI 分组<a hidden class="anchor" aria-hidden="true" href="#ui-分组">#</a></h2>
+<p>跨角色的相同 <code>deviceId</code> → 单个&quot;实例&quot;行：</p>
+<ul>
+<li>徽章：<code>operator</code>、<code>node</code>。</li>
+<li>显示能力 + 最后在线。</li>
+</ul>
+<hr>
+<h1 id="迁移策略">迁移策略<a hidden class="anchor" aria-hidden="true" href="#迁移策略">#</a></h1>
+<h2 id="阶段-0记录--对齐">阶段 0：记录 + 对齐<a hidden class="anchor" aria-hidden="true" href="#阶段-0记录--对齐">#</a></h2>
+<ul>
+<li>发布此文档。</li>
+<li>盘点所有协议调用 + 审批流程。</li>
+</ul>
+<h2 id="阶段-1向-ws-添加角色作用域">阶段 1：向 WS 添加角色/作用域<a hidden class="anchor" aria-hidden="true" href="#阶段-1向-ws-添加角色作用域">#</a></h2>
+<ul>
+<li>用 <code>role</code>、<code>scope</code>、<code>deviceId</code> 扩展 <code>connect</code> 参数。</li>
+<li>为 node 角色添加允许列表限制。</li>
+</ul>
+<h2 id="阶段-2bridge-兼容性">阶段 2：Bridge 兼容性<a hidden class="anchor" aria-hidden="true" href="#阶段-2bridge-兼容性">#</a></h2>
+<ul>
+<li>保持 bridge 运行。</li>
+<li>并行添加 WS node 支持。</li>
+<li>通过配置标志限制功能。</li>
+</ul>
+<h2 id="阶段-3中央审批">阶段 3：中央审批<a hidden class="anchor" aria-hidden="true" href="#阶段-3中央审批">#</a></h2>
+<ul>
+<li>在 WS 中添加审批请求 + 解决事件。</li>
+<li>更新 mac 应用 UI 以提示 + 响应。</li>
+<li>节点运行时停止提示 UI。</li>
+</ul>
+<h2 id="阶段-4tls-统一">阶段 4：TLS 统一<a hidden class="anchor" aria-hidden="true" href="#阶段-4tls-统一">#</a></h2>
+<ul>
+<li>使用 bridge TLS 运行时为 WS 添加 TLS 配置。</li>
+<li>向客户端添加固定。</li>
+</ul>
+<h2 id="阶段-5弃用-bridge">阶段 5：弃用 bridge<a hidden class="anchor" aria-hidden="true" href="#阶段-5弃用-bridge">#</a></h2>
+<ul>
+<li>将 iOS/Android/mac 节点迁移到 WS。</li>
+<li>保持 bridge 作为后备；稳定后移除。</li>
+</ul>
+<h2 id="阶段-6设备绑定认证">阶段 6：设备绑定认证<a hidden class="anchor" aria-hidden="true" href="#阶段-6设备绑定认证">#</a></h2>
+<ul>
+<li>所有非本地连接都需要基于密钥的身份。</li>
+<li>添加撤销 + 轮换 UI。</li>
+</ul>
+<hr>
+<h1 id="安全说明">安全说明<a hidden class="anchor" aria-hidden="true" href="#安全说明">#</a></h1>
+<ul>
+<li>角色/允许列表在 Gateway 网关边界强制执行。</li>
+<li>没有客户端可以在没有 operator 作用域的情况下获得&quot;完整&quot;API。</li>
+<li><em>所有</em>连接都需要配对。</li>
+<li>TLS + 固定减少移动设备的 MITM 风险。</li>
+<li>SSH 静默批准是便利措施；仍然记录 + 可撤销。</li>
+<li>设备发现永远不是信任锚。</li>
+<li>能力声明通过按平台/类型的服务器允许列表验证。</li>
+</ul>
+<h1 id="流式传输--大型负载节点媒体">流式传输 + 大型负载（节点媒体）<a hidden class="anchor" aria-hidden="true" href="#流式传输--大型负载节点媒体">#</a></h1>
+<p>WS 控制平面对于小消息没问题，但节点还做：</p>
+<ul>
+<li>相机剪辑</li>
+<li>屏幕录制</li>
+<li>音频流</li>
+</ul>
+<p>选项：</p>
+<ol>
+<li>WS 二进制帧 + 分块 + 背压规则。</li>
+<li>单独的流式端点（仍然是 TLS + 认证）。</li>
+<li>对于媒体密集型命令保持 bridge 更长时间，最后迁移。</li>
+</ol>
+<p>在实现前选择一个以避免漂移。</p>
+<h1 id="能力--命令策略">能力 + 命令策略<a hidden class="anchor" aria-hidden="true" href="#能力--命令策略">#</a></h1>
+<ul>
+<li>节点报告的 caps/commands 被视为<strong>声明</strong>。</li>
+<li>Gateway 网关强制执行每平台允许列表。</li>
+<li>任何新命令都需要操作者批准或显式允许列表更改。</li>
+<li>用时间戳审计更改。</li>
+</ul>
+<h1 id="审计--速率限制">审计 + 速率限制<a hidden class="anchor" aria-hidden="true" href="#审计--速率限制">#</a></h1>
+<ul>
+<li>记录：配对请求、批准/拒绝、令牌颁发/轮换/撤销。</li>
+<li>速率限制配对垃圾和审批提示。</li>
+</ul>
+<h1 id="协议卫生">协议卫生<a hidden class="anchor" aria-hidden="true" href="#协议卫生">#</a></h1>
+<ul>
+<li>显式协议版本 + 错误代码。</li>
+<li>重连规则 + 心跳策略。</li>
+<li>在线状态 TTL 和最后在线语义。</li>
+</ul>
+<hr>
+<h1 id="开放问题">开放问题<a hidden class="anchor" aria-hidden="true" href="#开放问题">#</a></h1>
+<ol>
+<li>
+<p>同时运行两个角色的单个设备：令牌模型</p>
+<ul>
+<li>建议每个角色单独的令牌（node vs operator）。</li>
+<li>相同的 deviceId；不同的作用域；更清晰的撤销。</li>
+</ul>
+</li>
+<li>
+<p>操作者作用域粒度</p>
+<ul>
+<li>read/write/admin + approvals + pairing（最小可行）。</li>
+<li>以后考虑每功能作用域。</li>
+</ul>
+</li>
+<li>
+<p>令牌轮换 + 撤销 UX</p>
+<ul>
+<li>角色更改时自动轮换。</li>
+<li>按 deviceId + 角色撤销的 UI。</li>
+</ul>
+</li>
+<li>
+<p>设备发现</p>
+<ul>
+<li>扩展当前 Bonjour TXT 以包含 WS TLS 指纹 + 角色提示。</li>
+<li>仅作为定位器提示处理。</li>
+</ul>
+</li>
+<li>
+<p>跨网络审批</p>
+<ul>
+<li>广播到所有操作者客户端；活跃的 UI 显示模态框。</li>
+<li>先响应者获胜；Gateway 网关强制原子性。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="总结tldr">总结（TL;DR）<a hidden class="anchor" aria-hidden="true" href="#总结tldr">#</a></h1>
+<ul>
+<li>当前：WS 控制平面 + Bridge 节点传输。</li>
+<li>痛点：审批 + 重复 + 两个栈。</li>
+<li>提议：一个带有显式角色 + 作用域的 WS 协议，统一配对 + TLS 固定，Gateway 网关托管的审批，稳定设备 ID + 可爱别名。</li>
+<li>结果：更简单的 UX，更强的安全性，更少的重复，更好的移动路由。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/tools/clawhub/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>ClawHub</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/cli-backends/">
+    <span class="title">Next »</span>
+    <br>
+    <span>CLI 后端（回退运行时）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

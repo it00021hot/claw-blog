@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>exe.dev | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标：OpenClaw Gateway 网关运行在 exe.dev VM 上，可从你的笔记本电脑通过以下地址访问：https://&lt;vm-name&gt;.exe.xyz
+本页假设使用 exe.dev 的默认 exeuntu 镜像。如果你选择了不同的发行版，请相应地映射软件包。
+新手快速路径
+
+https://exe.new/openclaw
+根据需要填写你的认证密钥/令牌
+点击 VM 旁边的&quot;Agent&quot;，然后等待&hellip;
+???
+完成
+
+你需要什么
+
+exe.dev 账户
+ssh exe.dev 访问 exe.dev 虚拟机（可选）
+
+使用 Shelley 自动安装
+Shelley，exe.dev 的智能体，可以使用我们的提示立即安装 OpenClaw。使用的提示如下：
+Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by &#34;openclaw devices list&#34; and &#34;openclaw device approve &lt;request id&gt;&#34;. Make sure the dashboard shows that OpenClaw&#39;s health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final &#34;reachable&#34; should be &lt;vm-name&gt;.exe.xyz, without port specification.
+手动安装
+1) 创建 VM
+从你的设备：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/install/exe-dev/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/install/exe-dev/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/install/exe-dev/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="exe.dev">
+  <meta property="og:description" content="目标：OpenClaw Gateway 网关运行在 exe.dev VM 上，可从你的笔记本电脑通过以下地址访问：https://&lt;vm-name&gt;.exe.xyz
+本页假设使用 exe.dev 的默认 exeuntu 镜像。如果你选择了不同的发行版，请相应地映射软件包。
+新手快速路径 https://exe.new/openclaw 根据需要填写你的认证密钥/令牌 点击 VM 旁边的&#34;Agent&#34;，然后等待… ??? 完成 你需要什么 exe.dev 账户 ssh exe.dev 访问 exe.dev 虚拟机（可选） 使用 Shelley 自动安装 Shelley，exe.dev 的智能体，可以使用我们的提示立即安装 OpenClaw。使用的提示如下：
+Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by &#34;openclaw devices list&#34; and &#34;openclaw device approve &lt;request id&gt;&#34;. Make sure the dashboard shows that OpenClaw&#39;s health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final &#34;reachable&#34; should be &lt;vm-name&gt;.exe.xyz, without port specification. 手动安装 1) 创建 VM 从你的设备：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="exe.dev">
+<meta name="twitter:description" content="目标：OpenClaw Gateway 网关运行在 exe.dev VM 上，可从你的笔记本电脑通过以下地址访问：https://&lt;vm-name&gt;.exe.xyz
+本页假设使用 exe.dev 的默认 exeuntu 镜像。如果你选择了不同的发行版，请相应地映射软件包。
+新手快速路径
+
+https://exe.new/openclaw
+根据需要填写你的认证密钥/令牌
+点击 VM 旁边的&quot;Agent&quot;，然后等待&hellip;
+???
+完成
+
+你需要什么
+
+exe.dev 账户
+ssh exe.dev 访问 exe.dev 虚拟机（可选）
+
+使用 Shelley 自动安装
+Shelley，exe.dev 的智能体，可以使用我们的提示立即安装 OpenClaw。使用的提示如下：
+Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by &#34;openclaw devices list&#34; and &#34;openclaw device approve &lt;request id&gt;&#34;. Make sure the dashboard shows that OpenClaw&#39;s health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final &#34;reachable&#34; should be &lt;vm-name&gt;.exe.xyz, without port specification.
+手动安装
+1) 创建 VM
+从你的设备：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "exe.dev",
+      "item": "/openclaw/install/exe-dev/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "exe.dev",
+  "name": "exe.dev",
+  "description": "目标：OpenClaw Gateway 网关运行在 exe.dev VM 上，可从你的笔记本电脑通过以下地址访问：https://\u0026lt;vm-name\u0026gt;.exe.xyz\n本页假设使用 exe.dev 的默认 exeuntu 镜像。如果你选择了不同的发行版，请相应地映射软件包。\n新手快速路径 https://exe.new/openclaw 根据需要填写你的认证密钥/令牌 点击 VM 旁边的\u0026quot;Agent\u0026quot;，然后等待\u0026hellip; ??? 完成 你需要什么 exe.dev 账户 ssh exe.dev 访问 exe.dev 虚拟机（可选） 使用 Shelley 自动安装 Shelley，exe.dev 的智能体，可以使用我们的提示立即安装 OpenClaw。使用的提示如下：\nSet up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by \u0026#34;openclaw devices list\u0026#34; and \u0026#34;openclaw device approve \u0026lt;request id\u0026gt;\u0026#34;. Make sure the dashboard shows that OpenClaw\u0026#39;s health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final \u0026#34;reachable\u0026#34; should be \u0026lt;vm-name\u0026gt;.exe.xyz, without port specification. 手动安装 1) 创建 VM 从你的设备：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标：OpenClaw Gateway 网关运行在 exe.dev VM 上，可从你的笔记本电脑通过以下地址访问：https://.exe.xyz\n本页假设使用 exe.dev 的默认 exeuntu 镜像。如果你选择了不同的发行版，请相应地映射软件包。\n新手快速路径 https://exe.new/openclaw 根据需要填写你的认证密钥/令牌 点击 VM 旁边的\"Agent\"，然后等待… ??? 完成 你需要什么 exe.dev 账户 ssh exe.dev 访问 exe.dev 虚拟机（可选） 使用 Shelley 自动安装 Shelley，exe.dev 的智能体，可以使用我们的提示立即安装 OpenClaw。使用的提示如下：\nSet up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by \"openclaw devices list\" and \"openclaw device approve \". Make sure the dashboard shows that OpenClaw's health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final \"reachable\" should be .exe.xyz, without port specification. 手动安装 1) 创建 VM 从你的设备：\nssh exe.dev new 然后连接：\nssh .exe.xyz 提示：保持此 VM 有状态。OpenClaw 在 ~/.openclaw/ 和 ~/.openclaw/workspace/ 下存储状态。\n2) 安装先决条件（在 VM 上） sudo apt-get update sudo apt-get install -y git curl jq ca-certificates openssl 3) 安装 OpenClaw 运行 OpenClaw 安装脚本：\ncurl -fsSL https://openclaw.ai/install.sh | bash 4) 设置 nginx 将 OpenClaw 代理到端口 8000 编辑 /etc/nginx/sites-enabled/default：\nserver { listen 80 default_server; listen [::]:80 default_server; listen 8000; listen [::]:8000; server_name _; location / { proxy_pass http://127.0.0.1:18789; proxy_http_version 1.1; # WebSocket 支持 proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection \"upgrade\"; # 标准代理头 proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; # 长连接超时设置 proxy_read_timeout 86400s; proxy_send_timeout 86400s; } } 5) 访问 OpenClaw 并授予权限 访问 https://.exe.xyz/?token=YOUR-TOKEN-FROM-TERMINAL（参阅新手引导中的控制 UI 输出）。使用 openclaw devices list 和 openclaw devices approve 批准设备。如有疑问，从浏览器使用 Shelley！\n远程访问 远程访问由 exe.dev 的认证处理。默认情况下，来自端口 8000 的 HTTP 流量通过电子邮件认证转发到 https://.exe.xyz。\n更新 npm i -g openclaw@latest openclaw doctor openclaw gateway restart openclaw health 指南：更新\n",
+  "wordCount" : "275",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/install/exe-dev/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      exe.dev
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%96%b0%e6%89%8b%e5%bf%ab%e9%80%9f%e8%b7%af%e5%be%84" aria-label="新手快速路径">新手快速路径</a></li>
+                <li>
+                    <a href="#%e4%bd%a0%e9%9c%80%e8%a6%81%e4%bb%80%e4%b9%88" aria-label="你需要什么">你需要什么</a></li>
+                <li>
+                    <a href="#%e4%bd%bf%e7%94%a8-shelley-%e8%87%aa%e5%8a%a8%e5%ae%89%e8%a3%85" aria-label="使用 Shelley 自动安装">使用 Shelley 自动安装</a></li>
+                <li>
+                    <a href="#%e6%89%8b%e5%8a%a8%e5%ae%89%e8%a3%85" aria-label="手动安装">手动安装</a></li>
+                <li>
+                    <a href="#1-%e5%88%9b%e5%bb%ba-vm" aria-label="1) 创建 VM">1) 创建 VM</a></li>
+                <li>
+                    <a href="#2-%e5%ae%89%e8%a3%85%e5%85%88%e5%86%b3%e6%9d%a1%e4%bb%b6%e5%9c%a8-vm-%e4%b8%8a" aria-label="2) 安装先决条件（在 VM 上）">2) 安装先决条件（在 VM 上）</a></li>
+                <li>
+                    <a href="#3-%e5%ae%89%e8%a3%85-openclaw" aria-label="3) 安装 OpenClaw">3) 安装 OpenClaw</a></li>
+                <li>
+                    <a href="#4-%e8%ae%be%e7%bd%ae-nginx-%e5%b0%86-openclaw-%e4%bb%a3%e7%90%86%e5%88%b0%e7%ab%af%e5%8f%a3-8000" aria-label="4) 设置 nginx 将 OpenClaw 代理到端口 8000">4) 设置 nginx 将 OpenClaw 代理到端口 8000</a></li>
+                <li>
+                    <a href="#5-%e8%ae%bf%e9%97%ae-openclaw-%e5%b9%b6%e6%8e%88%e4%ba%88%e6%9d%83%e9%99%90" aria-label="5) 访问 OpenClaw 并授予权限">5) 访问 OpenClaw 并授予权限</a></li>
+                <li>
+                    <a href="#%e8%bf%9c%e7%a8%8b%e8%ae%bf%e9%97%ae" aria-label="远程访问">远程访问</a></li>
+                <li>
+                    <a href="#%e6%9b%b4%e6%96%b0" aria-label="更新">更新</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>目标：OpenClaw Gateway 网关运行在 exe.dev VM 上，可从你的笔记本电脑通过以下地址访问：<code>https://&lt;vm-name&gt;.exe.xyz</code></p>
+<p>本页假设使用 exe.dev 的默认 <strong>exeuntu</strong> 镜像。如果你选择了不同的发行版，请相应地映射软件包。</p>
+<h2 id="新手快速路径">新手快速路径<a hidden class="anchor" aria-hidden="true" href="#新手快速路径">#</a></h2>
+<ol>
+<li><a href="https://exe.new/openclaw">https://exe.new/openclaw</a></li>
+<li>根据需要填写你的认证密钥/令牌</li>
+<li>点击 VM 旁边的&quot;Agent&quot;，然后等待&hellip;</li>
+<li>???</li>
+<li>完成</li>
+</ol>
+<h2 id="你需要什么">你需要什么<a hidden class="anchor" aria-hidden="true" href="#你需要什么">#</a></h2>
+<ul>
+<li>exe.dev 账户</li>
+<li><code>ssh exe.dev</code> 访问 <a href="https://exe.dev">exe.dev</a> 虚拟机（可选）</li>
+</ul>
+<h2 id="使用-shelley-自动安装">使用 Shelley 自动安装<a hidden class="anchor" aria-hidden="true" href="#使用-shelley-自动安装">#</a></h2>
+<p>Shelley，<a href="https://exe.dev">exe.dev</a> 的智能体，可以使用我们的提示立即安装 OpenClaw。使用的提示如下：</p>
+<pre tabindex="0"><code>Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by &#34;openclaw devices list&#34; and &#34;openclaw device approve &lt;request id&gt;&#34;. Make sure the dashboard shows that OpenClaw&#39;s health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final &#34;reachable&#34; should be &lt;vm-name&gt;.exe.xyz, without port specification.
+</code></pre><h2 id="手动安装">手动安装<a hidden class="anchor" aria-hidden="true" href="#手动安装">#</a></h2>
+<h2 id="1-创建-vm">1) 创建 VM<a hidden class="anchor" aria-hidden="true" href="#1-创建-vm">#</a></h2>
+<p>从你的设备：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh exe.dev new
+</span></span></code></pre></div><p>然后连接：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh &lt;vm-name&gt;.exe.xyz
+</span></span></code></pre></div><p>提示：保持此 VM <strong>有状态</strong>。OpenClaw 在 <code>~/.openclaw/</code> 和 <code>~/.openclaw/workspace/</code> 下存储状态。</p>
+<h2 id="2-安装先决条件在-vm-上">2) 安装先决条件（在 VM 上）<a hidden class="anchor" aria-hidden="true" href="#2-安装先决条件在-vm-上">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get update
+</span></span><span class="line"><span class="cl">sudo apt-get install -y git curl jq ca-certificates openssl
+</span></span></code></pre></div><h2 id="3-安装-openclaw">3) 安装 OpenClaw<a hidden class="anchor" aria-hidden="true" href="#3-安装-openclaw">#</a></h2>
+<p>运行 OpenClaw 安装脚本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://openclaw.ai/install.sh <span class="p">|</span> bash
+</span></span></code></pre></div><h2 id="4-设置-nginx-将-openclaw-代理到端口-8000">4) 设置 nginx 将 OpenClaw 代理到端口 8000<a hidden class="anchor" aria-hidden="true" href="#4-设置-nginx-将-openclaw-代理到端口-8000">#</a></h2>
+<p>编辑 <code>/etc/nginx/sites-enabled/default</code>：</p>
+<pre tabindex="0"><code>server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 8000;
+    listen [::]:8000;
+
+    server_name _;
+
+    location / {
+        proxy_pass http://127.0.0.1:18789;
+        proxy_http_version 1.1;
+
+        # WebSocket 支持
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &#34;upgrade&#34;;
+
+        # 标准代理头
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # 长连接超时设置
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+    }
+}
+</code></pre><h2 id="5-访问-openclaw-并授予权限">5) 访问 OpenClaw 并授予权限<a hidden class="anchor" aria-hidden="true" href="#5-访问-openclaw-并授予权限">#</a></h2>
+<p>访问 <code>https://&lt;vm-name&gt;.exe.xyz/?token=YOUR-TOKEN-FROM-TERMINAL</code>（参阅新手引导中的控制 UI 输出）。使用 <code>openclaw devices list</code> 和 <code>openclaw devices approve &lt;requestId&gt;</code> 批准设备。如有疑问，从浏览器使用 Shelley！</p>
+<h2 id="远程访问">远程访问<a hidden class="anchor" aria-hidden="true" href="#远程访问">#</a></h2>
+<p>远程访问由 <a href="https://exe.dev">exe.dev</a> 的认证处理。默认情况下，来自端口 8000 的 HTTP 流量通过电子邮件认证转发到 <code>https://&lt;vm-name&gt;.exe.xyz</code>。</p>
+<h2 id="更新">更新<a hidden class="anchor" aria-hidden="true" href="#更新">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm i -g openclaw@latest
+</span></span><span class="line"><span class="cl">openclaw doctor
+</span></span><span class="line"><span class="cl">openclaw gateway restart
+</span></span><span class="line"><span class="cl">openclaw health
+</span></span></code></pre></div><p>指南：<a href="/install/updating">更新</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/gateway/doctor/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Doctor</span>
+  </a>
+  <a class="next" href="/openclaw/refactor/exec-host/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Exec 主机重构计划</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

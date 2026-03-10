@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Docker（可选）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Docker 是可选的。仅当你想要容器化的 Gateway 网关或验证 Docker 流程时才使用它。
+Docker 适合我吗？ 是：你想要一个隔离的、可丢弃的 Gateway 网关环境，或在没有本地安装的主机上运行 OpenClaw。 否：你在自己的机器上运行，只想要最快的开发循环。请改用正常的安装流程。 沙箱注意事项：智能体沙箱隔离也使用 Docker，但它不需要完整的 Gateway 网关在 Docker 中运行。参阅沙箱隔离。 本指南涵盖：
+容器化 Gateway 网关（完整的 OpenClaw 在 Docker 中） 每会话智能体沙箱（主机 Gateway 网关 &#43; Docker 隔离的智能体工具） 沙箱隔离详情：沙箱隔离
+要求 Docker Desktop（或 Docker Engine）&#43; Docker Compose v2 足够的磁盘空间用于镜像 &#43; 日志 容器化 Gateway 网关（Docker Compose） 快速开始（推荐） 从仓库根目录：
+./docker-setup.sh 此脚本：
+构建 Gateway 网关镜像 运行新手引导向导 打印可选的提供商设置提示 通过 Docker Compose 启动 Gateway 网关 生成 Gateway 网关令牌并写入 .env 可选环境变量：
+OPENCLAW_DOCKER_APT_PACKAGES — 在构建期间安装额外的 apt 包 OPENCLAW_EXTRA_MOUNTS — 添加额外的主机绑定挂载 OPENCLAW_HOME_VOLUME — 在命名卷中持久化 /home/node 完成后：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Docker（可选）" href="/openclaw/install/docker/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Discord（Bot API）</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态：已支持通过官方 Discord 机器人网关进行私信和服务器文字频道通信。
+快速设置（新手） 创建 Discord 机器人并复制机器人令牌。 在 Discord 应用设置中启用 Message Content Intent（如果你计划使用允许列表或名称查找，还需启用 Server Members Intent）。 为 OpenClaw 设置令牌： 环境变量：DISCORD_BOT_TOKEN=... 或配置：channels.discord.token: &#34;...&#34;。 如果两者都设置，配置优先（环境变量回退仅适用于默认账户）。 使用消息权限邀请机器人到你的服务器（如果你只想使用私信，可以创建一个私人服务器）。 启动 Gateway 网关。 私信访问默认采用配对模式；首次联系时需批准配对码。 最小配置：
+{ channels: { discord: { enabled: true, token: &#34;YOUR_BOT_TOKEN&#34;, }, }, } 目标 通过 Discord 私信或服务器频道与 OpenClaw 对话。 直接聊天会合并到智能体的主会话（默认 agent:main:main）；服务器频道保持隔离为 agent:&lt;agentId&gt;:discord:channel:&lt;channelId&gt;（显示名称使用 discord:&lt;guildSlug&gt;#&lt;channelSlug&gt;）。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 保持路由确定性：回复始终返回到消息来源的渠道。 工作原理 创建 Discord 应用程序 → Bot，启用你需要的意图（私信 &#43; 服务器消息 &#43; 消息内容），并获取机器人令牌。 使用所需权限邀请机器人到你的服务器，以便在你想使用的地方读取/发送消息。 使用 channels.discord.token 配置 OpenClaw（或使用 DISCORD_BOT_TOKEN 作为回退）。 运行 Gateway 网关；当令牌可用（配置优先，环境变量回退）且 channels.discord.enabled 不为 false 时，它会自动启动 Discord 渠道。 如果你更喜欢使用环境变量，设置 DISCORD_BOT_TOKEN（配置块是可选的）。 直接聊天：发送时使用 user:&lt;id&gt;（或 &lt;@id&gt; 提及）；所有对话都进入共享的 main 会话。纯数字 ID 是模糊的，会被拒绝。 服务器频道：发送时使用 channel:&lt;channelId&gt;。默认需要提及，可以按服务器或按频道设置。 直接聊天：默认通过 channels.discord.dm.policy 进行安全保护（默认：&#34;pairing&#34;）。未知发送者会收到配对码（1 小时后过期）；通过 openclaw pairing approve discord &lt;code&gt; 批准。 要保持旧的&#34;对任何人开放&#34;行为：设置 channels.discord.dm.policy=&#34;open&#34; 和 channels.discord.dm.allowFrom=[&#34;*&#34;]。 要使用硬编码允许列表：设置 channels.discord.dm.policy=&#34;allowlist&#34; 并在 channels.discord.dm.allowFrom 中列出发送者。 要忽略所有私信：设置 channels.discord.dm.enabled=false 或 channels.discord.dm.policy=&#34;disabled&#34;。 群组私信默认被忽略；通过 channels.discord.dm.groupEnabled 启用，并可选择通过 channels.discord.dm.groupChannels 进行限制。 可选服务器规则：设置 channels.discord.guilds，以服务器 ID（首选）或 slug 为键，并包含每个频道的规则。 可选原生命令：commands.native 默认为 &#34;auto&#34;（Discord/Telegram 开启，Slack 关闭）。使用 channels.discord.commands.native: true|false|&#34;auto&#34; 覆盖；false 会清除之前注册的命令。文本命令由 commands.text 控制，必须作为独立的 /... 消息发送。使用 commands.useAccessGroups: false 可跳过命令的访问组检查。 完整命令列表 &#43; 配置：斜杠命令 可选服务器上下文历史：设置 channels.discord.historyLimit（默认 20，回退到 messages.groupChat.historyLimit）以在回复提及时包含最近 N 条服务器消息作为上下文。设置 0 禁用。 表情反应：智能体可以通过 discord 工具触发表情反应（受 channels.discord.actions.* 控制）。 表情反应移除语义：参见 /tools/reactions。 discord 工具仅在当前渠道是 Discord 时暴露。 原生命令使用隔离的会话键（agent:&lt;agentId&gt;:discord:slash:&lt;userId&gt;）而不是共享的 main 会话。 注意：名称 → ID 解析使用服务器成员搜索，需要 Server Members Intent；如果机器人无法搜索成员，请使用 ID 或 &lt;@id&gt; 提及。 注意：Slug 为小写，空格替换为 -。频道名称的 slug 不包含前导 #。 注意：服务器上下文 [from:] 行包含 author.tag &#43; id，便于进行可提及的回复。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Discord（Bot API）" href="/openclaw/channels/discord/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Deepgram（音频转录）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Deepgram 是一个语音转文字 API。在 OpenClaw 中，它通过 tools.media.audio 用于接收音频/语音消息的转录。
+启用后，OpenClaw 会将音频文件上传到 Deepgram，并将转录文本注入回复管道（{{Transcript}} &#43; [Audio] 块）。这不是流式处理；它使用的是预录音转录端点。
+网站：https://deepgram.com
+文档：https://developers.deepgram.com
+快速开始 设置你的 API 密钥： DEEPGRAM_API_KEY=dg_... 启用提供商： { tools: { media: { audio: { enabled: true, models: [{ provider: &#34;deepgram&#34;, model: &#34;nova-3&#34; }], }, }, }, } 选项 model：Deepgram 模型 ID（默认：nova-3） language：语言提示（可选） tools.media.audio.providerOptions.deepgram.detect_language：启用语言检测（可选） tools.media.audio.providerOptions.deepgram.punctuate：启用标点符号（可选） tools.media.audio.providerOptions.deepgram.smart_format：启用智能格式化（可选） 带语言参数的示例：
+{ tools: { media: { audio: { enabled: true, models: [{ provider: &#34;deepgram&#34;, model: &#34;nova-3&#34;, language: &#34;en&#34; }], }, }, }, } 带 Deepgram 选项的示例：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Deepgram（音频转录）" href="/openclaw/providers/deepgram/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Cron Add 加固 &amp; Schema 对齐</h2>
+    </header>
+    <div class="entry-content">
+      <p>背景 最近的 Gateway 网关日志显示重复的 cron.add 失败，参数无效（缺少 sessionTarget、wakeMode、payload，以及格式错误的 schedule）。这表明至少有一个客户端（可能是智能体工具调用路径）正在发送包装的或部分指定的任务负载。另外，TypeScript 中的 cron 提供商枚举、Gateway 网关 schema、CLI 标志和 UI 表单类型之间存在漂移，加上 cron.status 的 UI 不匹配（期望 jobCount 而 Gateway 网关返回 jobs）。
+目标 通过规范化常见的包装负载并推断缺失的 kind 字段来停止 cron.add INVALID_REQUEST 垃圾。 在 Gateway 网关 schema、cron 类型、CLI 文档和 UI 表单之间对齐 cron 提供商列表。 使智能体 cron 工具 schema 明确，以便 LLM 生成正确的任务负载。 修复 Control UI cron 状态任务计数显示。 添加测试以覆盖规范化和工具行为。 非目标 更改 cron 调度语义或任务执行行为。 添加新的调度类型或 cron 表达式解析。 除了必要的字段修复外，不大改 cron 的 UI/UX。 发现（当前差距） Gateway 网关中的 CronPayloadSchema 排除了 signal &#43; imessage，而 TS 类型包含它们。 Control UI CronStatus 期望 jobCount，但 Gateway 网关返回 jobs。 智能体 cron 工具 schema 允许任意 job 对象，导致格式错误的输入。 Gateway 网关严格验证 cron.add 而不进行规范化，因此包装的负载会失败。 变更内容 cron.add 和 cron.update 现在规范化常见的包装形式并推断缺失的 kind 字段。 智能体 cron 工具 schema 与 Gateway 网关 schema 匹配，减少无效负载。 提供商枚举在 Gateway 网关、CLI、UI 和 macOS 选择器之间对齐。 Control UI 使用 Gateway 网关的 jobs 计数字段显示状态。 当前行为 **规范化：**包装的 data/job 负载被解包；schedule.kind 和 payload.kind 在安全时被推断。 **默认值：**当缺失时，为 wakeMode 和 sessionTarget 应用安全默认值。 **提供商：**Discord/Slack/Signal/iMessage 现在在 CLI/UI 中一致显示。 参见 Cron 任务 了解规范化的形式和示例。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Cron Add 加固 & Schema 对齐" href="/openclaw/experiments/plans/cron-add-hardening/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>CLI 后端（回退运行时）</h2>
+    </header>
+    <div class="entry-content">
+      <p>当 API 提供商宕机、被限流或暂时异常时，OpenClaw 可以运行本地 AI CLI 作为纯文本回退。这是有意保守的设计：
+工具被禁用（无工具调用）。 文本输入 → 文本输出（可靠）。 支持会话（因此后续轮次保持连贯）。 如果 CLI 接受图像路径，图像可以传递。 这被设计为安全网而非主要路径。当你想要&#34;始终有效&#34;的文本响应而不依赖外部 API 时使用它。
+新手友好快速开始 你可以无需任何配置使用 Claude Code CLI（OpenClaw 自带内置默认值）：
+openclaw agent --message &#34;hi&#34; --model claude-cli/opus-4.5 Codex CLI 也可以开箱即用：
+openclaw agent --message &#34;hi&#34; --model codex-cli/gpt-5.2-codex 如果你的 Gateway 网关在 launchd/systemd 下运行且 PATH 很精简，只需添加命令路径：
+{ agents: { defaults: { cliBackends: { &#34;claude-cli&#34;: { command: &#34;/opt/homebrew/bin/claude&#34;, }, }, }, }, } 就这样。除了 CLI 本身外，不需要密钥，不需要额外的认证配置。
+作为回退使用 将 CLI 后端添加到你的回退列表中，这样它只在主要模型失败时运行：
+{ agents: { defaults: { model: { primary: &#34;anthropic/claude-opus-4-5&#34;, fallbacks: [&#34;claude-cli/opus-4.5&#34;], }, models: { &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; }, &#34;claude-cli/opus-4.5&#34;: {}, }, }, }, } 注意事项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to CLI 后端（回退运行时）" href="/openclaw/gateway/cli-backends/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Clawnet 重构（协议 &#43; 认证统一）</h2>
+    </header>
+    <div class="entry-content">
+      <p>嗨 嗨 Peter — 方向很好；这将解锁更简单的用户体验 &#43; 更强的安全性。
+目的 单一、严谨的文档用于：
+当前状态：协议、流程、信任边界。 痛点：审批、多跳路由、UI 重复。 提议的新状态：一个协议、作用域角色、统一的认证/配对、TLS 固定。 身份模型：稳定 ID &#43; 可爱的别名。 迁移计划、风险、开放问题。 目标（来自讨论） 所有客户端使用一个协议（mac 应用、CLI、iOS、Android、无头节点）。 每个网络参与者都经过认证 &#43; 配对。 角色清晰：节点 vs 操作者。 中央审批路由到用户所在位置。 所有远程流量使用 TLS 加密 &#43; 可选固定。 最小化代码重复。 单台机器应该只显示一次（无 UI/节点重复条目）。 非目标（明确） 移除能力分离（仍需要最小权限）。 不经作用域检查就暴露完整的 Gateway 网关控制平面。 使认证依赖于人类标签（别名仍然是非安全性的）。 当前状态（现状） 两个协议 1) Gateway 网关 WebSocket（控制平面） 完整 API 表面：配置、渠道、模型、会话、智能体运行、日志、节点等。 默认绑定：loopback。通过 SSH/Tailscale 远程访问。 认证：通过 connect 的令牌/密码。 无 TLS 固定（依赖 loopback/隧道）。 代码： src/gateway/server/ws-connection/message-handler.ts src/gateway/client.ts docs/gateway/protocol.md 2) Bridge（节点传输） 窄允许列表表面，节点身份 &#43; 配对。 TCP 上的 JSONL；可选 TLS &#43; 证书指纹固定。 TLS 在设备发现 TXT 中公布指纹。 代码： src/infra/bridge/server/connection.ts src/gateway/server-bridge.ts src/node-host/bridge-client.ts docs/gateway/bridge-protocol.md 当前的控制平面客户端 CLI → 通过 callGateway（src/gateway/call.ts）连接 Gateway 网关 WS。 macOS 应用 UI → Gateway 网关 WS（GatewayConnection）。 Web 控制 UI → Gateway 网关 WS。 ACP → Gateway 网关 WS。 浏览器控制使用自己的 HTTP 控制服务器。 当前的节点 macOS 应用在节点模式下连接到 Gateway 网关 bridge（MacNodeBridgeSession）。 iOS/Android 应用连接到 Gateway 网关 bridge。 配对 &#43; 每节点令牌存储在 Gateway 网关上。 当前审批流程（exec） 智能体通过 Gateway 网关使用 system.run。 Gateway 网关通过 bridge 调用节点。 节点运行时决定审批。 UI 提示由 mac 应用显示（当节点 == mac 应用时）。 节点向 Gateway 网关返回 invoke-res。 多跳，UI 绑定到节点主机。 当前的在线状态 &#43; 身份 来自 WS 客户端的 Gateway 网关在线状态条目。 来自 bridge 的节点在线状态条目。 mac 应用可能为同一台机器显示两个条目（UI &#43; 节点）。 节点身份存储在配对存储中；UI 身份是分开的。 问题/痛点 需要维护两个协议栈（WS &#43; Bridge）。 远程节点上的审批：提示出现在节点主机上，而不是用户所在位置。 TLS 固定仅存在于 bridge；WS 依赖 SSH/Tailscale。 身份重复：同一台机器显示为多个实例。 角色模糊：UI &#43; 节点 &#43; CLI 能力没有明确分离。 提议的新状态（Clawnet） 一个协议，两个角色 带有角色 &#43; 作用域的单一 WS 协议。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Clawnet 重构（协议 &#43; 认证统一）" href="/openclaw/refactor/clawnet/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>ClawHub</h2>
+    </header>
+    <div class="entry-content">
+      <p>ClawHub 是 OpenClaw 的公共 Skills 注册中心。它是一项免费服务：所有 Skills 都是公开的、开放的，所有人都可以查看、共享和复用。Skills 就是一个包含 SKILL.md 文件（以及辅助文本文件）的文件夹。你可以在网页应用中浏览 Skills，也可以使用 CLI 来搜索、安装、更新和发布 Skills。
+网站：clawhub.com
+适用人群（新手友好） 如果你想为 OpenClaw 智能体添加新功能，ClawHub 是查找和安装 Skills 的最简单方式。你不需要了解后端的工作原理。你可以：
+使用自然语言搜索 Skills。 将 Skills 安装到你的工作区。 之后使用一条命令更新 Skills。 通过发布 Skills 来备份你自己的 Skills。 快速入门（非技术人员） 安装 CLI（参见下一节）。 搜索你需要的内容： clawhub search &#34;calendar&#34; 安装一个 Skills： clawhub install &lt;skill-slug&gt; 启动一个新的 OpenClaw 会话，以加载新 Skills。 安装 CLI 任选其一：
+npm i -g clawhub pnpm add -g clawhub 在 OpenClaw 中的定位 默认情况下，CLI 会将 Skills 安装到当前工作目录下的 ./skills。如果已配置 OpenClaw 工作区，clawhub 会回退到该工作区，除非你通过 --workdir（或 CLAWHUB_WORKDIR）进行覆盖。OpenClaw 从 &lt;workspace&gt;/skills 加载工作区 Skills，并会在下一个会话中生效。如果你已经在使用 ~/.openclaw/skills 或内置 Skills，工作区 Skills 优先级更高。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to ClawHub" href="/openclaw/tools/clawhub/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Claude Max API 代理</h2>
+    </header>
+    <div class="entry-content">
+      <p>claude-max-api-proxy 是一个社区工具，将你的 Claude Max/Pro 订阅暴露为 OpenAI 兼容的 API 端点。这使你可以将订阅与任何支持 OpenAI API 格式的工具配合使用。
+为什么使用它？ 方式 费用 适用场景 Anthropic API 按 token 计费（Opus 约 $15/M 输入，$75/M 输出） 生产应用、高流量场景 Claude Max 订阅 每月固定 $200 个人使用、开发、无限用量 如果你有 Claude Max 订阅并希望与 OpenAI 兼容工具配合使用，这个代理可以帮你节省大量费用。
+工作原理 你的应用 → claude-max-api-proxy → Claude Code CLI → Anthropic（通过订阅） （OpenAI 格式） （转换格式） （使用你的登录凭据） 该代理：
+在 http://localhost:3456/v1/chat/completions 接受 OpenAI 格式的请求 将其转换为 Claude Code CLI 命令 以 OpenAI 格式返回响应（支持流式传输） 安装 # 需要 Node.js 20&#43; 和 Claude Code CLI npm install -g claude-max-api-proxy # 验证 Claude CLI 已认证 claude --version 使用方法 启动服务器 claude-max-api # 服务器运行在 http://localhost:3456 测试 # 健康检查 curl http://localhost:3456/health # 列出模型 curl http://localhost:3456/v1/models # 聊天补全 curl http://localhost:3456/v1/chat/completions \ -H &#34;Content-Type: application/json&#34; \ -d &#39;{ &#34;model&#34;: &#34;claude-opus-4&#34;, &#34;messages&#34;: [{&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: &#34;Hello!&#34;}] }&#39; 与 OpenClaw 配合使用 你可以将 OpenClaw 指向该代理作为自定义 OpenAI 兼容端点：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Claude Max API 代理" href="/openclaw/providers/claude-max-api-proxy/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Chrome 扩展（浏览器中继）</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw Chrome 扩展让智能体控制你现有的 Chrome 标签页（你的正常 Chrome 窗口），而不是启动一个单独的 openclaw 管理的 Chrome 配置文件。
+附加/分离通过一个单独的 Chrome 工具栏按钮实现。
+它是什么（概念） 有三个部分：
+浏览器控制服务（Gateway 网关或节点）：智能体/工具调用的 API（通过 Gateway 网关） 本地中继服务器（loopback CDP）：在控制服务器和扩展之间桥接（默认 http://127.0.0.1:18792） Chrome MV3 扩展：使用 chrome.debugger 附加到活动标签页，并将 CDP 消息传送到中继 然后 OpenClaw 通过正常的 browser 工具界面控制附加的标签页（选择正确的配置文件）。
+安装/加载（未打包） 将扩展安装到稳定的本地路径： openclaw browser extension install 打印已安装扩展的目录路径： openclaw browser extension path Chrome → chrome://extensions 启用&#34;开发者模式&#34; “加载已解压的扩展程序” → 选择上面打印的目录 固定扩展。 更新（无构建步骤） 扩展作为静态文件包含在 OpenClaw 发布版（npm 包）中。没有单独的&#34;构建&#34;步骤。
+升级 OpenClaw 后：
+重新运行 openclaw browser extension install 以刷新 OpenClaw 状态目录下的已安装文件。 Chrome → chrome://extensions → 点击扩展上的&#34;重新加载&#34;。 使用它（无需额外配置） OpenClaw 附带一个名为 chrome 的内置浏览器配置文件，它指向默认端口上的扩展中继。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Chrome 扩展（浏览器中继）" href="/openclaw/tools/chrome-extension/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Canvas（macOS 应用）</h2>
+    </header>
+    <div class="entry-content">
+      <p>macOS 应用使用 WKWebView 嵌入一个智能体控制的 Canvas 面板。它是一个用于 HTML/CSS/JS、A2UI 和小型交互式界面的轻量级可视化工作区。
+Canvas 存储位置 Canvas 状态存储在 Application Support 下：
+~/Library/Application Support/OpenClaw/canvas/&lt;session&gt;/... Canvas 面板通过自定义 URL 方案提供这些文件：
+openclaw-canvas://&lt;session&gt;/&lt;path&gt; 示例：
+openclaw-canvas://main/ → &lt;canvasRoot&gt;/main/index.html openclaw-canvas://main/assets/app.css → &lt;canvasRoot&gt;/main/assets/app.css openclaw-canvas://main/widgets/todo/ → &lt;canvasRoot&gt;/main/widgets/todo/index.html 如果根目录下没有 index.html，应用会显示一个内置脚手架页面。
+面板行为 无边框、可调整大小的面板，锚定在菜单栏（或鼠标光标）附近。 记住每个会话的大小/位置。 当本地 canvas 文件更改时自动重新加载。 一次只显示一个 Canvas 面板（根据需要切换会话）。 可以从设置 → 允许 Canvas 禁用 Canvas。禁用时，canvas 节点命令返回 CANVAS_DISABLED。
+智能体 API 接口 Canvas 通过 Gateway 网关 WebSocket 暴露，因此智能体可以：
+显示/隐藏面板 导航到路径或 URL 执行 JavaScript 捕获快照图像 CLI 示例：
+openclaw nodes canvas present --node &lt;id&gt; openclaw nodes canvas navigate --node &lt;id&gt; --url &#34;/&#34; openclaw nodes canvas eval --node &lt;id&gt; --js &#34;document.title&#34; openclaw nodes canvas snapshot --node &lt;id&gt; 注意事项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Canvas（macOS 应用）" href="/openclaw/platforms/mac/canvas/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/23/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/25/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

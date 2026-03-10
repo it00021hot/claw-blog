@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Gmail Pub/Sub -&gt; OpenClaw | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="目标：Gmail watch -&gt; Pub/Sub 推送 -&gt; gog gmail watch serve -&gt; OpenClaw webhook。
+前置条件
+
+已安装并登录 gcloud（安装指南）。
+已安装 gog (gogcli) 并为 Gmail 账户授权（gogcli.sh）。
+已启用 OpenClaw hooks（参见 Webhooks）。
+已登录 tailscale（tailscale.com）。支持的设置使用 Tailscale Funnel 作为公共 HTTPS 端点。
+其他隧道服务也可以使用，但需要自行配置/不受支持，需要手动接入。
+目前，我们支持的是 Tailscale。
+
+示例 hook 配置（启用 Gmail 预设映射）：
+{
+  hooks: {
+    enabled: true,
+    token: &#34;OPENCLAW_HOOK_TOKEN&#34;,
+    path: &#34;/hooks&#34;,
+    presets: [&#34;gmail&#34;],
+  },
+}
+要将 Gmail 摘要投递到聊天界面，请用设置了 deliver 以及可选的 channel/to 的映射覆盖预设：
+{
+  hooks: {
+    enabled: true,
+    token: &#34;OPENCLAW_HOOK_TOKEN&#34;,
+    presets: [&#34;gmail&#34;],
+    mappings: [
+      {
+        match: { path: &#34;gmail&#34; },
+        action: &#34;agent&#34;,
+        wakeMode: &#34;now&#34;,
+        name: &#34;Gmail&#34;,
+        sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;,
+        messageTemplate: &#34;New email from {{messages[0].from}}\nSubject: {{messages[0].subject}}\n{{messages[0].snippet}}\n{{messages[0].body}}&#34;,
+        model: &#34;openai/gpt-5.2-mini&#34;,
+        deliver: true,
+        channel: &#34;last&#34;,
+        // to: &#34;&#43;15551234567&#34;
+      },
+    ],
+  },
+}
+如果你想使用固定渠道，请设置 channel &#43; to。否则 channel: &quot;last&quot; 会使用上次的投递路由（默认回退到 WhatsApp）。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/automation/gmail-pubsub/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/automation/gmail-pubsub/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/automation/gmail-pubsub/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Gmail Pub/Sub -&gt; OpenClaw">
+  <meta property="og:description" content="目标：Gmail watch -&gt; Pub/Sub 推送 -&gt; gog gmail watch serve -&gt; OpenClaw webhook。
+前置条件 已安装并登录 gcloud（安装指南）。 已安装 gog (gogcli) 并为 Gmail 账户授权（gogcli.sh）。 已启用 OpenClaw hooks（参见 Webhooks）。 已登录 tailscale（tailscale.com）。支持的设置使用 Tailscale Funnel 作为公共 HTTPS 端点。 其他隧道服务也可以使用，但需要自行配置/不受支持，需要手动接入。 目前，我们支持的是 Tailscale。 示例 hook 配置（启用 Gmail 预设映射）：
+{ hooks: { enabled: true, token: &#34;OPENCLAW_HOOK_TOKEN&#34;, path: &#34;/hooks&#34;, presets: [&#34;gmail&#34;], }, } 要将 Gmail 摘要投递到聊天界面，请用设置了 deliver 以及可选的 channel/to 的映射覆盖预设：
+{ hooks: { enabled: true, token: &#34;OPENCLAW_HOOK_TOKEN&#34;, presets: [&#34;gmail&#34;], mappings: [ { match: { path: &#34;gmail&#34; }, action: &#34;agent&#34;, wakeMode: &#34;now&#34;, name: &#34;Gmail&#34;, sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;, messageTemplate: &#34;New email from {{messages[0].from}}\nSubject: {{messages[0].subject}}\n{{messages[0].snippet}}\n{{messages[0].body}}&#34;, model: &#34;openai/gpt-5.2-mini&#34;, deliver: true, channel: &#34;last&#34;, // to: &#34;&#43;15551234567&#34; }, ], }, } 如果你想使用固定渠道，请设置 channel &#43; to。否则 channel: &#34;last&#34; 会使用上次的投递路由（默认回退到 WhatsApp）。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gmail Pub/Sub -&gt; OpenClaw">
+<meta name="twitter:description" content="目标：Gmail watch -&gt; Pub/Sub 推送 -&gt; gog gmail watch serve -&gt; OpenClaw webhook。
+前置条件
+
+已安装并登录 gcloud（安装指南）。
+已安装 gog (gogcli) 并为 Gmail 账户授权（gogcli.sh）。
+已启用 OpenClaw hooks（参见 Webhooks）。
+已登录 tailscale（tailscale.com）。支持的设置使用 Tailscale Funnel 作为公共 HTTPS 端点。
+其他隧道服务也可以使用，但需要自行配置/不受支持，需要手动接入。
+目前，我们支持的是 Tailscale。
+
+示例 hook 配置（启用 Gmail 预设映射）：
+{
+  hooks: {
+    enabled: true,
+    token: &#34;OPENCLAW_HOOK_TOKEN&#34;,
+    path: &#34;/hooks&#34;,
+    presets: [&#34;gmail&#34;],
+  },
+}
+要将 Gmail 摘要投递到聊天界面，请用设置了 deliver 以及可选的 channel/to 的映射覆盖预设：
+{
+  hooks: {
+    enabled: true,
+    token: &#34;OPENCLAW_HOOK_TOKEN&#34;,
+    presets: [&#34;gmail&#34;],
+    mappings: [
+      {
+        match: { path: &#34;gmail&#34; },
+        action: &#34;agent&#34;,
+        wakeMode: &#34;now&#34;,
+        name: &#34;Gmail&#34;,
+        sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;,
+        messageTemplate: &#34;New email from {{messages[0].from}}\nSubject: {{messages[0].subject}}\n{{messages[0].snippet}}\n{{messages[0].body}}&#34;,
+        model: &#34;openai/gpt-5.2-mini&#34;,
+        deliver: true,
+        channel: &#34;last&#34;,
+        // to: &#34;&#43;15551234567&#34;
+      },
+    ],
+  },
+}
+如果你想使用固定渠道，请设置 channel &#43; to。否则 channel: &quot;last&quot; 会使用上次的投递路由（默认回退到 WhatsApp）。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Gmail Pub/Sub -\u003e OpenClaw",
+      "item": "/openclaw/automation/gmail-pubsub/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Gmail Pub/Sub -\u003e OpenClaw",
+  "name": "Gmail Pub\/Sub -\u003e OpenClaw",
+  "description": "目标：Gmail watch -\u0026gt; Pub/Sub 推送 -\u0026gt; gog gmail watch serve -\u0026gt; OpenClaw webhook。\n前置条件 已安装并登录 gcloud（安装指南）。 已安装 gog (gogcli) 并为 Gmail 账户授权（gogcli.sh）。 已启用 OpenClaw hooks（参见 Webhooks）。 已登录 tailscale（tailscale.com）。支持的设置使用 Tailscale Funnel 作为公共 HTTPS 端点。 其他隧道服务也可以使用，但需要自行配置/不受支持，需要手动接入。 目前，我们支持的是 Tailscale。 示例 hook 配置（启用 Gmail 预设映射）：\n{ hooks: { enabled: true, token: \u0026#34;OPENCLAW_HOOK_TOKEN\u0026#34;, path: \u0026#34;/hooks\u0026#34;, presets: [\u0026#34;gmail\u0026#34;], }, } 要将 Gmail 摘要投递到聊天界面，请用设置了 deliver 以及可选的 channel/to 的映射覆盖预设：\n{ hooks: { enabled: true, token: \u0026#34;OPENCLAW_HOOK_TOKEN\u0026#34;, presets: [\u0026#34;gmail\u0026#34;], mappings: [ { match: { path: \u0026#34;gmail\u0026#34; }, action: \u0026#34;agent\u0026#34;, wakeMode: \u0026#34;now\u0026#34;, name: \u0026#34;Gmail\u0026#34;, sessionKey: \u0026#34;hook:gmail:{{messages[0].id}}\u0026#34;, messageTemplate: \u0026#34;New email from {{messages[0].from}}\\nSubject: {{messages[0].subject}}\\n{{messages[0].snippet}}\\n{{messages[0].body}}\u0026#34;, model: \u0026#34;openai/gpt-5.2-mini\u0026#34;, deliver: true, channel: \u0026#34;last\u0026#34;, // to: \u0026#34;+15551234567\u0026#34; }, ], }, } 如果你想使用固定渠道，请设置 channel + to。否则 channel: \u0026quot;last\u0026quot; 会使用上次的投递路由（默认回退到 WhatsApp）。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "目标：Gmail watch -\u003e Pub/Sub 推送 -\u003e gog gmail watch serve -\u003e OpenClaw webhook。\n前置条件 已安装并登录 gcloud（安装指南）。 已安装 gog (gogcli) 并为 Gmail 账户授权（gogcli.sh）。 已启用 OpenClaw hooks（参见 Webhooks）。 已登录 tailscale（tailscale.com）。支持的设置使用 Tailscale Funnel 作为公共 HTTPS 端点。 其他隧道服务也可以使用，但需要自行配置/不受支持，需要手动接入。 目前，我们支持的是 Tailscale。 示例 hook 配置（启用 Gmail 预设映射）：\n{ hooks: { enabled: true, token: \"OPENCLAW_HOOK_TOKEN\", path: \"/hooks\", presets: [\"gmail\"], }, } 要将 Gmail 摘要投递到聊天界面，请用设置了 deliver 以及可选的 channel/to 的映射覆盖预设：\n{ hooks: { enabled: true, token: \"OPENCLAW_HOOK_TOKEN\", presets: [\"gmail\"], mappings: [ { match: { path: \"gmail\" }, action: \"agent\", wakeMode: \"now\", name: \"Gmail\", sessionKey: \"hook:gmail:{{messages[0].id}}\", messageTemplate: \"New email from {{messages[0].from}}\\nSubject: {{messages[0].subject}}\\n{{messages[0].snippet}}\\n{{messages[0].body}}\", model: \"openai/gpt-5.2-mini\", deliver: true, channel: \"last\", // to: \"+15551234567\" }, ], }, } 如果你想使用固定渠道，请设置 channel + to。否则 channel: \"last\" 会使用上次的投递路由（默认回退到 WhatsApp）。\n要为 Gmail 运行强制使用更便宜的模型，请在映射中设置 model（provider/model 或别名）。如果你强制启用了 agents.defaults.models，请将其包含在内。\n要专门为 Gmail hooks 设置默认模型和思考级别，请在配置中添加 hooks.gmail.model / hooks.gmail.thinking：\n{ hooks: { gmail: { model: \"openrouter/meta-llama/llama-3.3-70b-instruct:free\", thinking: \"off\", }, }, } 注意事项：\n映射中的每个 hook 的 model/thinking 仍会覆盖这些默认值。 回退顺序：hooks.gmail.model → agents.defaults.model.fallbacks → 主模型（认证/速率限制/超时）。 如果设置了 agents.defaults.models，Gmail 模型必须在允许列表中。 Gmail hook 内容默认使用外部内容安全边界包装。 要禁用（危险），请设置 hooks.gmail.allowUnsafeExternalContent: true。 要进一步自定义负载处理，请添加 hooks.mappings 或在 hooks.transformsDir 下添加 JS/TS 转换模块（参见 Webhooks）。\n向导（推荐） 使用 OpenClaw 助手将所有内容接入在一起（在 macOS 上通过 brew 安装依赖）：\nopenclaw webhooks gmail setup \\ --account openclaw@gmail.com 默认设置：\n使用 Tailscale Funnel 作为公共推送端点。 为 openclaw webhooks gmail run 写入 hooks.gmail 配置。 启用 Gmail hook 预设（hooks.presets: [\"gmail\"]）。 路径说明：当启用 tailscale.mode 时，OpenClaw 会自动将 hooks.gmail.serve.path 设置为 /，并将公共路径保持在 hooks.gmail.tailscale.path（默认 /gmail-pubsub），因为 Tailscale 在代理之前会剥离设置的路径前缀。 如果你需要后端接收带前缀的路径，请将 hooks.gmail.tailscale.target（或 --tailscale-target）设置为完整 URL，如 http://127.0.0.1:8788/gmail-pubsub，并匹配 hooks.gmail.serve.path。\n想要自定义端点？使用 --push-endpoint 或 --tailscale off。\n平台说明：在 macOS 上，向导通过 Homebrew 安装 gcloud、gogcli 和 tailscale；在 Linux 上请先手动安装它们。\nGateway 网关自动启动（推荐）：\n当 hooks.enabled=true 且设置了 hooks.gmail.account 时，Gateway 网关会在启动时运行 gog gmail watch serve 并自动续期 watch。 设置 OPENCLAW_SKIP_GMAIL_WATCHER=1 可退出（如果你自己运行守护进程则很有用）。 不要同时运行手动守护进程，否则会遇到 listen tcp 127.0.0.1:8788: bind: address already in use。 手动守护进程（启动 gog gmail watch serve + 自动续期）：\nopenclaw webhooks gmail run 一次性设置 选择拥有 gog 使用的 OAuth 客户端的 GCP 项目。 gcloud auth login gcloud config set project 注意：Gmail watch 要求 Pub/Sub 主题与 OAuth 客户端位于同一项目中。\n启用 API： gcloud services enable gmail.googleapis.com pubsub.googleapis.com 创建主题： gcloud pubsub topics create gog-gmail-watch 允许 Gmail push 发布： gcloud pubsub topics add-iam-policy-binding gog-gmail-watch \\ --member=serviceAccount:gmail-api-push@system.gserviceaccount.com \\ --role=roles/pubsub.publisher 启动 watch gog gmail watch start \\ --account openclaw@gmail.com \\ --label INBOX \\ --topic projects//topics/gog-gmail-watch 保存输出中的 history_id（用于调试）。\n运行推送处理程序 本地示例（共享 token 认证）：\ngog gmail watch serve \\ --account openclaw@gmail.com \\ --bind 127.0.0.1 \\ --port 8788 \\ --path /gmail-pubsub \\ --token \\ --hook-url http://127.0.0.1:18789/hooks/gmail \\ --hook-token OPENCLAW_HOOK_TOKEN \\ --include-body \\ --max-bytes 20000 注意事项：\n--token 保护推送端点（x-gog-token 或 ?token=）。 --hook-url 指向 OpenClaw /hooks/gmail（已映射；隔离运行 + 摘要发送到主线程）。 --include-body 和 --max-bytes 控制发送到 OpenClaw 的正文片段。 推荐：openclaw webhooks gmail run 封装了相同的流程并自动续期 watch。\n暴露处理程序（高级，不受支持） 如果你需要非 Tailscale 隧道，请手动接入并在推送订阅中使用公共 URL（不受支持，无保护措施）：\ncloudflared tunnel --url http://127.0.0.1:8788 --no-autoupdate 使用生成的 URL 作为推送端点：\ngcloud pubsub subscriptions create gog-gmail-watch-push \\ --topic gog-gmail-watch \\ --push-endpoint \"https:///gmail-pubsub?token=\" 生产环境：使用稳定的 HTTPS 端点并配置 Pub/Sub OIDC JWT，然后运行：\ngog gmail watch serve --verify-oidc --oidc-email 测试 向被监视的收件箱发送一条消息：\ngog gmail send \\ --account openclaw@gmail.com \\ --to openclaw@gmail.com \\ --subject \"watch test\" \\ --body \"ping\" 检查 watch 状态和历史记录：\ngog gmail watch status --account openclaw@gmail.com gog gmail history --account openclaw@gmail.com --since 故障排除 Invalid topicName：项目不匹配（主题不在 OAuth 客户端项目中）。 User not authorized：主题缺少 roles/pubsub.publisher。 空消息：Gmail push 仅提供 historyId；通过 gog gmail history 获取。 清理 gog gmail watch stop --account openclaw@gmail.com gcloud pubsub subscriptions delete gog-gmail-watch-push gcloud pubsub topics delete gog-gmail-watch ",
+  "wordCount" : "497",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/automation/gmail-pubsub/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Gmail Pub/Sub -&gt; OpenClaw
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e7%bd%ae%e6%9d%a1%e4%bb%b6" aria-label="前置条件">前置条件</a></li>
+                <li>
+                    <a href="#%e5%90%91%e5%af%bc%e6%8e%a8%e8%8d%90" aria-label="向导（推荐）">向导（推荐）</a></li>
+                <li>
+                    <a href="#%e4%b8%80%e6%ac%a1%e6%80%a7%e8%ae%be%e7%bd%ae" aria-label="一次性设置">一次性设置</a></li>
+                <li>
+                    <a href="#%e5%90%af%e5%8a%a8-watch" aria-label="启动 watch">启动 watch</a></li>
+                <li>
+                    <a href="#%e8%bf%90%e8%a1%8c%e6%8e%a8%e9%80%81%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f" aria-label="运行推送处理程序">运行推送处理程序</a></li>
+                <li>
+                    <a href="#%e6%9a%b4%e9%9c%b2%e5%a4%84%e7%90%86%e7%a8%8b%e5%ba%8f%e9%ab%98%e7%ba%a7%e4%b8%8d%e5%8f%97%e6%94%af%e6%8c%81" aria-label="暴露处理程序（高级，不受支持）">暴露处理程序（高级，不受支持）</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95" aria-label="测试">测试</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a></li>
+                <li>
+                    <a href="#%e6%b8%85%e7%90%86" aria-label="清理">清理</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>目标：Gmail watch -&gt; Pub/Sub 推送 -&gt; <code>gog gmail watch serve</code> -&gt; OpenClaw webhook。</p>
+<h2 id="前置条件">前置条件<a hidden class="anchor" aria-hidden="true" href="#前置条件">#</a></h2>
+<ul>
+<li>已安装并登录 <code>gcloud</code>（<a href="https://docs.cloud.google.com/sdk/docs/install-sdk">安装指南</a>）。</li>
+<li>已安装 <code>gog</code> (gogcli) 并为 Gmail 账户授权（<a href="https://gogcli.sh/">gogcli.sh</a>）。</li>
+<li>已启用 OpenClaw hooks（参见 <a href="/automation/webhook">Webhooks</a>）。</li>
+<li>已登录 <code>tailscale</code>（<a href="https://tailscale.com/">tailscale.com</a>）。支持的设置使用 Tailscale Funnel 作为公共 HTTPS 端点。
+其他隧道服务也可以使用，但需要自行配置/不受支持，需要手动接入。
+目前，我们支持的是 Tailscale。</li>
+</ul>
+<p>示例 hook 配置（启用 Gmail 预设映射）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  hooks: {
+    enabled: true,
+    token: &#34;OPENCLAW_HOOK_TOKEN&#34;,
+    path: &#34;/hooks&#34;,
+    presets: [&#34;gmail&#34;],
+  },
+}
+</code></pre><p>要将 Gmail 摘要投递到聊天界面，请用设置了 <code>deliver</code> 以及可选的 <code>channel</code>/<code>to</code> 的映射覆盖预设：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  hooks: {
+    enabled: true,
+    token: &#34;OPENCLAW_HOOK_TOKEN&#34;,
+    presets: [&#34;gmail&#34;],
+    mappings: [
+      {
+        match: { path: &#34;gmail&#34; },
+        action: &#34;agent&#34;,
+        wakeMode: &#34;now&#34;,
+        name: &#34;Gmail&#34;,
+        sessionKey: &#34;hook:gmail:{{messages[0].id}}&#34;,
+        messageTemplate: &#34;New email from {{messages[0].from}}\nSubject: {{messages[0].subject}}\n{{messages[0].snippet}}\n{{messages[0].body}}&#34;,
+        model: &#34;openai/gpt-5.2-mini&#34;,
+        deliver: true,
+        channel: &#34;last&#34;,
+        // to: &#34;+15551234567&#34;
+      },
+    ],
+  },
+}
+</code></pre><p>如果你想使用固定渠道，请设置 <code>channel</code> + <code>to</code>。否则 <code>channel: &quot;last&quot;</code> 会使用上次的投递路由（默认回退到 WhatsApp）。</p>
+<p>要为 Gmail 运行强制使用更便宜的模型，请在映射中设置 <code>model</code>（<code>provider/model</code> 或别名）。如果你强制启用了 <code>agents.defaults.models</code>，请将其包含在内。</p>
+<p>要专门为 Gmail hooks 设置默认模型和思考级别，请在配置中添加 <code>hooks.gmail.model</code> / <code>hooks.gmail.thinking</code>：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  hooks: {
+    gmail: {
+      model: &#34;openrouter/meta-llama/llama-3.3-70b-instruct:free&#34;,
+      thinking: &#34;off&#34;,
+    },
+  },
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>映射中的每个 hook 的 <code>model</code>/<code>thinking</code> 仍会覆盖这些默认值。</li>
+<li>回退顺序：<code>hooks.gmail.model</code> → <code>agents.defaults.model.fallbacks</code> → 主模型（认证/速率限制/超时）。</li>
+<li>如果设置了 <code>agents.defaults.models</code>，Gmail 模型必须在允许列表中。</li>
+<li>Gmail hook 内容默认使用外部内容安全边界包装。
+要禁用（危险），请设置 <code>hooks.gmail.allowUnsafeExternalContent: true</code>。</li>
+</ul>
+<p>要进一步自定义负载处理，请添加 <code>hooks.mappings</code> 或在 <code>hooks.transformsDir</code> 下添加 JS/TS 转换模块（参见 <a href="/automation/webhook">Webhooks</a>）。</p>
+<h2 id="向导推荐">向导（推荐）<a hidden class="anchor" aria-hidden="true" href="#向导推荐">#</a></h2>
+<p>使用 OpenClaw 助手将所有内容接入在一起（在 macOS 上通过 brew 安装依赖）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw webhooks gmail setup <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --account openclaw@gmail.com
+</span></span></code></pre></div><p>默认设置：</p>
+<ul>
+<li>使用 Tailscale Funnel 作为公共推送端点。</li>
+<li>为 <code>openclaw webhooks gmail run</code> 写入 <code>hooks.gmail</code> 配置。</li>
+<li>启用 Gmail hook 预设（<code>hooks.presets: [&quot;gmail&quot;]</code>）。</li>
+</ul>
+<p>路径说明：当启用 <code>tailscale.mode</code> 时，OpenClaw 会自动将 <code>hooks.gmail.serve.path</code> 设置为 <code>/</code>，并将公共路径保持在 <code>hooks.gmail.tailscale.path</code>（默认 <code>/gmail-pubsub</code>），因为 Tailscale 在代理之前会剥离设置的路径前缀。
+如果你需要后端接收带前缀的路径，请将 <code>hooks.gmail.tailscale.target</code>（或 <code>--tailscale-target</code>）设置为完整 URL，如 <code>http://127.0.0.1:8788/gmail-pubsub</code>，并匹配 <code>hooks.gmail.serve.path</code>。</p>
+<p>想要自定义端点？使用 <code>--push-endpoint &lt;url&gt;</code> 或 <code>--tailscale off</code>。</p>
+<p>平台说明：在 macOS 上，向导通过 Homebrew 安装 <code>gcloud</code>、<code>gogcli</code> 和 <code>tailscale</code>；在 Linux 上请先手动安装它们。</p>
+<p>Gateway 网关自动启动（推荐）：</p>
+<ul>
+<li>当 <code>hooks.enabled=true</code> 且设置了 <code>hooks.gmail.account</code> 时，Gateway 网关会在启动时运行 <code>gog gmail watch serve</code> 并自动续期 watch。</li>
+<li>设置 <code>OPENCLAW_SKIP_GMAIL_WATCHER=1</code> 可退出（如果你自己运行守护进程则很有用）。</li>
+<li>不要同时运行手动守护进程，否则会遇到 <code>listen tcp 127.0.0.1:8788: bind: address already in use</code>。</li>
+</ul>
+<p>手动守护进程（启动 <code>gog gmail watch serve</code> + 自动续期）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw webhooks gmail run
+</span></span></code></pre></div><h2 id="一次性设置">一次性设置<a hidden class="anchor" aria-hidden="true" href="#一次性设置">#</a></h2>
+<ol>
+<li>选择<strong>拥有 <code>gog</code> 使用的 OAuth 客户端</strong>的 GCP 项目。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud auth login
+</span></span><span class="line"><span class="cl">gcloud config <span class="nb">set</span> project &lt;project-id&gt;
+</span></span></code></pre></div><p>注意：Gmail watch 要求 Pub/Sub 主题与 OAuth 客户端位于同一项目中。</p>
+<ol start="2">
+<li>启用 API：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud services <span class="nb">enable</span> gmail.googleapis.com pubsub.googleapis.com
+</span></span></code></pre></div><ol start="3">
+<li>创建主题：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud pubsub topics create gog-gmail-watch
+</span></span></code></pre></div><ol start="4">
+<li>允许 Gmail push 发布：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud pubsub topics add-iam-policy-binding gog-gmail-watch <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --member<span class="o">=</span>serviceAccount:gmail-api-push@system.gserviceaccount.com <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --role<span class="o">=</span>roles/pubsub.publisher
+</span></span></code></pre></div><h2 id="启动-watch">启动 watch<a hidden class="anchor" aria-hidden="true" href="#启动-watch">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gog gmail watch start <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --account openclaw@gmail.com <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --label INBOX <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --topic projects/&lt;project-id&gt;/topics/gog-gmail-watch
+</span></span></code></pre></div><p>保存输出中的 <code>history_id</code>（用于调试）。</p>
+<h2 id="运行推送处理程序">运行推送处理程序<a hidden class="anchor" aria-hidden="true" href="#运行推送处理程序">#</a></h2>
+<p>本地示例（共享 token 认证）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gog gmail watch serve <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --account openclaw@gmail.com <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --bind 127.0.0.1 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --port <span class="m">8788</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --path /gmail-pubsub <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --token &lt;shared&gt; <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --hook-url http://127.0.0.1:18789/hooks/gmail <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --hook-token OPENCLAW_HOOK_TOKEN <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --include-body <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --max-bytes <span class="m">20000</span>
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li><code>--token</code> 保护推送端点（<code>x-gog-token</code> 或 <code>?token=</code>）。</li>
+<li><code>--hook-url</code> 指向 OpenClaw <code>/hooks/gmail</code>（已映射；隔离运行 + 摘要发送到主线程）。</li>
+<li><code>--include-body</code> 和 <code>--max-bytes</code> 控制发送到 OpenClaw 的正文片段。</li>
+</ul>
+<p>推荐：<code>openclaw webhooks gmail run</code> 封装了相同的流程并自动续期 watch。</p>
+<h2 id="暴露处理程序高级不受支持">暴露处理程序（高级，不受支持）<a hidden class="anchor" aria-hidden="true" href="#暴露处理程序高级不受支持">#</a></h2>
+<p>如果你需要非 Tailscale 隧道，请手动接入并在推送订阅中使用公共 URL（不受支持，无保护措施）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cloudflared tunnel --url http://127.0.0.1:8788 --no-autoupdate
+</span></span></code></pre></div><p>使用生成的 URL 作为推送端点：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcloud pubsub subscriptions create gog-gmail-watch-push <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --topic gog-gmail-watch <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --push-endpoint <span class="s2">&#34;https://&lt;public-url&gt;/gmail-pubsub?token=&lt;shared&gt;&#34;</span>
+</span></span></code></pre></div><p>生产环境：使用稳定的 HTTPS 端点并配置 Pub/Sub OIDC JWT，然后运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gog gmail watch serve --verify-oidc --oidc-email &lt;svc@...&gt;
+</span></span></code></pre></div><h2 id="测试">测试<a hidden class="anchor" aria-hidden="true" href="#测试">#</a></h2>
+<p>向被监视的收件箱发送一条消息：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gog gmail send <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --account openclaw@gmail.com <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --to openclaw@gmail.com <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --subject <span class="s2">&#34;watch test&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --body <span class="s2">&#34;ping&#34;</span>
+</span></span></code></pre></div><p>检查 watch 状态和历史记录：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gog gmail watch status --account openclaw@gmail.com
+</span></span><span class="line"><span class="cl">gog gmail <span class="nb">history</span> --account openclaw@gmail.com --since &lt;historyId&gt;
+</span></span></code></pre></div><h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<ul>
+<li><code>Invalid topicName</code>：项目不匹配（主题不在 OAuth 客户端项目中）。</li>
+<li><code>User not authorized</code>：主题缺少 <code>roles/pubsub.publisher</code>。</li>
+<li>空消息：Gmail push 仅提供 <code>historyId</code>；通过 <code>gog gmail history</code> 获取。</li>
+</ul>
+<h2 id="清理">清理<a hidden class="anchor" aria-hidden="true" href="#清理">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gog gmail watch stop --account openclaw@gmail.com
+</span></span><span class="line"><span class="cl">gcloud pubsub subscriptions delete gog-gmail-watch-push
+</span></span><span class="line"><span class="cl">gcloud pubsub topics delete gog-gmail-watch
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/providers/glm/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>GLM 模型</span>
+  </a>
+  <a class="next" href="/openclaw/channels/googlechat/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Google Chat（Chat API）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

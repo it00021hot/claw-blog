@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Amazon Bedrock | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 可以通过 pi‑ai 的 Bedrock Converse 流式提供商使用 Amazon Bedrock 模型。Bedrock 认证使用 AWS SDK 默认凭证链，而非 API 密钥。
+pi‑ai 支持的功能
+
+提供商：amazon-bedrock
+API：bedrock-converse-stream
+认证：AWS 凭证（环境变量、共享配置或实例角色）
+区域：AWS_REGION 或 AWS_DEFAULT_REGION（默认：us-east-1）
+
+自动模型发现
+如果检测到 AWS 凭证，OpenClaw 可以自动发现支持流式传输和文本输出的 Bedrock 模型。发现功能使用 bedrock:ListFoundationModels，并会被缓存（默认：1 小时）。
+配置选项位于 models.bedrockDiscovery 下：
+{
+  models: {
+    bedrockDiscovery: {
+      enabled: true,
+      region: &#34;us-east-1&#34;,
+      providerFilter: [&#34;anthropic&#34;, &#34;amazon&#34;],
+      refreshInterval: 3600,
+      defaultContextWindow: 32000,
+      defaultMaxTokens: 4096,
+    },
+  },
+}
+注意事项：
+
+enabled 在存在 AWS 凭证时默认为 true。
+region 默认为 AWS_REGION 或 AWS_DEFAULT_REGION，然后是 us-east-1。
+providerFilter 匹配 Bedrock 提供商名称（例如 anthropic）。
+refreshInterval 单位为秒；设置为 0 可禁用缓存。
+defaultContextWindow（默认：32000）和 defaultMaxTokens（默认：4096）用于已发现的模型（如果你知道模型限制，可以覆盖这些值）。
+
+设置（手动）
+
+确保 AWS 凭证在 Gateway 网关主机上可用：
+
+export AWS_ACCESS_KEY_ID=&#34;AKIA...&#34;
+export AWS_SECRET_ACCESS_KEY=&#34;...&#34;
+export AWS_REGION=&#34;us-east-1&#34;
+# 可选：
+export AWS_SESSION_TOKEN=&#34;...&#34;
+export AWS_PROFILE=&#34;your-profile&#34;
+# 可选（Bedrock API 密钥/Bearer 令牌）：
+export AWS_BEARER_TOKEN_BEDROCK=&#34;...&#34;
+
+在配置中添加 Bedrock 提供商和模型（无需 apiKey）：
+
+{
+  models: {
+    providers: {
+      &#34;amazon-bedrock&#34;: {
+        baseUrl: &#34;https://bedrock-runtime.us-east-1.amazonaws.com&#34;,
+        api: &#34;bedrock-converse-stream&#34;,
+        auth: &#34;aws-sdk&#34;,
+        models: [
+          {
+            id: &#34;anthropic.claude-opus-4-5-20251101-v1:0&#34;,
+            name: &#34;Claude Opus 4.5 (Bedrock)&#34;,
+            reasoning: true,
+            input: [&#34;text&#34;, &#34;image&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 200000,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      model: { primary: &#34;amazon-bedrock/anthropic.claude-opus-4-5-20251101-v1:0&#34; },
+    },
+  },
+}
+EC2 实例角色
+当在附加了 IAM 角色的 EC2 实例上运行 OpenClaw 时，AWS SDK 会自动使用实例元数据服务（IMDS）进行认证。但是，OpenClaw 的凭证检测目前只检查环境变量，不检查 IMDS 凭证。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/providers/bedrock/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/providers/bedrock/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/providers/bedrock/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Amazon Bedrock">
+  <meta property="og:description" content="OpenClaw 可以通过 pi‑ai 的 Bedrock Converse 流式提供商使用 Amazon Bedrock 模型。Bedrock 认证使用 AWS SDK 默认凭证链，而非 API 密钥。
+pi‑ai 支持的功能 提供商：amazon-bedrock API：bedrock-converse-stream 认证：AWS 凭证（环境变量、共享配置或实例角色） 区域：AWS_REGION 或 AWS_DEFAULT_REGION（默认：us-east-1） 自动模型发现 如果检测到 AWS 凭证，OpenClaw 可以自动发现支持流式传输和文本输出的 Bedrock 模型。发现功能使用 bedrock:ListFoundationModels，并会被缓存（默认：1 小时）。
+配置选项位于 models.bedrockDiscovery 下：
+{ models: { bedrockDiscovery: { enabled: true, region: &#34;us-east-1&#34;, providerFilter: [&#34;anthropic&#34;, &#34;amazon&#34;], refreshInterval: 3600, defaultContextWindow: 32000, defaultMaxTokens: 4096, }, }, } 注意事项：
+enabled 在存在 AWS 凭证时默认为 true。 region 默认为 AWS_REGION 或 AWS_DEFAULT_REGION，然后是 us-east-1。 providerFilter 匹配 Bedrock 提供商名称（例如 anthropic）。 refreshInterval 单位为秒；设置为 0 可禁用缓存。 defaultContextWindow（默认：32000）和 defaultMaxTokens（默认：4096）用于已发现的模型（如果你知道模型限制，可以覆盖这些值）。 设置（手动） 确保 AWS 凭证在 Gateway 网关主机上可用： export AWS_ACCESS_KEY_ID=&#34;AKIA...&#34; export AWS_SECRET_ACCESS_KEY=&#34;...&#34; export AWS_REGION=&#34;us-east-1&#34; # 可选： export AWS_SESSION_TOKEN=&#34;...&#34; export AWS_PROFILE=&#34;your-profile&#34; # 可选（Bedrock API 密钥/Bearer 令牌）： export AWS_BEARER_TOKEN_BEDROCK=&#34;...&#34; 在配置中添加 Bedrock 提供商和模型（无需 apiKey）： { models: { providers: { &#34;amazon-bedrock&#34;: { baseUrl: &#34;https://bedrock-runtime.us-east-1.amazonaws.com&#34;, api: &#34;bedrock-converse-stream&#34;, auth: &#34;aws-sdk&#34;, models: [ { id: &#34;anthropic.claude-opus-4-5-20251101-v1:0&#34;, name: &#34;Claude Opus 4.5 (Bedrock)&#34;, reasoning: true, input: [&#34;text&#34;, &#34;image&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 200000, maxTokens: 8192, }, ], }, }, }, agents: { defaults: { model: { primary: &#34;amazon-bedrock/anthropic.claude-opus-4-5-20251101-v1:0&#34; }, }, }, } EC2 实例角色 当在附加了 IAM 角色的 EC2 实例上运行 OpenClaw 时，AWS SDK 会自动使用实例元数据服务（IMDS）进行认证。但是，OpenClaw 的凭证检测目前只检查环境变量，不检查 IMDS 凭证。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Amazon Bedrock">
+<meta name="twitter:description" content="OpenClaw 可以通过 pi‑ai 的 Bedrock Converse 流式提供商使用 Amazon Bedrock 模型。Bedrock 认证使用 AWS SDK 默认凭证链，而非 API 密钥。
+pi‑ai 支持的功能
+
+提供商：amazon-bedrock
+API：bedrock-converse-stream
+认证：AWS 凭证（环境变量、共享配置或实例角色）
+区域：AWS_REGION 或 AWS_DEFAULT_REGION（默认：us-east-1）
+
+自动模型发现
+如果检测到 AWS 凭证，OpenClaw 可以自动发现支持流式传输和文本输出的 Bedrock 模型。发现功能使用 bedrock:ListFoundationModels，并会被缓存（默认：1 小时）。
+配置选项位于 models.bedrockDiscovery 下：
+{
+  models: {
+    bedrockDiscovery: {
+      enabled: true,
+      region: &#34;us-east-1&#34;,
+      providerFilter: [&#34;anthropic&#34;, &#34;amazon&#34;],
+      refreshInterval: 3600,
+      defaultContextWindow: 32000,
+      defaultMaxTokens: 4096,
+    },
+  },
+}
+注意事项：
+
+enabled 在存在 AWS 凭证时默认为 true。
+region 默认为 AWS_REGION 或 AWS_DEFAULT_REGION，然后是 us-east-1。
+providerFilter 匹配 Bedrock 提供商名称（例如 anthropic）。
+refreshInterval 单位为秒；设置为 0 可禁用缓存。
+defaultContextWindow（默认：32000）和 defaultMaxTokens（默认：4096）用于已发现的模型（如果你知道模型限制，可以覆盖这些值）。
+
+设置（手动）
+
+确保 AWS 凭证在 Gateway 网关主机上可用：
+
+export AWS_ACCESS_KEY_ID=&#34;AKIA...&#34;
+export AWS_SECRET_ACCESS_KEY=&#34;...&#34;
+export AWS_REGION=&#34;us-east-1&#34;
+# 可选：
+export AWS_SESSION_TOKEN=&#34;...&#34;
+export AWS_PROFILE=&#34;your-profile&#34;
+# 可选（Bedrock API 密钥/Bearer 令牌）：
+export AWS_BEARER_TOKEN_BEDROCK=&#34;...&#34;
+
+在配置中添加 Bedrock 提供商和模型（无需 apiKey）：
+
+{
+  models: {
+    providers: {
+      &#34;amazon-bedrock&#34;: {
+        baseUrl: &#34;https://bedrock-runtime.us-east-1.amazonaws.com&#34;,
+        api: &#34;bedrock-converse-stream&#34;,
+        auth: &#34;aws-sdk&#34;,
+        models: [
+          {
+            id: &#34;anthropic.claude-opus-4-5-20251101-v1:0&#34;,
+            name: &#34;Claude Opus 4.5 (Bedrock)&#34;,
+            reasoning: true,
+            input: [&#34;text&#34;, &#34;image&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 200000,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      model: { primary: &#34;amazon-bedrock/anthropic.claude-opus-4-5-20251101-v1:0&#34; },
+    },
+  },
+}
+EC2 实例角色
+当在附加了 IAM 角色的 EC2 实例上运行 OpenClaw 时，AWS SDK 会自动使用实例元数据服务（IMDS）进行认证。但是，OpenClaw 的凭证检测目前只检查环境变量，不检查 IMDS 凭证。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Amazon Bedrock",
+      "item": "/openclaw/providers/bedrock/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Amazon Bedrock",
+  "name": "Amazon Bedrock",
+  "description": "OpenClaw 可以通过 pi‑ai 的 Bedrock Converse 流式提供商使用 Amazon Bedrock 模型。Bedrock 认证使用 AWS SDK 默认凭证链，而非 API 密钥。\npi‑ai 支持的功能 提供商：amazon-bedrock API：bedrock-converse-stream 认证：AWS 凭证（环境变量、共享配置或实例角色） 区域：AWS_REGION 或 AWS_DEFAULT_REGION（默认：us-east-1） 自动模型发现 如果检测到 AWS 凭证，OpenClaw 可以自动发现支持流式传输和文本输出的 Bedrock 模型。发现功能使用 bedrock:ListFoundationModels，并会被缓存（默认：1 小时）。\n配置选项位于 models.bedrockDiscovery 下：\n{ models: { bedrockDiscovery: { enabled: true, region: \u0026#34;us-east-1\u0026#34;, providerFilter: [\u0026#34;anthropic\u0026#34;, \u0026#34;amazon\u0026#34;], refreshInterval: 3600, defaultContextWindow: 32000, defaultMaxTokens: 4096, }, }, } 注意事项：\nenabled 在存在 AWS 凭证时默认为 true。 region 默认为 AWS_REGION 或 AWS_DEFAULT_REGION，然后是 us-east-1。 providerFilter 匹配 Bedrock 提供商名称（例如 anthropic）。 refreshInterval 单位为秒；设置为 0 可禁用缓存。 defaultContextWindow（默认：32000）和 defaultMaxTokens（默认：4096）用于已发现的模型（如果你知道模型限制，可以覆盖这些值）。 设置（手动） 确保 AWS 凭证在 Gateway 网关主机上可用： export AWS_ACCESS_KEY_ID=\u0026#34;AKIA...\u0026#34; export AWS_SECRET_ACCESS_KEY=\u0026#34;...\u0026#34; export AWS_REGION=\u0026#34;us-east-1\u0026#34; # 可选： export AWS_SESSION_TOKEN=\u0026#34;...\u0026#34; export AWS_PROFILE=\u0026#34;your-profile\u0026#34; # 可选（Bedrock API 密钥/Bearer 令牌）： export AWS_BEARER_TOKEN_BEDROCK=\u0026#34;...\u0026#34; 在配置中添加 Bedrock 提供商和模型（无需 apiKey）： { models: { providers: { \u0026#34;amazon-bedrock\u0026#34;: { baseUrl: \u0026#34;https://bedrock-runtime.us-east-1.amazonaws.com\u0026#34;, api: \u0026#34;bedrock-converse-stream\u0026#34;, auth: \u0026#34;aws-sdk\u0026#34;, models: [ { id: \u0026#34;anthropic.claude-opus-4-5-20251101-v1:0\u0026#34;, name: \u0026#34;Claude Opus 4.5 (Bedrock)\u0026#34;, reasoning: true, input: [\u0026#34;text\u0026#34;, \u0026#34;image\u0026#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 200000, maxTokens: 8192, }, ], }, }, }, agents: { defaults: { model: { primary: \u0026#34;amazon-bedrock/anthropic.claude-opus-4-5-20251101-v1:0\u0026#34; }, }, }, } EC2 实例角色 当在附加了 IAM 角色的 EC2 实例上运行 OpenClaw 时，AWS SDK 会自动使用实例元数据服务（IMDS）进行认证。但是，OpenClaw 的凭证检测目前只检查环境变量，不检查 IMDS 凭证。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 可以通过 pi‑ai 的 Bedrock Converse 流式提供商使用 Amazon Bedrock 模型。Bedrock 认证使用 AWS SDK 默认凭证链，而非 API 密钥。\npi‑ai 支持的功能 提供商：amazon-bedrock API：bedrock-converse-stream 认证：AWS 凭证（环境变量、共享配置或实例角色） 区域：AWS_REGION 或 AWS_DEFAULT_REGION（默认：us-east-1） 自动模型发现 如果检测到 AWS 凭证，OpenClaw 可以自动发现支持流式传输和文本输出的 Bedrock 模型。发现功能使用 bedrock:ListFoundationModels，并会被缓存（默认：1 小时）。\n配置选项位于 models.bedrockDiscovery 下：\n{ models: { bedrockDiscovery: { enabled: true, region: \"us-east-1\", providerFilter: [\"anthropic\", \"amazon\"], refreshInterval: 3600, defaultContextWindow: 32000, defaultMaxTokens: 4096, }, }, } 注意事项：\nenabled 在存在 AWS 凭证时默认为 true。 region 默认为 AWS_REGION 或 AWS_DEFAULT_REGION，然后是 us-east-1。 providerFilter 匹配 Bedrock 提供商名称（例如 anthropic）。 refreshInterval 单位为秒；设置为 0 可禁用缓存。 defaultContextWindow（默认：32000）和 defaultMaxTokens（默认：4096）用于已发现的模型（如果你知道模型限制，可以覆盖这些值）。 设置（手动） 确保 AWS 凭证在 Gateway 网关主机上可用： export AWS_ACCESS_KEY_ID=\"AKIA...\" export AWS_SECRET_ACCESS_KEY=\"...\" export AWS_REGION=\"us-east-1\" # 可选： export AWS_SESSION_TOKEN=\"...\" export AWS_PROFILE=\"your-profile\" # 可选（Bedrock API 密钥/Bearer 令牌）： export AWS_BEARER_TOKEN_BEDROCK=\"...\" 在配置中添加 Bedrock 提供商和模型（无需 apiKey）： { models: { providers: { \"amazon-bedrock\": { baseUrl: \"https://bedrock-runtime.us-east-1.amazonaws.com\", api: \"bedrock-converse-stream\", auth: \"aws-sdk\", models: [ { id: \"anthropic.claude-opus-4-5-20251101-v1:0\", name: \"Claude Opus 4.5 (Bedrock)\", reasoning: true, input: [\"text\", \"image\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 200000, maxTokens: 8192, }, ], }, }, }, agents: { defaults: { model: { primary: \"amazon-bedrock/anthropic.claude-opus-4-5-20251101-v1:0\" }, }, }, } EC2 实例角色 当在附加了 IAM 角色的 EC2 实例上运行 OpenClaw 时，AWS SDK 会自动使用实例元数据服务（IMDS）进行认证。但是，OpenClaw 的凭证检测目前只检查环境变量，不检查 IMDS 凭证。\n解决方法： 设置 AWS_PROFILE=default 以表明 AWS 凭证可用。实际认证仍然通过 IMDS 使用实例角色。\n# 添加到 ~/.bashrc 或你的 shell 配置文件 export AWS_PROFILE=default export AWS_REGION=us-east-1 EC2 实例角色所需的 IAM 权限：\nbedrock:InvokeModel bedrock:InvokeModelWithResponseStream bedrock:ListFoundationModels（用于自动发现） 或者附加托管策略 AmazonBedrockFullAccess。\n快速设置：\n# 1. 创建 IAM 角色和实例配置文件 aws iam create-role --role-name EC2-Bedrock-Access \\ --assume-role-policy-document '{ \"Version\": \"2012-10-17\", \"Statement\": [{ \"Effect\": \"Allow\", \"Principal\": {\"Service\": \"ec2.amazonaws.com\"}, \"Action\": \"sts:AssumeRole\" }] }' aws iam attach-role-policy --role-name EC2-Bedrock-Access \\ --policy-arn arn:aws:iam::aws:policy/AmazonBedrockFullAccess aws iam create-instance-profile --instance-profile-name EC2-Bedrock-Access aws iam add-role-to-instance-profile \\ --instance-profile-name EC2-Bedrock-Access \\ --role-name EC2-Bedrock-Access # 2. 附加到你的 EC2 实例 aws ec2 associate-iam-instance-profile \\ --instance-id i-xxxxx \\ --iam-instance-profile Name=EC2-Bedrock-Access # 3. 在 EC2 实例上启用发现功能 openclaw config set models.bedrockDiscovery.enabled true openclaw config set models.bedrockDiscovery.region us-east-1 # 4. 设置解决方法所需的环境变量 echo 'export AWS_PROFILE=default' \u003e\u003e ~/.bashrc echo 'export AWS_REGION=us-east-1' \u003e\u003e ~/.bashrc source ~/.bashrc # 5. 验证模型已被发现 openclaw models list 注意事项 Bedrock 需要在你的 AWS 账户/区域中启用模型访问。 自动发现需要 bedrock:ListFoundationModels 权限。 如果你使用配置文件，请在 Gateway 网关主机上设置 AWS_PROFILE。 OpenClaw 按以下顺序获取凭证来源：AWS_BEARER_TOKEN_BEDROCK，然后是 AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY，然后是 AWS_PROFILE，最后是默认的 AWS SDK 链。 推理支持取决于模型；请查看 Bedrock 模型卡了解当前功能。 如果你更喜欢托管密钥流程，也可以在 Bedrock 前面放置一个 OpenAI 兼容的代理，并将其配置为 OpenAI 提供商。 ",
+  "wordCount" : "341",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/providers/bedrock/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Amazon Bedrock
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#piai-%e6%94%af%e6%8c%81%e7%9a%84%e5%8a%9f%e8%83%bd" aria-label="pi‑ai 支持的功能">pi‑ai 支持的功能</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%8a%a8%e6%a8%a1%e5%9e%8b%e5%8f%91%e7%8e%b0" aria-label="自动模型发现">自动模型发现</a></li>
+                <li>
+                    <a href="#%e8%ae%be%e7%bd%ae%e6%89%8b%e5%8a%a8" aria-label="设置（手动）">设置（手动）</a></li>
+                <li>
+                    <a href="#ec2-%e5%ae%9e%e4%be%8b%e8%a7%92%e8%89%b2" aria-label="EC2 实例角色">EC2 实例角色</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="注意事项">注意事项</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 可以通过 pi‑ai 的 <strong>Bedrock Converse</strong> 流式提供商使用 <strong>Amazon Bedrock</strong> 模型。Bedrock 认证使用 <strong>AWS SDK 默认凭证链</strong>，而非 API 密钥。</p>
+<h2 id="piai-支持的功能">pi‑ai 支持的功能<a hidden class="anchor" aria-hidden="true" href="#piai-支持的功能">#</a></h2>
+<ul>
+<li>提供商：<code>amazon-bedrock</code></li>
+<li>API：<code>bedrock-converse-stream</code></li>
+<li>认证：AWS 凭证（环境变量、共享配置或实例角色）</li>
+<li>区域：<code>AWS_REGION</code> 或 <code>AWS_DEFAULT_REGION</code>（默认：<code>us-east-1</code>）</li>
+</ul>
+<h2 id="自动模型发现">自动模型发现<a hidden class="anchor" aria-hidden="true" href="#自动模型发现">#</a></h2>
+<p>如果检测到 AWS 凭证，OpenClaw 可以自动发现支持<strong>流式传输</strong>和<strong>文本输出</strong>的 Bedrock 模型。发现功能使用 <code>bedrock:ListFoundationModels</code>，并会被缓存（默认：1 小时）。</p>
+<p>配置选项位于 <code>models.bedrockDiscovery</code> 下：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  models: {
+    bedrockDiscovery: {
+      enabled: true,
+      region: &#34;us-east-1&#34;,
+      providerFilter: [&#34;anthropic&#34;, &#34;amazon&#34;],
+      refreshInterval: 3600,
+      defaultContextWindow: 32000,
+      defaultMaxTokens: 4096,
+    },
+  },
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li><code>enabled</code> 在存在 AWS 凭证时默认为 <code>true</code>。</li>
+<li><code>region</code> 默认为 <code>AWS_REGION</code> 或 <code>AWS_DEFAULT_REGION</code>，然后是 <code>us-east-1</code>。</li>
+<li><code>providerFilter</code> 匹配 Bedrock 提供商名称（例如 <code>anthropic</code>）。</li>
+<li><code>refreshInterval</code> 单位为秒；设置为 <code>0</code> 可禁用缓存。</li>
+<li><code>defaultContextWindow</code>（默认：<code>32000</code>）和 <code>defaultMaxTokens</code>（默认：<code>4096</code>）用于已发现的模型（如果你知道模型限制，可以覆盖这些值）。</li>
+</ul>
+<h2 id="设置手动">设置（手动）<a hidden class="anchor" aria-hidden="true" href="#设置手动">#</a></h2>
+<ol>
+<li>确保 AWS 凭证在 <strong>Gateway 网关主机</strong>上可用：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="s2">&#34;AKIA...&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="s2">&#34;...&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_REGION</span><span class="o">=</span><span class="s2">&#34;us-east-1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 可选：</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span><span class="s2">&#34;...&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_PROFILE</span><span class="o">=</span><span class="s2">&#34;your-profile&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 可选（Bedrock API 密钥/Bearer 令牌）：</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_BEARER_TOKEN_BEDROCK</span><span class="o">=</span><span class="s2">&#34;...&#34;</span>
+</span></span></code></pre></div><ol start="2">
+<li>在配置中添加 Bedrock 提供商和模型（无需 <code>apiKey</code>）：</li>
+</ol>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  models: {
+    providers: {
+      &#34;amazon-bedrock&#34;: {
+        baseUrl: &#34;https://bedrock-runtime.us-east-1.amazonaws.com&#34;,
+        api: &#34;bedrock-converse-stream&#34;,
+        auth: &#34;aws-sdk&#34;,
+        models: [
+          {
+            id: &#34;anthropic.claude-opus-4-5-20251101-v1:0&#34;,
+            name: &#34;Claude Opus 4.5 (Bedrock)&#34;,
+            reasoning: true,
+            input: [&#34;text&#34;, &#34;image&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 200000,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+  agents: {
+    defaults: {
+      model: { primary: &#34;amazon-bedrock/anthropic.claude-opus-4-5-20251101-v1:0&#34; },
+    },
+  },
+}
+</code></pre><h2 id="ec2-实例角色">EC2 实例角色<a hidden class="anchor" aria-hidden="true" href="#ec2-实例角色">#</a></h2>
+<p>当在附加了 IAM 角色的 EC2 实例上运行 OpenClaw 时，AWS SDK 会自动使用实例元数据服务（IMDS）进行认证。但是，OpenClaw 的凭证检测目前只检查环境变量，不检查 IMDS 凭证。</p>
+<p><strong>解决方法：</strong> 设置 <code>AWS_PROFILE=default</code> 以表明 AWS 凭证可用。实际认证仍然通过 IMDS 使用实例角色。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 添加到 ~/.bashrc 或你的 shell 配置文件</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_PROFILE</span><span class="o">=</span>default
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AWS_REGION</span><span class="o">=</span>us-east-1
+</span></span></code></pre></div><p>EC2 实例角色<strong>所需的 IAM 权限</strong>：</p>
+<ul>
+<li><code>bedrock:InvokeModel</code></li>
+<li><code>bedrock:InvokeModelWithResponseStream</code></li>
+<li><code>bedrock:ListFoundationModels</code>（用于自动发现）</li>
+</ul>
+<p>或者附加托管策略 <code>AmazonBedrockFullAccess</code>。</p>
+<p><strong>快速设置：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 1. 创建 IAM 角色和实例配置文件</span>
+</span></span><span class="line"><span class="cl">aws iam create-role --role-name EC2-Bedrock-Access <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --assume-role-policy-document <span class="s1">&#39;{
+</span></span></span><span class="line"><span class="cl"><span class="s1">    &#34;Version&#34;: &#34;2012-10-17&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s1">    &#34;Statement&#34;: [{
+</span></span></span><span class="line"><span class="cl"><span class="s1">      &#34;Effect&#34;: &#34;Allow&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s1">      &#34;Principal&#34;: {&#34;Service&#34;: &#34;ec2.amazonaws.com&#34;},
+</span></span></span><span class="line"><span class="cl"><span class="s1">      &#34;Action&#34;: &#34;sts:AssumeRole&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    }]
+</span></span></span><span class="line"><span class="cl"><span class="s1">  }&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">aws iam attach-role-policy --role-name EC2-Bedrock-Access <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --policy-arn arn:aws:iam::aws:policy/AmazonBedrockFullAccess
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">aws iam create-instance-profile --instance-profile-name EC2-Bedrock-Access
+</span></span><span class="line"><span class="cl">aws iam add-role-to-instance-profile <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --instance-profile-name EC2-Bedrock-Access <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --role-name EC2-Bedrock-Access
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 附加到你的 EC2 实例</span>
+</span></span><span class="line"><span class="cl">aws ec2 associate-iam-instance-profile <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --instance-id i-xxxxx <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --iam-instance-profile <span class="nv">Name</span><span class="o">=</span>EC2-Bedrock-Access
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 在 EC2 实例上启用发现功能</span>
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> models.bedrockDiscovery.enabled <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> models.bedrockDiscovery.region us-east-1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 4. 设置解决方法所需的环境变量</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;export AWS_PROFILE=default&#39;</span> &gt;&gt; ~/.bashrc
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;export AWS_REGION=us-east-1&#39;</span> &gt;&gt; ~/.bashrc
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> ~/.bashrc
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 5. 验证模型已被发现</span>
+</span></span><span class="line"><span class="cl">openclaw models list
+</span></span></code></pre></div><h2 id="注意事项">注意事项<a hidden class="anchor" aria-hidden="true" href="#注意事项">#</a></h2>
+<ul>
+<li>Bedrock 需要在你的 AWS 账户/区域中启用<strong>模型访问</strong>。</li>
+<li>自动发现需要 <code>bedrock:ListFoundationModels</code> 权限。</li>
+<li>如果你使用配置文件，请在 Gateway 网关主机上设置 <code>AWS_PROFILE</code>。</li>
+<li>OpenClaw 按以下顺序获取凭证来源：<code>AWS_BEARER_TOKEN_BEDROCK</code>，然后是 <code>AWS_ACCESS_KEY_ID</code> + <code>AWS_SECRET_ACCESS_KEY</code>，然后是 <code>AWS_PROFILE</code>，最后是默认的 AWS SDK 链。</li>
+<li>推理支持取决于模型；请查看 Bedrock 模型卡了解当前功能。</li>
+<li>如果你更喜欢托管密钥流程，也可以在 Bedrock 前面放置一个 OpenAI 兼容的代理，并将其配置为 OpenAI 提供商。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/reference/agents.default/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>AGENTS.md — OpenClaw 个人助手（默认）</span>
+  </a>
+  <a class="next" href="/openclaw/platforms/android/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Android 应用（节点）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

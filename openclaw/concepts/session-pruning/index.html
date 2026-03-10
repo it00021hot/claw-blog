@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>会话剪枝 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="会话剪枝在每次 LLM 调用之前从内存上下文中修剪旧的工具结果。它不会重写磁盘上的会话历史（*.jsonl）。
+运行时机
+
+当启用 mode: &quot;cache-ttl&quot; 且该会话的最后一次 Anthropic 调用早于 ttl 时。
+仅影响该请求发送给模型的消息。
+仅对 Anthropic API 调用（和 OpenRouter Anthropic 模型）生效。
+为获得最佳效果，请将 ttl 与你的模型 cacheControlTtl 匹配。
+剪枝后，TTL 窗口会重置，因此后续请求会保持缓存直到 ttl 再次过期。
+
+智能默认值（Anthropic）
+
+OAuth 或 setup-token 配置文件：启用 cache-ttl 剪枝并将心跳设置为 1h。
+API 密钥配置文件：启用 cache-ttl 剪枝，将心跳设置为 30m，并将 Anthropic 模型的 cacheControlTtl 默认为 1h。
+如果你显式设置了这些值中的任何一个，OpenClaw 不会覆盖它们。
+
+改进内容（成本 &#43; 缓存行为）
+
+为什么要剪枝： Anthropic 提示缓存仅在 TTL 内适用。如果会话空闲超过 TTL，下一个请求会重新缓存完整提示，除非你先修剪它。
+什么变得更便宜： 剪枝减少了 TTL 过期后第一个请求的 cacheWrite 大小。
+为什么 TTL 重置很重要： 一旦剪枝运行，缓存窗口会重置，因此后续请求可以重用新缓存的提示，而不是再次重新缓存完整历史。
+它不做什么： 剪枝不会添加 token 或&quot;双倍&quot;成本；它只改变该 TTL 后第一个请求缓存的内容。
+
+可以剪枝的内容
+
+仅 toolResult 消息。
+用户 &#43; 助手消息永远不会被修改。
+最后 keepLastAssistants 条助手消息受保护；该截止点之后的工具结果不会被剪枝。
+如果没有足够的助手消息来确定截止点，则跳过剪枝。
+包含图像块的工具结果会被跳过（永不修剪/清除）。
+
+上下文窗口估算
+剪枝使用估算的上下文窗口（字符 ≈ token × 4）。基础窗口按以下顺序解析：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/session-pruning/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/session-pruning/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/session-pruning/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="会话剪枝">
+  <meta property="og:description" content="会话剪枝在每次 LLM 调用之前从内存上下文中修剪旧的工具结果。它不会重写磁盘上的会话历史（*.jsonl）。
+运行时机 当启用 mode: &#34;cache-ttl&#34; 且该会话的最后一次 Anthropic 调用早于 ttl 时。 仅影响该请求发送给模型的消息。 仅对 Anthropic API 调用（和 OpenRouter Anthropic 模型）生效。 为获得最佳效果，请将 ttl 与你的模型 cacheControlTtl 匹配。 剪枝后，TTL 窗口会重置，因此后续请求会保持缓存直到 ttl 再次过期。 智能默认值（Anthropic） OAuth 或 setup-token 配置文件：启用 cache-ttl 剪枝并将心跳设置为 1h。 API 密钥配置文件：启用 cache-ttl 剪枝，将心跳设置为 30m，并将 Anthropic 模型的 cacheControlTtl 默认为 1h。 如果你显式设置了这些值中的任何一个，OpenClaw 不会覆盖它们。 改进内容（成本 &#43; 缓存行为） 为什么要剪枝： Anthropic 提示缓存仅在 TTL 内适用。如果会话空闲超过 TTL，下一个请求会重新缓存完整提示，除非你先修剪它。 什么变得更便宜： 剪枝减少了 TTL 过期后第一个请求的 cacheWrite 大小。 为什么 TTL 重置很重要： 一旦剪枝运行，缓存窗口会重置，因此后续请求可以重用新缓存的提示，而不是再次重新缓存完整历史。 它不做什么： 剪枝不会添加 token 或&#34;双倍&#34;成本；它只改变该 TTL 后第一个请求缓存的内容。 可以剪枝的内容 仅 toolResult 消息。 用户 &#43; 助手消息永远不会被修改。 最后 keepLastAssistants 条助手消息受保护；该截止点之后的工具结果不会被剪枝。 如果没有足够的助手消息来确定截止点，则跳过剪枝。 包含图像块的工具结果会被跳过（永不修剪/清除）。 上下文窗口估算 剪枝使用估算的上下文窗口（字符 ≈ token × 4）。基础窗口按以下顺序解析：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="会话剪枝">
+<meta name="twitter:description" content="会话剪枝在每次 LLM 调用之前从内存上下文中修剪旧的工具结果。它不会重写磁盘上的会话历史（*.jsonl）。
+运行时机
+
+当启用 mode: &quot;cache-ttl&quot; 且该会话的最后一次 Anthropic 调用早于 ttl 时。
+仅影响该请求发送给模型的消息。
+仅对 Anthropic API 调用（和 OpenRouter Anthropic 模型）生效。
+为获得最佳效果，请将 ttl 与你的模型 cacheControlTtl 匹配。
+剪枝后，TTL 窗口会重置，因此后续请求会保持缓存直到 ttl 再次过期。
+
+智能默认值（Anthropic）
+
+OAuth 或 setup-token 配置文件：启用 cache-ttl 剪枝并将心跳设置为 1h。
+API 密钥配置文件：启用 cache-ttl 剪枝，将心跳设置为 30m，并将 Anthropic 模型的 cacheControlTtl 默认为 1h。
+如果你显式设置了这些值中的任何一个，OpenClaw 不会覆盖它们。
+
+改进内容（成本 &#43; 缓存行为）
+
+为什么要剪枝： Anthropic 提示缓存仅在 TTL 内适用。如果会话空闲超过 TTL，下一个请求会重新缓存完整提示，除非你先修剪它。
+什么变得更便宜： 剪枝减少了 TTL 过期后第一个请求的 cacheWrite 大小。
+为什么 TTL 重置很重要： 一旦剪枝运行，缓存窗口会重置，因此后续请求可以重用新缓存的提示，而不是再次重新缓存完整历史。
+它不做什么： 剪枝不会添加 token 或&quot;双倍&quot;成本；它只改变该 TTL 后第一个请求缓存的内容。
+
+可以剪枝的内容
+
+仅 toolResult 消息。
+用户 &#43; 助手消息永远不会被修改。
+最后 keepLastAssistants 条助手消息受保护；该截止点之后的工具结果不会被剪枝。
+如果没有足够的助手消息来确定截止点，则跳过剪枝。
+包含图像块的工具结果会被跳过（永不修剪/清除）。
+
+上下文窗口估算
+剪枝使用估算的上下文窗口（字符 ≈ token × 4）。基础窗口按以下顺序解析：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "会话剪枝",
+      "item": "/openclaw/concepts/session-pruning/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "会话剪枝",
+  "name": "会话剪枝",
+  "description": "会话剪枝在每次 LLM 调用之前从内存上下文中修剪旧的工具结果。它不会重写磁盘上的会话历史（*.jsonl）。\n运行时机 当启用 mode: \u0026quot;cache-ttl\u0026quot; 且该会话的最后一次 Anthropic 调用早于 ttl 时。 仅影响该请求发送给模型的消息。 仅对 Anthropic API 调用（和 OpenRouter Anthropic 模型）生效。 为获得最佳效果，请将 ttl 与你的模型 cacheControlTtl 匹配。 剪枝后，TTL 窗口会重置，因此后续请求会保持缓存直到 ttl 再次过期。 智能默认值（Anthropic） OAuth 或 setup-token 配置文件：启用 cache-ttl 剪枝并将心跳设置为 1h。 API 密钥配置文件：启用 cache-ttl 剪枝，将心跳设置为 30m，并将 Anthropic 模型的 cacheControlTtl 默认为 1h。 如果你显式设置了这些值中的任何一个，OpenClaw 不会覆盖它们。 改进内容（成本 + 缓存行为） 为什么要剪枝： Anthropic 提示缓存仅在 TTL 内适用。如果会话空闲超过 TTL，下一个请求会重新缓存完整提示，除非你先修剪它。 什么变得更便宜： 剪枝减少了 TTL 过期后第一个请求的 cacheWrite 大小。 为什么 TTL 重置很重要： 一旦剪枝运行，缓存窗口会重置，因此后续请求可以重用新缓存的提示，而不是再次重新缓存完整历史。 它不做什么： 剪枝不会添加 token 或\u0026quot;双倍\u0026quot;成本；它只改变该 TTL 后第一个请求缓存的内容。 可以剪枝的内容 仅 toolResult 消息。 用户 + 助手消息永远不会被修改。 最后 keepLastAssistants 条助手消息受保护；该截止点之后的工具结果不会被剪枝。 如果没有足够的助手消息来确定截止点，则跳过剪枝。 包含图像块的工具结果会被跳过（永不修剪/清除）。 上下文窗口估算 剪枝使用估算的上下文窗口（字符 ≈ token × 4）。基础窗口按以下顺序解析：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "会话剪枝在每次 LLM 调用之前从内存上下文中修剪旧的工具结果。它不会重写磁盘上的会话历史（*.jsonl）。\n运行时机 当启用 mode: \"cache-ttl\" 且该会话的最后一次 Anthropic 调用早于 ttl 时。 仅影响该请求发送给模型的消息。 仅对 Anthropic API 调用（和 OpenRouter Anthropic 模型）生效。 为获得最佳效果，请将 ttl 与你的模型 cacheControlTtl 匹配。 剪枝后，TTL 窗口会重置，因此后续请求会保持缓存直到 ttl 再次过期。 智能默认值（Anthropic） OAuth 或 setup-token 配置文件：启用 cache-ttl 剪枝并将心跳设置为 1h。 API 密钥配置文件：启用 cache-ttl 剪枝，将心跳设置为 30m，并将 Anthropic 模型的 cacheControlTtl 默认为 1h。 如果你显式设置了这些值中的任何一个，OpenClaw 不会覆盖它们。 改进内容（成本 + 缓存行为） 为什么要剪枝： Anthropic 提示缓存仅在 TTL 内适用。如果会话空闲超过 TTL，下一个请求会重新缓存完整提示，除非你先修剪它。 什么变得更便宜： 剪枝减少了 TTL 过期后第一个请求的 cacheWrite 大小。 为什么 TTL 重置很重要： 一旦剪枝运行，缓存窗口会重置，因此后续请求可以重用新缓存的提示，而不是再次重新缓存完整历史。 它不做什么： 剪枝不会添加 token 或\"双倍\"成本；它只改变该 TTL 后第一个请求缓存的内容。 可以剪枝的内容 仅 toolResult 消息。 用户 + 助手消息永远不会被修改。 最后 keepLastAssistants 条助手消息受保护；该截止点之后的工具结果不会被剪枝。 如果没有足够的助手消息来确定截止点，则跳过剪枝。 包含图像块的工具结果会被跳过（永不修剪/清除）。 上下文窗口估算 剪枝使用估算的上下文窗口（字符 ≈ token × 4）。基础窗口按以下顺序解析：\nmodels.providers.*.models[].contextWindow 覆盖。 模型定义 contextWindow（来自模型注册表）。 默认 200000 token。 如果设置了 agents.defaults.contextTokens，它将被视为解析窗口的上限（最小值）。\n模式 cache-ttl 仅当最后一次 Anthropic 调用早于 ttl（默认 5m）时才运行剪枝。 运行时：与之前相同的软修剪 + 硬清除行为。 软剪枝 vs 硬剪枝 软修剪：仅用于过大的工具结果。 保留头部 + 尾部，插入 ...，并附加一个包含原始大小的注释。 跳过包含图像块的结果。 硬清除：用 hardClear.placeholder 替换整个工具结果。 工具选择 tools.allow / tools.deny 支持 * 通配符。 拒绝优先。 匹配不区分大小写。 允许列表为空 =\u003e 允许所有工具。 与其他限制的交互 内置工具已经截断自己的输出；会话剪枝是一个额外的层，防止长时间运行的聊天在模型上下文中累积过多的工具输出。 压缩是独立的：压缩进行总结并持久化，剪枝是每个请求的临时操作。参阅 /concepts/compaction。 默认值（启用时） ttl：\"5m\" keepLastAssistants：3 softTrimRatio：0.3 hardClearRatio：0.5 minPrunableToolChars：50000 softTrim：{ maxChars: 4000, headChars: 1500, tailChars: 1500 } hardClear：{ enabled: true, placeholder: \"[Old tool result content cleared]\" } 示例 默认（关闭）：\n{ agent: { contextPruning: { mode: \"off\" }, }, } 启用 TTL 感知剪枝：\n{ agent: { contextPruning: { mode: \"cache-ttl\", ttl: \"5m\" }, }, } 限制剪枝到特定工具：\n{ agent: { contextPruning: { mode: \"cache-ttl\", tools: { allow: [\"exec\", \"read\"], deny: [\"*image*\"] }, }, }, } 参阅配置参考：Gateway 网关配置\n",
+  "wordCount" : "211",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/session-pruning/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      会话剪枝
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%bf%90%e8%a1%8c%e6%97%b6%e6%9c%ba" aria-label="运行时机">运行时机</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e9%bb%98%e8%ae%a4%e5%80%bcanthropic" aria-label="智能默认值（Anthropic）">智能默认值（Anthropic）</a></li>
+                <li>
+                    <a href="#%e6%94%b9%e8%bf%9b%e5%86%85%e5%ae%b9%e6%88%90%e6%9c%ac--%e7%bc%93%e5%ad%98%e8%a1%8c%e4%b8%ba" aria-label="改进内容（成本 &#43; 缓存行为）">改进内容（成本 + 缓存行为）</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e4%bb%a5%e5%89%aa%e6%9e%9d%e7%9a%84%e5%86%85%e5%ae%b9" aria-label="可以剪枝的内容">可以剪枝的内容</a></li>
+                <li>
+                    <a href="#%e4%b8%8a%e4%b8%8b%e6%96%87%e7%aa%97%e5%8f%a3%e4%bc%b0%e7%ae%97" aria-label="上下文窗口估算">上下文窗口估算</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%bc%8f" aria-label="模式">模式</a><ul>
+                        
+                <li>
+                    <a href="#cache-ttl" aria-label="cache-ttl">cache-ttl</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%bd%af%e5%89%aa%e6%9e%9d-vs-%e7%a1%ac%e5%89%aa%e6%9e%9d" aria-label="软剪枝 vs 硬剪枝">软剪枝 vs 硬剪枝</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e9%80%89%e6%8b%a9" aria-label="工具选择">工具选择</a></li>
+                <li>
+                    <a href="#%e4%b8%8e%e5%85%b6%e4%bb%96%e9%99%90%e5%88%b6%e7%9a%84%e4%ba%a4%e4%ba%92" aria-label="与其他限制的交互">与其他限制的交互</a></li>
+                <li>
+                    <a href="#%e9%bb%98%e8%ae%a4%e5%80%bc%e5%90%af%e7%94%a8%e6%97%b6" aria-label="默认值（启用时）">默认值（启用时）</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b" aria-label="示例">示例</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>会话剪枝在每次 LLM 调用之前从内存上下文中修剪<strong>旧的工具结果</strong>。它<strong>不会</strong>重写磁盘上的会话历史（<code>*.jsonl</code>）。</p>
+<h2 id="运行时机">运行时机<a hidden class="anchor" aria-hidden="true" href="#运行时机">#</a></h2>
+<ul>
+<li>当启用 <code>mode: &quot;cache-ttl&quot;</code> 且该会话的最后一次 Anthropic 调用早于 <code>ttl</code> 时。</li>
+<li>仅影响该请求发送给模型的消息。</li>
+<li>仅对 Anthropic API 调用（和 OpenRouter Anthropic 模型）生效。</li>
+<li>为获得最佳效果，请将 <code>ttl</code> 与你的模型 <code>cacheControlTtl</code> 匹配。</li>
+<li>剪枝后，TTL 窗口会重置，因此后续请求会保持缓存直到 <code>ttl</code> 再次过期。</li>
+</ul>
+<h2 id="智能默认值anthropic">智能默认值（Anthropic）<a hidden class="anchor" aria-hidden="true" href="#智能默认值anthropic">#</a></h2>
+<ul>
+<li><strong>OAuth 或 setup-token</strong> 配置文件：启用 <code>cache-ttl</code> 剪枝并将心跳设置为 <code>1h</code>。</li>
+<li><strong>API 密钥</strong>配置文件：启用 <code>cache-ttl</code> 剪枝，将心跳设置为 <code>30m</code>，并将 Anthropic 模型的 <code>cacheControlTtl</code> 默认为 <code>1h</code>。</li>
+<li>如果你显式设置了这些值中的任何一个，OpenClaw <strong>不会</strong>覆盖它们。</li>
+</ul>
+<h2 id="改进内容成本--缓存行为">改进内容（成本 + 缓存行为）<a hidden class="anchor" aria-hidden="true" href="#改进内容成本--缓存行为">#</a></h2>
+<ul>
+<li><strong>为什么要剪枝：</strong> Anthropic 提示缓存仅在 TTL 内适用。如果会话空闲超过 TTL，下一个请求会重新缓存完整提示，除非你先修剪它。</li>
+<li><strong>什么变得更便宜：</strong> 剪枝减少了 TTL 过期后第一个请求的 <strong>cacheWrite</strong> 大小。</li>
+<li><strong>为什么 TTL 重置很重要：</strong> 一旦剪枝运行，缓存窗口会重置，因此后续请求可以重用新缓存的提示，而不是再次重新缓存完整历史。</li>
+<li><strong>它不做什么：</strong> 剪枝不会添加 token 或&quot;双倍&quot;成本；它只改变该 TTL 后第一个请求缓存的内容。</li>
+</ul>
+<h2 id="可以剪枝的内容">可以剪枝的内容<a hidden class="anchor" aria-hidden="true" href="#可以剪枝的内容">#</a></h2>
+<ul>
+<li>仅 <code>toolResult</code> 消息。</li>
+<li>用户 + 助手消息<strong>永远不会</strong>被修改。</li>
+<li>最后 <code>keepLastAssistants</code> 条助手消息受保护；该截止点之后的工具结果不会被剪枝。</li>
+<li>如果没有足够的助手消息来确定截止点，则跳过剪枝。</li>
+<li>包含<strong>图像块</strong>的工具结果会被跳过（永不修剪/清除）。</li>
+</ul>
+<h2 id="上下文窗口估算">上下文窗口估算<a hidden class="anchor" aria-hidden="true" href="#上下文窗口估算">#</a></h2>
+<p>剪枝使用估算的上下文窗口（字符 ≈ token × 4）。基础窗口按以下顺序解析：</p>
+<ol>
+<li><code>models.providers.*.models[].contextWindow</code> 覆盖。</li>
+<li>模型定义 <code>contextWindow</code>（来自模型注册表）。</li>
+<li>默认 <code>200000</code> token。</li>
+</ol>
+<p>如果设置了 <code>agents.defaults.contextTokens</code>，它将被视为解析窗口的上限（最小值）。</p>
+<h2 id="模式">模式<a hidden class="anchor" aria-hidden="true" href="#模式">#</a></h2>
+<h3 id="cache-ttl">cache-ttl<a hidden class="anchor" aria-hidden="true" href="#cache-ttl">#</a></h3>
+<ul>
+<li>仅当最后一次 Anthropic 调用早于 <code>ttl</code>（默认 <code>5m</code>）时才运行剪枝。</li>
+<li>运行时：与之前相同的软修剪 + 硬清除行为。</li>
+</ul>
+<h2 id="软剪枝-vs-硬剪枝">软剪枝 vs 硬剪枝<a hidden class="anchor" aria-hidden="true" href="#软剪枝-vs-硬剪枝">#</a></h2>
+<ul>
+<li><strong>软修剪</strong>：仅用于过大的工具结果。
+<ul>
+<li>保留头部 + 尾部，插入 <code>...</code>，并附加一个包含原始大小的注释。</li>
+<li>跳过包含图像块的结果。</li>
+</ul>
+</li>
+<li><strong>硬清除</strong>：用 <code>hardClear.placeholder</code> 替换整个工具结果。</li>
+</ul>
+<h2 id="工具选择">工具选择<a hidden class="anchor" aria-hidden="true" href="#工具选择">#</a></h2>
+<ul>
+<li><code>tools.allow</code> / <code>tools.deny</code> 支持 <code>*</code> 通配符。</li>
+<li>拒绝优先。</li>
+<li>匹配不区分大小写。</li>
+<li>允许列表为空 =&gt; 允许所有工具。</li>
+</ul>
+<h2 id="与其他限制的交互">与其他限制的交互<a hidden class="anchor" aria-hidden="true" href="#与其他限制的交互">#</a></h2>
+<ul>
+<li>内置工具已经截断自己的输出；会话剪枝是一个额外的层，防止长时间运行的聊天在模型上下文中累积过多的工具输出。</li>
+<li>压缩是独立的：压缩进行总结并持久化，剪枝是每个请求的临时操作。参阅 <a href="/concepts/compaction">/concepts/compaction</a>。</li>
+</ul>
+<h2 id="默认值启用时">默认值（启用时）<a hidden class="anchor" aria-hidden="true" href="#默认值启用时">#</a></h2>
+<ul>
+<li><code>ttl</code>：<code>&quot;5m&quot;</code></li>
+<li><code>keepLastAssistants</code>：<code>3</code></li>
+<li><code>softTrimRatio</code>：<code>0.3</code></li>
+<li><code>hardClearRatio</code>：<code>0.5</code></li>
+<li><code>minPrunableToolChars</code>：<code>50000</code></li>
+<li><code>softTrim</code>：<code>{ maxChars: 4000, headChars: 1500, tailChars: 1500 }</code></li>
+<li><code>hardClear</code>：<code>{ enabled: true, placeholder: &quot;[Old tool result content cleared]&quot; }</code></li>
+</ul>
+<h2 id="示例">示例<a hidden class="anchor" aria-hidden="true" href="#示例">#</a></h2>
+<p>默认（关闭）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    contextPruning: { mode: &#34;off&#34; },
+  },
+}
+</code></pre><p>启用 TTL 感知剪枝：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    contextPruning: { mode: &#34;cache-ttl&#34;, ttl: &#34;5m&#34; },
+  },
+}
+</code></pre><p>限制剪枝到特定工具：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agent: {
+    contextPruning: {
+      mode: &#34;cache-ttl&#34;,
+      tools: { allow: [&#34;exec&#34;, &#34;read&#34;], deny: [&#34;*image*&#34;] },
+    },
+  },
+}
+</code></pre><p>参阅配置参考：<a href="/gateway/configuration">Gateway 网关配置</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/web/dashboard/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>仪表板（控制 UI）</span>
+  </a>
+  <a class="next" href="/openclaw/concepts/session-tool/">
+    <span class="title">Next »</span>
+    <br>
+    <span>会话工具</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

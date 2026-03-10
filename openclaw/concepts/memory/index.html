@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>记忆 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 记忆是智能体工作空间中的纯 Markdown 文件。这些文件是唯一的事实来源；模型只&quot;记住&quot;写入磁盘的内容。
+记忆搜索工具由活动的记忆插件提供（默认：memory-core）。使用 plugins.slots.memory = &quot;none&quot; 禁用记忆插件。
+记忆文件（Markdown）
+默认工作空间布局使用两个记忆层：
+
+memory/YYYY-MM-DD.md
+
+每日日志（仅追加）。
+在会话开始时读取今天和昨天的内容。
+
+
+MEMORY.md（可选）
+
+精心整理的长期记忆。
+仅在主要的私人会话中加载（绝不在群组上下文中加载）。
+
+
+
+这些文件位于工作空间下（agents.defaults.workspace，默认 ~/.openclaw/workspace）。完整布局参见智能体工作空间。
+何时写入记忆
+
+决策、偏好和持久性事实写入 MEMORY.md。
+日常笔记和运行上下文写入 memory/YYYY-MM-DD.md。
+如果有人说&quot;记住这个&quot;，就写下来（不要只保存在内存中）。
+这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。
+如果你想让某些内容持久保存，请要求机器人将其写入记忆。
+
+自动记忆刷新（压缩前触发）
+当会话接近自动压缩时，OpenClaw 会触发一个静默的智能体回合，提醒模型在上下文被压缩之前写入持久记忆。默认提示明确说明模型可以回复，但通常 NO_REPLY 是正确的响应，因此用户永远不会看到这个回合。
+这由 agents.defaults.compaction.memoryFlush 控制：
+{
+  agents: {
+    defaults: {
+      compaction: {
+        reserveTokensFloor: 20000,
+        memoryFlush: {
+          enabled: true,
+          softThresholdTokens: 4000,
+          systemPrompt: &#34;Session nearing compaction. Store durable memories now.&#34;,
+          prompt: &#34;Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.&#34;,
+        },
+      },
+    },
+  },
+}
+详情：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/memory/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/memory/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/memory/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="记忆">
+  <meta property="og:description" content="OpenClaw 记忆是智能体工作空间中的纯 Markdown 文件。这些文件是唯一的事实来源；模型只&#34;记住&#34;写入磁盘的内容。
+记忆搜索工具由活动的记忆插件提供（默认：memory-core）。使用 plugins.slots.memory = &#34;none&#34; 禁用记忆插件。
+记忆文件（Markdown） 默认工作空间布局使用两个记忆层：
+memory/YYYY-MM-DD.md 每日日志（仅追加）。 在会话开始时读取今天和昨天的内容。 MEMORY.md（可选） 精心整理的长期记忆。 仅在主要的私人会话中加载（绝不在群组上下文中加载）。 这些文件位于工作空间下（agents.defaults.workspace，默认 ~/.openclaw/workspace）。完整布局参见智能体工作空间。
+何时写入记忆 决策、偏好和持久性事实写入 MEMORY.md。 日常笔记和运行上下文写入 memory/YYYY-MM-DD.md。 如果有人说&#34;记住这个&#34;，就写下来（不要只保存在内存中）。 这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。 如果你想让某些内容持久保存，请要求机器人将其写入记忆。 自动记忆刷新（压缩前触发） 当会话接近自动压缩时，OpenClaw 会触发一个静默的智能体回合，提醒模型在上下文被压缩之前写入持久记忆。默认提示明确说明模型可以回复，但通常 NO_REPLY 是正确的响应，因此用户永远不会看到这个回合。
+这由 agents.defaults.compaction.memoryFlush 控制：
+{ agents: { defaults: { compaction: { reserveTokensFloor: 20000, memoryFlush: { enabled: true, softThresholdTokens: 4000, systemPrompt: &#34;Session nearing compaction. Store durable memories now.&#34;, prompt: &#34;Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.&#34;, }, }, }, }, } 详情：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记忆">
+<meta name="twitter:description" content="OpenClaw 记忆是智能体工作空间中的纯 Markdown 文件。这些文件是唯一的事实来源；模型只&quot;记住&quot;写入磁盘的内容。
+记忆搜索工具由活动的记忆插件提供（默认：memory-core）。使用 plugins.slots.memory = &quot;none&quot; 禁用记忆插件。
+记忆文件（Markdown）
+默认工作空间布局使用两个记忆层：
+
+memory/YYYY-MM-DD.md
+
+每日日志（仅追加）。
+在会话开始时读取今天和昨天的内容。
+
+
+MEMORY.md（可选）
+
+精心整理的长期记忆。
+仅在主要的私人会话中加载（绝不在群组上下文中加载）。
+
+
+
+这些文件位于工作空间下（agents.defaults.workspace，默认 ~/.openclaw/workspace）。完整布局参见智能体工作空间。
+何时写入记忆
+
+决策、偏好和持久性事实写入 MEMORY.md。
+日常笔记和运行上下文写入 memory/YYYY-MM-DD.md。
+如果有人说&quot;记住这个&quot;，就写下来（不要只保存在内存中）。
+这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。
+如果你想让某些内容持久保存，请要求机器人将其写入记忆。
+
+自动记忆刷新（压缩前触发）
+当会话接近自动压缩时，OpenClaw 会触发一个静默的智能体回合，提醒模型在上下文被压缩之前写入持久记忆。默认提示明确说明模型可以回复，但通常 NO_REPLY 是正确的响应，因此用户永远不会看到这个回合。
+这由 agents.defaults.compaction.memoryFlush 控制：
+{
+  agents: {
+    defaults: {
+      compaction: {
+        reserveTokensFloor: 20000,
+        memoryFlush: {
+          enabled: true,
+          softThresholdTokens: 4000,
+          systemPrompt: &#34;Session nearing compaction. Store durable memories now.&#34;,
+          prompt: &#34;Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.&#34;,
+        },
+      },
+    },
+  },
+}
+详情：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "记忆",
+      "item": "/openclaw/concepts/memory/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "记忆",
+  "name": "记忆",
+  "description": "OpenClaw 记忆是智能体工作空间中的纯 Markdown 文件。这些文件是唯一的事实来源；模型只\u0026quot;记住\u0026quot;写入磁盘的内容。\n记忆搜索工具由活动的记忆插件提供（默认：memory-core）。使用 plugins.slots.memory = \u0026quot;none\u0026quot; 禁用记忆插件。\n记忆文件（Markdown） 默认工作空间布局使用两个记忆层：\nmemory/YYYY-MM-DD.md 每日日志（仅追加）。 在会话开始时读取今天和昨天的内容。 MEMORY.md（可选） 精心整理的长期记忆。 仅在主要的私人会话中加载（绝不在群组上下文中加载）。 这些文件位于工作空间下（agents.defaults.workspace，默认 ~/.openclaw/workspace）。完整布局参见智能体工作空间。\n何时写入记忆 决策、偏好和持久性事实写入 MEMORY.md。 日常笔记和运行上下文写入 memory/YYYY-MM-DD.md。 如果有人说\u0026quot;记住这个\u0026quot;，就写下来（不要只保存在内存中）。 这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。 如果你想让某些内容持久保存，请要求机器人将其写入记忆。 自动记忆刷新（压缩前触发） 当会话接近自动压缩时，OpenClaw 会触发一个静默的智能体回合，提醒模型在上下文被压缩之前写入持久记忆。默认提示明确说明模型可以回复，但通常 NO_REPLY 是正确的响应，因此用户永远不会看到这个回合。\n这由 agents.defaults.compaction.memoryFlush 控制：\n{ agents: { defaults: { compaction: { reserveTokensFloor: 20000, memoryFlush: { enabled: true, softThresholdTokens: 4000, systemPrompt: \u0026#34;Session nearing compaction. Store durable memories now.\u0026#34;, prompt: \u0026#34;Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.\u0026#34;, }, }, }, }, } 详情：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 记忆是智能体工作空间中的纯 Markdown 文件。这些文件是唯一的事实来源；模型只\"记住\"写入磁盘的内容。\n记忆搜索工具由活动的记忆插件提供（默认：memory-core）。使用 plugins.slots.memory = \"none\" 禁用记忆插件。\n记忆文件（Markdown） 默认工作空间布局使用两个记忆层：\nmemory/YYYY-MM-DD.md 每日日志（仅追加）。 在会话开始时读取今天和昨天的内容。 MEMORY.md（可选） 精心整理的长期记忆。 仅在主要的私人会话中加载（绝不在群组上下文中加载）。 这些文件位于工作空间下（agents.defaults.workspace，默认 ~/.openclaw/workspace）。完整布局参见智能体工作空间。\n何时写入记忆 决策、偏好和持久性事实写入 MEMORY.md。 日常笔记和运行上下文写入 memory/YYYY-MM-DD.md。 如果有人说\"记住这个\"，就写下来（不要只保存在内存中）。 这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。 如果你想让某些内容持久保存，请要求机器人将其写入记忆。 自动记忆刷新（压缩前触发） 当会话接近自动压缩时，OpenClaw 会触发一个静默的智能体回合，提醒模型在上下文被压缩之前写入持久记忆。默认提示明确说明模型可以回复，但通常 NO_REPLY 是正确的响应，因此用户永远不会看到这个回合。\n这由 agents.defaults.compaction.memoryFlush 控制：\n{ agents: { defaults: { compaction: { reserveTokensFloor: 20000, memoryFlush: { enabled: true, softThresholdTokens: 4000, systemPrompt: \"Session nearing compaction. Store durable memories now.\", prompt: \"Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.\", }, }, }, }, } 详情：\n软阈值：当会话 token 估计超过 contextWindow - reserveTokensFloor - softThresholdTokens 时触发刷新。 默认静默：提示包含 NO_REPLY，因此不会发送任何内容。 两个提示：一个用户提示加一个系统提示附加提醒。 每个压缩周期刷新一次（在 sessions.json 中跟踪）。 工作空间必须可写：如果会话以 workspaceAccess: \"ro\" 或 \"none\" 在沙箱中运行，则跳过刷新。 完整的压缩生命周期参见会话管理 + 压缩。\n向量记忆搜索 OpenClaw 可以在 MEMORY.md 和 memory/*.md（以及你选择加入的任何额外目录或文件）上构建小型向量索引，以便语义查询可以找到相关笔记，即使措辞不同。\n默认值：\n默认启用。 监视记忆文件的更改（去抖动）。 默认使用远程嵌入。如果未设置 memorySearch.provider，OpenClaw 自动选择： 如果配置了 memorySearch.local.modelPath 且文件存在，则使用 local。 如果可以解析 OpenAI 密钥，则使用 openai。 如果可以解析 Gemini 密钥，则使用 gemini。 否则记忆搜索保持禁用状态直到配置完成。 本地模式使用 node-llama-cpp，可能需要运行 pnpm approve-builds。 使用 sqlite-vec（如果可用）在 SQLite 中加速向量搜索。 远程嵌入需要嵌入提供商的 API 密钥。OpenClaw 从身份验证配置文件、models.providers.*.apiKey 或环境变量解析密钥。Codex OAuth 仅涵盖聊天/补全，不满足记忆搜索的嵌入需求。对于 Gemini，使用 GEMINI_API_KEY 或 models.providers.google.apiKey。使用自定义 OpenAI 兼容端点时，设置 memorySearch.remote.apiKey（以及可选的 memorySearch.remote.headers）。\n额外记忆路径 如果你想索引默认工作空间布局之外的 Markdown 文件，添加显式路径：\nagents: { defaults: { memorySearch: { extraPaths: [\"../team-docs\", \"/srv/shared-notes/overview.md\"] } } } 说明：\n路径可以是绝对路径或工作空间相对路径。 目录会递归扫描 .md 文件。 仅索引 Markdown 文件。 符号链接被忽略（文件或目录）。 Gemini 嵌入（原生） 将提供商设置为 gemini 以直接使用 Gemini 嵌入 API：\nagents: { defaults: { memorySearch: { provider: \"gemini\", model: \"gemini-embedding-001\", remote: { apiKey: \"YOUR_GEMINI_API_KEY\" } } } } 说明：\nremote.baseUrl 是可选的（默认为 Gemini API 基础 URL）。 remote.headers 让你可以在需要时添加额外的标头。 默认模型：gemini-embedding-001。 如果你想使用自定义 OpenAI 兼容端点（OpenRouter、vLLM 或代理），可以使用 remote 配置与 OpenAI 提供商：\nagents: { defaults: { memorySearch: { provider: \"openai\", model: \"text-embedding-3-small\", remote: { baseUrl: \"https://api.example.com/v1/\", apiKey: \"YOUR_OPENAI_COMPAT_API_KEY\", headers: { \"X-Custom-Header\": \"value\" } } } } } 如果你不想设置 API 密钥，使用 memorySearch.provider = \"local\" 或设置 memorySearch.fallback = \"none\"。\n回退：\nmemorySearch.fallback 可以是 openai、gemini、local 或 none。 回退提供商仅在主嵌入提供商失败时使用。 批量索引（OpenAI + Gemini）：\nOpenAI 和 Gemini 嵌入默认启用。设置 agents.defaults.memorySearch.remote.batch.enabled = false 以禁用。 默认行为等待批处理完成；如果需要可以调整 remote.batch.wait、remote.batch.pollIntervalMs 和 remote.batch.timeoutMinutes。 设置 remote.batch.concurrency 以控制我们并行提交多少个批处理作业（默认：2）。 批处理模式在 memorySearch.provider = \"openai\" 或 \"gemini\" 时适用，并使用相应的 API 密钥。 Gemini 批处理作业使用异步嵌入批处理端点，需要 Gemini Batch API 可用。 为什么 OpenAI 批处理快速又便宜：\n对于大型回填，OpenAI 通常是我们支持的最快选项，因为我们可以在单个批处理作业中提交许多嵌入请求，让 OpenAI 异步处理它们。 OpenAI 为 Batch API 工作负载提供折扣定价，因此大型索引运行通常比同步发送相同请求更便宜。 详情参见 OpenAI Batch API 文档和定价： https://platform.openai.com/docs/api-reference/batch https://platform.openai.com/pricing 配置示例：\nagents: { defaults: { memorySearch: { provider: \"openai\", model: \"text-embedding-3-small\", fallback: \"openai\", remote: { batch: { enabled: true, concurrency: 2 } }, sync: { watch: true } } } } 工具：\nmemory_search — 返回带有文件 + 行范围的片段。 memory_get — 按路径读取记忆文件内容。 本地模式：\n设置 agents.defaults.memorySearch.provider = \"local\"。 提供 agents.defaults.memorySearch.local.modelPath（GGUF 或 hf: URI）。 可选：设置 agents.defaults.memorySearch.fallback = \"none\" 以避免远程回退。 记忆工具的工作原理 memory_search 从 MEMORY.md + memory/**/*.md 语义搜索 Markdown 块（目标约 400 个 token，80 个 token 重叠）。它返回片段文本（上限约 700 个字符）、文件路径、行范围、分数、提供商/模型，以及我们是否从本地回退到远程嵌入。不返回完整文件内容。 memory_get 读取特定的记忆 Markdown 文件（工作空间相对路径），可选从起始行开始读取 N 行。MEMORY.md / memory/ 之外的路径仅在明确列在 memorySearch.extraPaths 中时才允许。 两个工具仅在智能体的 memorySearch.enabled 解析为 true 时启用。 索引内容（及时机） 文件类型：仅 Markdown（MEMORY.md、memory/**/*.md，以及 memorySearch.extraPaths 下的任何 .md 文件）。 索引存储：每个智能体的 SQLite 位于 ~/.openclaw/memory/.sqlite（可通过 agents.defaults.memorySearch.store.path 配置，支持 {agentId} 令牌）。 新鲜度：监视器监视 MEMORY.md、memory/ 和 memorySearch.extraPaths，标记索引为脏（去抖动 1.5 秒）。同步在会话开始时、搜索时或按间隔安排，并异步运行。会话记录使用增量阈值触发后台同步。 重新索引触发器：索引存储嵌入的提供商/模型 + 端点指纹 + 分块参数。如果其中任何一个发生变化，OpenClaw 会自动重置并重新索引整个存储。 混合搜索（BM25 + 向量） 启用时，OpenClaw 结合：\n向量相似度（语义匹配，措辞可以不同） BM25 关键词相关性（精确令牌如 ID、环境变量、代码符号） 如果你的平台上全文搜索不可用，OpenClaw 会回退到纯向量搜索。\n为什么使用混合搜索？ 向量搜索擅长\"这意味着同一件事\"：\n“Mac Studio gateway host” vs “运行 gateway 的机器” “debounce file updates” vs “避免每次写入都索引” 但它在精确的高信号令牌上可能较弱：\nID（a828e60、b3b9895a…） 代码符号（memorySearch.query.hybrid） 错误字符串（“sqlite-vec unavailable”） BM25（全文）正好相反：擅长精确令牌，弱于释义。 混合搜索是务实的中间地带：同时使用两种检索信号，这样你可以在\"自然语言\"查询和\"大海捞针\"查询上都获得好结果。\n我们如何合并结果（当前设计） 实现概述：\n从双方检索候选池： 向量：按余弦相似度取前 maxResults * candidateMultiplier 个。 BM25：按 FTS5 BM25 排名取前 maxResults * candidateMultiplier 个（越低越好）。 将 BM25 排名转换为 0..1 范围的分数： textScore = 1 / (1 + max(0, bm25Rank)) 按块 id 合并候选并计算加权分数： finalScore = vectorWeight * vectorScore + textWeight * textScore 说明：\n在配置解析中 vectorWeight + textWeight 归一化为 1.0，因此权重表现为百分比。 如果嵌入不可用（或提供商返回零向量），我们仍然运行 BM25 并返回关键词匹配。 如果无法创建 FTS5，我们保持纯向量搜索（不会硬失败）。 这不是\"IR 理论完美\"的，但它简单、快速，并且往往能提高真实笔记的召回率/精确率。 如果我们以后想要更复杂的方案，常见的下一步是倒数排名融合（RRF）或在混合之前进行分数归一化（最小/最大或 z 分数）。\n配置：\nagents: { defaults: { memorySearch: { query: { hybrid: { enabled: true, vectorWeight: 0.7, textWeight: 0.3, candidateMultiplier: 4 } } } } } 嵌入缓存 OpenClaw 可以在 SQLite 中缓存块嵌入，这样重新索引和频繁更新（特别是会话记录）不会重新嵌入未更改的文本。\n配置：\nagents: { defaults: { memorySearch: { cache: { enabled: true, maxEntries: 50000 } } } } 会话记忆搜索（实验性） 你可以选择性地索引会话记录并通过 memory_search 呈现它们。 这由实验性标志控制。\nagents: { defaults: { memorySearch: { experimental: { sessionMemory: true }, sources: [\"memory\", \"sessions\"] } } } 说明：\n会话索引是选择加入的（默认关闭）。 会话更新被去抖动并在超过增量阈值后异步索引（尽力而为）。 memory_search 永远不会阻塞索引；在后台同步完成之前，结果可能略有延迟。 结果仍然只包含片段；memory_get 仍然仅限于记忆文件。 会话索引按智能体隔离（仅索引该智能体的会话日志）。 会话日志存储在磁盘上（~/.openclaw/agents//sessions/*.jsonl）。任何具有文件系统访问权限的进程/用户都可以读取它们，因此将磁盘访问视为信任边界。对于更严格的隔离，在单独的操作系统用户或主机下运行智能体。 增量阈值（显示默认值）：\nagents: { defaults: { memorySearch: { sync: { sessions: { deltaBytes: 100000, // ~100 KB deltaMessages: 50 // JSONL 行数 } } } } } SQLite 向量加速（sqlite-vec） 当 sqlite-vec 扩展可用时，OpenClaw 将嵌入存储在 SQLite 虚拟表（vec0）中，并在数据库中执行向量距离查询。这使搜索保持快速，无需将每个嵌入加载到 JS 中。\n配置（可选）：\nagents: { defaults: { memorySearch: { store: { vector: { enabled: true, extensionPath: \"/path/to/sqlite-vec\" } } } } } 说明：\nenabled 默认为 true；禁用时，搜索回退到对存储嵌入的进程内余弦相似度计算。 如果 sqlite-vec 扩展缺失或加载失败，OpenClaw 会记录错误并继续使用 JS 回退（无向量表）。 extensionPath 覆盖捆绑的 sqlite-vec 路径（对于自定义构建或非标准安装位置很有用）。 本地嵌入自动下载 默认本地嵌入模型：hf:ggml-org/embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf（约 0.6 GB）。 当 memorySearch.provider = \"local\" 时，node-llama-cpp 解析 modelPath；如果 GGUF 缺失，它会自动下载到缓存（或 local.modelCacheDir，如果已设置），然后加载它。下载在重试时会续传。 原生构建要求：运行 pnpm approve-builds，选择 node-llama-cpp，然后运行 pnpm rebuild node-llama-cpp。 回退：如果本地设置失败且 memorySearch.fallback = \"openai\"，我们自动切换到远程嵌入（openai/text-embedding-3-small，除非被覆盖）并记录原因。 自定义 OpenAI 兼容端点示例 agents: { defaults: { memorySearch: { provider: \"openai\", model: \"text-embedding-3-small\", remote: { baseUrl: \"https://api.example.com/v1/\", apiKey: \"YOUR_REMOTE_API_KEY\", headers: { \"X-Organization\": \"org-id\", \"X-Project\": \"project-id\" } } } } } 说明：\nremote.* 优先于 models.providers.openai.*。 remote.headers 与 OpenAI 标头合并；键冲突时 remote 优先。省略 remote.headers 以使用 OpenAI 默认值。 ",
+  "wordCount" : "735",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/memory/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      记忆
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%ae%b0%e5%bf%86%e6%96%87%e4%bb%b6markdown" aria-label="记忆文件（Markdown）">记忆文件（Markdown）</a></li>
+                <li>
+                    <a href="#%e4%bd%95%e6%97%b6%e5%86%99%e5%85%a5%e8%ae%b0%e5%bf%86" aria-label="何时写入记忆">何时写入记忆</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%8a%a8%e8%ae%b0%e5%bf%86%e5%88%b7%e6%96%b0%e5%8e%8b%e7%bc%a9%e5%89%8d%e8%a7%a6%e5%8f%91" aria-label="自动记忆刷新（压缩前触发）">自动记忆刷新（压缩前触发）</a></li>
+                <li>
+                    <a href="#%e5%90%91%e9%87%8f%e8%ae%b0%e5%bf%86%e6%90%9c%e7%b4%a2" aria-label="向量记忆搜索">向量记忆搜索</a><ul>
+                        
+                <li>
+                    <a href="#%e9%a2%9d%e5%a4%96%e8%ae%b0%e5%bf%86%e8%b7%af%e5%be%84" aria-label="额外记忆路径">额外记忆路径</a></li>
+                <li>
+                    <a href="#gemini-%e5%b5%8c%e5%85%a5%e5%8e%9f%e7%94%9f" aria-label="Gemini 嵌入（原生）">Gemini 嵌入（原生）</a></li>
+                <li>
+                    <a href="#%e8%ae%b0%e5%bf%86%e5%b7%a5%e5%85%b7%e7%9a%84%e5%b7%a5%e4%bd%9c%e5%8e%9f%e7%90%86" aria-label="记忆工具的工作原理">记忆工具的工作原理</a></li>
+                <li>
+                    <a href="#%e7%b4%a2%e5%bc%95%e5%86%85%e5%ae%b9%e5%8f%8a%e6%97%b6%e6%9c%ba" aria-label="索引内容（及时机）">索引内容（及时机）</a></li>
+                <li>
+                    <a href="#%e6%b7%b7%e5%90%88%e6%90%9c%e7%b4%a2bm25--%e5%90%91%e9%87%8f" aria-label="混合搜索（BM25 &#43; 向量）">混合搜索（BM25 + 向量）</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%bf%e7%94%a8%e6%b7%b7%e5%90%88%e6%90%9c%e7%b4%a2" aria-label="为什么使用混合搜索？">为什么使用混合搜索？</a></li>
+                <li>
+                    <a href="#%e6%88%91%e4%bb%ac%e5%a6%82%e4%bd%95%e5%90%88%e5%b9%b6%e7%bb%93%e6%9e%9c%e5%bd%93%e5%89%8d%e8%ae%be%e8%ae%a1" aria-label="我们如何合并结果（当前设计）">我们如何合并结果（当前设计）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b5%8c%e5%85%a5%e7%bc%93%e5%ad%98" aria-label="嵌入缓存">嵌入缓存</a></li>
+                <li>
+                    <a href="#%e4%bc%9a%e8%af%9d%e8%ae%b0%e5%bf%86%e6%90%9c%e7%b4%a2%e5%ae%9e%e9%aa%8c%e6%80%a7" aria-label="会话记忆搜索（实验性）">会话记忆搜索（实验性）</a></li>
+                <li>
+                    <a href="#sqlite-%e5%90%91%e9%87%8f%e5%8a%a0%e9%80%9fsqlite-vec" aria-label="SQLite 向量加速（sqlite-vec）">SQLite 向量加速（sqlite-vec）</a></li>
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e5%b5%8c%e5%85%a5%e8%87%aa%e5%8a%a8%e4%b8%8b%e8%bd%bd" aria-label="本地嵌入自动下载">本地嵌入自动下载</a></li>
+                <li>
+                    <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89-openai-%e5%85%bc%e5%ae%b9%e7%ab%af%e7%82%b9%e7%a4%ba%e4%be%8b" aria-label="自定义 OpenAI 兼容端点示例">自定义 OpenAI 兼容端点示例</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 记忆是<strong>智能体工作空间中的纯 Markdown 文件</strong>。这些文件是唯一的事实来源；模型只&quot;记住&quot;写入磁盘的内容。</p>
+<p>记忆搜索工具由活动的记忆插件提供（默认：<code>memory-core</code>）。使用 <code>plugins.slots.memory = &quot;none&quot;</code> 禁用记忆插件。</p>
+<h2 id="记忆文件markdown">记忆文件（Markdown）<a hidden class="anchor" aria-hidden="true" href="#记忆文件markdown">#</a></h2>
+<p>默认工作空间布局使用两个记忆层：</p>
+<ul>
+<li><code>memory/YYYY-MM-DD.md</code>
+<ul>
+<li>每日日志（仅追加）。</li>
+<li>在会话开始时读取今天和昨天的内容。</li>
+</ul>
+</li>
+<li><code>MEMORY.md</code>（可选）
+<ul>
+<li>精心整理的长期记忆。</li>
+<li><strong>仅在主要的私人会话中加载</strong>（绝不在群组上下文中加载）。</li>
+</ul>
+</li>
+</ul>
+<p>这些文件位于工作空间下（<code>agents.defaults.workspace</code>，默认 <code>~/.openclaw/workspace</code>）。完整布局参见<a href="/concepts/agent-workspace">智能体工作空间</a>。</p>
+<h2 id="何时写入记忆">何时写入记忆<a hidden class="anchor" aria-hidden="true" href="#何时写入记忆">#</a></h2>
+<ul>
+<li>决策、偏好和持久性事实写入 <code>MEMORY.md</code>。</li>
+<li>日常笔记和运行上下文写入 <code>memory/YYYY-MM-DD.md</code>。</li>
+<li>如果有人说&quot;记住这个&quot;，就写下来（不要只保存在内存中）。</li>
+<li>这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。</li>
+<li>如果你想让某些内容持久保存，<strong>请要求机器人将其写入</strong>记忆。</li>
+</ul>
+<h2 id="自动记忆刷新压缩前触发">自动记忆刷新（压缩前触发）<a hidden class="anchor" aria-hidden="true" href="#自动记忆刷新压缩前触发">#</a></h2>
+<p>当会话<strong>接近自动压缩</strong>时，OpenClaw 会触发一个<strong>静默的智能体回合</strong>，提醒模型在上下文被压缩<strong>之前</strong>写入持久记忆。默认提示明确说明模型<em>可以回复</em>，但通常 <code>NO_REPLY</code> 是正确的响应，因此用户永远不会看到这个回合。</p>
+<p>这由 <code>agents.defaults.compaction.memoryFlush</code> 控制：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      compaction: {
+        reserveTokensFloor: 20000,
+        memoryFlush: {
+          enabled: true,
+          softThresholdTokens: 4000,
+          systemPrompt: &#34;Session nearing compaction. Store durable memories now.&#34;,
+          prompt: &#34;Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.&#34;,
+        },
+      },
+    },
+  },
+}
+</code></pre><p>详情：</p>
+<ul>
+<li><strong>软阈值</strong>：当会话 token 估计超过 <code>contextWindow - reserveTokensFloor - softThresholdTokens</code> 时触发刷新。</li>
+<li>默认<strong>静默</strong>：提示包含 <code>NO_REPLY</code>，因此不会发送任何内容。</li>
+<li><strong>两个提示</strong>：一个用户提示加一个系统提示附加提醒。</li>
+<li><strong>每个压缩周期刷新一次</strong>（在 <code>sessions.json</code> 中跟踪）。</li>
+<li><strong>工作空间必须可写</strong>：如果会话以 <code>workspaceAccess: &quot;ro&quot;</code> 或 <code>&quot;none&quot;</code> 在沙箱中运行，则跳过刷新。</li>
+</ul>
+<p>完整的压缩生命周期参见<a href="/reference/session-management-compaction">会话管理 + 压缩</a>。</p>
+<h2 id="向量记忆搜索">向量记忆搜索<a hidden class="anchor" aria-hidden="true" href="#向量记忆搜索">#</a></h2>
+<p>OpenClaw 可以在 <code>MEMORY.md</code> 和 <code>memory/*.md</code>（以及你选择加入的任何额外目录或文件）上构建小型向量索引，以便语义查询可以找到相关笔记，即使措辞不同。</p>
+<p>默认值：</p>
+<ul>
+<li>默认启用。</li>
+<li>监视记忆文件的更改（去抖动）。</li>
+<li>默认使用远程嵌入。如果未设置 <code>memorySearch.provider</code>，OpenClaw 自动选择：
+<ol>
+<li>如果配置了 <code>memorySearch.local.modelPath</code> 且文件存在，则使用 <code>local</code>。</li>
+<li>如果可以解析 OpenAI 密钥，则使用 <code>openai</code>。</li>
+<li>如果可以解析 Gemini 密钥，则使用 <code>gemini</code>。</li>
+<li>否则记忆搜索保持禁用状态直到配置完成。</li>
+</ol>
+</li>
+<li>本地模式使用 node-llama-cpp，可能需要运行 <code>pnpm approve-builds</code>。</li>
+<li>使用 sqlite-vec（如果可用）在 SQLite 中加速向量搜索。</li>
+</ul>
+<p>远程嵌入<strong>需要</strong>嵌入提供商的 API 密钥。OpenClaw 从身份验证配置文件、<code>models.providers.*.apiKey</code> 或环境变量解析密钥。Codex OAuth 仅涵盖聊天/补全，<strong>不</strong>满足记忆搜索的嵌入需求。对于 Gemini，使用 <code>GEMINI_API_KEY</code> 或 <code>models.providers.google.apiKey</code>。使用自定义 OpenAI 兼容端点时，设置 <code>memorySearch.remote.apiKey</code>（以及可选的 <code>memorySearch.remote.headers</code>）。</p>
+<h3 id="额外记忆路径">额外记忆路径<a hidden class="anchor" aria-hidden="true" href="#额外记忆路径">#</a></h3>
+<p>如果你想索引默认工作空间布局之外的 Markdown 文件，添加显式路径：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      extraPaths: [&#34;../team-docs&#34;, &#34;/srv/shared-notes/overview.md&#34;]
+    }
+  }
+}
+</code></pre><p>说明：</p>
+<ul>
+<li>路径可以是绝对路径或工作空间相对路径。</li>
+<li>目录会递归扫描 <code>.md</code> 文件。</li>
+<li>仅索引 Markdown 文件。</li>
+<li>符号链接被忽略（文件或目录）。</li>
+</ul>
+<h3 id="gemini-嵌入原生">Gemini 嵌入（原生）<a hidden class="anchor" aria-hidden="true" href="#gemini-嵌入原生">#</a></h3>
+<p>将提供商设置为 <code>gemini</code> 以直接使用 Gemini 嵌入 API：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      provider: &#34;gemini&#34;,
+      model: &#34;gemini-embedding-001&#34;,
+      remote: {
+        apiKey: &#34;YOUR_GEMINI_API_KEY&#34;
+      }
+    }
+  }
+}
+</code></pre><p>说明：</p>
+<ul>
+<li><code>remote.baseUrl</code> 是可选的（默认为 Gemini API 基础 URL）。</li>
+<li><code>remote.headers</code> 让你可以在需要时添加额外的标头。</li>
+<li>默认模型：<code>gemini-embedding-001</code>。</li>
+</ul>
+<p>如果你想使用<strong>自定义 OpenAI 兼容端点</strong>（OpenRouter、vLLM 或代理），可以使用 <code>remote</code> 配置与 OpenAI 提供商：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      provider: &#34;openai&#34;,
+      model: &#34;text-embedding-3-small&#34;,
+      remote: {
+        baseUrl: &#34;https://api.example.com/v1/&#34;,
+        apiKey: &#34;YOUR_OPENAI_COMPAT_API_KEY&#34;,
+        headers: { &#34;X-Custom-Header&#34;: &#34;value&#34; }
+      }
+    }
+  }
+}
+</code></pre><p>如果你不想设置 API 密钥，使用 <code>memorySearch.provider = &quot;local&quot;</code> 或设置 <code>memorySearch.fallback = &quot;none&quot;</code>。</p>
+<p>回退：</p>
+<ul>
+<li><code>memorySearch.fallback</code> 可以是 <code>openai</code>、<code>gemini</code>、<code>local</code> 或 <code>none</code>。</li>
+<li>回退提供商仅在主嵌入提供商失败时使用。</li>
+</ul>
+<p>批量索引（OpenAI + Gemini）：</p>
+<ul>
+<li>OpenAI 和 Gemini 嵌入默认启用。设置 <code>agents.defaults.memorySearch.remote.batch.enabled = false</code> 以禁用。</li>
+<li>默认行为等待批处理完成；如果需要可以调整 <code>remote.batch.wait</code>、<code>remote.batch.pollIntervalMs</code> 和 <code>remote.batch.timeoutMinutes</code>。</li>
+<li>设置 <code>remote.batch.concurrency</code> 以控制我们并行提交多少个批处理作业（默认：2）。</li>
+<li>批处理模式在 <code>memorySearch.provider = &quot;openai&quot;</code> 或 <code>&quot;gemini&quot;</code> 时适用，并使用相应的 API 密钥。</li>
+<li>Gemini 批处理作业使用异步嵌入批处理端点，需要 Gemini Batch API 可用。</li>
+</ul>
+<p>为什么 OpenAI 批处理快速又便宜：</p>
+<ul>
+<li>对于大型回填，OpenAI 通常是我们支持的最快选项，因为我们可以在单个批处理作业中提交许多嵌入请求，让 OpenAI 异步处理它们。</li>
+<li>OpenAI 为 Batch API 工作负载提供折扣定价，因此大型索引运行通常比同步发送相同请求更便宜。</li>
+<li>详情参见 OpenAI Batch API 文档和定价：
+<ul>
+<li><a href="https://platform.openai.com/docs/api-reference/batch">https://platform.openai.com/docs/api-reference/batch</a></li>
+<li><a href="https://platform.openai.com/pricing">https://platform.openai.com/pricing</a></li>
+</ul>
+</li>
+</ul>
+<p>配置示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      provider: &#34;openai&#34;,
+      model: &#34;text-embedding-3-small&#34;,
+      fallback: &#34;openai&#34;,
+      remote: {
+        batch: { enabled: true, concurrency: 2 }
+      },
+      sync: { watch: true }
+    }
+  }
+}
+</code></pre><p>工具：</p>
+<ul>
+<li><code>memory_search</code> — 返回带有文件 + 行范围的片段。</li>
+<li><code>memory_get</code> — 按路径读取记忆文件内容。</li>
+</ul>
+<p>本地模式：</p>
+<ul>
+<li>设置 <code>agents.defaults.memorySearch.provider = &quot;local&quot;</code>。</li>
+<li>提供 <code>agents.defaults.memorySearch.local.modelPath</code>（GGUF 或 <code>hf:</code> URI）。</li>
+<li>可选：设置 <code>agents.defaults.memorySearch.fallback = &quot;none&quot;</code> 以避免远程回退。</li>
+</ul>
+<h3 id="记忆工具的工作原理">记忆工具的工作原理<a hidden class="anchor" aria-hidden="true" href="#记忆工具的工作原理">#</a></h3>
+<ul>
+<li><code>memory_search</code> 从 <code>MEMORY.md</code> + <code>memory/**/*.md</code> 语义搜索 Markdown 块（目标约 400 个 token，80 个 token 重叠）。它返回片段文本（上限约 700 个字符）、文件路径、行范围、分数、提供商/模型，以及我们是否从本地回退到远程嵌入。不返回完整文件内容。</li>
+<li><code>memory_get</code> 读取特定的记忆 Markdown 文件（工作空间相对路径），可选从起始行开始读取 N 行。<code>MEMORY.md</code> / <code>memory/</code> 之外的路径仅在明确列在 <code>memorySearch.extraPaths</code> 中时才允许。</li>
+<li>两个工具仅在智能体的 <code>memorySearch.enabled</code> 解析为 true 时启用。</li>
+</ul>
+<h3 id="索引内容及时机">索引内容（及时机）<a hidden class="anchor" aria-hidden="true" href="#索引内容及时机">#</a></h3>
+<ul>
+<li>文件类型：仅 Markdown（<code>MEMORY.md</code>、<code>memory/**/*.md</code>，以及 <code>memorySearch.extraPaths</code> 下的任何 <code>.md</code> 文件）。</li>
+<li>索引存储：每个智能体的 SQLite 位于 <code>~/.openclaw/memory/&lt;agentId&gt;.sqlite</code>（可通过 <code>agents.defaults.memorySearch.store.path</code> 配置，支持 <code>{agentId}</code> 令牌）。</li>
+<li>新鲜度：监视器监视 <code>MEMORY.md</code>、<code>memory/</code> 和 <code>memorySearch.extraPaths</code>，标记索引为脏（去抖动 1.5 秒）。同步在会话开始时、搜索时或按间隔安排，并异步运行。会话记录使用增量阈值触发后台同步。</li>
+<li>重新索引触发器：索引存储嵌入的<strong>提供商/模型 + 端点指纹 + 分块参数</strong>。如果其中任何一个发生变化，OpenClaw 会自动重置并重新索引整个存储。</li>
+</ul>
+<h3 id="混合搜索bm25--向量">混合搜索（BM25 + 向量）<a hidden class="anchor" aria-hidden="true" href="#混合搜索bm25--向量">#</a></h3>
+<p>启用时，OpenClaw 结合：</p>
+<ul>
+<li><strong>向量相似度</strong>（语义匹配，措辞可以不同）</li>
+<li><strong>BM25 关键词相关性</strong>（精确令牌如 ID、环境变量、代码符号）</li>
+</ul>
+<p>如果你的平台上全文搜索不可用，OpenClaw 会回退到纯向量搜索。</p>
+<h4 id="为什么使用混合搜索">为什么使用混合搜索？<a hidden class="anchor" aria-hidden="true" href="#为什么使用混合搜索">#</a></h4>
+<p>向量搜索擅长&quot;这意味着同一件事&quot;：</p>
+<ul>
+<li>&ldquo;Mac Studio gateway host&rdquo; vs &ldquo;运行 gateway 的机器&rdquo;</li>
+<li>&ldquo;debounce file updates&rdquo; vs &ldquo;避免每次写入都索引&rdquo;</li>
+</ul>
+<p>但它在精确的高信号令牌上可能较弱：</p>
+<ul>
+<li>ID（<code>a828e60</code>、<code>b3b9895a…</code>）</li>
+<li>代码符号（<code>memorySearch.query.hybrid</code>）</li>
+<li>错误字符串（&ldquo;sqlite-vec unavailable&rdquo;）</li>
+</ul>
+<p>BM25（全文）正好相反：擅长精确令牌，弱于释义。
+混合搜索是务实的中间地带：<strong>同时使用两种检索信号</strong>，这样你可以在&quot;自然语言&quot;查询和&quot;大海捞针&quot;查询上都获得好结果。</p>
+<h4 id="我们如何合并结果当前设计">我们如何合并结果（当前设计）<a hidden class="anchor" aria-hidden="true" href="#我们如何合并结果当前设计">#</a></h4>
+<p>实现概述：</p>
+<ol>
+<li>从双方检索候选池：</li>
+</ol>
+<ul>
+<li><strong>向量</strong>：按余弦相似度取前 <code>maxResults * candidateMultiplier</code> 个。</li>
+<li><strong>BM25</strong>：按 FTS5 BM25 排名取前 <code>maxResults * candidateMultiplier</code> 个（越低越好）。</li>
+</ul>
+<ol start="2">
+<li>将 BM25 排名转换为 0..1 范围的分数：</li>
+</ol>
+<ul>
+<li><code>textScore = 1 / (1 + max(0, bm25Rank))</code></li>
+</ul>
+<ol start="3">
+<li>按块 id 合并候选并计算加权分数：</li>
+</ol>
+<ul>
+<li><code>finalScore = vectorWeight * vectorScore + textWeight * textScore</code></li>
+</ul>
+<p>说明：</p>
+<ul>
+<li>在配置解析中 <code>vectorWeight</code> + <code>textWeight</code> 归一化为 1.0，因此权重表现为百分比。</li>
+<li>如果嵌入不可用（或提供商返回零向量），我们仍然运行 BM25 并返回关键词匹配。</li>
+<li>如果无法创建 FTS5，我们保持纯向量搜索（不会硬失败）。</li>
+</ul>
+<p>这不是&quot;IR 理论完美&quot;的，但它简单、快速，并且往往能提高真实笔记的召回率/精确率。
+如果我们以后想要更复杂的方案，常见的下一步是倒数排名融合（RRF）或在混合之前进行分数归一化（最小/最大或 z 分数）。</p>
+<p>配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      query: {
+        hybrid: {
+          enabled: true,
+          vectorWeight: 0.7,
+          textWeight: 0.3,
+          candidateMultiplier: 4
+        }
+      }
+    }
+  }
+}
+</code></pre><h3 id="嵌入缓存">嵌入缓存<a hidden class="anchor" aria-hidden="true" href="#嵌入缓存">#</a></h3>
+<p>OpenClaw 可以在 SQLite 中缓存<strong>块嵌入</strong>，这样重新索引和频繁更新（特别是会话记录）不会重新嵌入未更改的文本。</p>
+<p>配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      cache: {
+        enabled: true,
+        maxEntries: 50000
+      }
+    }
+  }
+}
+</code></pre><h3 id="会话记忆搜索实验性">会话记忆搜索（实验性）<a hidden class="anchor" aria-hidden="true" href="#会话记忆搜索实验性">#</a></h3>
+<p>你可以选择性地索引<strong>会话记录</strong>并通过 <code>memory_search</code> 呈现它们。
+这由实验性标志控制。</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      experimental: { sessionMemory: true },
+      sources: [&#34;memory&#34;, &#34;sessions&#34;]
+    }
+  }
+}
+</code></pre><p>说明：</p>
+<ul>
+<li>会话索引是<strong>选择加入</strong>的（默认关闭）。</li>
+<li>会话更新被去抖动并在超过增量阈值后<strong>异步索引</strong>（尽力而为）。</li>
+<li><code>memory_search</code> 永远不会阻塞索引；在后台同步完成之前，结果可能略有延迟。</li>
+<li>结果仍然只包含片段；<code>memory_get</code> 仍然仅限于记忆文件。</li>
+<li>会话索引按智能体隔离（仅索引该智能体的会话日志）。</li>
+<li>会话日志存储在磁盘上（<code>~/.openclaw/agents/&lt;agentId&gt;/sessions/*.jsonl</code>）。任何具有文件系统访问权限的进程/用户都可以读取它们，因此将磁盘访问视为信任边界。对于更严格的隔离，在单独的操作系统用户或主机下运行智能体。</li>
+</ul>
+<p>增量阈值（显示默认值）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      sync: {
+        sessions: {
+          deltaBytes: 100000,   // ~100 KB
+          deltaMessages: 50     // JSONL 行数
+        }
+      }
+    }
+  }
+}
+</code></pre><h3 id="sqlite-向量加速sqlite-vec">SQLite 向量加速（sqlite-vec）<a hidden class="anchor" aria-hidden="true" href="#sqlite-向量加速sqlite-vec">#</a></h3>
+<p>当 sqlite-vec 扩展可用时，OpenClaw 将嵌入存储在 SQLite 虚拟表（<code>vec0</code>）中，并在数据库中执行向量距离查询。这使搜索保持快速，无需将每个嵌入加载到 JS 中。</p>
+<p>配置（可选）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      store: {
+        vector: {
+          enabled: true,
+          extensionPath: &#34;/path/to/sqlite-vec&#34;
+        }
+      }
+    }
+  }
+}
+</code></pre><p>说明：</p>
+<ul>
+<li><code>enabled</code> 默认为 true；禁用时，搜索回退到对存储嵌入的进程内余弦相似度计算。</li>
+<li>如果 sqlite-vec 扩展缺失或加载失败，OpenClaw 会记录错误并继续使用 JS 回退（无向量表）。</li>
+<li><code>extensionPath</code> 覆盖捆绑的 sqlite-vec 路径（对于自定义构建或非标准安装位置很有用）。</li>
+</ul>
+<h3 id="本地嵌入自动下载">本地嵌入自动下载<a hidden class="anchor" aria-hidden="true" href="#本地嵌入自动下载">#</a></h3>
+<ul>
+<li>默认本地嵌入模型：<code>hf:ggml-org/embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf</code>（约 0.6 GB）。</li>
+<li>当 <code>memorySearch.provider = &quot;local&quot;</code> 时，<code>node-llama-cpp</code> 解析 <code>modelPath</code>；如果 GGUF 缺失，它会<strong>自动下载</strong>到缓存（或 <code>local.modelCacheDir</code>，如果已设置），然后加载它。下载在重试时会续传。</li>
+<li>原生构建要求：运行 <code>pnpm approve-builds</code>，选择 <code>node-llama-cpp</code>，然后运行 <code>pnpm rebuild node-llama-cpp</code>。</li>
+<li>回退：如果本地设置失败且 <code>memorySearch.fallback = &quot;openai&quot;</code>，我们自动切换到远程嵌入（<code>openai/text-embedding-3-small</code>，除非被覆盖）并记录原因。</li>
+</ul>
+<h3 id="自定义-openai-兼容端点示例">自定义 OpenAI 兼容端点示例<a hidden class="anchor" aria-hidden="true" href="#自定义-openai-兼容端点示例">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">agents: {
+  defaults: {
+    memorySearch: {
+      provider: &#34;openai&#34;,
+      model: &#34;text-embedding-3-small&#34;,
+      remote: {
+        baseUrl: &#34;https://api.example.com/v1/&#34;,
+        apiKey: &#34;YOUR_REMOTE_API_KEY&#34;,
+        headers: {
+          &#34;X-Organization&#34;: &#34;org-id&#34;,
+          &#34;X-Project&#34;: &#34;project-id&#34;
+        }
+      }
+    }
+  }
+}
+</code></pre><p>说明：</p>
+<ul>
+<li><code>remote.*</code> 优先于 <code>models.providers.openai.*</code>。</li>
+<li><code>remote.headers</code> 与 OpenAI 标头合并；键冲突时 remote 优先。省略 <code>remote.headers</code> 以使用 OpenAI 默认值。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/automation/auth-monitoring/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>认证监控</span>
+  </a>
+  <a class="next" href="/openclaw/gateway/discovery/">
+    <span class="title">Next »</span>
+    <br>
+    <span>设备发现 &amp; 传输协议</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

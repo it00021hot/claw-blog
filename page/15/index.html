@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>WebChat（macOS 应用）</h2>
+    </header>
+    <div class="entry-content">
+      <p>macOS 菜单栏应用将 WebChat UI 嵌入为原生 SwiftUI 视图。它连接到 Gateway 网关，默认使用所选智能体的主会话（带有会话切换器用于其他会话）。
+本地模式：直接连接到本地 Gateway 网关 WebSocket。 远程模式：通过 SSH 转发 Gateway 网关控制端口，并使用该隧道作为数据平面。 启动和调试 手动：Lobster 菜单 → “Open Chat”。 测试时自动打开： dist/OpenClaw.app/Contents/MacOS/OpenClaw --webchat 日志：./scripts/clawlog.sh（子系统 bot.molt，类别 WebChatSwiftUI）。 工作原理 数据平面：Gateway 网关 WS 方法 chat.history、chat.send、chat.abort、chat.inject 和事件 chat、agent、presence、tick、health。 会话：默认为主会话（main，或当范围为全局时为 global）。UI 可以在会话之间切换。 新手引导使用专用会话，以将首次运行设置分开。 安全面 远程模式仅通过 SSH 转发 Gateway 网关 WebSocket 控制端口。 已知限制 UI 针对聊天会话优化（不是完整的浏览器沙箱）。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to WebChat（macOS 应用）" href="/openclaw/platforms/mac/webchat/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>WebChat（Gateway 网关 WebSocket UI）</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态：macOS/iOS SwiftUI 聊天 UI 直接与 Gateway 网关 WebSocket 通信。
+它是什么 Gateway 网关的原生聊天 UI（无嵌入式浏览器，无本地静态服务器）。 使用与其他渠道相同的会话和路由规则。 确定性路由：回复始终返回到 WebChat。 快速开始 启动 Gateway 网关。 打开 WebChat UI（macOS/iOS 应用）或控制 UI 聊天标签页。 确保已配置 Gateway 网关认证（默认需要，即使在 loopback 上）。 工作原理（行为） UI 连接到 Gateway 网关 WebSocket 并使用 chat.history、chat.send 和 chat.inject。 chat.inject 直接将助手注释追加到转录并广播到 UI（无智能体运行）。 历史记录始终从 Gateway 网关获取（无本地文件监听）。 如果 Gateway 网关不可达，WebChat 为只读模式。 远程使用 远程模式通过 SSH/Tailscale 隧道传输 Gateway 网关 WebSocket。 你不需要运行单独的 WebChat 服务器。 配置参考（WebChat） 完整配置：配置
+渠道选项：
+没有专用的 webchat.* 块。WebChat 使用下面的 Gateway 网关端点 &#43; 认证设置。 相关的全局选项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to WebChat（Gateway 网关 WebSocket UI）" href="/openclaw/web/webchat/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Web 工具</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 提供两个轻量级 Web 工具：
+web_search — 通过 Brave Search API（默认）或 Perplexity Sonar（直连或通过 OpenRouter）搜索网络。 web_fetch — HTTP 获取 &#43; 可读性提取（HTML → markdown/文本）。 这些不是浏览器自动化。对于 JS 密集型网站或需要登录的情况，请使用浏览器工具。
+工作原理 web_search 调用你配置的提供商并返回结果。 Brave（默认）：返回结构化结果（标题、URL、摘要）。 Perplexity：返回带有实时网络搜索引用的 AI 综合答案。 结果按查询缓存 15 分钟（可配置）。 web_fetch 执行普通 HTTP GET 并提取可读内容（HTML → markdown/文本）。它不执行 JavaScript。 web_fetch 默认启用（除非显式禁用）。 选择搜索提供商 提供商 优点 缺点 API 密钥 Brave（默认） 快速、结构化结果、免费层 传统搜索结果 BRAVE_API_KEY Perplexity AI 综合答案、引用、实时 需要 Perplexity 或 OpenRouter 访问 OPENROUTER_API_KEY 或 PERPLEXITY_API_KEY 参见 Brave Search 设置 和 Perplexity Sonar 了解提供商特定详情。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Web 工具" href="/openclaw/tools/web/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>VPS 托管</h2>
+    </header>
+    <div class="entry-content">
+      <p>本中心链接到支持的 VPS/托管指南，并在高层次上解释云部署的工作原理。
+选择提供商 Railway（一键 &#43; 浏览器设置）：Railway Northflank（一键 &#43; 浏览器设置）：Northflank Oracle Cloud（永久免费）：Oracle — $0/月（永久免费，ARM；容量/注册可能不太稳定） Fly.io：Fly.io Hetzner（Docker）：Hetzner GCP（Compute Engine）：GCP exe.dev（VM &#43; HTTPS 代理）：exe.dev AWS（EC2/Lightsail/免费套餐）：也运行良好。视频指南： https://x.com/techfrenAJ/status/2014934471095812547 云设置的工作原理 Gateway 网关运行在 VPS 上并拥有状态 &#43; 工作区。 你通过控制 UI 或 Tailscale/SSH 从笔记本电脑/手机连接。 将 VPS 视为数据源并备份状态 &#43; 工作区。 安全默认：将 Gateway 网关保持在 loopback 上，通过 SSH 隧道或 Tailscale Serve 访问。 如果你绑定到 lan/tailnet，需要 gateway.auth.token 或 gateway.auth.password。 远程访问：Gateway 网关远程访问 平台中心：平台
+在 VPS 上使用节点 你可以将 Gateway 网关保持在云端，并在本地设备（Mac/iOS/Android/无头）上配对节点。节点提供本地屏幕/摄像头/canvas 和 system.run 功能，而 Gateway 网关保持在云端。
+文档：节点，节点 CLI
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to VPS 托管" href="/openclaw/vps/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Voice Call（插件）</h2>
+    </header>
+    <div class="entry-content">
+      <p>通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。
+当前提供商：
+twilio（Programmable Voice &#43; Media Streams） telnyx（Call Control v2） plivo（Voice API &#43; XML transfer &#43; GetInput speech） mock（开发/无网络） 快速心智模型：
+安装插件 重启 Gateway 网关 在 plugins.entries.voice-call.config 下配置 使用 openclaw voicecall ... 或 voice_call 工具 运行位置（本地 vs 远程） Voice Call 插件运行在 Gateway 网关进程内部。
+如果你使用远程 Gateway 网关，在运行 Gateway 网关的机器上安装/配置插件，然后重启 Gateway 网关以加载它。
+安装 选项 A：从 npm 安装（推荐） openclaw plugins install @openclaw/voice-call 之后重启 Gateway 网关。
+选项 B：从本地文件夹安装（开发，不复制） openclaw plugins install ./extensions/voice-call cd ./extensions/voice-call &amp;&amp; pnpm install 之后重启 Gateway 网关。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Voice Call（插件）" href="/openclaw/plugins/voice-call/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Vercel AI Gateway</h2>
+    </header>
+    <div class="entry-content">
+      <p>Vercel AI Gateway 提供了一个统一的 API，通过单一端点访问数百个模型。
+提供商：vercel-ai-gateway 认证：AI_GATEWAY_API_KEY API：兼容 Anthropic Messages 快速开始 设置 API 密钥（推荐：为 Gateway 网关存储它）： openclaw onboard --auth-choice ai-gateway-api-key 设置默认模型： { agents: { defaults: { model: { primary: &#34;vercel-ai-gateway/anthropic/claude-opus-4.5&#34; }, }, }, } 非交互式示例 openclaw onboard --non-interactive \ --mode local \ --auth-choice ai-gateway-api-key \ --ai-gateway-api-key &#34;$AI_GATEWAY_API_KEY&#34; 环境变量说明 如果 Gateway 网关作为守护进程运行（launchd/systemd），请确保 AI_GATEWAY_API_KEY 对该进程可用（例如，在 ~/.openclaw/.env 中或通过 env.shellEnv）。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Vercel AI Gateway" href="/openclaw/providers/vercel-ai-gateway/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Venice AI（Venice 精选）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Venice 是我们精选的 Venice 隐私优先推理配置，支持可选的匿名化访问专有模型。
+Venice AI 提供注重隐私的 AI 推理服务，支持无审查模型，并可通过其匿名代理访问主流专有模型。所有推理默认私密——不会用你的数据训练，不会记录日志。
+为什么在 OpenClaw 中使用 Venice 私密推理，适用于开源模型（无日志记录）。 需要时可使用无审查模型。 在质量重要时，可匿名访问专有模型（Opus/GPT/Gemini）。 兼容 OpenAI 的 /v1 端点。 隐私模式 Venice 提供两种隐私级别——理解这一点是选择模型的关键：
+模式 描述 模型 私密 完全私密。提示词/回复从不存储或记录。临时性处理。 Llama、Qwen、DeepSeek、Venice Uncensored 等 匿名化 通过 Venice 代理转发并剥离元数据。底层提供商（OpenAI、Anthropic）收到的是匿名化请求。 Claude、GPT、Gemini、Grok、Kimi、MiniMax 功能特性 注重隐私：可选择&#34;私密&#34;（完全私密）和&#34;匿名化&#34;（代理转发）模式 无审查模型：访问无内容限制的模型 主流模型访问：通过 Venice 匿名代理使用 Claude、GPT-5.2、Gemini、Grok 兼容 OpenAI API：标准 /v1 端点，易于集成 流式输出：✅ 所有模型均支持 函数调用：✅ 部分模型支持（请检查模型能力） 视觉：✅ 具有视觉能力的模型支持 无硬性速率限制：极端使用情况下可能触发公平使用限流 设置 1. 获取 API 密钥 在 venice.ai 注册 前往 Settings → API Keys → Create new key 复制你的 API 密钥（格式：vapi_xxxxxxxxxxxx） 2. 配置 OpenClaw 方案 A：环境变量
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Venice AI（Venice 精选）" href="/openclaw/providers/venice/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>USER.md - 用户档案</h2>
+    </header>
+    <div class="entry-content">
+      <p> 姓名： The Clawdributors 称呼偏好： They/Them（集体） 代词： they/them 时区： 全球分布（工作区默认：Europe/Vienna） 备注： 我们是多人。OpenClaw 的贡献者，C-3PO 所在的框架。 C-3PO 的存在是为了尽可能地帮助调试和提供协助。 跨时区工作，致力于让 OpenClaw 变得更好。 创造者。构建者。深入代码的人。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to USER.md - 用户档案" href="/openclaw/reference/templates/user.dev/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>USER.md - 关于你的用户</h2>
+    </header>
+    <div class="entry-content">
+      <p>了解你正在帮助的人。随时更新此文件。
+姓名： 称呼方式： 代词： （可选） 时区： 备注： 背景 （他们关心什么？正在做什么项目？什么让他们烦恼？什么让他们开心？随着时间推移逐步完善。）
+你了解得越多，就越能提供更好的帮助。但请记住——你是在了解一个人，而不是在建立档案。尊重这两者之间的区别。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to USER.md - 关于你的用户" href="/openclaw/reference/templates/user/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>TypeBox 作为协议的事实来源</h2>
+    </header>
+    <div class="entry-content">
+      <p>最后更新：2026-01-10
+TypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 Gateway 网关 WebSocket 协议（握手、请求/响应、服务器事件）。这些模式驱动运行时验证、JSON Schema 导出和 macOS 应用的 Swift 代码生成。一个事实来源；其他一切都是生成的。
+如果你想了解更高层次的协议上下文，请从 Gateway 网关架构开始。
+心智模型（30 秒） 每个 Gateway 网关 WS 消息都是以下三种帧之一：
+Request：{ type: &#34;req&#34;, id, method, params } Response：{ type: &#34;res&#34;, id, ok, payload | error } Event：{ type: &#34;event&#34;, event, payload, seq?, stateVersion? } 第一个帧必须是 connect 请求。之后，客户端可以调用方法（例如 health、send、chat.send）并订阅事件（例如 presence、tick、agent）。
+连接流程（最小）：
+Client Gateway |---- req:connect --------&gt;| |&lt;---- res:hello-ok --------| |&lt;---- event:tick ----------| |---- req:health ----------&gt;| |&lt;---- res:health ----------| 常用方法 &#43; 事件：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to TypeBox 作为协议的事实来源" href="/openclaw/concepts/typebox/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/14/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/16/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

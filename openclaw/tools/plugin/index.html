@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>插件（扩展） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="快速开始（插件新手？）
+插件只是一个小型代码模块，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。
+大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。
+快速路径：
+
+查看已加载的内容：
+
+openclaw plugins list
+
+安装官方插件（例如：Voice Call）：
+
+openclaw plugins install @openclaw/voice-call
+
+重启 Gateway 网关，然后在 plugins.entries.&lt;id&gt;.config 下配置。
+
+参见 Voice Call 了解具体的插件示例。
+可用插件（官方）
+
+从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 @openclaw/msteams。
+Memory (Core) — 捆绑的记忆搜索插件（通过 plugins.slots.memory 默认启用）
+Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 plugins.slots.memory = &quot;memory-lancedb&quot;）
+Voice Call — @openclaw/voice-call
+Zalo Personal — @openclaw/zalouser
+Matrix — @openclaw/matrix
+Nostr — @openclaw/nostr
+Zalo — @openclaw/zalo
+Microsoft Teams — @openclaw/msteams
+Google Antigravity OAuth（提供商认证）— 作为 google-antigravity-auth 捆绑（默认禁用）
+Gemini CLI OAuth（提供商认证）— 作为 google-gemini-cli-auth 捆绑（默认禁用）
+Qwen OAuth（提供商认证）— 作为 qwen-portal-auth 捆绑（默认禁用）
+Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 github-copilot 设备登录不同（捆绑，默认禁用）
+
+OpenClaw 插件是通过 jiti 在运行时加载的 TypeScript 模块。配置验证不会执行插件代码；它使用插件清单和 JSON Schema。参见 插件清单。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tools/plugin/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tools/plugin/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tools/plugin/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="插件（扩展）">
+  <meta property="og:description" content="快速开始（插件新手？） 插件只是一个小型代码模块，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。
+大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。
+快速路径：
+查看已加载的内容： openclaw plugins list 安装官方插件（例如：Voice Call）： openclaw plugins install @openclaw/voice-call 重启 Gateway 网关，然后在 plugins.entries.&lt;id&gt;.config 下配置。 参见 Voice Call 了解具体的插件示例。
+可用插件（官方） 从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 @openclaw/msteams。 Memory (Core) — 捆绑的记忆搜索插件（通过 plugins.slots.memory 默认启用） Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 plugins.slots.memory = &#34;memory-lancedb&#34;） Voice Call — @openclaw/voice-call Zalo Personal — @openclaw/zalouser Matrix — @openclaw/matrix Nostr — @openclaw/nostr Zalo — @openclaw/zalo Microsoft Teams — @openclaw/msteams Google Antigravity OAuth（提供商认证）— 作为 google-antigravity-auth 捆绑（默认禁用） Gemini CLI OAuth（提供商认证）— 作为 google-gemini-cli-auth 捆绑（默认禁用） Qwen OAuth（提供商认证）— 作为 qwen-portal-auth 捆绑（默认禁用） Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 github-copilot 设备登录不同（捆绑，默认禁用） OpenClaw 插件是通过 jiti 在运行时加载的 TypeScript 模块。配置验证不会执行插件代码；它使用插件清单和 JSON Schema。参见 插件清单。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="插件（扩展）">
+<meta name="twitter:description" content="快速开始（插件新手？）
+插件只是一个小型代码模块，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。
+大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。
+快速路径：
+
+查看已加载的内容：
+
+openclaw plugins list
+
+安装官方插件（例如：Voice Call）：
+
+openclaw plugins install @openclaw/voice-call
+
+重启 Gateway 网关，然后在 plugins.entries.&lt;id&gt;.config 下配置。
+
+参见 Voice Call 了解具体的插件示例。
+可用插件（官方）
+
+从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 @openclaw/msteams。
+Memory (Core) — 捆绑的记忆搜索插件（通过 plugins.slots.memory 默认启用）
+Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 plugins.slots.memory = &quot;memory-lancedb&quot;）
+Voice Call — @openclaw/voice-call
+Zalo Personal — @openclaw/zalouser
+Matrix — @openclaw/matrix
+Nostr — @openclaw/nostr
+Zalo — @openclaw/zalo
+Microsoft Teams — @openclaw/msteams
+Google Antigravity OAuth（提供商认证）— 作为 google-antigravity-auth 捆绑（默认禁用）
+Gemini CLI OAuth（提供商认证）— 作为 google-gemini-cli-auth 捆绑（默认禁用）
+Qwen OAuth（提供商认证）— 作为 qwen-portal-auth 捆绑（默认禁用）
+Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 github-copilot 设备登录不同（捆绑，默认禁用）
+
+OpenClaw 插件是通过 jiti 在运行时加载的 TypeScript 模块。配置验证不会执行插件代码；它使用插件清单和 JSON Schema。参见 插件清单。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "插件（扩展）",
+      "item": "/openclaw/tools/plugin/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "插件（扩展）",
+  "name": "插件（扩展）",
+  "description": "快速开始（插件新手？） 插件只是一个小型代码模块，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。\n大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。\n快速路径：\n查看已加载的内容： openclaw plugins list 安装官方插件（例如：Voice Call）： openclaw plugins install @openclaw/voice-call 重启 Gateway 网关，然后在 plugins.entries.\u0026lt;id\u0026gt;.config 下配置。 参见 Voice Call 了解具体的插件示例。\n可用插件（官方） 从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 @openclaw/msteams。 Memory (Core) — 捆绑的记忆搜索插件（通过 plugins.slots.memory 默认启用） Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 plugins.slots.memory = \u0026quot;memory-lancedb\u0026quot;） Voice Call — @openclaw/voice-call Zalo Personal — @openclaw/zalouser Matrix — @openclaw/matrix Nostr — @openclaw/nostr Zalo — @openclaw/zalo Microsoft Teams — @openclaw/msteams Google Antigravity OAuth（提供商认证）— 作为 google-antigravity-auth 捆绑（默认禁用） Gemini CLI OAuth（提供商认证）— 作为 google-gemini-cli-auth 捆绑（默认禁用） Qwen OAuth（提供商认证）— 作为 qwen-portal-auth 捆绑（默认禁用） Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 github-copilot 设备登录不同（捆绑，默认禁用） OpenClaw 插件是通过 jiti 在运行时加载的 TypeScript 模块。配置验证不会执行插件代码；它使用插件清单和 JSON Schema。参见 插件清单。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "快速开始（插件新手？） 插件只是一个小型代码模块，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。\n大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。\n快速路径：\n查看已加载的内容： openclaw plugins list 安装官方插件（例如：Voice Call）： openclaw plugins install @openclaw/voice-call 重启 Gateway 网关，然后在 plugins.entries..config 下配置。 参见 Voice Call 了解具体的插件示例。\n可用插件（官方） 从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 @openclaw/msteams。 Memory (Core) — 捆绑的记忆搜索插件（通过 plugins.slots.memory 默认启用） Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 plugins.slots.memory = \"memory-lancedb\"） Voice Call — @openclaw/voice-call Zalo Personal — @openclaw/zalouser Matrix — @openclaw/matrix Nostr — @openclaw/nostr Zalo — @openclaw/zalo Microsoft Teams — @openclaw/msteams Google Antigravity OAuth（提供商认证）— 作为 google-antigravity-auth 捆绑（默认禁用） Gemini CLI OAuth（提供商认证）— 作为 google-gemini-cli-auth 捆绑（默认禁用） Qwen OAuth（提供商认证）— 作为 qwen-portal-auth 捆绑（默认禁用） Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 github-copilot 设备登录不同（捆绑，默认禁用） OpenClaw 插件是通过 jiti 在运行时加载的 TypeScript 模块。配置验证不会执行插件代码；它使用插件清单和 JSON Schema。参见 插件清单。\n插件可以注册：\nGateway 网关 RPC 方法 Gateway 网关 HTTP 处理程序 智能体工具 CLI 命令 后台服务 可选的配置验证 Skills（通过在插件清单中列出 skills 目录） 自动回复命令（不调用 AI 智能体即可执行） 插件与 Gateway 网关在同一进程中运行，因此将它们视为受信任的代码。 工具编写指南：插件智能体工具。\n运行时辅助工具 插件可以通过 api.runtime 访问选定的核心辅助工具。对于电话 TTS：\nconst result = await api.runtime.tts.textToSpeechTelephony({ text: \"Hello from OpenClaw\", cfg: api.config, }); 注意事项：\n使用核心 messages.tts 配置（OpenAI 或 ElevenLabs）。 返回 PCM 音频缓冲区 + 采样率。插件必须为提供商重新采样/编码。 Edge TTS 不支持电话。 发现和优先级 OpenClaw 按顺序扫描：\n配置路径 plugins.load.paths（文件或目录） 工作区扩展 /.openclaw/extensions/*.ts /.openclaw/extensions/*/index.ts 全局扩展 ~/.openclaw/extensions/*.ts ~/.openclaw/extensions/*/index.ts 捆绑扩展（随 OpenClaw 一起发布，默认禁用） /extensions/* 捆绑插件必须通过 plugins.entries..enabled 或 openclaw plugins enable 显式启用。已安装的插件默认启用，但可以用相同方式禁用。\n每个插件必须在其根目录中包含 openclaw.plugin.json 文件。如果路径指向文件，则插件根目录是文件的目录，必须包含清单。\n如果多个插件解析到相同的 id，上述顺序中的第一个匹配项获胜，较低优先级的副本被忽略。\n包集合 插件目录可以包含带有 openclaw.extensions 的 package.json：\n{ \"name\": \"my-pack\", \"openclaw\": { \"extensions\": [\"./src/safety.ts\", \"./src/tools.ts\"] } } 每个条目成为一个插件。如果包列出多个扩展，插件 id 变为 name/。\n如果你的插件导入 npm 依赖，请在该目录中安装它们以便 node_modules 可用（npm install / pnpm install）。\n渠道目录元数据 渠道插件可以通过 openclaw.channel 广播新手引导元数据，通过 openclaw.install 广播安装提示。这使核心目录保持无数据。\n示例：\n{ \"name\": \"@openclaw/nextcloud-talk\", \"openclaw\": { \"extensions\": [\"./index.ts\"], \"channel\": { \"id\": \"nextcloud-talk\", \"label\": \"Nextcloud Talk\", \"selectionLabel\": \"Nextcloud Talk (self-hosted)\", \"docsPath\": \"/channels/nextcloud-talk\", \"docsLabel\": \"nextcloud-talk\", \"blurb\": \"Self-hosted chat via Nextcloud Talk webhook bots.\", \"order\": 65, \"aliases\": [\"nc-talk\", \"nc\"] }, \"install\": { \"npmSpec\": \"@openclaw/nextcloud-talk\", \"localPath\": \"extensions/nextcloud-talk\", \"defaultChoice\": \"npm\" } } } OpenClaw 还可以合并外部渠道目录（例如，MPM 注册表导出）。将 JSON 文件放在以下位置之一：\n~/.openclaw/mpm/plugins.json ~/.openclaw/mpm/catalog.json ~/.openclaw/plugins/catalog.json 或将 OPENCLAW_PLUGIN_CATALOG_PATHS（或 OPENCLAW_MPM_CATALOG_PATHS）指向一个或多个 JSON 文件（逗号/分号/PATH 分隔）。每个文件应包含 { \"entries\": [ { \"name\": \"@scope/pkg\", \"openclaw\": { \"channel\": {...}, \"install\": {...} } } ] }。\n插件 ID 默认插件 id：\n包集合：package.json 的 name 独立文件：文件基本名称（~/.../voice-call.ts → voice-call） 如果插件导出 id，OpenClaw 会使用它，但当它与配置的 id 不匹配时会发出警告。\n配置 { plugins: { enabled: true, allow: [\"voice-call\"], deny: [\"untrusted-plugin\"], load: { paths: [\"~/Projects/oss/voice-call-extension\"] }, entries: { \"voice-call\": { enabled: true, config: { provider: \"twilio\" } }, }, }, } 字段：\nenabled：主开关（默认：true） allow：允许列表（可选） deny：拒绝列表（可选；deny 优先） load.paths：额外的插件文件/目录 entries.：每个插件的开关 + 配置 配置更改需要重启 Gateway 网关。\n验证规则（严格）：\nentries、allow、deny 或 slots 中的未知插件 id 是错误。 未知的 channels. 键是错误，除非插件清单声明了渠道 id。 插件配置使用嵌入在 openclaw.plugin.json（configSchema）中的 JSON Schema 进行验证。 如果插件被禁用，其配置会保留并发出警告。 插件槽位（独占类别） 某些插件类别是独占的（一次只有一个活跃）。使用 plugins.slots 选择哪个插件拥有该槽位：\n{ plugins: { slots: { memory: \"memory-core\", // or \"none\" to disable memory plugins }, }, } 如果多个插件声明 kind: \"memory\"，只有选定的那个加载。其他的被禁用并带有诊断信息。\n控制界面（schema + 标签） 控制界面使用 config.schema（JSON Schema + uiHints）来渲染更好的表单。\nOpenClaw 在运行时根据发现的插件增强 uiHints：\n为 plugins.entries. / .enabled / .config 添加每插件标签 在以下位置合并可选的插件提供的配置字段提示： plugins.entries..config. 如果你希望插件配置字段显示良好的标签/占位符（并将密钥标记为敏感），请在插件清单中提供 uiHints 和 JSON Schema。\n示例：\n{ \"id\": \"my-plugin\", \"configSchema\": { \"type\": \"object\", \"additionalProperties\": false, \"properties\": { \"apiKey\": { \"type\": \"string\" }, \"region\": { \"type\": \"string\" } } }, \"uiHints\": { \"apiKey\": { \"label\": \"API Key\", \"sensitive\": true }, \"region\": { \"label\": \"Region\", \"placeholder\": \"us-east-1\" } } } CLI openclaw plugins list openclaw plugins info openclaw plugins install # copy a local file/dir into ~/.openclaw/extensions/ openclaw plugins install ./extensions/voice-call # relative path ok openclaw plugins install ./plugin.tgz # install from a local tarball openclaw plugins install ./plugin.zip # install from a local zip openclaw plugins install -l ./extensions/voice-call # link (no copy) for dev openclaw plugins install @openclaw/voice-call # install from npm openclaw plugins update openclaw plugins update --all openclaw plugins enable openclaw plugins disable openclaw plugins doctor plugins update 仅适用于在 plugins.installs 下跟踪的 npm 安装。\n插件也可以注册自己的顶级命令（例如：openclaw voicecall）。\n插件 API（概述） 插件导出以下之一：\n函数：(api) =\u003e { ... } 对象：{ id, name, configSchema, register(api) { ... } } 插件钩子 插件可以附带钩子并在运行时注册它们。这让插件可以捆绑事件驱动的自动化，而无需单独安装钩子包。\n示例 import { registerPluginHooksFromDir } from \"openclaw/plugin-sdk\"; export default function register(api) { registerPluginHooksFromDir(api, \"./hooks\"); } 注意事项：\n钩子目录遵循正常的钩子结构（HOOK.md + handler.ts）。 钩子资格规则仍然适用（操作系统/二进制文件/环境/配置要求）。 插件管理的钩子在 openclaw hooks list 中显示为 plugin:。 你不能通过 openclaw hooks 启用/禁用插件管理的钩子；而是启用/禁用插件。 提供商插件（模型认证） 插件可以注册模型提供商认证流程，以便用户可以在 OpenClaw 内运行 OAuth 或 API 密钥设置（无需外部脚本）。\n通过 api.registerProvider(...) 注册提供商。每个提供商暴露一个或多个认证方法（OAuth、API 密钥、设备码等）。这些方法驱动：\nopenclaw models auth login --provider [--method ] 示例：\napi.registerProvider({ id: \"acme\", label: \"AcmeAI\", auth: [ { id: \"oauth\", label: \"OAuth\", kind: \"oauth\", run: async (ctx) =\u003e { // Run OAuth flow and return auth profiles. return { profiles: [ { profileId: \"acme:default\", credential: { type: \"oauth\", provider: \"acme\", access: \"...\", refresh: \"...\", expires: Date.now() + 3600 * 1000, }, }, ], defaultModel: \"acme/opus-1\", }; }, }, ], }); 注意事项：\nrun 接收带有 prompter、runtime、openUrl 和 oauth.createVpsAwareHandlers 辅助工具的 ProviderAuthContext。 当需要添加默认模型或提供商配置时返回 configPatch。 返回 defaultModel 以便 --set-default 可以更新智能体默认值。 注册消息渠道 插件可以注册渠道插件，其行为类似于内置渠道（WhatsApp、Telegram 等）。渠道配置位于 channels. 下，由你的渠道插件代码验证。\nconst myChannel = { id: \"acmechat\", meta: { id: \"acmechat\", label: \"AcmeChat\", selectionLabel: \"AcmeChat (API)\", docsPath: \"/channels/acmechat\", blurb: \"demo channel plugin.\", aliases: [\"acme\"], }, capabilities: { chatTypes: [\"direct\"] }, config: { listAccountIds: (cfg) =\u003e Object.keys(cfg.channels?.acmechat?.accounts ?? {}), resolveAccount: (cfg, accountId) =\u003e cfg.channels?.acmechat?.accounts?.[accountId ?? \"default\"] ?? { accountId, }, }, outbound: { deliveryMode: \"direct\", sendText: async () =\u003e ({ ok: true }), }, }; export default function (api) { api.registerChannel({ plugin: myChannel }); } 注意事项：\n将配置放在 channels. 下（而不是 plugins.entries）。 meta.label 用于 CLI/UI 列表中的标签。 meta.aliases 添加用于规范化和 CLI 输入的备用 id。 meta.preferOver 列出当两者都配置时要跳过自动启用的渠道 id。 meta.detailLabel 和 meta.systemImage 让 UI 显示更丰富的渠道标签/图标。 编写新的消息渠道（分步指南） 当你想要一个新的聊天界面（“消息渠道”）而不是模型提供商时使用此方法。 模型提供商文档位于 /providers/* 下。\n选择 id + 配置结构 所有渠道配置位于 channels. 下。 对于多账户设置，优先使用 channels..accounts.。 定义渠道元数据 meta.label、meta.selectionLabel、meta.docsPath、meta.blurb 控制 CLI/UI 列表。 meta.docsPath 应指向像 /channels/ 这样的文档页面。 meta.preferOver 让插件替换另一个渠道（自动启用优先选择它）。 meta.detailLabel 和 meta.systemImage 被 UI 用于详细文本/图标。 实现必需的适配器 config.listAccountIds + config.resolveAccount capabilities（聊天类型、媒体、线程等） outbound.deliveryMode + outbound.sendText（用于基本发送） 根据需要添加可选适配器 setup（向导）、security（私信策略）、status（健康/诊断） gateway（启动/停止/登录）、mentions、threading、streaming actions（消息操作）、commands（原生命令行为） 在插件中注册渠道 api.registerChannel({ plugin }) 最小配置示例：\n{ channels: { acmechat: { accounts: { default: { token: \"ACME_TOKEN\", enabled: true }, }, }, }, } 最小渠道插件（仅出站）：\nconst plugin = { id: \"acmechat\", meta: { id: \"acmechat\", label: \"AcmeChat\", selectionLabel: \"AcmeChat (API)\", docsPath: \"/channels/acmechat\", blurb: \"AcmeChat messaging channel.\", aliases: [\"acme\"], }, capabilities: { chatTypes: [\"direct\"] }, config: { listAccountIds: (cfg) =\u003e Object.keys(cfg.channels?.acmechat?.accounts ?? {}), resolveAccount: (cfg, accountId) =\u003e cfg.channels?.acmechat?.accounts?.[accountId ?? \"default\"] ?? { accountId, }, }, outbound: { deliveryMode: \"direct\", sendText: async ({ text }) =\u003e { // deliver `text` to your channel here return { ok: true }; }, }, }; export default function (api) { api.registerChannel({ plugin }); } 加载插件（扩展目录或 plugins.load.paths），重启 Gateway 网关，然后在配置中配置 channels.。\n智能体工具 参见专门指南：插件智能体工具。\n注册 Gateway 网关 RPC 方法 export default function (api) { api.registerGatewayMethod(\"myplugin.status\", ({ respond }) =\u003e { respond(true, { ok: true }); }); } 注册 CLI 命令 export default function (api) { api.registerCli( ({ program }) =\u003e { program.command(\"mycmd\").action(() =\u003e { console.log(\"Hello\"); }); }, { commands: [\"mycmd\"] }, ); } 注册自动回复命令 插件可以注册自定义斜杠命令，无需调用 AI 智能体即可执行。这对于切换命令、状态检查或不需要 LLM 处理的快速操作很有用。\nexport default function (api) { api.registerCommand({ name: \"mystatus\", description: \"Show plugin status\", handler: (ctx) =\u003e ({ text: `Plugin is running! Channel: ${ctx.channel}`, }), }); } 命令处理程序上下文：\nsenderId：发送者的 ID（如可用） channel：发送命令的渠道 isAuthorizedSender：发送者是否是授权用户 args：命令后传递的参数（如果 acceptsArgs: true） commandBody：完整的命令文本 config：当前 OpenClaw 配置 命令选项：\nname：命令名称（不带前导 /） description：命令列表中显示的帮助文本 acceptsArgs：命令是否接受参数（默认：false）。如果为 false 且提供了参数，命令不会匹配，消息会传递给其他处理程序 requireAuth：是否需要授权发送者（默认：true） handler：返回 { text: string } 的函数（可以是异步的） 带授权和参数的示例：\napi.registerCommand({ name: \"setmode\", description: \"Set plugin mode\", acceptsArgs: true, requireAuth: true, handler: async (ctx) =\u003e { const mode = ctx.args?.trim() || \"default\"; await saveMode(mode); return { text: `Mode set to: ${mode}` }; }, }); 注意事项：\n插件命令在内置命令和 AI 智能体之前处理 命令全局注册，适用于所有渠道 命令名称不区分大小写（/MyStatus 匹配 /mystatus） 命令名称必须以字母开头，只能包含字母、数字、连字符和下划线 保留的命令名称（如 help、status、reset 等）不能被插件覆盖 跨插件的重复命令注册将失败并显示诊断错误 注册后台服务 export default function (api) { api.registerService({ id: \"my-service\", start: () =\u003e api.logger.info(\"ready\"), stop: () =\u003e api.logger.info(\"bye\"), }); } 命名约定 Gateway 网关方法：pluginId.action（例如：voicecall.status） 工具：snake_case（例如：voice_call） CLI 命令：kebab 或 camel，但避免与核心命令冲突 Skills 插件可以在仓库中附带 Skills（skills//SKILL.md）。 使用 plugins.entries..enabled（或其他配置门控）启用它，并确保它存在于你的工作区/托管 Skills 位置。\n分发（npm） 推荐的打包方式：\n主包：openclaw（本仓库） 插件：@openclaw/* 下的独立 npm 包（例如：@openclaw/voice-call） 发布契约：\n插件 package.json 必须包含带有一个或多个入口文件的 openclaw.extensions。 入口文件可以是 .js 或 .ts（jiti 在运行时加载 TS）。 openclaw plugins install 使用 npm pack，提取到 ~/.openclaw/extensions//，并在配置中启用它。 配置键稳定性：作用域包被规范化为 plugins.entries.* 的无作用域 id。 示例插件：Voice Call 本仓库包含一个语音通话插件（Twilio 或 log 回退）：\n源码：extensions/voice-call Skills：skills/voice-call CLI：openclaw voicecall start|status 工具：voice_call RPC：voicecall.start、voicecall.status 配置（twilio）：provider: \"twilio\" + twilio.accountSid/authToken/from（可选 statusCallbackUrl、twimlUrl） 配置（dev）：provider: \"log\"（无网络） 参见 Voice Call 和 extensions/voice-call/README.md 了解设置和用法。\n安全注意事项 插件与 Gateway 网关在同一进程中运行。将它们视为受信任的代码：\n只安装你信任的插件。 优先使用 plugins.allow 允许列表。 更改后重启 Gateway 网关。 测试插件 插件可以（也应该）附带测试：\n仓库内插件可以在 src/** 下保留 Vitest 测试（例如：src/plugins/voice-call.plugin.test.ts）。 单独发布的插件应运行自己的 CI（lint/构建/测试）并验证 openclaw.extensions 指向构建的入口点（dist/index.js）。 ",
+  "wordCount" : "1233",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/tools/plugin/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      插件（扩展）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b%e6%8f%92%e4%bb%b6%e6%96%b0%e6%89%8b" aria-label="快速开始（插件新手？）">快速开始（插件新手？）</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e7%94%a8%e6%8f%92%e4%bb%b6%e5%ae%98%e6%96%b9" aria-label="可用插件（官方）">可用插件（官方）</a></li>
+                <li>
+                    <a href="#%e8%bf%90%e8%a1%8c%e6%97%b6%e8%be%85%e5%8a%a9%e5%b7%a5%e5%85%b7" aria-label="运行时辅助工具">运行时辅助工具</a></li>
+                <li>
+                    <a href="#%e5%8f%91%e7%8e%b0%e5%92%8c%e4%bc%98%e5%85%88%e7%ba%a7" aria-label="发现和优先级">发现和优先级</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8c%85%e9%9b%86%e5%90%88" aria-label="包集合">包集合</a></li>
+                <li>
+                    <a href="#%e6%b8%a0%e9%81%93%e7%9b%ae%e5%bd%95%e5%85%83%e6%95%b0%e6%8d%ae" aria-label="渠道目录元数据">渠道目录元数据</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8f%92%e4%bb%b6-id" aria-label="插件 ID">插件 ID</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae" aria-label="配置">配置</a></li>
+                <li>
+                    <a href="#%e6%8f%92%e4%bb%b6%e6%a7%bd%e4%bd%8d%e7%8b%ac%e5%8d%a0%e7%b1%bb%e5%88%ab" aria-label="插件槽位（独占类别）">插件槽位（独占类别）</a></li>
+                <li>
+                    <a href="#%e6%8e%a7%e5%88%b6%e7%95%8c%e9%9d%a2schema--%e6%a0%87%e7%ad%be" aria-label="控制界面（schema &#43; 标签）">控制界面（schema + 标签）</a></li>
+                <li>
+                    <a href="#cli" aria-label="CLI">CLI</a></li>
+                <li>
+                    <a href="#%e6%8f%92%e4%bb%b6-api%e6%a6%82%e8%bf%b0" aria-label="插件 API（概述）">插件 API（概述）</a></li>
+                <li>
+                    <a href="#%e6%8f%92%e4%bb%b6%e9%92%a9%e5%ad%90" aria-label="插件钩子">插件钩子</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b" aria-label="示例">示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%8f%90%e4%be%9b%e5%95%86%e6%8f%92%e4%bb%b6%e6%a8%a1%e5%9e%8b%e8%ae%a4%e8%af%81" aria-label="提供商插件（模型认证）">提供商插件（模型认证）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b3%a8%e5%86%8c%e6%b6%88%e6%81%af%e6%b8%a0%e9%81%93" aria-label="注册消息渠道">注册消息渠道</a></li>
+                <li>
+                    <a href="#%e7%bc%96%e5%86%99%e6%96%b0%e7%9a%84%e6%b6%88%e6%81%af%e6%b8%a0%e9%81%93%e5%88%86%e6%ad%a5%e6%8c%87%e5%8d%97" aria-label="编写新的消息渠道（分步指南）">编写新的消息渠道（分步指南）</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e5%b7%a5%e5%85%b7" aria-label="智能体工具">智能体工具</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e5%86%8c-gateway-%e7%bd%91%e5%85%b3-rpc-%e6%96%b9%e6%b3%95" aria-label="注册 Gateway 网关 RPC 方法">注册 Gateway 网关 RPC 方法</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e5%86%8c-cli-%e5%91%bd%e4%bb%a4" aria-label="注册 CLI 命令">注册 CLI 命令</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e5%86%8c%e8%87%aa%e5%8a%a8%e5%9b%9e%e5%a4%8d%e5%91%bd%e4%bb%a4" aria-label="注册自动回复命令">注册自动回复命令</a></li>
+                <li>
+                    <a href="#%e6%b3%a8%e5%86%8c%e5%90%8e%e5%8f%b0%e6%9c%8d%e5%8a%a1" aria-label="注册后台服务">注册后台服务</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%91%bd%e5%90%8d%e7%ba%a6%e5%ae%9a" aria-label="命名约定">命名约定</a></li>
+                <li>
+                    <a href="#skills" aria-label="Skills">Skills</a></li>
+                <li>
+                    <a href="#%e5%88%86%e5%8f%91npm" aria-label="分发（npm）">分发（npm）</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b%e6%8f%92%e4%bb%b6voice-call" aria-label="示例插件：Voice Call">示例插件：Voice Call</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="安全注意事项">安全注意事项</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e6%8f%92%e4%bb%b6" aria-label="测试插件">测试插件</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="快速开始插件新手">快速开始（插件新手？）<a hidden class="anchor" aria-hidden="true" href="#快速开始插件新手">#</a></h2>
+<p>插件只是一个<strong>小型代码模块</strong>，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。</p>
+<p>大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。</p>
+<p>快速路径：</p>
+<ol>
+<li>查看已加载的内容：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins list
+</span></span></code></pre></div><ol start="2">
+<li>安装官方插件（例如：Voice Call）：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install @openclaw/voice-call
+</span></span></code></pre></div><ol start="3">
+<li>重启 Gateway 网关，然后在 <code>plugins.entries.&lt;id&gt;.config</code> 下配置。</li>
+</ol>
+<p>参见 <a href="/plugins/voice-call">Voice Call</a> 了解具体的插件示例。</p>
+<h2 id="可用插件官方">可用插件（官方）<a hidden class="anchor" aria-hidden="true" href="#可用插件官方">#</a></h2>
+<ul>
+<li>从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 <code>@openclaw/msteams</code>。</li>
+<li>Memory (Core) — 捆绑的记忆搜索插件（通过 <code>plugins.slots.memory</code> 默认启用）</li>
+<li>Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 <code>plugins.slots.memory = &quot;memory-lancedb&quot;</code>）</li>
+<li><a href="/plugins/voice-call">Voice Call</a> — <code>@openclaw/voice-call</code></li>
+<li><a href="/plugins/zalouser">Zalo Personal</a> — <code>@openclaw/zalouser</code></li>
+<li><a href="/channels/matrix">Matrix</a> — <code>@openclaw/matrix</code></li>
+<li><a href="/channels/nostr">Nostr</a> — <code>@openclaw/nostr</code></li>
+<li><a href="/channels/zalo">Zalo</a> — <code>@openclaw/zalo</code></li>
+<li><a href="/channels/msteams">Microsoft Teams</a> — <code>@openclaw/msteams</code></li>
+<li>Google Antigravity OAuth（提供商认证）— 作为 <code>google-antigravity-auth</code> 捆绑（默认禁用）</li>
+<li>Gemini CLI OAuth（提供商认证）— 作为 <code>google-gemini-cli-auth</code> 捆绑（默认禁用）</li>
+<li>Qwen OAuth（提供商认证）— 作为 <code>qwen-portal-auth</code> 捆绑（默认禁用）</li>
+<li>Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 <code>github-copilot</code> 设备登录不同（捆绑，默认禁用）</li>
+</ul>
+<p>OpenClaw 插件是通过 jiti 在运行时加载的 <strong>TypeScript 模块</strong>。<strong>配置验证不会执行插件代码</strong>；它使用插件清单和 JSON Schema。参见 <a href="/plugins/manifest">插件清单</a>。</p>
+<p>插件可以注册：</p>
+<ul>
+<li>Gateway 网关 RPC 方法</li>
+<li>Gateway 网关 HTTP 处理程序</li>
+<li>智能体工具</li>
+<li>CLI 命令</li>
+<li>后台服务</li>
+<li>可选的配置验证</li>
+<li><strong>Skills</strong>（通过在插件清单中列出 <code>skills</code> 目录）</li>
+<li><strong>自动回复命令</strong>（不调用 AI 智能体即可执行）</li>
+</ul>
+<p>插件与 Gateway 网关<strong>在同一进程中</strong>运行，因此将它们视为受信任的代码。
+工具编写指南：<a href="/plugins/agent-tools">插件智能体工具</a>。</p>
+<h2 id="运行时辅助工具">运行时辅助工具<a hidden class="anchor" aria-hidden="true" href="#运行时辅助工具">#</a></h2>
+<p>插件可以通过 <code>api.runtime</code> 访问选定的核心辅助工具。对于电话 TTS：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">api</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">tts</span><span class="p">.</span><span class="nx">textToSpeechTelephony</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">text</span><span class="o">:</span> <span class="s2">&#34;Hello from OpenClaw&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">cfg</span>: <span class="kt">api.config</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>使用核心 <code>messages.tts</code> 配置（OpenAI 或 ElevenLabs）。</li>
+<li>返回 PCM 音频缓冲区 + 采样率。插件必须为提供商重新采样/编码。</li>
+<li>Edge TTS 不支持电话。</li>
+</ul>
+<h2 id="发现和优先级">发现和优先级<a hidden class="anchor" aria-hidden="true" href="#发现和优先级">#</a></h2>
+<p>OpenClaw 按顺序扫描：</p>
+<ol>
+<li>配置路径</li>
+</ol>
+<ul>
+<li><code>plugins.load.paths</code>（文件或目录）</li>
+</ul>
+<ol start="2">
+<li>工作区扩展</li>
+</ol>
+<ul>
+<li><code>&lt;workspace&gt;/.openclaw/extensions/*.ts</code></li>
+<li><code>&lt;workspace&gt;/.openclaw/extensions/*/index.ts</code></li>
+</ul>
+<ol start="3">
+<li>全局扩展</li>
+</ol>
+<ul>
+<li><code>~/.openclaw/extensions/*.ts</code></li>
+<li><code>~/.openclaw/extensions/*/index.ts</code></li>
+</ul>
+<ol start="4">
+<li>捆绑扩展（随 OpenClaw 一起发布，<strong>默认禁用</strong>）</li>
+</ol>
+<ul>
+<li><code>&lt;openclaw&gt;/extensions/*</code></li>
+</ul>
+<p>捆绑插件必须通过 <code>plugins.entries.&lt;id&gt;.enabled</code> 或 <code>openclaw plugins enable &lt;id&gt;</code> 显式启用。已安装的插件默认启用，但可以用相同方式禁用。</p>
+<p>每个插件必须在其根目录中包含 <code>openclaw.plugin.json</code> 文件。如果路径指向文件，则插件根目录是文件的目录，必须包含清单。</p>
+<p>如果多个插件解析到相同的 id，上述顺序中的第一个匹配项获胜，较低优先级的副本被忽略。</p>
+<h3 id="包集合">包集合<a hidden class="anchor" aria-hidden="true" href="#包集合">#</a></h3>
+<p>插件目录可以包含带有 <code>openclaw.extensions</code> 的 <code>package.json</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;my-pack&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;openclaw&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;extensions&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;./src/safety.ts&#34;</span><span class="p">,</span> <span class="s2">&#34;./src/tools.ts&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>每个条目成为一个插件。如果包列出多个扩展，插件 id 变为 <code>name/&lt;fileBase&gt;</code>。</p>
+<p>如果你的插件导入 npm 依赖，请在该目录中安装它们以便 <code>node_modules</code> 可用（<code>npm install</code> / <code>pnpm install</code>）。</p>
+<h3 id="渠道目录元数据">渠道目录元数据<a hidden class="anchor" aria-hidden="true" href="#渠道目录元数据">#</a></h3>
+<p>渠道插件可以通过 <code>openclaw.channel</code> 广播新手引导元数据，通过 <code>openclaw.install</code> 广播安装提示。这使核心目录保持无数据。</p>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;@openclaw/nextcloud-talk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;openclaw&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;extensions&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;./index.ts&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;channel&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;nextcloud-talk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;label&#34;</span><span class="p">:</span> <span class="s2">&#34;Nextcloud Talk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;selectionLabel&#34;</span><span class="p">:</span> <span class="s2">&#34;Nextcloud Talk (self-hosted)&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;docsPath&#34;</span><span class="p">:</span> <span class="s2">&#34;/channels/nextcloud-talk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;docsLabel&#34;</span><span class="p">:</span> <span class="s2">&#34;nextcloud-talk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;blurb&#34;</span><span class="p">:</span> <span class="s2">&#34;Self-hosted chat via Nextcloud Talk webhook bots.&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;order&#34;</span><span class="p">:</span> <span class="mi">65</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;aliases&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;nc-talk&#34;</span><span class="p">,</span> <span class="s2">&#34;nc&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;install&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;npmSpec&#34;</span><span class="p">:</span> <span class="s2">&#34;@openclaw/nextcloud-talk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;localPath&#34;</span><span class="p">:</span> <span class="s2">&#34;extensions/nextcloud-talk&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;defaultChoice&#34;</span><span class="p">:</span> <span class="s2">&#34;npm&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>OpenClaw 还可以合并<strong>外部渠道目录</strong>（例如，MPM 注册表导出）。将 JSON 文件放在以下位置之一：</p>
+<ul>
+<li><code>~/.openclaw/mpm/plugins.json</code></li>
+<li><code>~/.openclaw/mpm/catalog.json</code></li>
+<li><code>~/.openclaw/plugins/catalog.json</code></li>
+</ul>
+<p>或将 <code>OPENCLAW_PLUGIN_CATALOG_PATHS</code>（或 <code>OPENCLAW_MPM_CATALOG_PATHS</code>）指向一个或多个 JSON 文件（逗号/分号/<code>PATH</code> 分隔）。每个文件应包含 <code>{ &quot;entries&quot;: [ { &quot;name&quot;: &quot;@scope/pkg&quot;, &quot;openclaw&quot;: { &quot;channel&quot;: {...}, &quot;install&quot;: {...} } } ] }</code>。</p>
+<h2 id="插件-id">插件 ID<a hidden class="anchor" aria-hidden="true" href="#插件-id">#</a></h2>
+<p>默认插件 id：</p>
+<ul>
+<li>包集合：<code>package.json</code> 的 <code>name</code></li>
+<li>独立文件：文件基本名称（<code>~/.../voice-call.ts</code> → <code>voice-call</code>）</li>
+</ul>
+<p>如果插件导出 <code>id</code>，OpenClaw 会使用它，但当它与配置的 id 不匹配时会发出警告。</p>
+<h2 id="配置">配置<a hidden class="anchor" aria-hidden="true" href="#配置">#</a></h2>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  plugins: {
+    enabled: true,
+    allow: [&#34;voice-call&#34;],
+    deny: [&#34;untrusted-plugin&#34;],
+    load: { paths: [&#34;~/Projects/oss/voice-call-extension&#34;] },
+    entries: {
+      &#34;voice-call&#34;: { enabled: true, config: { provider: &#34;twilio&#34; } },
+    },
+  },
+}
+</code></pre><p>字段：</p>
+<ul>
+<li><code>enabled</code>：主开关（默认：true）</li>
+<li><code>allow</code>：允许列表（可选）</li>
+<li><code>deny</code>：拒绝列表（可选；deny 优先）</li>
+<li><code>load.paths</code>：额外的插件文件/目录</li>
+<li><code>entries.&lt;id&gt;</code>：每个插件的开关 + 配置</li>
+</ul>
+<p>配置更改<strong>需要重启 Gateway 网关</strong>。</p>
+<p>验证规则（严格）：</p>
+<ul>
+<li><code>entries</code>、<code>allow</code>、<code>deny</code> 或 <code>slots</code> 中的未知插件 id 是<strong>错误</strong>。</li>
+<li>未知的 <code>channels.&lt;id&gt;</code> 键是<strong>错误</strong>，除非插件清单声明了渠道 id。</li>
+<li>插件配置使用嵌入在 <code>openclaw.plugin.json</code>（<code>configSchema</code>）中的 JSON Schema 进行验证。</li>
+<li>如果插件被禁用，其配置会保留并发出<strong>警告</strong>。</li>
+</ul>
+<h2 id="插件槽位独占类别">插件槽位（独占类别）<a hidden class="anchor" aria-hidden="true" href="#插件槽位独占类别">#</a></h2>
+<p>某些插件类别是<strong>独占的</strong>（一次只有一个活跃）。使用 <code>plugins.slots</code> 选择哪个插件拥有该槽位：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  plugins: {
+    slots: {
+      memory: &#34;memory-core&#34;, // or &#34;none&#34; to disable memory plugins
+    },
+  },
+}
+</code></pre><p>如果多个插件声明 <code>kind: &quot;memory&quot;</code>，只有选定的那个加载。其他的被禁用并带有诊断信息。</p>
+<h2 id="控制界面schema--标签">控制界面（schema + 标签）<a hidden class="anchor" aria-hidden="true" href="#控制界面schema--标签">#</a></h2>
+<p>控制界面使用 <code>config.schema</code>（JSON Schema + <code>uiHints</code>）来渲染更好的表单。</p>
+<p>OpenClaw 在运行时根据发现的插件增强 <code>uiHints</code>：</p>
+<ul>
+<li>为 <code>plugins.entries.&lt;id&gt;</code> / <code>.enabled</code> / <code>.config</code> 添加每插件标签</li>
+<li>在以下位置合并可选的插件提供的配置字段提示：
+<code>plugins.entries.&lt;id&gt;.config.&lt;field&gt;</code></li>
+</ul>
+<p>如果你希望插件配置字段显示良好的标签/占位符（并将密钥标记为敏感），请在插件清单中提供 <code>uiHints</code> 和 JSON Schema。</p>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;my-plugin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;configSchema&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;object&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;additionalProperties&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;properties&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;apiKey&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;region&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;uiHints&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;apiKey&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;label&#34;</span><span class="p">:</span> <span class="s2">&#34;API Key&#34;</span><span class="p">,</span> <span class="nt">&#34;sensitive&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;region&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;label&#34;</span><span class="p">:</span> <span class="s2">&#34;Region&#34;</span><span class="p">,</span> <span class="nt">&#34;placeholder&#34;</span><span class="p">:</span> <span class="s2">&#34;us-east-1&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="cli">CLI<a hidden class="anchor" aria-hidden="true" href="#cli">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins list
+</span></span><span class="line"><span class="cl">openclaw plugins info &lt;id&gt;
+</span></span><span class="line"><span class="cl">openclaw plugins install &lt;path&gt;                 <span class="c1"># copy a local file/dir into ~/.openclaw/extensions/&lt;id&gt;</span>
+</span></span><span class="line"><span class="cl">openclaw plugins install ./extensions/voice-call <span class="c1"># relative path ok</span>
+</span></span><span class="line"><span class="cl">openclaw plugins install ./plugin.tgz           <span class="c1"># install from a local tarball</span>
+</span></span><span class="line"><span class="cl">openclaw plugins install ./plugin.zip           <span class="c1"># install from a local zip</span>
+</span></span><span class="line"><span class="cl">openclaw plugins install -l ./extensions/voice-call <span class="c1"># link (no copy) for dev</span>
+</span></span><span class="line"><span class="cl">openclaw plugins install @openclaw/voice-call <span class="c1"># install from npm</span>
+</span></span><span class="line"><span class="cl">openclaw plugins update &lt;id&gt;
+</span></span><span class="line"><span class="cl">openclaw plugins update --all
+</span></span><span class="line"><span class="cl">openclaw plugins <span class="nb">enable</span> &lt;id&gt;
+</span></span><span class="line"><span class="cl">openclaw plugins disable &lt;id&gt;
+</span></span><span class="line"><span class="cl">openclaw plugins doctor
+</span></span></code></pre></div><p><code>plugins update</code> 仅适用于在 <code>plugins.installs</code> 下跟踪的 npm 安装。</p>
+<p>插件也可以注册自己的顶级命令（例如：<code>openclaw voicecall</code>）。</p>
+<h2 id="插件-api概述">插件 API（概述）<a hidden class="anchor" aria-hidden="true" href="#插件-api概述">#</a></h2>
+<p>插件导出以下之一：</p>
+<ul>
+<li>函数：<code>(api) =&gt; { ... }</code></li>
+<li>对象：<code>{ id, name, configSchema, register(api) { ... } }</code></li>
+</ul>
+<h2 id="插件钩子">插件钩子<a hidden class="anchor" aria-hidden="true" href="#插件钩子">#</a></h2>
+<p>插件可以附带钩子并在运行时注册它们。这让插件可以捆绑事件驱动的自动化，而无需单独安装钩子包。</p>
+<h3 id="示例">示例<a hidden class="anchor" aria-hidden="true" href="#示例">#</a></h3>
+<pre tabindex="0"><code>import { registerPluginHooksFromDir } from &#34;openclaw/plugin-sdk&#34;;
+
+export default function register(api) {
+  registerPluginHooksFromDir(api, &#34;./hooks&#34;);
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>钩子目录遵循正常的钩子结构（<code>HOOK.md</code> + <code>handler.ts</code>）。</li>
+<li>钩子资格规则仍然适用（操作系统/二进制文件/环境/配置要求）。</li>
+<li>插件管理的钩子在 <code>openclaw hooks list</code> 中显示为 <code>plugin:&lt;id&gt;</code>。</li>
+<li>你不能通过 <code>openclaw hooks</code> 启用/禁用插件管理的钩子；而是启用/禁用插件。</li>
+</ul>
+<h2 id="提供商插件模型认证">提供商插件（模型认证）<a hidden class="anchor" aria-hidden="true" href="#提供商插件模型认证">#</a></h2>
+<p>插件可以注册<strong>模型提供商认证</strong>流程，以便用户可以在 OpenClaw 内运行 OAuth 或 API 密钥设置（无需外部脚本）。</p>
+<p>通过 <code>api.registerProvider(...)</code> 注册提供商。每个提供商暴露一个或多个认证方法（OAuth、API 密钥、设备码等）。这些方法驱动：</p>
+<ul>
+<li><code>openclaw models auth login --provider &lt;id&gt; [--method &lt;id&gt;]</code></li>
+</ul>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">api</span><span class="p">.</span><span class="nx">registerProvider</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;acme&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;AcmeAI&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">auth</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;oauth&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;OAuth&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">kind</span><span class="o">:</span> <span class="s2">&#34;oauth&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">run</span>: <span class="kt">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Run OAuth flow and return auth profiles.
+</span></span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">profiles</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">profileId</span><span class="o">:</span> <span class="s2">&#34;acme:default&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">credential</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="kr">type</span><span class="o">:</span> <span class="s2">&#34;oauth&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">provider</span><span class="o">:</span> <span class="s2">&#34;acme&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">access</span><span class="o">:</span> <span class="s2">&#34;...&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">refresh</span><span class="o">:</span> <span class="s2">&#34;...&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">expires</span>: <span class="kt">Date.now</span><span class="p">()</span> <span class="o">+</span> <span class="mi">3600</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">              <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">          <span class="p">],</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">defaultModel</span><span class="o">:</span> <span class="s2">&#34;acme/opus-1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li><code>run</code> 接收带有 <code>prompter</code>、<code>runtime</code>、<code>openUrl</code> 和 <code>oauth.createVpsAwareHandlers</code> 辅助工具的 <code>ProviderAuthContext</code>。</li>
+<li>当需要添加默认模型或提供商配置时返回 <code>configPatch</code>。</li>
+<li>返回 <code>defaultModel</code> 以便 <code>--set-default</code> 可以更新智能体默认值。</li>
+</ul>
+<h3 id="注册消息渠道">注册消息渠道<a hidden class="anchor" aria-hidden="true" href="#注册消息渠道">#</a></h3>
+<p>插件可以注册<strong>渠道插件</strong>，其行为类似于内置渠道（WhatsApp、Telegram 等）。渠道配置位于 <code>channels.&lt;id&gt;</code> 下，由你的渠道插件代码验证。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">myChannel</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;acmechat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">meta</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;acmechat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;AcmeChat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">selectionLabel</span><span class="o">:</span> <span class="s2">&#34;AcmeChat (API)&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">docsPath</span><span class="o">:</span> <span class="s2">&#34;/channels/acmechat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">blurb</span><span class="o">:</span> <span class="s2">&#34;demo channel plugin.&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">aliases</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;acme&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">capabilities</span><span class="o">:</span> <span class="p">{</span> <span class="nx">chatTypes</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;direct&#34;</span><span class="p">]</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">config</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">listAccountIds</span><span class="o">:</span> <span class="p">(</span><span class="nx">cfg</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">channels</span><span class="o">?</span><span class="p">.</span><span class="nx">acmechat</span><span class="o">?</span><span class="p">.</span><span class="nx">accounts</span> <span class="o">??</span> <span class="p">{}),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">resolveAccount</span><span class="o">:</span> <span class="p">(</span><span class="nx">cfg</span><span class="p">,</span> <span class="nx">accountId</span><span class="p">)</span> <span class="o">=&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">cfg</span><span class="p">.</span><span class="nx">channels</span><span class="o">?</span><span class="p">.</span><span class="nx">acmechat</span><span class="o">?</span><span class="p">.</span><span class="nx">accounts</span><span class="o">?</span><span class="p">.[</span><span class="nx">accountId</span> <span class="o">??</span> <span class="s2">&#34;default&#34;</span><span class="p">]</span> <span class="o">??</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">accountId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">outbound</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">deliveryMode</span><span class="o">:</span> <span class="s2">&#34;direct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sendText</span>: <span class="kt">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="nx">ok</span>: <span class="kt">true</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">api</span><span class="p">.</span><span class="nx">registerChannel</span><span class="p">({</span> <span class="nx">plugin</span>: <span class="kt">myChannel</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>将配置放在 <code>channels.&lt;id&gt;</code> 下（而不是 <code>plugins.entries</code>）。</li>
+<li><code>meta.label</code> 用于 CLI/UI 列表中的标签。</li>
+<li><code>meta.aliases</code> 添加用于规范化和 CLI 输入的备用 id。</li>
+<li><code>meta.preferOver</code> 列出当两者都配置时要跳过自动启用的渠道 id。</li>
+<li><code>meta.detailLabel</code> 和 <code>meta.systemImage</code> 让 UI 显示更丰富的渠道标签/图标。</li>
+</ul>
+<h3 id="编写新的消息渠道分步指南">编写新的消息渠道（分步指南）<a hidden class="anchor" aria-hidden="true" href="#编写新的消息渠道分步指南">#</a></h3>
+<p>当你想要一个<strong>新的聊天界面</strong>（&ldquo;消息渠道&rdquo;）而不是模型提供商时使用此方法。
+模型提供商文档位于 <code>/providers/*</code> 下。</p>
+<ol>
+<li>选择 id + 配置结构</li>
+</ol>
+<ul>
+<li>所有渠道配置位于 <code>channels.&lt;id&gt;</code> 下。</li>
+<li>对于多账户设置，优先使用 <code>channels.&lt;id&gt;.accounts.&lt;accountId&gt;</code>。</li>
+</ul>
+<ol start="2">
+<li>定义渠道元数据</li>
+</ol>
+<ul>
+<li><code>meta.label</code>、<code>meta.selectionLabel</code>、<code>meta.docsPath</code>、<code>meta.blurb</code> 控制 CLI/UI 列表。</li>
+<li><code>meta.docsPath</code> 应指向像 <code>/channels/&lt;id&gt;</code> 这样的文档页面。</li>
+<li><code>meta.preferOver</code> 让插件替换另一个渠道（自动启用优先选择它）。</li>
+<li><code>meta.detailLabel</code> 和 <code>meta.systemImage</code> 被 UI 用于详细文本/图标。</li>
+</ul>
+<ol start="3">
+<li>实现必需的适配器</li>
+</ol>
+<ul>
+<li><code>config.listAccountIds</code> + <code>config.resolveAccount</code></li>
+<li><code>capabilities</code>（聊天类型、媒体、线程等）</li>
+<li><code>outbound.deliveryMode</code> + <code>outbound.sendText</code>（用于基本发送）</li>
+</ul>
+<ol start="4">
+<li>根据需要添加可选适配器</li>
+</ol>
+<ul>
+<li><code>setup</code>（向导）、<code>security</code>（私信策略）、<code>status</code>（健康/诊断）</li>
+<li><code>gateway</code>（启动/停止/登录）、<code>mentions</code>、<code>threading</code>、<code>streaming</code></li>
+<li><code>actions</code>（消息操作）、<code>commands</code>（原生命令行为）</li>
+</ul>
+<ol start="5">
+<li>在插件中注册渠道</li>
+</ol>
+<ul>
+<li><code>api.registerChannel({ plugin })</code></li>
+</ul>
+<p>最小配置示例：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    acmechat: {
+      accounts: {
+        default: { token: &#34;ACME_TOKEN&#34;, enabled: true },
+      },
+    },
+  },
+}
+</code></pre><p>最小渠道插件（仅出站）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">plugin</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;acmechat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">meta</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;acmechat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">label</span><span class="o">:</span> <span class="s2">&#34;AcmeChat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">selectionLabel</span><span class="o">:</span> <span class="s2">&#34;AcmeChat (API)&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">docsPath</span><span class="o">:</span> <span class="s2">&#34;/channels/acmechat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">blurb</span><span class="o">:</span> <span class="s2">&#34;AcmeChat messaging channel.&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">aliases</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;acme&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">capabilities</span><span class="o">:</span> <span class="p">{</span> <span class="nx">chatTypes</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;direct&#34;</span><span class="p">]</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">config</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">listAccountIds</span><span class="o">:</span> <span class="p">(</span><span class="nx">cfg</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">cfg</span><span class="p">.</span><span class="nx">channels</span><span class="o">?</span><span class="p">.</span><span class="nx">acmechat</span><span class="o">?</span><span class="p">.</span><span class="nx">accounts</span> <span class="o">??</span> <span class="p">{}),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">resolveAccount</span><span class="o">:</span> <span class="p">(</span><span class="nx">cfg</span><span class="p">,</span> <span class="nx">accountId</span><span class="p">)</span> <span class="o">=&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">cfg</span><span class="p">.</span><span class="nx">channels</span><span class="o">?</span><span class="p">.</span><span class="nx">acmechat</span><span class="o">?</span><span class="p">.</span><span class="nx">accounts</span><span class="o">?</span><span class="p">.[</span><span class="nx">accountId</span> <span class="o">??</span> <span class="s2">&#34;default&#34;</span><span class="p">]</span> <span class="o">??</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">accountId</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">outbound</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">deliveryMode</span><span class="o">:</span> <span class="s2">&#34;direct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sendText</span>: <span class="kt">async</span> <span class="p">({</span> <span class="nx">text</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// deliver `text` to your channel here
+</span></span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="p">{</span> <span class="nx">ok</span>: <span class="kt">true</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">api</span><span class="p">.</span><span class="nx">registerChannel</span><span class="p">({</span> <span class="nx">plugin</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>加载插件（扩展目录或 <code>plugins.load.paths</code>），重启 Gateway 网关，然后在配置中配置 <code>channels.&lt;id&gt;</code>。</p>
+<h3 id="智能体工具">智能体工具<a hidden class="anchor" aria-hidden="true" href="#智能体工具">#</a></h3>
+<p>参见专门指南：<a href="/plugins/agent-tools">插件智能体工具</a>。</p>
+<h3 id="注册-gateway-网关-rpc-方法">注册 Gateway 网关 RPC 方法<a hidden class="anchor" aria-hidden="true" href="#注册-gateway-网关-rpc-方法">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">api</span><span class="p">.</span><span class="nx">registerGatewayMethod</span><span class="p">(</span><span class="s2">&#34;myplugin.status&#34;</span><span class="p">,</span> <span class="p">({</span> <span class="nx">respond</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">respond</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="p">{</span> <span class="nx">ok</span>: <span class="kt">true</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="注册-cli-命令">注册 CLI 命令<a hidden class="anchor" aria-hidden="true" href="#注册-cli-命令">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">api</span><span class="p">.</span><span class="nx">registerCli</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">({</span> <span class="nx">program</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">program</span><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s2">&#34;mycmd&#34;</span><span class="p">).</span><span class="nx">action</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;Hello&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">commands</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;mycmd&#34;</span><span class="p">]</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="注册自动回复命令">注册自动回复命令<a hidden class="anchor" aria-hidden="true" href="#注册自动回复命令">#</a></h3>
+<p>插件可以注册自定义斜杠命令，<strong>无需调用 AI 智能体</strong>即可执行。这对于切换命令、状态检查或不需要 LLM 处理的快速操作很有用。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">api</span><span class="p">.</span><span class="nx">registerCommand</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;mystatus&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">description</span><span class="o">:</span> <span class="s2">&#34;Show plugin status&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">handler</span><span class="o">:</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">text</span><span class="o">:</span> <span class="sb">`Plugin is running! Channel: </span><span class="si">${</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">channel</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>命令处理程序上下文：</p>
+<ul>
+<li><code>senderId</code>：发送者的 ID（如可用）</li>
+<li><code>channel</code>：发送命令的渠道</li>
+<li><code>isAuthorizedSender</code>：发送者是否是授权用户</li>
+<li><code>args</code>：命令后传递的参数（如果 <code>acceptsArgs: true</code>）</li>
+<li><code>commandBody</code>：完整的命令文本</li>
+<li><code>config</code>：当前 OpenClaw 配置</li>
+</ul>
+<p>命令选项：</p>
+<ul>
+<li><code>name</code>：命令名称（不带前导 <code>/</code>）</li>
+<li><code>description</code>：命令列表中显示的帮助文本</li>
+<li><code>acceptsArgs</code>：命令是否接受参数（默认：false）。如果为 false 且提供了参数，命令不会匹配，消息会传递给其他处理程序</li>
+<li><code>requireAuth</code>：是否需要授权发送者（默认：true）</li>
+<li><code>handler</code>：返回 <code>{ text: string }</code> 的函数（可以是异步的）</li>
+</ul>
+<p>带授权和参数的示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="nx">api</span><span class="p">.</span><span class="nx">registerCommand</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="s2">&#34;setmode&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">description</span><span class="o">:</span> <span class="s2">&#34;Set plugin mode&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">acceptsArgs</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">requireAuth</span>: <span class="kt">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">handler</span>: <span class="kt">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">mode</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">args</span><span class="o">?</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span> <span class="o">||</span> <span class="s2">&#34;default&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">await</span> <span class="nx">saveMode</span><span class="p">(</span><span class="nx">mode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span> <span class="nx">text</span><span class="o">:</span> <span class="sb">`Mode set to: </span><span class="si">${</span><span class="nx">mode</span><span class="si">}</span><span class="sb">`</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>插件命令在内置命令和 AI 智能体<strong>之前</strong>处理</li>
+<li>命令全局注册，适用于所有渠道</li>
+<li>命令名称不区分大小写（<code>/MyStatus</code> 匹配 <code>/mystatus</code>）</li>
+<li>命令名称必须以字母开头，只能包含字母、数字、连字符和下划线</li>
+<li>保留的命令名称（如 <code>help</code>、<code>status</code>、<code>reset</code> 等）不能被插件覆盖</li>
+<li>跨插件的重复命令注册将失败并显示诊断错误</li>
+</ul>
+<h3 id="注册后台服务">注册后台服务<a hidden class="anchor" aria-hidden="true" href="#注册后台服务">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">api</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">api</span><span class="p">.</span><span class="nx">registerService</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;my-service&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">start</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">api</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">&#34;ready&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">stop</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">api</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s2">&#34;bye&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="命名约定">命名约定<a hidden class="anchor" aria-hidden="true" href="#命名约定">#</a></h2>
+<ul>
+<li>Gateway 网关方法：<code>pluginId.action</code>（例如：<code>voicecall.status</code>）</li>
+<li>工具：<code>snake_case</code>（例如：<code>voice_call</code>）</li>
+<li>CLI 命令：kebab 或 camel，但避免与核心命令冲突</li>
+</ul>
+<h2 id="skills">Skills<a hidden class="anchor" aria-hidden="true" href="#skills">#</a></h2>
+<p>插件可以在仓库中附带 Skills（<code>skills/&lt;name&gt;/SKILL.md</code>）。
+使用 <code>plugins.entries.&lt;id&gt;.enabled</code>（或其他配置门控）启用它，并确保它存在于你的工作区/托管 Skills 位置。</p>
+<h2 id="分发npm">分发（npm）<a hidden class="anchor" aria-hidden="true" href="#分发npm">#</a></h2>
+<p>推荐的打包方式：</p>
+<ul>
+<li>主包：<code>openclaw</code>（本仓库）</li>
+<li>插件：<code>@openclaw/*</code> 下的独立 npm 包（例如：<code>@openclaw/voice-call</code>）</li>
+</ul>
+<p>发布契约：</p>
+<ul>
+<li>插件 <code>package.json</code> 必须包含带有一个或多个入口文件的 <code>openclaw.extensions</code>。</li>
+<li>入口文件可以是 <code>.js</code> 或 <code>.ts</code>（jiti 在运行时加载 TS）。</li>
+<li><code>openclaw plugins install &lt;npm-spec&gt;</code> 使用 <code>npm pack</code>，提取到 <code>~/.openclaw/extensions/&lt;id&gt;/</code>，并在配置中启用它。</li>
+<li>配置键稳定性：作用域包被规范化为 <code>plugins.entries.*</code> 的<strong>无作用域</strong> id。</li>
+</ul>
+<h2 id="示例插件voice-call">示例插件：Voice Call<a hidden class="anchor" aria-hidden="true" href="#示例插件voice-call">#</a></h2>
+<p>本仓库包含一个语音通话插件（Twilio 或 log 回退）：</p>
+<ul>
+<li>源码：<code>extensions/voice-call</code></li>
+<li>Skills：<code>skills/voice-call</code></li>
+<li>CLI：<code>openclaw voicecall start|status</code></li>
+<li>工具：<code>voice_call</code></li>
+<li>RPC：<code>voicecall.start</code>、<code>voicecall.status</code></li>
+<li>配置（twilio）：<code>provider: &quot;twilio&quot;</code> + <code>twilio.accountSid/authToken/from</code>（可选 <code>statusCallbackUrl</code>、<code>twimlUrl</code>）</li>
+<li>配置（dev）：<code>provider: &quot;log&quot;</code>（无网络）</li>
+</ul>
+<p>参见 <a href="/plugins/voice-call">Voice Call</a> 和 <code>extensions/voice-call/README.md</code> 了解设置和用法。</p>
+<h2 id="安全注意事项">安全注意事项<a hidden class="anchor" aria-hidden="true" href="#安全注意事项">#</a></h2>
+<p>插件与 Gateway 网关在同一进程中运行。将它们视为受信任的代码：</p>
+<ul>
+<li>只安装你信任的插件。</li>
+<li>优先使用 <code>plugins.allow</code> 允许列表。</li>
+<li>更改后重启 Gateway 网关。</li>
+</ul>
+<h2 id="测试插件">测试插件<a hidden class="anchor" aria-hidden="true" href="#测试插件">#</a></h2>
+<p>插件可以（也应该）附带测试：</p>
+<ul>
+<li>仓库内插件可以在 <code>src/**</code> 下保留 Vitest 测试（例如：<code>src/plugins/voice-call.plugin.test.ts</code>）。</li>
+<li>单独发布的插件应运行自己的 CI（lint/构建/测试）并验证 <code>openclaw.extensions</code> 指向构建的入口点（<code>dist/index.js</code>）。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/refactor/plugin-sdk/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>插件 SDK &#43; 运行时重构计划</span>
+  </a>
+  <a class="next" href="/openclaw/plugins/agent-tools/">
+    <span class="title">Next »</span>
+    <br>
+    <span>插件智能体工具</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

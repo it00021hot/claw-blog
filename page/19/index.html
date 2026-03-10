@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>OpenClaw macOS 配套应用（菜单栏 &#43; Gateway 网关代理）</h2>
+    </header>
+    <div class="entry-content">
+      <p>macOS 应用是 OpenClaw 的菜单栏配套应用。它拥有权限，在本地管理/附加到 Gateway 网关（launchd 或手动），并作为节点向智能体暴露 macOS 功能。
+功能 在菜单栏中显示原生通知和状态。 拥有 TCC 提示（通知、辅助功能、屏幕录制、麦克风、语音识别、自动化/AppleScript）。 运行或连接到 Gateway 网关（本地或远程）。 暴露 macOS 专用工具（Canvas、相机、屏幕录制、system.run）。 在远程模式下启动本地节点主机服务（launchd），在本地模式下停止它。 可选地托管 PeekabooBridge 用于 UI 自动化。 根据请求通过 npm/pnpm 安装全局 CLI（openclaw）（不建议使用 bun 作为 Gateway 网关运行时）。 本地 vs 远程模式 本地（默认）：如果存在运行中的本地 Gateway 网关，应用附加到它；否则通过 openclaw gateway install 启用 launchd 服务。 远程：应用通过 SSH/Tailscale 连接到 Gateway 网关，从不启动本地进程。 应用启动本地节点主机服务，以便远程 Gateway 网关可以访问此 Mac。 应用不会将 Gateway 网关作为子进程生成。 Launchd 控制 应用管理一个标记为 bot.molt.gateway 的每用户 LaunchAgent（使用 --profile/OPENCLAW_PROFILE 时为 bot.molt.&lt;profile&gt;；旧版 com.openclaw.* 仍会卸载）。
+launchctl kickstart -k gui/$UID/bot.molt.gateway launchctl bootout gui/$UID/bot.molt.gateway 运行命名配置文件时，将标签替换为 bot.molt.&lt;profile&gt;。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to OpenClaw macOS 配套应用（菜单栏 &#43; Gateway 网关代理）" href="/openclaw/platforms/macos/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>OpenClaw macOS 发布（Sparkle）</h2>
+    </header>
+    <div class="entry-content">
+      <p>本应用现已支持 Sparkle 自动更新。发布构建必须经过 Developer ID 签名、压缩，并发布包含签名的 appcast 条目。
+前提条件 已安装 Developer ID Application 证书（示例：Developer ID Application: &lt;Developer Name&gt; (&lt;TEAMID&gt;)）。 环境变量 SPARKLE_PRIVATE_KEY_FILE 已设置为 Sparkle ed25519 私钥路径（公钥已嵌入 Info.plist）。如果缺失，请检查 ~/.profile。 用于 xcrun notarytool 的公证凭据（钥匙串配置文件或 API 密钥），以实现通过 Gatekeeper 安全分发的 DMG/zip。 我们使用名为 openclaw-notary 的钥匙串配置文件，由 shell 配置文件中的 App Store Connect API 密钥环境变量创建： APP_STORE_CONNECT_API_KEY_P8、APP_STORE_CONNECT_KEY_ID、APP_STORE_CONNECT_ISSUER_ID echo &#34;$APP_STORE_CONNECT_API_KEY_P8&#34; | sed &#39;s/\\n/\n/g&#39; &gt; /tmp/openclaw-notary.p8 xcrun notarytool store-credentials &#34;openclaw-notary&#34; --key /tmp/openclaw-notary.p8 --key-id &#34;$APP_STORE_CONNECT_KEY_ID&#34; --issuer &#34;$APP_STORE_CONNECT_ISSUER_ID&#34; 已安装 pnpm 依赖（pnpm install --config.node-linker=hoisted）。 Sparkle 工具通过 SwiftPM 自动获取，位于 apps/macos/.build/artifacts/sparkle/Sparkle/bin/（sign_update、generate_appcast 等）。 构建与打包 注意事项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to OpenClaw macOS 发布（Sparkle）" href="/openclaw/platforms/mac/release/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>OpenClaw macOS IPC 架构</h2>
+    </header>
+    <div class="entry-content">
+      <p>当前模型： 一个本地 Unix 套接字将节点主机服务连接到 macOS 应用，用于 exec 审批 &#43; system.run。存在一个 openclaw-mac 调试 CLI 用于发现/连接检查；智能体操作仍通过 Gateway 网关 WebSocket 和 node.invoke 流转。UI 自动化使用 PeekabooBridge。
+目标 单个 GUI 应用实例拥有所有面向 TCC 的工作（通知、屏幕录制、麦克风、语音、AppleScript）。 小型自动化接口：Gateway 网关 &#43; 节点命令，加上用于 UI 自动化的 PeekabooBridge。 可预测的权限：始终是同一个签名的 bundle ID，由 launchd 启动，因此 TCC 授权保持有效。 工作原理 Gateway 网关 &#43; 节点传输 应用运行 Gateway 网关（本地模式）并作为节点连接到它。 智能体操作通过 node.invoke 执行（例如 system.run、system.notify、canvas.*）。 节点服务 &#43; 应用 IPC 一个无头节点主机服务连接到 Gateway 网关 WebSocket。 system.run 请求通过本地 Unix 套接字转发到 macOS 应用。 应用在 UI 上下文中执行 exec，必要时提示，并返回输出。 图示（SCI）：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to OpenClaw macOS IPC 架构" href="/openclaw/platforms/mac/xpc/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>OpenAI Chat Completions（HTTP）</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 的 Gateway 网关可以提供一个小型的 OpenAI 兼容 Chat Completions 端点。
+此端点默认禁用。请先在配置中启用它。
+POST /v1/chat/completions 与 Gateway 网关相同的端口（WS &#43; HTTP 多路复用）：http://&lt;gateway-host&gt;:&lt;port&gt;/v1/chat/completions 底层实现中，请求作为普通的 Gateway 网关智能体运行执行（与 openclaw agent 相同的代码路径），因此路由/权限/配置与你的 Gateway 网关一致。
+认证 使用 Gateway 网关认证配置。发送 bearer 令牌：
+Authorization: Bearer &lt;token&gt; 注意事项：
+当 gateway.auth.mode=&#34;token&#34; 时，使用 gateway.auth.token（或 OPENCLAW_GATEWAY_TOKEN）。 当 gateway.auth.mode=&#34;password&#34; 时，使用 gateway.auth.password（或 OPENCLAW_GATEWAY_PASSWORD）。 选择智能体 无需自定义头：在 OpenAI model 字段中编码智能体 ID：
+model: &#34;openclaw:&lt;agentId&gt;&#34;（例如：&#34;openclaw:main&#34;、&#34;openclaw:beta&#34;） model: &#34;agent:&lt;agentId&gt;&#34;（别名） 或通过头指定特定的 OpenClaw 智能体：
+x-openclaw-agent-id: &lt;agentId&gt;（默认：main） 高级选项：
+x-openclaw-session-key: &lt;sessionKey&gt; 完全控制会话路由。 启用端点 将 gateway.http.endpoints.chatCompletions.enabled 设置为 true：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to OpenAI Chat Completions（HTTP）" href="/openclaw/gateway/openai-http-api/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>OpenAI</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenAI 提供 GPT 模型的开发者 API。Codex 支持ChatGPT 登录进行订阅访问，或API 密钥登录进行按量计费访问。Codex 云端需要 ChatGPT 登录。
+方式 A：OpenAI API 密钥（OpenAI Platform） **适用于：**直接 API 访问和按量计费。 从 OpenAI 控制台获取你的 API 密钥。
+CLI 设置 openclaw onboard --auth-choice openai-api-key # 或非交互式 openclaw onboard --openai-api-key &#34;$OPENAI_API_KEY&#34; 配置片段 { env: { OPENAI_API_KEY: &#34;sk-...&#34; }, agents: { defaults: { model: { primary: &#34;openai/gpt-5.2&#34; } } }, } 方式 B：OpenAI Code（Codex）订阅 **适用于：**使用 ChatGPT/Codex 订阅访问而非 API 密钥。 Codex 云端需要 ChatGPT 登录，而 Codex CLI 支持 ChatGPT 或 API 密钥登录。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to OpenAI" href="/openclaw/providers/openai/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Ollama</h2>
+    </header>
+    <div class="entry-content">
+      <p>Ollama 是一个本地 LLM 运行时，可以轻松在你的机器上运行开源模型。OpenClaw 通过 Ollama 的 OpenAI 兼容 API 进行集成，并且当你通过 OLLAMA_API_KEY（或认证配置）启用且未定义显式的 models.providers.ollama 条目时，可以自动发现支持工具调用的模型。
+快速开始 安装 Ollama：https://ollama.ai
+拉取模型：
+ollama pull llama3.3 # 或 ollama pull qwen2.5-coder:32b # 或 ollama pull deepseek-r1:32b 为 OpenClaw 启用 Ollama（任意值即可；Ollama 不需要真实密钥）： # 设置环境变量 export OLLAMA_API_KEY=&#34;ollama-local&#34; # 或在配置文件中设置 openclaw config set models.providers.ollama.apiKey &#34;ollama-local&#34; 使用 Ollama 模型： { agents: { defaults: { model: { primary: &#34;ollama/llama3.3&#34; }, }, }, } 模型发现（隐式提供商） 当你设置了 OLLAMA_API_KEY（或认证配置）且未定义 models.providers.ollama 时，OpenClaw 会从本地 Ollama 实例 http://127.0.0.1:11434 发现模型：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Ollama" href="/openclaw/providers/ollama/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>OAuth</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 支持通过 OAuth 进行&#34;订阅认证&#34;，适用于提供此功能的提供商（特别是 OpenAI Codex（ChatGPT OAuth））。对于 Anthropic 订阅，请使用 setup-token 流程。本页说明：
+OAuth 令牌交换的工作原理（PKCE） 令牌存储在哪里（以及原因） 如何处理多账户（配置文件 &#43; 按会话覆盖） OpenClaw 还支持提供商插件，它们自带 OAuth 或 API 密钥流程。通过以下命令运行：
+openclaw models auth login --provider &lt;id&gt; 令牌汇聚点（为什么需要它） OAuth 提供商通常在登录/刷新流程中发放新的刷新令牌。某些提供商（或 OAuth 客户端）在为同一用户/应用发放新令牌时，可能会使旧的刷新令牌失效。
+实际症状：
+你通过 OpenClaw 和 Claude Code / Codex CLI 登录 → 其中一个稍后会随机&#34;登出&#34; 为减少这种情况，OpenClaw 将 auth-profiles.json 视为令牌汇聚点：
+运行时从同一个位置读取凭据 我们可以保留多个配置文件并确定性地路由它们 存储（令牌存放位置） 密钥按智能体存储：
+认证配置文件（OAuth &#43; API 密钥）：~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 运行时缓存（自动管理；请勿编辑）：~/.openclaw/agents/&lt;agentId&gt;/agent/auth.json 仅用于导入的旧版文件（仍然支持，但不是主存储）：
+~/.openclaw/credentials/oauth.json（首次使用时导入到 auth-profiles.json） 以上所有路径也遵循 $OPENCLAW_STATE_DIR（状态目录覆盖）。完整参考：/gateway/configuration
+Anthropic setup-token（订阅认证） 在任意机器上运行 claude setup-token，然后将其粘贴到 OpenClaw 中：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to OAuth" href="/openclaw/concepts/oauth/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Nostr</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态： 可选插件（默认禁用）。
+Nostr 是一个去中心化的社交网络协议。此渠道使 OpenClaw 能够通过 NIP-04 接收和回复加密私信（DMs）。
+安装（按需） 新手引导（推荐） 新手引导向导（openclaw onboard）和 openclaw channels add 会列出可选的渠道插件。 选择 Nostr 会提示你按需安装插件。 安装默认值：
+Dev 渠道 &#43; git checkout 可用： 使用本地插件路径。 Stable/Beta： 从 npm 下载。 你可以随时在提示中覆盖选择。
+手动安装 openclaw plugins install @openclaw/nostr 使用本地 checkout（开发工作流）：
+openclaw plugins install --link &lt;path-to-openclaw&gt;/extensions/nostr 安装或启用插件后重启 Gateway 网关。
+快速设置 生成 Nostr 密钥对（如需要）： # 使用 nak nak key generate 添加到配置： { &#34;channels&#34;: { &#34;nostr&#34;: { &#34;privateKey&#34;: &#34;${NOSTR_PRIVATE_KEY}&#34; } } } 导出密钥： export NOSTR_PRIVATE_KEY=&#34;nsec1...&#34; 重启 Gateway 网关。 配置参考 键 类型 默认值 描述 privateKey string 必填 nsec 或十六进制格式的私钥 relays string[] [&#39;wss://relay.damus.io&#39;, &#39;wss://nos.lol&#39;] 中继 URL（WebSocket） dmPolicy string pairing 私信访问策略 allowFrom string[] [] 允许的发送者公钥 enabled boolean true 启用/禁用渠道 name string - 显示名称 profile object - NIP-01 个人资料元数据 个人资料元数据 个人资料数据作为 NIP-01 kind:0 事件发布。你可以从控制界面（Channels -&gt; Nostr -&gt; Profile）管理它，或直接在配置中设置。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Nostr" href="/openclaw/channels/nostr/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Node.js</h2>
+    </header>
+    <div class="entry-content">
+      <p>该页面是英文文档的中文占位版本，完整内容请先参考英文版：Node.js。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Node.js" href="/openclaw/install/node/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Node &#43; tsx &#34;  name is not a function&#34; 崩溃</h2>
+    </header>
+    <div class="entry-content">
+      <p>概述 通过 Node 使用 tsx 运行 OpenClaw 时，启动阶段报错：
+[openclaw] Failed to start CLI: TypeError: __name is not a function at createSubsystemLogger (.../src/logging/subsystem.ts:203:25) at .../src/agents/auth-profiles/constants.ts:25:20 此问题在开发脚本从 Bun 切换到 tsx 后出现（提交 2871657e，2026-01-06）。相同的运行路径在 Bun 下正常工作。
+环境 Node: v25.x（在 v25.3.0 上观察到） tsx: 4.21.0 操作系统: macOS（其他运行 Node 25 的平台也可能复现） 复现步骤（仅 Node） # 在仓库根目录 node --version pnpm install node --import tsx src/entry.ts status 仓库内最小复现 node --import tsx scripts/repro/tsx-name-repro.ts Node 版本检查 Node 25.3.0：失败 Node 22.22.0（Homebrew node@22）：失败 Node 24：尚未安装，需要验证 说明 / 假设 tsx 使用 esbuild 转换 TS/ESM。esbuild 的 keepNames 会生成一个 __name 辅助函数，并用 __name(...) 包裹函数定义。 崩溃表明 __name 存在但在运行时不是函数，这意味着在 Node 25 的加载器路径中该辅助函数缺失或被覆盖。 其他 esbuild 使用者也报告过类似的 __name 辅助函数缺失或被重写的问题。 回归历史 2871657e（2026-01-06）：脚本从 Bun 改为 tsx，使 Bun 成为可选项。 在此之前（Bun 路径），openclaw status 和 gateway:watch 均正常工作。 解决方法 开发脚本使用 Bun（当前临时回退方案）。 使用 Node &#43; tsc watch，然后运行编译产物： pnpm exec tsc --watch --preserveWatchOutput node --watch openclaw.mjs status 已在本地确认：pnpm exec tsc -p tsconfig.json &#43; node openclaw.mjs status 在 Node 25 上可正常运行。 如果可能，在 TS 加载器中禁用 esbuild 的 keepNames（防止插入 __name 辅助函数）；tsx 目前不提供此配置项。 在 Node LTS（22/24）上测试 tsx，确认该问题是否为 Node 25 特有。 参考资料 https://opennext.js.org/cloudflare/howtos/keep_names https://esbuild.github.io/api/#keep-names https://github.com/evanw/esbuild/issues/1031 后续步骤 在 Node 22/24 上复现，确认是否为 Node 25 回归问题。 测试 tsx nightly 版本，或在存在已知回归时固定到早期版本。 如果在 Node LTS 上也能复现，则向上游提交包含 __name 堆栈跟踪的最小复现。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Node &#43; tsx &#34;  name is not a function&#34; 崩溃" href="/openclaw/debug/node-issue/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/18/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/20/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

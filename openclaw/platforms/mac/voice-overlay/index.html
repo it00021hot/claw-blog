@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>语音浮层生命周期（macOS） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="受众：macOS 应用贡献者。目标：在唤醒词与按键说话重叠时保持语音浮层行为可预测。
+当前意图
+
+如果浮层已因唤醒词显示，此时用户按下热键，热键会话会接管现有文本而非重置。浮层在热键按住期间保持显示。用户松开时：如果有去除空白后的文本则发送，否则关闭。
+单独使用唤醒词时仍在静音后自动发送；按键说话在松开时立即发送。
+
+已实现（2025 年 12 月 9 日）
+
+浮层会话现在为每次捕获（唤醒词或按键说话）携带一个令牌。当令牌不匹配时，部分/最终/发送/关闭/音量更新会被丢弃，避免过时回调。
+按键说话会接管任何可见的浮层文本作为前缀（因此在唤醒浮层显示时按下热键会保留文本并追加新语音）。它最多等待 1.5 秒获取最终转录结果，然后回退到当前文本。
+提示音/浮层日志以 info 级别输出，分类为 voicewake.overlay、voicewake.ptt 和 voicewake.chime（会话开始、部分、最终、发送、关闭、提示音原因）。
+
+后续步骤
+
+VoiceSessionCoordinator（actor）
+
+同一时间只拥有一个 VoiceSession。
+API（基于令牌）：beginWakeCapture、beginPushToTalk、updatePartial、endCapture、cancel、applyCooldown。
+丢弃携带过时令牌的回调（防止旧识别器重新打开浮层）。
+
+
+VoiceSession（模型）
+
+字段：token、source（wakeWord|pushToTalk）、已提交/临时文本、提示音标志、计时器（自动发送、空闲）、overlayMode（display|editing|sending）、冷却截止时间。
+
+
+浮层绑定
+
+VoiceSessionPublisher（ObservableObject）将活跃会话镜像到 SwiftUI。
+VoiceWakeOverlayView 仅通过 publisher 渲染；绝不直接修改全局单例。
+浮层用户操作（sendNow、dismiss、edit）携带会话令牌回调到 coordinator。
+
+
+统一发送路径
+
+endCapture 时：如果去除空白后文本为空 → 关闭；否则 performSend(session:)（播放一次发送提示音、转发、关闭）。
+按键说话：无延迟；唤醒词：可选自动发送延迟。
+按键说话结束后对唤醒运行时施加短暂冷却，防止唤醒词立即重新触发。
+
+
+日志
+
+Coordinator 在子系统 bot.molt、分类 voicewake.overlay 和 voicewake.chime 下输出 .info 级别日志。
+关键事件：session_started、adopted_by_push_to_talk、partial、finalized、send、dismiss、cancel、cooldown。
+
+
+
+调试清单
+
+
+复现浮层粘滞问题时流式查看日志：
+sudo log stream --predicate &#39;subsystem == &#34;bot.molt&#34; AND category CONTAINS &#34;voicewake&#34;&#39; --level info --style compact
+
+
+验证只有一个活跃会话令牌；过时回调应被 coordinator 丢弃。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/platforms/mac/voice-overlay/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/platforms/mac/voice-overlay/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/platforms/mac/voice-overlay/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="语音浮层生命周期（macOS）">
+  <meta property="og:description" content="受众：macOS 应用贡献者。目标：在唤醒词与按键说话重叠时保持语音浮层行为可预测。
+当前意图 如果浮层已因唤醒词显示，此时用户按下热键，热键会话会接管现有文本而非重置。浮层在热键按住期间保持显示。用户松开时：如果有去除空白后的文本则发送，否则关闭。 单独使用唤醒词时仍在静音后自动发送；按键说话在松开时立即发送。 已实现（2025 年 12 月 9 日） 浮层会话现在为每次捕获（唤醒词或按键说话）携带一个令牌。当令牌不匹配时，部分/最终/发送/关闭/音量更新会被丢弃，避免过时回调。 按键说话会接管任何可见的浮层文本作为前缀（因此在唤醒浮层显示时按下热键会保留文本并追加新语音）。它最多等待 1.5 秒获取最终转录结果，然后回退到当前文本。 提示音/浮层日志以 info 级别输出，分类为 voicewake.overlay、voicewake.ptt 和 voicewake.chime（会话开始、部分、最终、发送、关闭、提示音原因）。 后续步骤 VoiceSessionCoordinator（actor） 同一时间只拥有一个 VoiceSession。 API（基于令牌）：beginWakeCapture、beginPushToTalk、updatePartial、endCapture、cancel、applyCooldown。 丢弃携带过时令牌的回调（防止旧识别器重新打开浮层）。 VoiceSession（模型） 字段：token、source（wakeWord|pushToTalk）、已提交/临时文本、提示音标志、计时器（自动发送、空闲）、overlayMode（display|editing|sending）、冷却截止时间。 浮层绑定 VoiceSessionPublisher（ObservableObject）将活跃会话镜像到 SwiftUI。 VoiceWakeOverlayView 仅通过 publisher 渲染；绝不直接修改全局单例。 浮层用户操作（sendNow、dismiss、edit）携带会话令牌回调到 coordinator。 统一发送路径 endCapture 时：如果去除空白后文本为空 → 关闭；否则 performSend(session:)（播放一次发送提示音、转发、关闭）。 按键说话：无延迟；唤醒词：可选自动发送延迟。 按键说话结束后对唤醒运行时施加短暂冷却，防止唤醒词立即重新触发。 日志 Coordinator 在子系统 bot.molt、分类 voicewake.overlay 和 voicewake.chime 下输出 .info 级别日志。 关键事件：session_started、adopted_by_push_to_talk、partial、finalized、send、dismiss、cancel、cooldown。 调试清单 复现浮层粘滞问题时流式查看日志：
+sudo log stream --predicate &#39;subsystem == &#34;bot.molt&#34; AND category CONTAINS &#34;voicewake&#34;&#39; --level info --style compact 验证只有一个活跃会话令牌；过时回调应被 coordinator 丢弃。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="语音浮层生命周期（macOS）">
+<meta name="twitter:description" content="受众：macOS 应用贡献者。目标：在唤醒词与按键说话重叠时保持语音浮层行为可预测。
+当前意图
+
+如果浮层已因唤醒词显示，此时用户按下热键，热键会话会接管现有文本而非重置。浮层在热键按住期间保持显示。用户松开时：如果有去除空白后的文本则发送，否则关闭。
+单独使用唤醒词时仍在静音后自动发送；按键说话在松开时立即发送。
+
+已实现（2025 年 12 月 9 日）
+
+浮层会话现在为每次捕获（唤醒词或按键说话）携带一个令牌。当令牌不匹配时，部分/最终/发送/关闭/音量更新会被丢弃，避免过时回调。
+按键说话会接管任何可见的浮层文本作为前缀（因此在唤醒浮层显示时按下热键会保留文本并追加新语音）。它最多等待 1.5 秒获取最终转录结果，然后回退到当前文本。
+提示音/浮层日志以 info 级别输出，分类为 voicewake.overlay、voicewake.ptt 和 voicewake.chime（会话开始、部分、最终、发送、关闭、提示音原因）。
+
+后续步骤
+
+VoiceSessionCoordinator（actor）
+
+同一时间只拥有一个 VoiceSession。
+API（基于令牌）：beginWakeCapture、beginPushToTalk、updatePartial、endCapture、cancel、applyCooldown。
+丢弃携带过时令牌的回调（防止旧识别器重新打开浮层）。
+
+
+VoiceSession（模型）
+
+字段：token、source（wakeWord|pushToTalk）、已提交/临时文本、提示音标志、计时器（自动发送、空闲）、overlayMode（display|editing|sending）、冷却截止时间。
+
+
+浮层绑定
+
+VoiceSessionPublisher（ObservableObject）将活跃会话镜像到 SwiftUI。
+VoiceWakeOverlayView 仅通过 publisher 渲染；绝不直接修改全局单例。
+浮层用户操作（sendNow、dismiss、edit）携带会话令牌回调到 coordinator。
+
+
+统一发送路径
+
+endCapture 时：如果去除空白后文本为空 → 关闭；否则 performSend(session:)（播放一次发送提示音、转发、关闭）。
+按键说话：无延迟；唤醒词：可选自动发送延迟。
+按键说话结束后对唤醒运行时施加短暂冷却，防止唤醒词立即重新触发。
+
+
+日志
+
+Coordinator 在子系统 bot.molt、分类 voicewake.overlay 和 voicewake.chime 下输出 .info 级别日志。
+关键事件：session_started、adopted_by_push_to_talk、partial、finalized、send、dismiss、cancel、cooldown。
+
+
+
+调试清单
+
+
+复现浮层粘滞问题时流式查看日志：
+sudo log stream --predicate &#39;subsystem == &#34;bot.molt&#34; AND category CONTAINS &#34;voicewake&#34;&#39; --level info --style compact
+
+
+验证只有一个活跃会话令牌；过时回调应被 coordinator 丢弃。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "语音浮层生命周期（macOS）",
+      "item": "/openclaw/platforms/mac/voice-overlay/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "语音浮层生命周期（macOS）",
+  "name": "语音浮层生命周期（macOS）",
+  "description": "受众：macOS 应用贡献者。目标：在唤醒词与按键说话重叠时保持语音浮层行为可预测。\n当前意图 如果浮层已因唤醒词显示，此时用户按下热键，热键会话会接管现有文本而非重置。浮层在热键按住期间保持显示。用户松开时：如果有去除空白后的文本则发送，否则关闭。 单独使用唤醒词时仍在静音后自动发送；按键说话在松开时立即发送。 已实现（2025 年 12 月 9 日） 浮层会话现在为每次捕获（唤醒词或按键说话）携带一个令牌。当令牌不匹配时，部分/最终/发送/关闭/音量更新会被丢弃，避免过时回调。 按键说话会接管任何可见的浮层文本作为前缀（因此在唤醒浮层显示时按下热键会保留文本并追加新语音）。它最多等待 1.5 秒获取最终转录结果，然后回退到当前文本。 提示音/浮层日志以 info 级别输出，分类为 voicewake.overlay、voicewake.ptt 和 voicewake.chime（会话开始、部分、最终、发送、关闭、提示音原因）。 后续步骤 VoiceSessionCoordinator（actor） 同一时间只拥有一个 VoiceSession。 API（基于令牌）：beginWakeCapture、beginPushToTalk、updatePartial、endCapture、cancel、applyCooldown。 丢弃携带过时令牌的回调（防止旧识别器重新打开浮层）。 VoiceSession（模型） 字段：token、source（wakeWord|pushToTalk）、已提交/临时文本、提示音标志、计时器（自动发送、空闲）、overlayMode（display|editing|sending）、冷却截止时间。 浮层绑定 VoiceSessionPublisher（ObservableObject）将活跃会话镜像到 SwiftUI。 VoiceWakeOverlayView 仅通过 publisher 渲染；绝不直接修改全局单例。 浮层用户操作（sendNow、dismiss、edit）携带会话令牌回调到 coordinator。 统一发送路径 endCapture 时：如果去除空白后文本为空 → 关闭；否则 performSend(session:)（播放一次发送提示音、转发、关闭）。 按键说话：无延迟；唤醒词：可选自动发送延迟。 按键说话结束后对唤醒运行时施加短暂冷却，防止唤醒词立即重新触发。 日志 Coordinator 在子系统 bot.molt、分类 voicewake.overlay 和 voicewake.chime 下输出 .info 级别日志。 关键事件：session_started、adopted_by_push_to_talk、partial、finalized、send、dismiss、cancel、cooldown。 调试清单 复现浮层粘滞问题时流式查看日志：\nsudo log stream --predicate \u0026#39;subsystem == \u0026#34;bot.molt\u0026#34; AND category CONTAINS \u0026#34;voicewake\u0026#34;\u0026#39; --level info --style compact 验证只有一个活跃会话令牌；过时回调应被 coordinator 丢弃。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "受众：macOS 应用贡献者。目标：在唤醒词与按键说话重叠时保持语音浮层行为可预测。\n当前意图 如果浮层已因唤醒词显示，此时用户按下热键，热键会话会接管现有文本而非重置。浮层在热键按住期间保持显示。用户松开时：如果有去除空白后的文本则发送，否则关闭。 单独使用唤醒词时仍在静音后自动发送；按键说话在松开时立即发送。 已实现（2025 年 12 月 9 日） 浮层会话现在为每次捕获（唤醒词或按键说话）携带一个令牌。当令牌不匹配时，部分/最终/发送/关闭/音量更新会被丢弃，避免过时回调。 按键说话会接管任何可见的浮层文本作为前缀（因此在唤醒浮层显示时按下热键会保留文本并追加新语音）。它最多等待 1.5 秒获取最终转录结果，然后回退到当前文本。 提示音/浮层日志以 info 级别输出，分类为 voicewake.overlay、voicewake.ptt 和 voicewake.chime（会话开始、部分、最终、发送、关闭、提示音原因）。 后续步骤 VoiceSessionCoordinator（actor） 同一时间只拥有一个 VoiceSession。 API（基于令牌）：beginWakeCapture、beginPushToTalk、updatePartial、endCapture、cancel、applyCooldown。 丢弃携带过时令牌的回调（防止旧识别器重新打开浮层）。 VoiceSession（模型） 字段：token、source（wakeWord|pushToTalk）、已提交/临时文本、提示音标志、计时器（自动发送、空闲）、overlayMode（display|editing|sending）、冷却截止时间。 浮层绑定 VoiceSessionPublisher（ObservableObject）将活跃会话镜像到 SwiftUI。 VoiceWakeOverlayView 仅通过 publisher 渲染；绝不直接修改全局单例。 浮层用户操作（sendNow、dismiss、edit）携带会话令牌回调到 coordinator。 统一发送路径 endCapture 时：如果去除空白后文本为空 → 关闭；否则 performSend(session:)（播放一次发送提示音、转发、关闭）。 按键说话：无延迟；唤醒词：可选自动发送延迟。 按键说话结束后对唤醒运行时施加短暂冷却，防止唤醒词立即重新触发。 日志 Coordinator 在子系统 bot.molt、分类 voicewake.overlay 和 voicewake.chime 下输出 .info 级别日志。 关键事件：session_started、adopted_by_push_to_talk、partial、finalized、send、dismiss、cancel、cooldown。 调试清单 复现浮层粘滞问题时流式查看日志：\nsudo log stream --predicate 'subsystem == \"bot.molt\" AND category CONTAINS \"voicewake\"' --level info --style compact 验证只有一个活跃会话令牌；过时回调应被 coordinator 丢弃。\n确保按键说话松开时始终使用活跃令牌调用 endCapture；如果文本为空，预期 dismiss 且不播放提示音或发送。\n迁移步骤（建议） 添加 VoiceSessionCoordinator、VoiceSession 和 VoiceSessionPublisher。 重构 VoiceWakeRuntime，使其创建/更新/结束会话，而非直接操作 VoiceWakeOverlayController。 重构 VoicePushToTalk，使其接管现有会话并在松开时调用 endCapture；施加运行时冷却。 将 VoiceWakeOverlayController 连接到 publisher；移除来自 runtime/PTT 的直接调用。 添加会话接管、冷却和空文本关闭的集成测试。 ",
+  "wordCount" : "99",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/platforms/mac/voice-overlay/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      语音浮层生命周期（macOS）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d%e6%84%8f%e5%9b%be" aria-label="当前意图">当前意图</a></li>
+                <li>
+                    <a href="#%e5%b7%b2%e5%ae%9e%e7%8e%b02025-%e5%b9%b4-12-%e6%9c%88-9-%e6%97%a5" aria-label="已实现（2025 年 12 月 9 日）">已实现（2025 年 12 月 9 日）</a></li>
+                <li>
+                    <a href="#%e5%90%8e%e7%bb%ad%e6%ad%a5%e9%aa%a4" aria-label="后续步骤">后续步骤</a></li>
+                <li>
+                    <a href="#%e8%b0%83%e8%af%95%e6%b8%85%e5%8d%95" aria-label="调试清单">调试清单</a></li>
+                <li>
+                    <a href="#%e8%bf%81%e7%a7%bb%e6%ad%a5%e9%aa%a4%e5%bb%ba%e8%ae%ae" aria-label="迁移步骤（建议）">迁移步骤（建议）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>受众：macOS 应用贡献者。目标：在唤醒词与按键说话重叠时保持语音浮层行为可预测。</p>
+<h3 id="当前意图">当前意图<a hidden class="anchor" aria-hidden="true" href="#当前意图">#</a></h3>
+<ul>
+<li>如果浮层已因唤醒词显示，此时用户按下热键，热键会话会<em>接管</em>现有文本而非重置。浮层在热键按住期间保持显示。用户松开时：如果有去除空白后的文本则发送，否则关闭。</li>
+<li>单独使用唤醒词时仍在静音后自动发送；按键说话在松开时立即发送。</li>
+</ul>
+<h3 id="已实现2025-年-12-月-9-日">已实现（2025 年 12 月 9 日）<a hidden class="anchor" aria-hidden="true" href="#已实现2025-年-12-月-9-日">#</a></h3>
+<ul>
+<li>浮层会话现在为每次捕获（唤醒词或按键说话）携带一个令牌。当令牌不匹配时，部分/最终/发送/关闭/音量更新会被丢弃，避免过时回调。</li>
+<li>按键说话会接管任何可见的浮层文本作为前缀（因此在唤醒浮层显示时按下热键会保留文本并追加新语音）。它最多等待 1.5 秒获取最终转录结果，然后回退到当前文本。</li>
+<li>提示音/浮层日志以 <code>info</code> 级别输出，分类为 <code>voicewake.overlay</code>、<code>voicewake.ptt</code> 和 <code>voicewake.chime</code>（会话开始、部分、最终、发送、关闭、提示音原因）。</li>
+</ul>
+<h3 id="后续步骤">后续步骤<a hidden class="anchor" aria-hidden="true" href="#后续步骤">#</a></h3>
+<ol>
+<li><strong>VoiceSessionCoordinator（actor）</strong>
+<ul>
+<li>同一时间只拥有一个 <code>VoiceSession</code>。</li>
+<li>API（基于令牌）：<code>beginWakeCapture</code>、<code>beginPushToTalk</code>、<code>updatePartial</code>、<code>endCapture</code>、<code>cancel</code>、<code>applyCooldown</code>。</li>
+<li>丢弃携带过时令牌的回调（防止旧识别器重新打开浮层）。</li>
+</ul>
+</li>
+<li><strong>VoiceSession（模型）</strong>
+<ul>
+<li>字段：<code>token</code>、<code>source</code>（wakeWord|pushToTalk）、已提交/临时文本、提示音标志、计时器（自动发送、空闲）、<code>overlayMode</code>（display|editing|sending）、冷却截止时间。</li>
+</ul>
+</li>
+<li><strong>浮层绑定</strong>
+<ul>
+<li><code>VoiceSessionPublisher</code>（<code>ObservableObject</code>）将活跃会话镜像到 SwiftUI。</li>
+<li><code>VoiceWakeOverlayView</code> 仅通过 publisher 渲染；绝不直接修改全局单例。</li>
+<li>浮层用户操作（<code>sendNow</code>、<code>dismiss</code>、<code>edit</code>）携带会话令牌回调到 coordinator。</li>
+</ul>
+</li>
+<li><strong>统一发送路径</strong>
+<ul>
+<li><code>endCapture</code> 时：如果去除空白后文本为空 → 关闭；否则 <code>performSend(session:)</code>（播放一次发送提示音、转发、关闭）。</li>
+<li>按键说话：无延迟；唤醒词：可选自动发送延迟。</li>
+<li>按键说话结束后对唤醒运行时施加短暂冷却，防止唤醒词立即重新触发。</li>
+</ul>
+</li>
+<li><strong>日志</strong>
+<ul>
+<li>Coordinator 在子系统 <code>bot.molt</code>、分类 <code>voicewake.overlay</code> 和 <code>voicewake.chime</code> 下输出 <code>.info</code> 级别日志。</li>
+<li>关键事件：<code>session_started</code>、<code>adopted_by_push_to_talk</code>、<code>partial</code>、<code>finalized</code>、<code>send</code>、<code>dismiss</code>、<code>cancel</code>、<code>cooldown</code>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="调试清单">调试清单<a hidden class="anchor" aria-hidden="true" href="#调试清单">#</a></h3>
+<ul>
+<li>
+<p>复现浮层粘滞问题时流式查看日志：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo log stream --predicate <span class="s1">&#39;subsystem == &#34;bot.molt&#34; AND category CONTAINS &#34;voicewake&#34;&#39;</span> --level info --style compact
+</span></span></code></pre></div></li>
+<li>
+<p>验证只有一个活跃会话令牌；过时回调应被 coordinator 丢弃。</p>
+</li>
+<li>
+<p>确保按键说话松开时始终使用活跃令牌调用 <code>endCapture</code>；如果文本为空，预期 <code>dismiss</code> 且不播放提示音或发送。</p>
+</li>
+</ul>
+<h3 id="迁移步骤建议">迁移步骤（建议）<a hidden class="anchor" aria-hidden="true" href="#迁移步骤建议">#</a></h3>
+<ol>
+<li>添加 <code>VoiceSessionCoordinator</code>、<code>VoiceSession</code> 和 <code>VoiceSessionPublisher</code>。</li>
+<li>重构 <code>VoiceWakeRuntime</code>，使其创建/更新/结束会话，而非直接操作 <code>VoiceWakeOverlayController</code>。</li>
+<li>重构 <code>VoicePushToTalk</code>，使其接管现有会话并在松开时调用 <code>endCapture</code>；施加运行时冷却。</li>
+<li>将 <code>VoiceWakeOverlayController</code> 连接到 publisher；移除来自 runtime/PTT 的直接调用。</li>
+<li>添加会话接管、冷却和空文本关闭的集成测试。</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/platforms/mac/voicewake/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>语音唤醒与按键通话</span>
+  </a>
+  <a class="next" href="/openclaw/help/debugging/">
+    <span class="title">Next »</span>
+    <br>
+    <span>调试</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

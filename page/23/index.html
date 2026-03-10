@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Gateway 网关架构</h2>
+    </header>
+    <div class="entry-content">
+      <p>最后更新：2026-01-22
+概述 单个长期运行的 Gateway 网关拥有所有消息平台（通过 Baileys 的 WhatsApp、通过 grammY 的 Telegram、Slack、Discord、Signal、iMessage、WebChat）。 控制平面客户端（macOS 应用、CLI、Web 界面、自动化）通过配置的绑定主机（默认 127.0.0.1:18789）上的 WebSocket 连接到 Gateway 网关。 节点（macOS/iOS/Android/无头设备）也通过 WebSocket 连接，但声明 role: node 并带有明确的能力/命令。 每台主机一个 Gateway 网关；它是唯一打开 WhatsApp 会话的位置。 canvas 主机（默认 18793）提供智能体可编辑的 HTML 和 A2UI。 组件和流程 Gateway 网关（守护进程） 维护提供商连接。 暴露类型化的 WS API（请求、响应、服务器推送事件）。 根据 JSON Schema 验证入站帧。 发出事件如 agent、chat、presence、health、heartbeat、cron。 客户端（mac 应用 / CLI / web 管理） 每个客户端一个 WS 连接。 发送请求（health、status、send、agent、system-presence）。 订阅事件（tick、agent、presence、shutdown）。 节点（macOS / iOS / Android / 无头设备） 以 role: node 连接到同一个 WS 服务器。 在 connect 中提供设备身份；配对是基于设备的（角色为 node），批准存储在设备配对存储中。 暴露命令如 canvas.*、camera.*、screen.record、location.get。 协议详情：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Gateway 网关架构" href="/openclaw/concepts/architecture/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Gateway 网关拥有的配对（选项 B）</h2>
+    </header>
+    <div class="entry-content">
+      <p>在 Gateway 网关拥有的配对中，Gateway 网关是允许哪些节点加入的唯一信息源。UI（macOS 应用、未来的客户端）只是审批或拒绝待处理请求的前端。
+重要：WS 节点在 connect 期间使用设备配对（角色 node）。node.pair.* 是一个独立的配对存储，不会限制 WS 握手。只有显式调用 node.pair.* 的客户端使用此流程。
+概念 待处理请求：一个节点请求加入；需要审批。 已配对节点：已批准的节点，带有已颁发的认证令牌。 传输层：Gateway 网关 WS 端点转发请求但不决定成员资格。（旧版 TCP 桥接支持已弃用/移除。） 配对工作原理 节点连接到 Gateway 网关 WS 并请求配对。 Gateway 网关存储一个待处理请求并发出 node.pair.requested。 你审批或拒绝该请求（CLI 或 UI）。 审批后，Gateway 网关颁发一个新令牌（重新配对时令牌会轮换）。 节点使用该令牌重新连接，现在是&#34;已配对&#34;状态。 待处理请求在 5 分钟后自动过期。
+CLI 工作流程（支持无头模式） openclaw nodes pending openclaw nodes approve &lt;requestId&gt; openclaw nodes reject &lt;requestId&gt; openclaw nodes status openclaw nodes rename --node &lt;id|name|ip&gt; --name &#34;Living Room iPad&#34; nodes status 显示已配对/已连接的节点及其功能。
+API 接口（Gateway 网关协议） 事件：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Gateway 网关拥有的配对（选项 B）" href="/openclaw/gateway/pairing/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Gateway 网关协议（WebSocket）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Gateway 网关 WS 协议是 OpenClaw 的单一控制平面 &#43; 节点传输。所有客户端（CLI、Web UI、macOS 应用、iOS/Android 节点、无头节点）都通过 WebSocket 连接，并在握手时声明其角色 &#43; 作用域。
+传输 WebSocket，带有 JSON 负载的文本帧。 第一帧必须是 connect 请求。 握手（connect） Gateway 网关 → 客户端（连接前质询）：
+{ &#34;type&#34;: &#34;event&#34;, &#34;event&#34;: &#34;connect.challenge&#34;, &#34;payload&#34;: { &#34;nonce&#34;: &#34;…&#34;, &#34;ts&#34;: 1737264000000 } } 客户端 → Gateway 网关：
+{ &#34;type&#34;: &#34;req&#34;, &#34;id&#34;: &#34;…&#34;, &#34;method&#34;: &#34;connect&#34;, &#34;params&#34;: { &#34;minProtocol&#34;: 3, &#34;maxProtocol&#34;: 3, &#34;client&#34;: { &#34;id&#34;: &#34;cli&#34;, &#34;version&#34;: &#34;1.2.3&#34;, &#34;platform&#34;: &#34;macos&#34;, &#34;mode&#34;: &#34;operator&#34; }, &#34;role&#34;: &#34;operator&#34;, &#34;scopes&#34;: [&#34;operator.read&#34;, &#34;operator.write&#34;], &#34;caps&#34;: [], &#34;commands&#34;: [], &#34;permissions&#34;: {}, &#34;auth&#34;: { &#34;token&#34;: &#34;…&#34; }, &#34;locale&#34;: &#34;en-US&#34;, &#34;userAgent&#34;: &#34;openclaw-cli/1.2.3&#34;, &#34;device&#34;: { &#34;id&#34;: &#34;device_fingerprint&#34;, &#34;publicKey&#34;: &#34;…&#34;, &#34;signature&#34;: &#34;…&#34;, &#34;signedAt&#34;: 1737264000000, &#34;nonce&#34;: &#34;…&#34; } } } Gateway 网关 → 客户端：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Gateway 网关协议（WebSocket）" href="/openclaw/gateway/protocol/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Gateway 网关 CLI</h2>
+    </header>
+    <div class="entry-content">
+      <p>Gateway 网关是 OpenClaw 的 WebSocket 服务器（渠道、节点、会话、hooks）。
+本页中的子命令位于 openclaw gateway … 下。
+相关文档：
+/gateway/bonjour /gateway/discovery /gateway/configuration 运行 Gateway 网关 运行本地 Gateway 网关进程：
+openclaw gateway 前台运行别名：
+openclaw gateway run 注意事项：
+默认情况下，除非在 ~/.openclaw/openclaw.json 中设置了 gateway.mode=local，否则 Gateway 网关将拒绝启动。使用 --allow-unconfigured 进行临时/开发运行。 在没有认证的情况下绑定到 loopback 之外的地址会被阻止（安全护栏）。 SIGUSR1 在授权时触发进程内重启（启用 commands.restart 或使用 gateway 工具/config apply/update）。 SIGINT/SIGTERM 处理程序会停止 Gateway 网关进程，但不会恢复任何自定义终端状态。如果你用 TUI 或 raw-mode 输入包装 CLI，请在退出前恢复终端。 选项 --port &lt;port&gt;：WebSocket 端口（默认来自配置/环境变量；通常为 18789）。 --bind &lt;loopback|lan|tailnet|auto|custom&gt;：监听器绑定模式。 --auth &lt;token|password&gt;：认证模式覆盖。 --token &lt;token&gt;：令牌覆盖（同时为进程设置 OPENCLAW_GATEWAY_TOKEN）。 --password &lt;password&gt;：密码覆盖（同时为进程设置 OPENCLAW_GATEWAY_PASSWORD）。 --tailscale &lt;off|serve|funnel&gt;：通过 Tailscale 暴露 Gateway 网关。 --tailscale-reset-on-exit：关闭时重置 Tailscale serve/funnel 配置。 --allow-unconfigured：允许在配置中没有 gateway.mode=local 的情况下启动 Gateway 网关。 --dev：如果缺失则创建开发配置 &#43; 工作区（跳过 BOOTSTRAP.md）。 --reset：重置开发配置 &#43; 凭证 &#43; 会话 &#43; 工作区（需要 --dev）。 --force：启动前杀死所选端口上的任何现有监听器。 --verbose：详细日志。 --claude-cli-logs：仅在控制台显示 claude-cli 日志（并启用其 stdout/stderr）。 --ws-log &lt;auto|full|compact&gt;：WebSocket 日志样式（默认 auto）。 --compact：--ws-log compact 的别名。 --raw-stream：将原始模型流事件记录到 jsonl。 --raw-stream-path &lt;path&gt;：原始流 jsonl 路径。 查询运行中的 Gateway 网关 所有查询命令使用 WebSocket RPC。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Gateway 网关 CLI" href="/openclaw/cli/gateway/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Fly.io 部署</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标： OpenClaw Gateway 网关运行在 Fly.io 机器上，具有持久存储、自动 HTTPS 和 Discord/渠道访问。
+你需要什么 已安装 flyctl CLI Fly.io 账户（免费套餐可用） 模型认证：Anthropic API 密钥（或其他提供商密钥） 渠道凭证：Discord bot token、Telegram token 等 初学者快速路径 克隆仓库 → 自定义 fly.toml 创建应用 &#43; 卷 → 设置密钥 使用 fly deploy 部署 SSH 进入创建配置或使用 Control UI 1）创建 Fly 应用 # Clone the repo git clone https://github.com/openclaw/openclaw.git cd openclaw # Create a new Fly app (pick your own name) fly apps create my-openclaw # Create a persistent volume (1GB is usually enough) fly volumes create openclaw_data --size 1 --region iad 提示： 选择离你近的区域。常见选项：lhr（伦敦）、iad（弗吉尼亚）、sjc（圣何塞）。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Fly.io 部署" href="/openclaw/install/fly/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Firecrawl</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 可以使用 Firecrawl 作为 web_fetch 的回退提取器。它是一个托管的 内容提取服务，支持机器人规避和缓存，有助于处理 JS 密集型网站或阻止普通 HTTP 请求的页面。
+获取 API 密钥 创建 Firecrawl 账户并生成 API 密钥。 将其存储在配置中或在 Gateway 网关环境中设置 FIRECRAWL_API_KEY。 配置 Firecrawl { tools: { web: { fetch: { firecrawl: { apiKey: &#34;FIRECRAWL_API_KEY_HERE&#34;, baseUrl: &#34;https://api.firecrawl.dev&#34;, onlyMainContent: true, maxAgeMs: 172800000, timeoutSeconds: 60, }, }, }, }, } 注意事项：
+当存在 API 密钥时，firecrawl.enabled 默认为 true。 maxAgeMs 控制缓存结果可以保留多久（毫秒）。默认为 2 天。 隐身 / 机器人规避 Firecrawl 提供了一个用于机器人规避的代理模式参数（basic、stealth 或 auto）。 OpenClaw 对 Firecrawl 请求始终使用 proxy: &#34;auto&#34; 加 storeInCache: true。 如果省略 proxy，Firecrawl 默认使用 auto。auto 在基本尝试失败时会使用隐身代理重试，这可能比 仅使用基本抓取消耗更多积分。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Firecrawl" href="/openclaw/tools/firecrawl/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Exec 工具</h2>
+    </header>
+    <div class="entry-content">
+      <p>在工作区中运行 shell 命令。通过 process 支持前台和后台执行。 如果 process 被禁用，exec 将同步运行并忽略 yieldMs/background。 后台会话按智能体隔离；process 只能看到同一智能体的会话。
+参数 command（必填） workdir（默认为当前工作目录） env（键值对覆盖） yieldMs（默认 10000）：延迟后自动转入后台 background（布尔值）：立即转入后台 timeout（秒，默认 1800）：超时后终止 pty（布尔值）：在可用时使用伪终端运行（仅限 TTY 的 CLI、编程智能体、终端 UI） host（sandbox | gateway | node）：执行位置 security（deny | allowlist | full）：gateway/node 的执行策略 ask（off | on-miss | always）：gateway/node 的审批提示 node（字符串）：host=node 时的节点 id/名称 elevated（布尔值）：请求提升模式（gateway 主机）；仅当 elevated 解析为 full 时才强制 security=full 注意事项：
+host 默认为 sandbox。 当沙箱隔离关闭时，elevated 会被忽略（exec 已在主机上运行）。 gateway/node 审批由 ~/.openclaw/exec-approvals.json 控制。 node 需要已配对的节点（配套应用或无头节点主机）。 如果有多个可用节点，设置 exec.node 或 tools.exec.node 来选择一个。 在非 Windows 主机上，exec 会使用已设置的 SHELL；如果 SHELL 是 fish，它会优先从 PATH 中选择 bash（或 sh）以避免 fish 不兼容的脚本，如果两者都不存在则回退到 SHELL。 主机执行（gateway/node）会拒绝 env.PATH 和加载器覆盖（LD_*/DYLD_*），以防止二进制劫持或代码注入。 重要提示：沙箱隔离默认关闭。如果沙箱隔离关闭，host=sandbox 将直接在 Gateway 网关主机上运行（无容器）且不需要审批。如需审批，请使用 host=gateway 运行并配置 exec 审批（或启用沙箱隔离）。 配置 tools.exec.notifyOnExit（默认：true）：为 true 时，后台 exec 会话在退出时会入队系统事件并请求心跳。 tools.exec.approvalRunningNoticeMs（默认：10000）：当需要审批的 exec 运行时间超过此值时发出单次&#34;运行中&#34;通知（0 表示禁用）。 tools.exec.host（默认：sandbox） tools.exec.security（默认：sandbox 为 deny，gateway &#43; node 未设置时为 allowlist） tools.exec.ask（默认：on-miss） tools.exec.node（默认：未设置） tools.exec.pathPrepend：exec 运行时添加到 PATH 前面的目录列表。 tools.exec.safeBins：仅限 stdin 的安全二进制文件，无需显式白名单条目即可运行。 示例：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Exec 工具" href="/openclaw/tools/exec/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Exec 主机重构计划</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标 添加 exec.host &#43; exec.security 以在沙箱、Gateway 网关和节点之间路由执行。 保持默认安全：除非明确启用，否则不进行跨主机执行。 将执行拆分为无头运行器服务，通过本地 IPC 连接可选的 UI（macOS 应用）。 提供每智能体策略、允许列表、询问模式和节点绑定。 支持与或不与允许列表一起使用的询问模式。 跨平台：Unix socket &#43; token 认证（macOS/Linux/Windows 一致性）。 非目标 无遗留允许列表迁移或遗留 schema 支持。 节点 exec 无 PTY/流式传输（仅聚合输出）。 除现有 Bridge &#43; Gateway 网关外无新网络层。 决定（已锁定） 配置键： exec.host &#43; exec.security（允许每智能体覆盖）。 提升： 保留 /elevated 作为 Gateway 网关完全访问的别名。 询问默认： on-miss。 批准存储： ~/.openclaw/exec-approvals.json（JSON，无遗留迁移）。 运行器： 无头系统服务；UI 应用托管 Unix socket 用于批准。 节点身份： 使用现有 nodeId。 Socket 认证： Unix socket &#43; token（跨平台）；如需要稍后拆分。 节点主机状态： ~/.openclaw/node.json（节点 id &#43; 配对 token）。 macOS exec 主机： 在 macOS 应用内运行 system.run；节点主机服务通过本地 IPC 转发请求。 无 XPC helper： 坚持使用 Unix socket &#43; token &#43; 对等检查。 关键概念 主机 sandbox：Docker exec（当前行为）。 gateway：在 Gateway 网关主机上执行。 node：通过 Bridge 在节点运行器上执行（system.run）。 安全模式 deny：始终阻止。 allowlist：仅允许匹配项。 full：允许一切（等同于提升模式）。 询问模式 off：从不询问。 on-miss：仅在允许列表不匹配时询问。 always：每次都询问。 询问独立于允许列表；允许列表可与 always 或 on-miss 一起使用。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Exec 主机重构计划" href="/openclaw/refactor/exec-host/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>exe.dev</h2>
+    </header>
+    <div class="entry-content">
+      <p>目标：OpenClaw Gateway 网关运行在 exe.dev VM 上，可从你的笔记本电脑通过以下地址访问：https://&lt;vm-name&gt;.exe.xyz
+本页假设使用 exe.dev 的默认 exeuntu 镜像。如果你选择了不同的发行版，请相应地映射软件包。
+新手快速路径 https://exe.new/openclaw 根据需要填写你的认证密钥/令牌 点击 VM 旁边的&#34;Agent&#34;，然后等待… ??? 完成 你需要什么 exe.dev 账户 ssh exe.dev 访问 exe.dev 虚拟机（可选） 使用 Shelley 自动安装 Shelley，exe.dev 的智能体，可以使用我们的提示立即安装 OpenClaw。使用的提示如下：
+Set up OpenClaw (https://docs.openclaw.ai/install) on this VM. Use the non-interactive and accept-risk flags for openclaw onboarding. Add the supplied auth or token as needed. Configure nginx to forward from the default port 18789 to the root location on the default enabled site config, making sure to enable Websocket support. Pairing is done by &#34;openclaw devices list&#34; and &#34;openclaw device approve &lt;request id&gt;&#34;. Make sure the dashboard shows that OpenClaw&#39;s health is OK. exe.dev handles forwarding from port 8000 to port 80/443 and HTTPS for us, so the final &#34;reachable&#34; should be &lt;vm-name&gt;.exe.xyz, without port specification. 手动安装 1) 创建 VM 从你的设备：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to exe.dev" href="/openclaw/install/exe-dev/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Doctor</h2>
+    </header>
+    <div class="entry-content">
+      <p>openclaw doctor 是 OpenClaw 的修复 &#43; 迁移工具。它修复过时的配置/状态，检查健康状况，并提供可操作的修复步骤。
+快速开始 openclaw doctor 无头/自动化 openclaw doctor --yes 无需提示接受默认值（包括适用时的重启/服务/沙箱修复步骤）。
+openclaw doctor --repair 无需提示应用推荐的修复（安全时进行修复 &#43; 重启）。
+openclaw doctor --repair --force 也应用激进的修复（覆盖自定义 supervisor 配置）。
+openclaw doctor --non-interactive 无需提示运行，仅应用安全迁移（配置规范化 &#43; 磁盘状态移动）。跳过需要人工确认的重启/服务/沙箱操作。 检测到时自动运行遗留状态迁移。
+openclaw doctor --deep 扫描系统服务以查找额外的 Gateway 网关安装（launchd/systemd/schtasks）。
+如果你想在写入前查看更改，请先打开配置文件：
+cat ~/.openclaw/openclaw.json 功能概述 git 安装的可选预检更新（仅交互模式）。 UI 协议新鲜度检查（当协议 schema 较新时重建 Control UI）。 健康检查 &#43; 重启提示。 Skills 状态摘要（符合条件/缺失/被阻止）。 遗留值的配置规范化。 OpenCode Zen 提供商覆盖警告（models.providers.opencode）。 遗留磁盘状态迁移（会话/智能体目录/WhatsApp 认证）。 状态完整性和权限检查（会话、记录、状态目录）。 本地运行时的配置文件权限检查（chmod 600）。 模型认证健康：检查 OAuth 过期，可刷新即将过期的 token，并报告认证配置文件冷却/禁用状态。 额外工作区目录检测（~/openclaw）。 启用沙箱隔离时的沙箱镜像修复。 遗留服务迁移和额外 Gateway 网关检测。 Gateway 网关运行时检查（服务已安装但未运行；缓存的 launchd 标签）。 渠道状态警告（从运行中的 Gateway 网关探测）。 Supervisor 配置审计（launchd/systemd/schtasks）及可选修复。 Gateway 网关运行时最佳实践检查（Node vs Bun，版本管理器路径）。 Gateway 网关端口冲突诊断（默认 18789）。 开放私信策略的安全警告。 未设置 gateway.auth.token 时的 Gateway 网关认证警告（本地模式；提供 token 生成）。 Linux 上的 systemd linger 检查。 源码安装检查（pnpm workspace 不匹配、缺失 UI 资产、缺失 tsx 二进制文件）。 写入更新后的配置 &#43; 向导元数据。 详细行为和原理 0）可选更新（git 安装） 如果这是 git 检出且 doctor 以交互模式运行，它会在运行 doctor 之前提供更新（fetch/rebase/build）。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Doctor" href="/openclaw/gateway/doctor/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/22/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/24/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

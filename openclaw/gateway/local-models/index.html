@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>本地模型 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="本地运行是可行的，但 OpenClaw 期望大上下文 &#43; 强大的提示注入防御。小显存会截断上下文并泄露安全性。目标要高：≥2 台满配 Mac Studio 或同等 GPU 配置（约 $30k&#43;）。单张 24 GB GPU 仅适用于较轻的提示，且延迟更高。使用你能运行的最大/完整尺寸模型变体；激进量化或&quot;小型&quot;检查点会增加提示注入风险（参见安全）。
+推荐：LM Studio &#43; MiniMax M2.1（Responses API，完整尺寸）
+当前最佳本地堆栈。在 LM Studio 中加载 MiniMax M2.1，启用本地服务器（默认 http://127.0.0.1:1234），并使用 Responses API 将推理与最终文本分开。
+{
+  agents: {
+    defaults: {
+      model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+        &#34;lmstudio/minimax-m2.1-gs32&#34;: { alias: &#34;Minimax&#34; },
+      },
+    },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      lmstudio: {
+        baseUrl: &#34;http://127.0.0.1:1234/v1&#34;,
+        apiKey: &#34;lmstudio&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;minimax-m2.1-gs32&#34;,
+            name: &#34;MiniMax M2.1 GS32&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 196608,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+设置清单">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/local-models/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/local-models/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/local-models/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="本地模型">
+  <meta property="og:description" content="本地运行是可行的，但 OpenClaw 期望大上下文 &#43; 强大的提示注入防御。小显存会截断上下文并泄露安全性。目标要高：≥2 台满配 Mac Studio 或同等 GPU 配置（约 $30k&#43;）。单张 24 GB GPU 仅适用于较轻的提示，且延迟更高。使用你能运行的最大/完整尺寸模型变体；激进量化或&#34;小型&#34;检查点会增加提示注入风险（参见安全）。
+推荐：LM Studio &#43; MiniMax M2.1（Responses API，完整尺寸） 当前最佳本地堆栈。在 LM Studio 中加载 MiniMax M2.1，启用本地服务器（默认 http://127.0.0.1:1234），并使用 Responses API 将推理与最终文本分开。
+{ agents: { defaults: { model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; }, models: { &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; }, &#34;lmstudio/minimax-m2.1-gs32&#34;: { alias: &#34;Minimax&#34; }, }, }, }, models: { mode: &#34;merge&#34;, providers: { lmstudio: { baseUrl: &#34;http://127.0.0.1:1234/v1&#34;, apiKey: &#34;lmstudio&#34;, api: &#34;openai-responses&#34;, models: [ { id: &#34;minimax-m2.1-gs32&#34;, name: &#34;MiniMax M2.1 GS32&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 196608, maxTokens: 8192, }, ], }, }, }, } 设置清单">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="本地模型">
+<meta name="twitter:description" content="本地运行是可行的，但 OpenClaw 期望大上下文 &#43; 强大的提示注入防御。小显存会截断上下文并泄露安全性。目标要高：≥2 台满配 Mac Studio 或同等 GPU 配置（约 $30k&#43;）。单张 24 GB GPU 仅适用于较轻的提示，且延迟更高。使用你能运行的最大/完整尺寸模型变体；激进量化或&quot;小型&quot;检查点会增加提示注入风险（参见安全）。
+推荐：LM Studio &#43; MiniMax M2.1（Responses API，完整尺寸）
+当前最佳本地堆栈。在 LM Studio 中加载 MiniMax M2.1，启用本地服务器（默认 http://127.0.0.1:1234），并使用 Responses API 将推理与最终文本分开。
+{
+  agents: {
+    defaults: {
+      model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+        &#34;lmstudio/minimax-m2.1-gs32&#34;: { alias: &#34;Minimax&#34; },
+      },
+    },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      lmstudio: {
+        baseUrl: &#34;http://127.0.0.1:1234/v1&#34;,
+        apiKey: &#34;lmstudio&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;minimax-m2.1-gs32&#34;,
+            name: &#34;MiniMax M2.1 GS32&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 196608,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+设置清单">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "本地模型",
+      "item": "/openclaw/gateway/local-models/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "本地模型",
+  "name": "本地模型",
+  "description": "本地运行是可行的，但 OpenClaw 期望大上下文 + 强大的提示注入防御。小显存会截断上下文并泄露安全性。目标要高：≥2 台满配 Mac Studio 或同等 GPU 配置（约 $30k+）。单张 24 GB GPU 仅适用于较轻的提示，且延迟更高。使用你能运行的最大/完整尺寸模型变体；激进量化或\u0026quot;小型\u0026quot;检查点会增加提示注入风险（参见安全）。\n推荐：LM Studio + MiniMax M2.1（Responses API，完整尺寸） 当前最佳本地堆栈。在 LM Studio 中加载 MiniMax M2.1，启用本地服务器（默认 http://127.0.0.1:1234），并使用 Responses API 将推理与最终文本分开。\n{ agents: { defaults: { model: { primary: \u0026#34;lmstudio/minimax-m2.1-gs32\u0026#34; }, models: { \u0026#34;anthropic/claude-opus-4-5\u0026#34;: { alias: \u0026#34;Opus\u0026#34; }, \u0026#34;lmstudio/minimax-m2.1-gs32\u0026#34;: { alias: \u0026#34;Minimax\u0026#34; }, }, }, }, models: { mode: \u0026#34;merge\u0026#34;, providers: { lmstudio: { baseUrl: \u0026#34;http://127.0.0.1:1234/v1\u0026#34;, apiKey: \u0026#34;lmstudio\u0026#34;, api: \u0026#34;openai-responses\u0026#34;, models: [ { id: \u0026#34;minimax-m2.1-gs32\u0026#34;, name: \u0026#34;MiniMax M2.1 GS32\u0026#34;, reasoning: false, input: [\u0026#34;text\u0026#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 196608, maxTokens: 8192, }, ], }, }, }, } 设置清单\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "本地运行是可行的，但 OpenClaw 期望大上下文 + 强大的提示注入防御。小显存会截断上下文并泄露安全性。目标要高：≥2 台满配 Mac Studio 或同等 GPU 配置（约 $30k+）。单张 24 GB GPU 仅适用于较轻的提示，且延迟更高。使用你能运行的最大/完整尺寸模型变体；激进量化或\"小型\"检查点会增加提示注入风险（参见安全）。\n推荐：LM Studio + MiniMax M2.1（Responses API，完整尺寸） 当前最佳本地堆栈。在 LM Studio 中加载 MiniMax M2.1，启用本地服务器（默认 http://127.0.0.1:1234），并使用 Responses API 将推理与最终文本分开。\n{ agents: { defaults: { model: { primary: \"lmstudio/minimax-m2.1-gs32\" }, models: { \"anthropic/claude-opus-4-5\": { alias: \"Opus\" }, \"lmstudio/minimax-m2.1-gs32\": { alias: \"Minimax\" }, }, }, }, models: { mode: \"merge\", providers: { lmstudio: { baseUrl: \"http://127.0.0.1:1234/v1\", apiKey: \"lmstudio\", api: \"openai-responses\", models: [ { id: \"minimax-m2.1-gs32\", name: \"MiniMax M2.1 GS32\", reasoning: false, input: [\"text\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 196608, maxTokens: 8192, }, ], }, }, }, } 设置清单\n安装 LM Studio：https://lmstudio.ai 在 LM Studio 中，下载可用的最大 MiniMax M2.1 构建（避免\"小型\"/重度量化变体），启动服务器，确认 http://127.0.0.1:1234/v1/models 列出了它。 保持模型加载；冷加载会增加启动延迟。 如果你的 LM Studio 构建不同，调整 contextWindow/maxTokens。 对于 WhatsApp，坚持使用 Responses API，这样只发送最终文本。 即使运行本地模型也要保持托管模型的配置；使用 models.mode: \"merge\" 以便备用方案保持可用。\n混合配置：托管为主，本地备用 { agents: { defaults: { model: { primary: \"anthropic/claude-sonnet-4-5\", fallbacks: [\"lmstudio/minimax-m2.1-gs32\", \"anthropic/claude-opus-4-5\"], }, models: { \"anthropic/claude-sonnet-4-5\": { alias: \"Sonnet\" }, \"lmstudio/minimax-m2.1-gs32\": { alias: \"MiniMax Local\" }, \"anthropic/claude-opus-4-5\": { alias: \"Opus\" }, }, }, }, models: { mode: \"merge\", providers: { lmstudio: { baseUrl: \"http://127.0.0.1:1234/v1\", apiKey: \"lmstudio\", api: \"openai-responses\", models: [ { id: \"minimax-m2.1-gs32\", name: \"MiniMax M2.1 GS32\", reasoning: false, input: [\"text\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 196608, maxTokens: 8192, }, ], }, }, }, } 本地优先，托管作为安全网 交换主要和备用的顺序；保持相同的 providers 块和 models.mode: \"merge\"，这样当本地机器宕机时可以回退到 Sonnet 或 Opus。\n区域托管/数据路由 托管的 MiniMax/Kimi/GLM 变体也存在于 OpenRouter 上，带有区域固定端点（例如，美国托管）。在那里选择区域变体以将流量保持在你选择的管辖区内，同时仍使用 models.mode: \"merge\" 作为 Anthropic/OpenAI 备用。 纯本地仍然是最强的隐私路径；当你需要提供商功能但又想控制数据流时，托管区域路由是折中方案。 其他 OpenAI 兼容本地代理 vLLM、LiteLLM、OAI-proxy 或自定义网关都可以工作，只要它们暴露 OpenAI 风格的 /v1 端点。用你的端点和模型 ID 替换上面的 provider 块：\n{ models: { mode: \"merge\", providers: { local: { baseUrl: \"http://127.0.0.1:8000/v1\", apiKey: \"sk-local\", api: \"openai-responses\", models: [ { id: \"my-local-model\", name: \"Local Model\", reasoning: false, input: [\"text\"], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 120000, maxTokens: 8192, }, ], }, }, }, } 保持 models.mode: \"merge\" 以便托管模型作为备用保持可用。\n故障排除 Gateway 网关能访问代理吗？curl http://127.0.0.1:1234/v1/models。 LM Studio 模型卸载了？重新加载；冷启动是常见的\"卡住\"原因。 上下文错误？降低 contextWindow 或提高服务器限制。 安全：本地模型跳过提供商端过滤器；保持智能体范围窄并开启压缩以限制提示注入的影响范围。 ",
+  "wordCount" : "312",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/local-models/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      本地模型
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%8e%a8%e8%8d%90lm-studio--minimax-m21responses-api%e5%ae%8c%e6%95%b4%e5%b0%ba%e5%af%b8" aria-label="推荐：LM Studio &#43; MiniMax M2.1（Responses API，完整尺寸）">推荐：LM Studio + MiniMax M2.1（Responses API，完整尺寸）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b7%b7%e5%90%88%e9%85%8d%e7%bd%ae%e6%89%98%e7%ae%a1%e4%b8%ba%e4%b8%bb%e6%9c%ac%e5%9c%b0%e5%a4%87%e7%94%a8" aria-label="混合配置：托管为主，本地备用">混合配置：托管为主，本地备用</a></li>
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e4%bc%98%e5%85%88%e6%89%98%e7%ae%a1%e4%bd%9c%e4%b8%ba%e5%ae%89%e5%85%a8%e7%bd%91" aria-label="本地优先，托管作为安全网">本地优先，托管作为安全网</a></li>
+                <li>
+                    <a href="#%e5%8c%ba%e5%9f%9f%e6%89%98%e7%ae%a1%e6%95%b0%e6%8d%ae%e8%b7%af%e7%94%b1" aria-label="区域托管/数据路由">区域托管/数据路由</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%b6%e4%bb%96-openai-%e5%85%bc%e5%ae%b9%e6%9c%ac%e5%9c%b0%e4%bb%a3%e7%90%86" aria-label="其他 OpenAI 兼容本地代理">其他 OpenAI 兼容本地代理</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>本地运行是可行的，但 OpenClaw 期望大上下文 + 强大的提示注入防御。小显存会截断上下文并泄露安全性。目标要高：<strong>≥2 台满配 Mac Studio 或同等 GPU 配置（约 $30k+）</strong>。单张 <strong>24 GB</strong> GPU 仅适用于较轻的提示，且延迟更高。使用<strong>你能运行的最大/完整尺寸模型变体</strong>；激进量化或&quot;小型&quot;检查点会增加提示注入风险（参见<a href="/gateway/security">安全</a>）。</p>
+<h2 id="推荐lm-studio--minimax-m21responses-api完整尺寸">推荐：LM Studio + MiniMax M2.1（Responses API，完整尺寸）<a hidden class="anchor" aria-hidden="true" href="#推荐lm-studio--minimax-m21responses-api完整尺寸">#</a></h2>
+<p>当前最佳本地堆栈。在 LM Studio 中加载 MiniMax M2.1，启用本地服务器（默认 <code>http://127.0.0.1:1234</code>），并使用 Responses API 将推理与最终文本分开。</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      model: { primary: &#34;lmstudio/minimax-m2.1-gs32&#34; },
+      models: {
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+        &#34;lmstudio/minimax-m2.1-gs32&#34;: { alias: &#34;Minimax&#34; },
+      },
+    },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      lmstudio: {
+        baseUrl: &#34;http://127.0.0.1:1234/v1&#34;,
+        apiKey: &#34;lmstudio&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;minimax-m2.1-gs32&#34;,
+            name: &#34;MiniMax M2.1 GS32&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 196608,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+</code></pre><p><strong>设置清单</strong></p>
+<ul>
+<li>安装 LM Studio：https://lmstudio.ai</li>
+<li>在 LM Studio 中，下载<strong>可用的最大 MiniMax M2.1 构建</strong>（避免&quot;小型&quot;/重度量化变体），启动服务器，确认 <code>http://127.0.0.1:1234/v1/models</code> 列出了它。</li>
+<li>保持模型加载；冷加载会增加启动延迟。</li>
+<li>如果你的 LM Studio 构建不同，调整 <code>contextWindow</code>/<code>maxTokens</code>。</li>
+<li>对于 WhatsApp，坚持使用 Responses API，这样只发送最终文本。</li>
+</ul>
+<p>即使运行本地模型也要保持托管模型的配置；使用 <code>models.mode: &quot;merge&quot;</code> 以便备用方案保持可用。</p>
+<h3 id="混合配置托管为主本地备用">混合配置：托管为主，本地备用<a hidden class="anchor" aria-hidden="true" href="#混合配置托管为主本地备用">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  agents: {
+    defaults: {
+      model: {
+        primary: &#34;anthropic/claude-sonnet-4-5&#34;,
+        fallbacks: [&#34;lmstudio/minimax-m2.1-gs32&#34;, &#34;anthropic/claude-opus-4-5&#34;],
+      },
+      models: {
+        &#34;anthropic/claude-sonnet-4-5&#34;: { alias: &#34;Sonnet&#34; },
+        &#34;lmstudio/minimax-m2.1-gs32&#34;: { alias: &#34;MiniMax Local&#34; },
+        &#34;anthropic/claude-opus-4-5&#34;: { alias: &#34;Opus&#34; },
+      },
+    },
+  },
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      lmstudio: {
+        baseUrl: &#34;http://127.0.0.1:1234/v1&#34;,
+        apiKey: &#34;lmstudio&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;minimax-m2.1-gs32&#34;,
+            name: &#34;MiniMax M2.1 GS32&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 196608,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+</code></pre><h3 id="本地优先托管作为安全网">本地优先，托管作为安全网<a hidden class="anchor" aria-hidden="true" href="#本地优先托管作为安全网">#</a></h3>
+<p>交换主要和备用的顺序；保持相同的 providers 块和 <code>models.mode: &quot;merge&quot;</code>，这样当本地机器宕机时可以回退到 Sonnet 或 Opus。</p>
+<h3 id="区域托管数据路由">区域托管/数据路由<a hidden class="anchor" aria-hidden="true" href="#区域托管数据路由">#</a></h3>
+<ul>
+<li>托管的 MiniMax/Kimi/GLM 变体也存在于 OpenRouter 上，带有区域固定端点（例如，美国托管）。在那里选择区域变体以将流量保持在你选择的管辖区内，同时仍使用 <code>models.mode: &quot;merge&quot;</code> 作为 Anthropic/OpenAI 备用。</li>
+<li>纯本地仍然是最强的隐私路径；当你需要提供商功能但又想控制数据流时，托管区域路由是折中方案。</li>
+</ul>
+<h2 id="其他-openai-兼容本地代理">其他 OpenAI 兼容本地代理<a hidden class="anchor" aria-hidden="true" href="#其他-openai-兼容本地代理">#</a></h2>
+<p>vLLM、LiteLLM、OAI-proxy 或自定义网关都可以工作，只要它们暴露 OpenAI 风格的 <code>/v1</code> 端点。用你的端点和模型 ID 替换上面的 provider 块：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  models: {
+    mode: &#34;merge&#34;,
+    providers: {
+      local: {
+        baseUrl: &#34;http://127.0.0.1:8000/v1&#34;,
+        apiKey: &#34;sk-local&#34;,
+        api: &#34;openai-responses&#34;,
+        models: [
+          {
+            id: &#34;my-local-model&#34;,
+            name: &#34;Local Model&#34;,
+            reasoning: false,
+            input: [&#34;text&#34;],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 120000,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}
+</code></pre><p>保持 <code>models.mode: &quot;merge&quot;</code> 以便托管模型作为备用保持可用。</p>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<ul>
+<li>Gateway 网关能访问代理吗？<code>curl http://127.0.0.1:1234/v1/models</code>。</li>
+<li>LM Studio 模型卸载了？重新加载；冷启动是常见的&quot;卡住&quot;原因。</li>
+<li>上下文错误？降低 <code>contextWindow</code> 或提高服务器限制。</li>
+<li>安全：本地模型跳过提供商端过滤器；保持智能体范围窄并开启压缩以限制提示注入的影响范围。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/start/quickstart/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>未命名文档</span>
+  </a>
+  <a class="next" href="/openclaw/start/showcase/">
+    <span class="title">Next »</span>
+    <br>
+    <span>案例展示</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

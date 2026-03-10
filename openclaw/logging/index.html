@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>日志 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 在两个地方记录日志：
+
+文件日志（JSON 行）由 Gateway 网关写入。
+控制台输出显示在终端和控制 UI 中。
+
+本页说明日志存放位置、如何读取日志以及如何配置日志级别和格式。
+日志存放位置
+默认情况下，Gateway 网关在以下位置写入滚动日志文件：
+/tmp/openclaw/openclaw-YYYY-MM-DD.log
+日期使用 Gateway 网关主机的本地时区。
+你可以在 ~/.openclaw/openclaw.json 中覆盖此设置：
+{
+  &#34;logging&#34;: {
+    &#34;file&#34;: &#34;/path/to/openclaw.log&#34;
+  }
+}
+如何读取日志
+CLI：实时跟踪（推荐）
+使用 CLI 通过 RPC 跟踪 Gateway 网关日志文件：
+openclaw logs --follow
+输出模式：
+
+TTY 会话：美观、彩色、结构化的日志行。
+非 TTY 会话：纯文本。
+--json：行分隔的 JSON（每行一个日志事件）。
+--plain：在 TTY 会话中强制纯文本。
+--no-color：禁用 ANSI 颜色。
+
+在 JSON 模式下，CLI 输出带 type 标签的对象：
+
+meta：流元数据（文件、游标、大小）
+log：解析的日志条目
+notice：截断/轮转提示
+raw：未解析的日志行
+
+如果 Gateway 网关无法访问，CLI 会打印一个简短提示运行：
+openclaw doctor
+控制 UI（Web）
+控制 UI 的日志标签页使用 logs.tail 跟踪相同的文件。
+参见 /web/control-ui 了解如何打开它。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/logging/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/logging/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/logging/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="日志">
+  <meta property="og:description" content="OpenClaw 在两个地方记录日志：
+文件日志（JSON 行）由 Gateway 网关写入。 控制台输出显示在终端和控制 UI 中。 本页说明日志存放位置、如何读取日志以及如何配置日志级别和格式。
+日志存放位置 默认情况下，Gateway 网关在以下位置写入滚动日志文件：
+/tmp/openclaw/openclaw-YYYY-MM-DD.log
+日期使用 Gateway 网关主机的本地时区。
+你可以在 ~/.openclaw/openclaw.json 中覆盖此设置：
+{ &#34;logging&#34;: { &#34;file&#34;: &#34;/path/to/openclaw.log&#34; } } 如何读取日志 CLI：实时跟踪（推荐） 使用 CLI 通过 RPC 跟踪 Gateway 网关日志文件：
+openclaw logs --follow 输出模式：
+TTY 会话：美观、彩色、结构化的日志行。 非 TTY 会话：纯文本。 --json：行分隔的 JSON（每行一个日志事件）。 --plain：在 TTY 会话中强制纯文本。 --no-color：禁用 ANSI 颜色。 在 JSON 模式下，CLI 输出带 type 标签的对象：
+meta：流元数据（文件、游标、大小） log：解析的日志条目 notice：截断/轮转提示 raw：未解析的日志行 如果 Gateway 网关无法访问，CLI 会打印一个简短提示运行：
+openclaw doctor 控制 UI（Web） 控制 UI 的日志标签页使用 logs.tail 跟踪相同的文件。 参见 /web/control-ui 了解如何打开它。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="日志">
+<meta name="twitter:description" content="OpenClaw 在两个地方记录日志：
+
+文件日志（JSON 行）由 Gateway 网关写入。
+控制台输出显示在终端和控制 UI 中。
+
+本页说明日志存放位置、如何读取日志以及如何配置日志级别和格式。
+日志存放位置
+默认情况下，Gateway 网关在以下位置写入滚动日志文件：
+/tmp/openclaw/openclaw-YYYY-MM-DD.log
+日期使用 Gateway 网关主机的本地时区。
+你可以在 ~/.openclaw/openclaw.json 中覆盖此设置：
+{
+  &#34;logging&#34;: {
+    &#34;file&#34;: &#34;/path/to/openclaw.log&#34;
+  }
+}
+如何读取日志
+CLI：实时跟踪（推荐）
+使用 CLI 通过 RPC 跟踪 Gateway 网关日志文件：
+openclaw logs --follow
+输出模式：
+
+TTY 会话：美观、彩色、结构化的日志行。
+非 TTY 会话：纯文本。
+--json：行分隔的 JSON（每行一个日志事件）。
+--plain：在 TTY 会话中强制纯文本。
+--no-color：禁用 ANSI 颜色。
+
+在 JSON 模式下，CLI 输出带 type 标签的对象：
+
+meta：流元数据（文件、游标、大小）
+log：解析的日志条目
+notice：截断/轮转提示
+raw：未解析的日志行
+
+如果 Gateway 网关无法访问，CLI 会打印一个简短提示运行：
+openclaw doctor
+控制 UI（Web）
+控制 UI 的日志标签页使用 logs.tail 跟踪相同的文件。
+参见 /web/control-ui 了解如何打开它。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "/openclaw/"
+    }
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "日志",
+      "item": "/openclaw/logging/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "日志",
+  "name": "日志",
+  "description": "OpenClaw 在两个地方记录日志：\n文件日志（JSON 行）由 Gateway 网关写入。 控制台输出显示在终端和控制 UI 中。 本页说明日志存放位置、如何读取日志以及如何配置日志级别和格式。\n日志存放位置 默认情况下，Gateway 网关在以下位置写入滚动日志文件：\n/tmp/openclaw/openclaw-YYYY-MM-DD.log\n日期使用 Gateway 网关主机的本地时区。\n你可以在 ~/.openclaw/openclaw.json 中覆盖此设置：\n{ \u0026#34;logging\u0026#34;: { \u0026#34;file\u0026#34;: \u0026#34;/path/to/openclaw.log\u0026#34; } } 如何读取日志 CLI：实时跟踪（推荐） 使用 CLI 通过 RPC 跟踪 Gateway 网关日志文件：\nopenclaw logs --follow 输出模式：\nTTY 会话：美观、彩色、结构化的日志行。 非 TTY 会话：纯文本。 --json：行分隔的 JSON（每行一个日志事件）。 --plain：在 TTY 会话中强制纯文本。 --no-color：禁用 ANSI 颜色。 在 JSON 模式下，CLI 输出带 type 标签的对象：\nmeta：流元数据（文件、游标、大小） log：解析的日志条目 notice：截断/轮转提示 raw：未解析的日志行 如果 Gateway 网关无法访问，CLI 会打印一个简短提示运行：\nopenclaw doctor 控制 UI（Web） 控制 UI 的日志标签页使用 logs.tail 跟踪相同的文件。 参见 /web/control-ui 了解如何打开它。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 在两个地方记录日志：\n文件日志（JSON 行）由 Gateway 网关写入。 控制台输出显示在终端和控制 UI 中。 本页说明日志存放位置、如何读取日志以及如何配置日志级别和格式。\n日志存放位置 默认情况下，Gateway 网关在以下位置写入滚动日志文件：\n/tmp/openclaw/openclaw-YYYY-MM-DD.log\n日期使用 Gateway 网关主机的本地时区。\n你可以在 ~/.openclaw/openclaw.json 中覆盖此设置：\n{ \"logging\": { \"file\": \"/path/to/openclaw.log\" } } 如何读取日志 CLI：实时跟踪（推荐） 使用 CLI 通过 RPC 跟踪 Gateway 网关日志文件：\nopenclaw logs --follow 输出模式：\nTTY 会话：美观、彩色、结构化的日志行。 非 TTY 会话：纯文本。 --json：行分隔的 JSON（每行一个日志事件）。 --plain：在 TTY 会话中强制纯文本。 --no-color：禁用 ANSI 颜色。 在 JSON 模式下，CLI 输出带 type 标签的对象：\nmeta：流元数据（文件、游标、大小） log：解析的日志条目 notice：截断/轮转提示 raw：未解析的日志行 如果 Gateway 网关无法访问，CLI 会打印一个简短提示运行：\nopenclaw doctor 控制 UI（Web） 控制 UI 的日志标签页使用 logs.tail 跟踪相同的文件。 参见 /web/control-ui 了解如何打开它。\n仅渠道日志 要过滤渠道活动（WhatsApp/Telegram 等），使用：\nopenclaw channels logs --channel whatsapp 日志格式 文件日志（JSONL） 日志文件中的每一行都是一个 JSON 对象。CLI 和控制 UI 解析这些条目以渲染结构化输出（时间、级别、子系统、消息）。\n控制台输出 控制台日志感知 TTY并格式化以提高可读性：\n子系统前缀（例如 gateway/channels/whatsapp） 级别着色（info/warn/error） 可选的紧凑或 JSON 模式 控制台格式由 logging.consoleStyle 控制。\n配置日志 所有日志配置都在 ~/.openclaw/openclaw.json 的 logging 下。\n{ \"logging\": { \"level\": \"info\", \"file\": \"/tmp/openclaw/openclaw-YYYY-MM-DD.log\", \"consoleLevel\": \"info\", \"consoleStyle\": \"pretty\", \"redactSensitive\": \"tools\", \"redactPatterns\": [\"sk-.*\"] } } 日志级别 logging.level：文件日志（JSONL）级别。 logging.consoleLevel：控制台详细程度级别。 --verbose 仅影响控制台输出；它不改变文件日志级别。\n控制台样式 logging.consoleStyle：\npretty：人类友好、彩色、带时间戳。 compact：更紧凑的输出（最适合长会话）。 json：每行 JSON（用于日志处理器）。 脱敏 工具摘要可以在敏感令牌输出到控制台之前对其进行脱敏：\nlogging.redactSensitive：off | tools（默认：tools） logging.redactPatterns：用于覆盖默认集的正则表达式字符串列表 脱敏仅影响控制台输出，不会改变文件日志。\n诊断 + OpenTelemetry 诊断是用于模型运行和消息流遥测（webhooks、队列、会话状态）的结构化、机器可读事件。它们不替代日志；它们存在是为了向指标、追踪和其他导出器提供数据。\n诊断事件在进程内发出，但导出器仅在启用诊断 + 导出器插件时才附加。\nOpenTelemetry 与 OTLP OpenTelemetry（OTel）：追踪、指标和日志的数据模型 + SDK。 OTLP：用于将 OTel 数据导出到收集器/后端的线路协议。 OpenClaw 目前通过 OTLP/HTTP（protobuf） 导出。 导出的信号 指标：计数器 + 直方图（令牌使用、消息流、队列）。 追踪：模型使用 + webhook/消息处理的 span。 日志：启用 diagnostics.otel.logs 时通过 OTLP 导出。日志量可能很大；请注意 logging.level 和导出器过滤器。 诊断事件目录 模型使用：\nmodel.usage：令牌、成本、持续时间、上下文、提供商/模型/渠道、会话 ID。 消息流：\nwebhook.received：每渠道的 webhook 入口。 webhook.processed：webhook 已处理 + 持续时间。 webhook.error：webhook 处理程序错误。 message.queued：消息入队等待处理。 message.processed：结果 + 持续时间 + 可选错误。 队列 + 会话：\nqueue.lane.enqueue：命令队列通道入队 + 深度。 queue.lane.dequeue：命令队列通道出队 + 等待时间。 session.state：会话状态转换 + 原因。 session.stuck：会话卡住警告 + 持续时间。 run.attempt：运行重试/尝试元数据。 diagnostic.heartbeat：聚合计数器（webhooks/队列/会话）。 启用诊断（无导出器） 如果你希望诊断事件可用于插件或自定义接收器，使用此配置：\n{ \"diagnostics\": { \"enabled\": true } } 诊断标志（定向日志） 使用标志在不提高 logging.level 的情况下开启额外的定向调试日志。 标志不区分大小写，支持通配符（例如 telegram.* 或 *）。\n{ \"diagnostics\": { \"flags\": [\"telegram.http\"] } } 环境变量覆盖（一次性）：\nOPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload 注意：\n标志日志进入标准日志文件（与 logging.file 相同）。 输出仍根据 logging.redactSensitive 进行脱敏。 完整指南：/diagnostics/flags。 导出到 OpenTelemetry 诊断可以通过 diagnostics-otel 插件（OTLP/HTTP）导出。这适用于任何接受 OTLP/HTTP 的 OpenTelemetry 收集器/后端。\n{ \"plugins\": { \"allow\": [\"diagnostics-otel\"], \"entries\": { \"diagnostics-otel\": { \"enabled\": true } } }, \"diagnostics\": { \"enabled\": true, \"otel\": { \"enabled\": true, \"endpoint\": \"http://otel-collector:4318\", \"protocol\": \"http/protobuf\", \"serviceName\": \"openclaw-gateway\", \"traces\": true, \"metrics\": true, \"logs\": true, \"sampleRate\": 0.2, \"flushIntervalMs\": 60000 } } } 注意：\n你也可以使用 openclaw plugins enable diagnostics-otel 启用插件。 protocol 目前仅支持 http/protobuf。grpc 被忽略。 指标包括令牌使用、成本、上下文大小、运行持续时间和消息流计数器/直方图（webhooks、队列、会话状态、队列深度/等待）。 追踪/指标可以通过 traces / metrics 切换（默认：开启）。启用时，追踪包括模型使用 span 加上 webhook/消息处理 span。 当你的收集器需要认证时设置 headers。 支持的环境变量：OTEL_EXPORTER_OTLP_ENDPOINT、OTEL_SERVICE_NAME、OTEL_EXPORTER_OTLP_PROTOCOL。 导出的指标（名称 + 类型） 模型使用：\nopenclaw.tokens（计数器，属性：openclaw.token、openclaw.channel、openclaw.provider、openclaw.model） openclaw.cost.usd（计数器，属性：openclaw.channel、openclaw.provider、openclaw.model） openclaw.run.duration_ms（直方图，属性：openclaw.channel、openclaw.provider、openclaw.model） openclaw.context.tokens（直方图，属性：openclaw.context、openclaw.channel、openclaw.provider、openclaw.model） 消息流：\nopenclaw.webhook.received（计数器，属性：openclaw.channel、openclaw.webhook） openclaw.webhook.error（计数器，属性：openclaw.channel、openclaw.webhook） openclaw.webhook.duration_ms（直方图，属性：openclaw.channel、openclaw.webhook） openclaw.message.queued（计数器，属性：openclaw.channel、openclaw.source） openclaw.message.processed（计数器，属性：openclaw.channel、openclaw.outcome） openclaw.message.duration_ms（直方图，属性：openclaw.channel、openclaw.outcome） 队列 + 会话：\nopenclaw.queue.lane.enqueue（计数器，属性：openclaw.lane） openclaw.queue.lane.dequeue（计数器，属性：openclaw.lane） openclaw.queue.depth（直方图，属性：openclaw.lane 或 openclaw.channel=heartbeat） openclaw.queue.wait_ms（直方图，属性：openclaw.lane） openclaw.session.state（计数器，属性：openclaw.state、openclaw.reason） openclaw.session.stuck（计数器，属性：openclaw.state） openclaw.session.stuck_age_ms（直方图，属性：openclaw.state） openclaw.run.attempt（计数器，属性：openclaw.attempt） 导出的 span（名称 + 关键属性） openclaw.model.usage openclaw.channel、openclaw.provider、openclaw.model openclaw.sessionKey、openclaw.sessionId openclaw.tokens.*（input/output/cache_read/cache_write/total） openclaw.webhook.processed openclaw.channel、openclaw.webhook、openclaw.chatId openclaw.webhook.error openclaw.channel、openclaw.webhook、openclaw.chatId、openclaw.error openclaw.message.processed openclaw.channel、openclaw.outcome、openclaw.chatId、openclaw.messageId、openclaw.sessionKey、openclaw.sessionId、openclaw.reason openclaw.session.stuck openclaw.state、openclaw.ageMs、openclaw.queueDepth、openclaw.sessionKey、openclaw.sessionId 采样 + 刷新 追踪采样：diagnostics.otel.sampleRate（0.0–1.0，仅根 span）。 指标导出间隔：diagnostics.otel.flushIntervalMs（最小 1000ms）。 协议说明 OTLP/HTTP 端点可以通过 diagnostics.otel.endpoint 或 OTEL_EXPORTER_OTLP_ENDPOINT 设置。 如果端点已包含 /v1/traces 或 /v1/metrics，则按原样使用。 如果端点已包含 /v1/logs，则按原样用于日志。 diagnostics.otel.logs 为主日志器输出启用 OTLP 日志导出。 日志导出行为 OTLP 日志使用与写入 logging.file 相同的结构化记录。 遵守 logging.level（文件日志级别）。控制台脱敏不适用于 OTLP 日志。 高流量安装应优先使用 OTLP 收集器采样/过滤。 故障排除提示 Gateway 网关无法访问？ 先运行 openclaw doctor。 日志为空？ 检查 Gateway 网关是否正在运行并写入 logging.file 中的文件路径。 需要更多细节？ 将 logging.level 设置为 debug 或 trace 并重试。 ",
+  "wordCount" : "428",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/logging/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/openclaw/">OpenClaw 🦞</a></div>
+    <h1 class="post-title entry-hint-parent">
+      日志
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%97%a5%e5%bf%97%e5%ad%98%e6%94%be%e4%bd%8d%e7%bd%ae" aria-label="日志存放位置">日志存放位置</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e8%af%bb%e5%8f%96%e6%97%a5%e5%bf%97" aria-label="如何读取日志">如何读取日志</a><ul>
+                        
+                <li>
+                    <a href="#cli%e5%ae%9e%e6%97%b6%e8%b7%9f%e8%b8%aa%e6%8e%a8%e8%8d%90" aria-label="CLI：实时跟踪（推荐）">CLI：实时跟踪（推荐）</a></li>
+                <li>
+                    <a href="#%e6%8e%a7%e5%88%b6-uiweb" aria-label="控制 UI（Web）">控制 UI（Web）</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e6%b8%a0%e9%81%93%e6%97%a5%e5%bf%97" aria-label="仅渠道日志">仅渠道日志</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%97%a5%e5%bf%97%e6%a0%bc%e5%bc%8f" aria-label="日志格式">日志格式</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%87%e4%bb%b6%e6%97%a5%e5%bf%97jsonl" aria-label="文件日志（JSONL）">文件日志（JSONL）</a></li>
+                <li>
+                    <a href="#%e6%8e%a7%e5%88%b6%e5%8f%b0%e8%be%93%e5%87%ba" aria-label="控制台输出">控制台输出</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e6%97%a5%e5%bf%97" aria-label="配置日志">配置日志</a><ul>
+                        
+                <li>
+                    <a href="#%e6%97%a5%e5%bf%97%e7%ba%a7%e5%88%ab" aria-label="日志级别">日志级别</a></li>
+                <li>
+                    <a href="#%e6%8e%a7%e5%88%b6%e5%8f%b0%e6%a0%b7%e5%bc%8f" aria-label="控制台样式">控制台样式</a></li>
+                <li>
+                    <a href="#%e8%84%b1%e6%95%8f" aria-label="脱敏">脱敏</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%af%8a%e6%96%ad--opentelemetry" aria-label="诊断 &#43; OpenTelemetry">诊断 + OpenTelemetry</a><ul>
+                        
+                <li>
+                    <a href="#opentelemetry-%e4%b8%8e-otlp" aria-label="OpenTelemetry 与 OTLP">OpenTelemetry 与 OTLP</a></li>
+                <li>
+                    <a href="#%e5%af%bc%e5%87%ba%e7%9a%84%e4%bf%a1%e5%8f%b7" aria-label="导出的信号">导出的信号</a></li>
+                <li>
+                    <a href="#%e8%af%8a%e6%96%ad%e4%ba%8b%e4%bb%b6%e7%9b%ae%e5%bd%95" aria-label="诊断事件目录">诊断事件目录</a></li>
+                <li>
+                    <a href="#%e5%90%af%e7%94%a8%e8%af%8a%e6%96%ad%e6%97%a0%e5%af%bc%e5%87%ba%e5%99%a8" aria-label="启用诊断（无导出器）">启用诊断（无导出器）</a></li>
+                <li>
+                    <a href="#%e8%af%8a%e6%96%ad%e6%a0%87%e5%bf%97%e5%ae%9a%e5%90%91%e6%97%a5%e5%bf%97" aria-label="诊断标志（定向日志）">诊断标志（定向日志）</a></li>
+                <li>
+                    <a href="#%e5%af%bc%e5%87%ba%e5%88%b0-opentelemetry" aria-label="导出到 OpenTelemetry">导出到 OpenTelemetry</a></li>
+                <li>
+                    <a href="#%e5%af%bc%e5%87%ba%e7%9a%84%e6%8c%87%e6%a0%87%e5%90%8d%e7%a7%b0--%e7%b1%bb%e5%9e%8b" aria-label="导出的指标（名称 &#43; 类型）">导出的指标（名称 + 类型）</a></li>
+                <li>
+                    <a href="#%e5%af%bc%e5%87%ba%e7%9a%84-span%e5%90%8d%e7%a7%b0--%e5%85%b3%e9%94%ae%e5%b1%9e%e6%80%a7" aria-label="导出的 span（名称 &#43; 关键属性）">导出的 span（名称 + 关键属性）</a></li>
+                <li>
+                    <a href="#%e9%87%87%e6%a0%b7--%e5%88%b7%e6%96%b0" aria-label="采样 &#43; 刷新">采样 + 刷新</a></li>
+                <li>
+                    <a href="#%e5%8d%8f%e8%ae%ae%e8%af%b4%e6%98%8e" aria-label="协议说明">协议说明</a></li>
+                <li>
+                    <a href="#%e6%97%a5%e5%bf%97%e5%af%bc%e5%87%ba%e8%a1%8c%e4%b8%ba" aria-label="日志导出行为">日志导出行为</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4%e6%8f%90%e7%a4%ba" aria-label="故障排除提示">故障排除提示</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 在两个地方记录日志：</p>
+<ul>
+<li><strong>文件日志</strong>（JSON 行）由 Gateway 网关写入。</li>
+<li><strong>控制台输出</strong>显示在终端和控制 UI 中。</li>
+</ul>
+<p>本页说明日志存放位置、如何读取日志以及如何配置日志级别和格式。</p>
+<h2 id="日志存放位置">日志存放位置<a hidden class="anchor" aria-hidden="true" href="#日志存放位置">#</a></h2>
+<p>默认情况下，Gateway 网关在以下位置写入滚动日志文件：</p>
+<p><code>/tmp/openclaw/openclaw-YYYY-MM-DD.log</code></p>
+<p>日期使用 Gateway 网关主机的本地时区。</p>
+<p>你可以在 <code>~/.openclaw/openclaw.json</code> 中覆盖此设置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;logging&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;file&#34;</span><span class="p">:</span> <span class="s2">&#34;/path/to/openclaw.log&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="如何读取日志">如何读取日志<a hidden class="anchor" aria-hidden="true" href="#如何读取日志">#</a></h2>
+<h3 id="cli实时跟踪推荐">CLI：实时跟踪（推荐）<a hidden class="anchor" aria-hidden="true" href="#cli实时跟踪推荐">#</a></h3>
+<p>使用 CLI 通过 RPC 跟踪 Gateway 网关日志文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw logs --follow
+</span></span></code></pre></div><p>输出模式：</p>
+<ul>
+<li><strong>TTY 会话</strong>：美观、彩色、结构化的日志行。</li>
+<li><strong>非 TTY 会话</strong>：纯文本。</li>
+<li><code>--json</code>：行分隔的 JSON（每行一个日志事件）。</li>
+<li><code>--plain</code>：在 TTY 会话中强制纯文本。</li>
+<li><code>--no-color</code>：禁用 ANSI 颜色。</li>
+</ul>
+<p>在 JSON 模式下，CLI 输出带 <code>type</code> 标签的对象：</p>
+<ul>
+<li><code>meta</code>：流元数据（文件、游标、大小）</li>
+<li><code>log</code>：解析的日志条目</li>
+<li><code>notice</code>：截断/轮转提示</li>
+<li><code>raw</code>：未解析的日志行</li>
+</ul>
+<p>如果 Gateway 网关无法访问，CLI 会打印一个简短提示运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw doctor
+</span></span></code></pre></div><h3 id="控制-uiweb">控制 UI（Web）<a hidden class="anchor" aria-hidden="true" href="#控制-uiweb">#</a></h3>
+<p>控制 UI 的<strong>日志</strong>标签页使用 <code>logs.tail</code> 跟踪相同的文件。
+参见 <a href="/web/control-ui">/web/control-ui</a> 了解如何打开它。</p>
+<h3 id="仅渠道日志">仅渠道日志<a hidden class="anchor" aria-hidden="true" href="#仅渠道日志">#</a></h3>
+<p>要过滤渠道活动（WhatsApp/Telegram 等），使用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw channels logs --channel whatsapp
+</span></span></code></pre></div><h2 id="日志格式">日志格式<a hidden class="anchor" aria-hidden="true" href="#日志格式">#</a></h2>
+<h3 id="文件日志jsonl">文件日志（JSONL）<a hidden class="anchor" aria-hidden="true" href="#文件日志jsonl">#</a></h3>
+<p>日志文件中的每一行都是一个 JSON 对象。CLI 和控制 UI 解析这些条目以渲染结构化输出（时间、级别、子系统、消息）。</p>
+<h3 id="控制台输出">控制台输出<a hidden class="anchor" aria-hidden="true" href="#控制台输出">#</a></h3>
+<p>控制台日志<strong>感知 TTY</strong>并格式化以提高可读性：</p>
+<ul>
+<li>子系统前缀（例如 <code>gateway/channels/whatsapp</code>）</li>
+<li>级别着色（info/warn/error）</li>
+<li>可选的紧凑或 JSON 模式</li>
+</ul>
+<p>控制台格式由 <code>logging.consoleStyle</code> 控制。</p>
+<h2 id="配置日志">配置日志<a hidden class="anchor" aria-hidden="true" href="#配置日志">#</a></h2>
+<p>所有日志配置都在 <code>~/.openclaw/openclaw.json</code> 的 <code>logging</code> 下。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;logging&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;level&#34;</span><span class="p">:</span> <span class="s2">&#34;info&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;file&#34;</span><span class="p">:</span> <span class="s2">&#34;/tmp/openclaw/openclaw-YYYY-MM-DD.log&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;consoleLevel&#34;</span><span class="p">:</span> <span class="s2">&#34;info&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;consoleStyle&#34;</span><span class="p">:</span> <span class="s2">&#34;pretty&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;redactSensitive&#34;</span><span class="p">:</span> <span class="s2">&#34;tools&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;redactPatterns&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;sk-.*&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="日志级别">日志级别<a hidden class="anchor" aria-hidden="true" href="#日志级别">#</a></h3>
+<ul>
+<li><code>logging.level</code>：<strong>文件日志</strong>（JSONL）级别。</li>
+<li><code>logging.consoleLevel</code>：<strong>控制台</strong>详细程度级别。</li>
+</ul>
+<p><code>--verbose</code> 仅影响控制台输出；它不改变文件日志级别。</p>
+<h3 id="控制台样式">控制台样式<a hidden class="anchor" aria-hidden="true" href="#控制台样式">#</a></h3>
+<p><code>logging.consoleStyle</code>：</p>
+<ul>
+<li><code>pretty</code>：人类友好、彩色、带时间戳。</li>
+<li><code>compact</code>：更紧凑的输出（最适合长会话）。</li>
+<li><code>json</code>：每行 JSON（用于日志处理器）。</li>
+</ul>
+<h3 id="脱敏">脱敏<a hidden class="anchor" aria-hidden="true" href="#脱敏">#</a></h3>
+<p>工具摘要可以在敏感令牌输出到控制台之前对其进行脱敏：</p>
+<ul>
+<li><code>logging.redactSensitive</code>：<code>off</code> | <code>tools</code>（默认：<code>tools</code>）</li>
+<li><code>logging.redactPatterns</code>：用于覆盖默认集的正则表达式字符串列表</li>
+</ul>
+<p>脱敏仅影响<strong>控制台输出</strong>，不会改变文件日志。</p>
+<h2 id="诊断--opentelemetry">诊断 + OpenTelemetry<a hidden class="anchor" aria-hidden="true" href="#诊断--opentelemetry">#</a></h2>
+<p>诊断是用于模型运行<strong>和</strong>消息流遥测（webhooks、队列、会话状态）的结构化、机器可读事件。它们<strong>不</strong>替代日志；它们存在是为了向指标、追踪和其他导出器提供数据。</p>
+<p>诊断事件在进程内发出，但导出器仅在启用诊断 + 导出器插件时才附加。</p>
+<h3 id="opentelemetry-与-otlp">OpenTelemetry 与 OTLP<a hidden class="anchor" aria-hidden="true" href="#opentelemetry-与-otlp">#</a></h3>
+<ul>
+<li><strong>OpenTelemetry（OTel）</strong>：追踪、指标和日志的数据模型 + SDK。</li>
+<li><strong>OTLP</strong>：用于将 OTel 数据导出到收集器/后端的线路协议。</li>
+<li>OpenClaw 目前通过 <strong>OTLP/HTTP（protobuf）</strong> 导出。</li>
+</ul>
+<h3 id="导出的信号">导出的信号<a hidden class="anchor" aria-hidden="true" href="#导出的信号">#</a></h3>
+<ul>
+<li><strong>指标</strong>：计数器 + 直方图（令牌使用、消息流、队列）。</li>
+<li><strong>追踪</strong>：模型使用 + webhook/消息处理的 span。</li>
+<li><strong>日志</strong>：启用 <code>diagnostics.otel.logs</code> 时通过 OTLP 导出。日志量可能很大；请注意 <code>logging.level</code> 和导出器过滤器。</li>
+</ul>
+<h3 id="诊断事件目录">诊断事件目录<a hidden class="anchor" aria-hidden="true" href="#诊断事件目录">#</a></h3>
+<p>模型使用：</p>
+<ul>
+<li><code>model.usage</code>：令牌、成本、持续时间、上下文、提供商/模型/渠道、会话 ID。</li>
+</ul>
+<p>消息流：</p>
+<ul>
+<li><code>webhook.received</code>：每渠道的 webhook 入口。</li>
+<li><code>webhook.processed</code>：webhook 已处理 + 持续时间。</li>
+<li><code>webhook.error</code>：webhook 处理程序错误。</li>
+<li><code>message.queued</code>：消息入队等待处理。</li>
+<li><code>message.processed</code>：结果 + 持续时间 + 可选错误。</li>
+</ul>
+<p>队列 + 会话：</p>
+<ul>
+<li><code>queue.lane.enqueue</code>：命令队列通道入队 + 深度。</li>
+<li><code>queue.lane.dequeue</code>：命令队列通道出队 + 等待时间。</li>
+<li><code>session.state</code>：会话状态转换 + 原因。</li>
+<li><code>session.stuck</code>：会话卡住警告 + 持续时间。</li>
+<li><code>run.attempt</code>：运行重试/尝试元数据。</li>
+<li><code>diagnostic.heartbeat</code>：聚合计数器（webhooks/队列/会话）。</li>
+</ul>
+<h3 id="启用诊断无导出器">启用诊断（无导出器）<a hidden class="anchor" aria-hidden="true" href="#启用诊断无导出器">#</a></h3>
+<p>如果你希望诊断事件可用于插件或自定义接收器，使用此配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;diagnostics&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="诊断标志定向日志">诊断标志（定向日志）<a hidden class="anchor" aria-hidden="true" href="#诊断标志定向日志">#</a></h3>
+<p>使用标志在不提高 <code>logging.level</code> 的情况下开启额外的定向调试日志。
+标志不区分大小写，支持通配符（例如 <code>telegram.*</code> 或 <code>*</code>）。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;diagnostics&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;flags&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;telegram.http&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>环境变量覆盖（一次性）：</p>
+<pre tabindex="0"><code>OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
+</code></pre><p>注意：</p>
+<ul>
+<li>标志日志进入标准日志文件（与 <code>logging.file</code> 相同）。</li>
+<li>输出仍根据 <code>logging.redactSensitive</code> 进行脱敏。</li>
+<li>完整指南：<a href="/diagnostics/flags">/diagnostics/flags</a>。</li>
+</ul>
+<h3 id="导出到-opentelemetry">导出到 OpenTelemetry<a hidden class="anchor" aria-hidden="true" href="#导出到-opentelemetry">#</a></h3>
+<p>诊断可以通过 <code>diagnostics-otel</code> 插件（OTLP/HTTP）导出。这适用于任何接受 OTLP/HTTP 的 OpenTelemetry 收集器/后端。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;plugins&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;diagnostics-otel&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;entries&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;diagnostics-otel&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;diagnostics&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;otel&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;enabled&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;endpoint&#34;</span><span class="p">:</span> <span class="s2">&#34;http://otel-collector:4318&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="s2">&#34;http/protobuf&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;serviceName&#34;</span><span class="p">:</span> <span class="s2">&#34;openclaw-gateway&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;traces&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;metrics&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;logs&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;sampleRate&#34;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;flushIntervalMs&#34;</span><span class="p">:</span> <span class="mi">60000</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>注意：</p>
+<ul>
+<li>你也可以使用 <code>openclaw plugins enable diagnostics-otel</code> 启用插件。</li>
+<li><code>protocol</code> 目前仅支持 <code>http/protobuf</code>。<code>grpc</code> 被忽略。</li>
+<li>指标包括令牌使用、成本、上下文大小、运行持续时间和消息流计数器/直方图（webhooks、队列、会话状态、队列深度/等待）。</li>
+<li>追踪/指标可以通过 <code>traces</code> / <code>metrics</code> 切换（默认：开启）。启用时，追踪包括模型使用 span 加上 webhook/消息处理 span。</li>
+<li>当你的收集器需要认证时设置 <code>headers</code>。</li>
+<li>支持的环境变量：<code>OTEL_EXPORTER_OTLP_ENDPOINT</code>、<code>OTEL_SERVICE_NAME</code>、<code>OTEL_EXPORTER_OTLP_PROTOCOL</code>。</li>
+</ul>
+<h3 id="导出的指标名称--类型">导出的指标（名称 + 类型）<a hidden class="anchor" aria-hidden="true" href="#导出的指标名称--类型">#</a></h3>
+<p>模型使用：</p>
+<ul>
+<li><code>openclaw.tokens</code>（计数器，属性：<code>openclaw.token</code>、<code>openclaw.channel</code>、<code>openclaw.provider</code>、<code>openclaw.model</code>）</li>
+<li><code>openclaw.cost.usd</code>（计数器，属性：<code>openclaw.channel</code>、<code>openclaw.provider</code>、<code>openclaw.model</code>）</li>
+<li><code>openclaw.run.duration_ms</code>（直方图，属性：<code>openclaw.channel</code>、<code>openclaw.provider</code>、<code>openclaw.model</code>）</li>
+<li><code>openclaw.context.tokens</code>（直方图，属性：<code>openclaw.context</code>、<code>openclaw.channel</code>、<code>openclaw.provider</code>、<code>openclaw.model</code>）</li>
+</ul>
+<p>消息流：</p>
+<ul>
+<li><code>openclaw.webhook.received</code>（计数器，属性：<code>openclaw.channel</code>、<code>openclaw.webhook</code>）</li>
+<li><code>openclaw.webhook.error</code>（计数器，属性：<code>openclaw.channel</code>、<code>openclaw.webhook</code>）</li>
+<li><code>openclaw.webhook.duration_ms</code>（直方图，属性：<code>openclaw.channel</code>、<code>openclaw.webhook</code>）</li>
+<li><code>openclaw.message.queued</code>（计数器，属性：<code>openclaw.channel</code>、<code>openclaw.source</code>）</li>
+<li><code>openclaw.message.processed</code>（计数器，属性：<code>openclaw.channel</code>、<code>openclaw.outcome</code>）</li>
+<li><code>openclaw.message.duration_ms</code>（直方图，属性：<code>openclaw.channel</code>、<code>openclaw.outcome</code>）</li>
+</ul>
+<p>队列 + 会话：</p>
+<ul>
+<li><code>openclaw.queue.lane.enqueue</code>（计数器，属性：<code>openclaw.lane</code>）</li>
+<li><code>openclaw.queue.lane.dequeue</code>（计数器，属性：<code>openclaw.lane</code>）</li>
+<li><code>openclaw.queue.depth</code>（直方图，属性：<code>openclaw.lane</code> 或 <code>openclaw.channel=heartbeat</code>）</li>
+<li><code>openclaw.queue.wait_ms</code>（直方图，属性：<code>openclaw.lane</code>）</li>
+<li><code>openclaw.session.state</code>（计数器，属性：<code>openclaw.state</code>、<code>openclaw.reason</code>）</li>
+<li><code>openclaw.session.stuck</code>（计数器，属性：<code>openclaw.state</code>）</li>
+<li><code>openclaw.session.stuck_age_ms</code>（直方图，属性：<code>openclaw.state</code>）</li>
+<li><code>openclaw.run.attempt</code>（计数器，属性：<code>openclaw.attempt</code>）</li>
+</ul>
+<h3 id="导出的-span名称--关键属性">导出的 span（名称 + 关键属性）<a hidden class="anchor" aria-hidden="true" href="#导出的-span名称--关键属性">#</a></h3>
+<ul>
+<li><code>openclaw.model.usage</code>
+<ul>
+<li><code>openclaw.channel</code>、<code>openclaw.provider</code>、<code>openclaw.model</code></li>
+<li><code>openclaw.sessionKey</code>、<code>openclaw.sessionId</code></li>
+<li><code>openclaw.tokens.*</code>（input/output/cache_read/cache_write/total）</li>
+</ul>
+</li>
+<li><code>openclaw.webhook.processed</code>
+<ul>
+<li><code>openclaw.channel</code>、<code>openclaw.webhook</code>、<code>openclaw.chatId</code></li>
+</ul>
+</li>
+<li><code>openclaw.webhook.error</code>
+<ul>
+<li><code>openclaw.channel</code>、<code>openclaw.webhook</code>、<code>openclaw.chatId</code>、<code>openclaw.error</code></li>
+</ul>
+</li>
+<li><code>openclaw.message.processed</code>
+<ul>
+<li><code>openclaw.channel</code>、<code>openclaw.outcome</code>、<code>openclaw.chatId</code>、<code>openclaw.messageId</code>、<code>openclaw.sessionKey</code>、<code>openclaw.sessionId</code>、<code>openclaw.reason</code></li>
+</ul>
+</li>
+<li><code>openclaw.session.stuck</code>
+<ul>
+<li><code>openclaw.state</code>、<code>openclaw.ageMs</code>、<code>openclaw.queueDepth</code>、<code>openclaw.sessionKey</code>、<code>openclaw.sessionId</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="采样--刷新">采样 + 刷新<a hidden class="anchor" aria-hidden="true" href="#采样--刷新">#</a></h3>
+<ul>
+<li>追踪采样：<code>diagnostics.otel.sampleRate</code>（0.0–1.0，仅根 span）。</li>
+<li>指标导出间隔：<code>diagnostics.otel.flushIntervalMs</code>（最小 1000ms）。</li>
+</ul>
+<h3 id="协议说明">协议说明<a hidden class="anchor" aria-hidden="true" href="#协议说明">#</a></h3>
+<ul>
+<li>OTLP/HTTP 端点可以通过 <code>diagnostics.otel.endpoint</code> 或 <code>OTEL_EXPORTER_OTLP_ENDPOINT</code> 设置。</li>
+<li>如果端点已包含 <code>/v1/traces</code> 或 <code>/v1/metrics</code>，则按原样使用。</li>
+<li>如果端点已包含 <code>/v1/logs</code>，则按原样用于日志。</li>
+<li><code>diagnostics.otel.logs</code> 为主日志器输出启用 OTLP 日志导出。</li>
+</ul>
+<h3 id="日志导出行为">日志导出行为<a hidden class="anchor" aria-hidden="true" href="#日志导出行为">#</a></h3>
+<ul>
+<li>OTLP 日志使用与写入 <code>logging.file</code> 相同的结构化记录。</li>
+<li>遵守 <code>logging.level</code>（文件日志级别）。控制台脱敏<strong>不</strong>适用于 OTLP 日志。</li>
+<li>高流量安装应优先使用 OTLP 收集器采样/过滤。</li>
+</ul>
+<h2 id="故障排除提示">故障排除提示<a hidden class="anchor" aria-hidden="true" href="#故障排除提示">#</a></h2>
+<ul>
+<li><strong>Gateway 网关无法访问？</strong> 先运行 <code>openclaw doctor</code>。</li>
+<li><strong>日志为空？</strong> 检查 Gateway 网关是否正在运行并写入 <code>logging.file</code> 中的文件路径。</li>
+<li><strong>需要更多细节？</strong> 将 <code>logging.level</code> 设置为 <code>debug</code> 或 <code>trace</code> 并重试。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/gateway/logging/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>日志</span>
+  </a>
+  <a class="next" href="/openclaw/platforms/mac/logging/">
+    <span class="title">Next »</span>
+    <br>
+    <span>日志（macOS）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

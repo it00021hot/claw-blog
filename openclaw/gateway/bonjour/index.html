@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Bonjour / mDNS 设备发现 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为仅限局域网的便捷方式来发现
+活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，不能替代 SSH 或
+基于 Tailnet 的连接。
+通过 Tailscale 的广域 Bonjour（单播 DNS‑SD）
+如果节点和 Gateway 网关在不同的网络上，多播 mDNS 无法跨越
+边界。你可以通过切换到基于 Tailscale 的单播 DNS‑SD
+（&ldquo;广域 Bonjour&rdquo;）来保持相同的设备发现用户体验。
+概要步骤：
+
+在 Gateway 网关主机上运行 DNS 服务器（可通过 Tailnet 访问）。
+在专用区域下发布 _openclaw-gw._tcp 的 DNS‑SD 记录
+（示例：openclaw.internal.）。
+配置 Tailscale 分割 DNS，使你选择的域名通过该
+DNS 服务器为客户端（包括 iOS）解析。
+
+OpenClaw 支持任何发现域名；openclaw.internal. 只是一个示例。
+iOS/Android 节点同时浏览 local. 和你配置的广域域名。
+Gateway 网关配置（推荐）
+{
+  gateway: { bind: &#34;tailnet&#34; }, // 仅 tailnet（推荐）
+  discovery: { wideArea: { enabled: true } }, // 启用广域 DNS-SD 发布
+}
+一次性 DNS 服务器设置（Gateway 网关主机）
+openclaw dns setup --apply
+这会安装 CoreDNS 并配置它：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/bonjour/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/bonjour/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/bonjour/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Bonjour / mDNS 设备发现">
+  <meta property="og:description" content="OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为仅限局域网的便捷方式来发现 活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，不能替代 SSH 或 基于 Tailnet 的连接。
+通过 Tailscale 的广域 Bonjour（单播 DNS‑SD） 如果节点和 Gateway 网关在不同的网络上，多播 mDNS 无法跨越 边界。你可以通过切换到基于 Tailscale 的单播 DNS‑SD （“广域 Bonjour”）来保持相同的设备发现用户体验。
+概要步骤：
+在 Gateway 网关主机上运行 DNS 服务器（可通过 Tailnet 访问）。 在专用区域下发布 _openclaw-gw._tcp 的 DNS‑SD 记录 （示例：openclaw.internal.）。 配置 Tailscale 分割 DNS，使你选择的域名通过该 DNS 服务器为客户端（包括 iOS）解析。 OpenClaw 支持任何发现域名；openclaw.internal. 只是一个示例。 iOS/Android 节点同时浏览 local. 和你配置的广域域名。
+Gateway 网关配置（推荐） { gateway: { bind: &#34;tailnet&#34; }, // 仅 tailnet（推荐） discovery: { wideArea: { enabled: true } }, // 启用广域 DNS-SD 发布 } 一次性 DNS 服务器设置（Gateway 网关主机） openclaw dns setup --apply 这会安装 CoreDNS 并配置它：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bonjour / mDNS 设备发现">
+<meta name="twitter:description" content="OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为仅限局域网的便捷方式来发现
+活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，不能替代 SSH 或
+基于 Tailnet 的连接。
+通过 Tailscale 的广域 Bonjour（单播 DNS‑SD）
+如果节点和 Gateway 网关在不同的网络上，多播 mDNS 无法跨越
+边界。你可以通过切换到基于 Tailscale 的单播 DNS‑SD
+（&ldquo;广域 Bonjour&rdquo;）来保持相同的设备发现用户体验。
+概要步骤：
+
+在 Gateway 网关主机上运行 DNS 服务器（可通过 Tailnet 访问）。
+在专用区域下发布 _openclaw-gw._tcp 的 DNS‑SD 记录
+（示例：openclaw.internal.）。
+配置 Tailscale 分割 DNS，使你选择的域名通过该
+DNS 服务器为客户端（包括 iOS）解析。
+
+OpenClaw 支持任何发现域名；openclaw.internal. 只是一个示例。
+iOS/Android 节点同时浏览 local. 和你配置的广域域名。
+Gateway 网关配置（推荐）
+{
+  gateway: { bind: &#34;tailnet&#34; }, // 仅 tailnet（推荐）
+  discovery: { wideArea: { enabled: true } }, // 启用广域 DNS-SD 发布
+}
+一次性 DNS 服务器设置（Gateway 网关主机）
+openclaw dns setup --apply
+这会安装 CoreDNS 并配置它：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Bonjour / mDNS 设备发现",
+      "item": "/openclaw/gateway/bonjour/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Bonjour / mDNS 设备发现",
+  "name": "Bonjour \/ mDNS 设备发现",
+  "description": "OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为仅限局域网的便捷方式来发现 活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，不能替代 SSH 或 基于 Tailnet 的连接。\n通过 Tailscale 的广域 Bonjour（单播 DNS‑SD） 如果节点和 Gateway 网关在不同的网络上，多播 mDNS 无法跨越 边界。你可以通过切换到基于 Tailscale 的单播 DNS‑SD （\u0026ldquo;广域 Bonjour\u0026rdquo;）来保持相同的设备发现用户体验。\n概要步骤：\n在 Gateway 网关主机上运行 DNS 服务器（可通过 Tailnet 访问）。 在专用区域下发布 _openclaw-gw._tcp 的 DNS‑SD 记录 （示例：openclaw.internal.）。 配置 Tailscale 分割 DNS，使你选择的域名通过该 DNS 服务器为客户端（包括 iOS）解析。 OpenClaw 支持任何发现域名；openclaw.internal. 只是一个示例。 iOS/Android 节点同时浏览 local. 和你配置的广域域名。\nGateway 网关配置（推荐） { gateway: { bind: \u0026#34;tailnet\u0026#34; }, // 仅 tailnet（推荐） discovery: { wideArea: { enabled: true } }, // 启用广域 DNS-SD 发布 } 一次性 DNS 服务器设置（Gateway 网关主机） openclaw dns setup --apply 这会安装 CoreDNS 并配置它：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为仅限局域网的便捷方式来发现 活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，不能替代 SSH 或 基于 Tailnet 的连接。\n通过 Tailscale 的广域 Bonjour（单播 DNS‑SD） 如果节点和 Gateway 网关在不同的网络上，多播 mDNS 无法跨越 边界。你可以通过切换到基于 Tailscale 的单播 DNS‑SD （“广域 Bonjour”）来保持相同的设备发现用户体验。\n概要步骤：\n在 Gateway 网关主机上运行 DNS 服务器（可通过 Tailnet 访问）。 在专用区域下发布 _openclaw-gw._tcp 的 DNS‑SD 记录 （示例：openclaw.internal.）。 配置 Tailscale 分割 DNS，使你选择的域名通过该 DNS 服务器为客户端（包括 iOS）解析。 OpenClaw 支持任何发现域名；openclaw.internal. 只是一个示例。 iOS/Android 节点同时浏览 local. 和你配置的广域域名。\nGateway 网关配置（推荐） { gateway: { bind: \"tailnet\" }, // 仅 tailnet（推荐） discovery: { wideArea: { enabled: true } }, // 启用广域 DNS-SD 发布 } 一次性 DNS 服务器设置（Gateway 网关主机） openclaw dns setup --apply 这会安装 CoreDNS 并配置它：\n仅在 Gateway 网关的 Tailscale 接口上监听 53 端口 从 ~/.openclaw/dns/.db 提供你选择的域名服务（示例：openclaw.internal.） 从 Tailnet 连接的机器上验证：\ndns-sd -B _openclaw-gw._tcp openclaw.internal. dig @ -p 53 _openclaw-gw._tcp.openclaw.internal PTR +short Tailscale DNS 设置 在 Tailscale 管理控制台中：\n添加指向 Gateway 网关 Tailnet IP 的名称服务器（UDP/TCP 53）。 添加分割 DNS，使你的发现域名使用该名称服务器。 一旦客户端接受 Tailnet DNS，iOS 节点就可以在 你的发现域名中浏览 _openclaw-gw._tcp，无需多播。\nGateway 网关监听器安全（推荐） Gateway 网关 WS 端口（默认 18789）默认绑定到 loopback。对于局域网/Tailnet 访问，请明确绑定并保持认证启用。\n对于仅 Tailnet 的设置：\n在 ~/.openclaw/openclaw.json 中设置 gateway.bind: \"tailnet\"。 重启 Gateway 网关（或重启 macOS 菜单栏应用）。 什么在广播 只有 Gateway 网关广播 _openclaw-gw._tcp。\n服务类型 _openclaw-gw._tcp — Gateway 网关传输信标（被 macOS/iOS/Android 节点使用）。 TXT 键（非机密提示） Gateway 网关广播小型非机密提示以方便 UI 流程：\nrole=gateway displayName=\u003c友好名称\u003e lanHost=.local gatewayPort=（Gateway 网关 WS + HTTP） gatewayTls=1（仅当 TLS 启用时） gatewayTlsSha256=（仅当 TLS 启用且指纹可用时） canvasPort=（仅当画布主机启用时；默认 18793） sshPort=（未覆盖时默认为 22） transport=gateway cliPath=（可选；可运行的 openclaw 入口点的绝对路径） tailnetDns=（当 Tailnet 可用时的可选提示） 在 macOS 上调试 有用的内置工具：\n浏览实例： dns-sd -B _openclaw-gw._tcp local. 解析单个实例（替换 ）： dns-sd -L \"\" _openclaw-gw._tcp local. 如果浏览有效但解析失败，你通常遇到的是局域网策略或 mDNS 解析器问题。\n在 Gateway 网关日志中调试 Gateway 网关会写入滚动日志文件（启动时打印为 gateway log file: ...）。查找 bonjour: 行，特别是：\nbonjour: advertise failed ... bonjour: ... name conflict resolved / hostname conflict resolved bonjour: watchdog detected non-announced service ... 在 iOS 节点上调试 iOS 节点使用 NWBrowser 来发现 _openclaw-gw._tcp。\n要捕获日志：\n设置 → Gateway 网关 → 高级 → Discovery Debug Logs 设置 → Gateway 网关 → 高级 → Discovery Logs → 复现 → Copy 日志包括浏览器状态转换和结果集变化。\n常见故障模式 Bonjour 不能跨网络：使用 Tailnet 或 SSH。 多播被阻止：某些 Wi‑Fi 网络禁用 mDNS。 休眠 / 接口变动：macOS 可能暂时丢弃 mDNS 结果；重试。 浏览有效但解析失败：保持机器名称简单（避免表情符号或 标点符号），然后重启 Gateway 网关。服务实例名称源自 主机名，因此过于复杂的名称可能会混淆某些解析器。 转义的实例名称（\\032） Bonjour/DNS‑SD 经常将服务实例名称中的字节转义为十进制 \\DDD 序列（例如空格变成 \\032）。\n这在协议级别是正常的。 UI 应该解码以进行显示（iOS 使用 BonjourEscapes.decode）。 禁用 / 配置 OPENCLAW_DISABLE_BONJOUR=1 禁用广播（旧版：OPENCLAW_DISABLE_BONJOUR）。 ~/.openclaw/openclaw.json 中的 gateway.bind 控制 Gateway 网关绑定模式。 OPENCLAW_SSH_PORT 覆盖 TXT 中广播的 SSH 端口（旧版：OPENCLAW_SSH_PORT）。 OPENCLAW_TAILNET_DNS 在 TXT 中发布 MagicDNS 提示（旧版：OPENCLAW_TAILNET_DNS）。 OPENCLAW_CLI_PATH 覆盖广播的 CLI 路径（旧版：OPENCLAW_CLI_PATH）。 相关文档 设备发现策略和传输选择：设备发现 节点配对 + 批准：Gateway 网关配对 ",
+  "wordCount" : "350",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/bonjour/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Bonjour / mDNS 设备发现
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e9%80%9a%e8%bf%87-tailscale-%e7%9a%84%e5%b9%bf%e5%9f%9f-bonjour%e5%8d%95%e6%92%ad-dnssd" aria-label="通过 Tailscale 的广域 Bonjour（单播 DNS‑SD）">通过 Tailscale 的广域 Bonjour（单播 DNS‑SD）</a><ul>
+                        
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e9%85%8d%e7%bd%ae%e6%8e%a8%e8%8d%90" aria-label="Gateway 网关配置（推荐）">Gateway 网关配置（推荐）</a></li>
+                <li>
+                    <a href="#%e4%b8%80%e6%ac%a1%e6%80%a7-dns-%e6%9c%8d%e5%8a%a1%e5%99%a8%e8%ae%be%e7%bd%aegateway-%e7%bd%91%e5%85%b3%e4%b8%bb%e6%9c%ba" aria-label="一次性 DNS 服务器设置（Gateway 网关主机）">一次性 DNS 服务器设置（Gateway 网关主机）</a></li>
+                <li>
+                    <a href="#tailscale-dns-%e8%ae%be%e7%bd%ae" aria-label="Tailscale DNS 设置">Tailscale DNS 设置</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e7%9b%91%e5%90%ac%e5%99%a8%e5%ae%89%e5%85%a8%e6%8e%a8%e8%8d%90" aria-label="Gateway 网关监听器安全（推荐）">Gateway 网关监听器安全（推荐）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bb%80%e4%b9%88%e5%9c%a8%e5%b9%bf%e6%92%ad" aria-label="什么在广播">什么在广播</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e7%b1%bb%e5%9e%8b" aria-label="服务类型">服务类型</a></li>
+                <li>
+                    <a href="#txt-%e9%94%ae%e9%9d%9e%e6%9c%ba%e5%af%86%e6%8f%90%e7%a4%ba" aria-label="TXT 键（非机密提示）">TXT 键（非机密提示）</a></li>
+                <li>
+                    <a href="#%e5%9c%a8-macos-%e4%b8%8a%e8%b0%83%e8%af%95" aria-label="在 macOS 上调试">在 macOS 上调试</a></li>
+                <li>
+                    <a href="#%e5%9c%a8-gateway-%e7%bd%91%e5%85%b3%e6%97%a5%e5%bf%97%e4%b8%ad%e8%b0%83%e8%af%95" aria-label="在 Gateway 网关日志中调试">在 Gateway 网关日志中调试</a></li>
+                <li>
+                    <a href="#%e5%9c%a8-ios-%e8%8a%82%e7%82%b9%e4%b8%8a%e8%b0%83%e8%af%95" aria-label="在 iOS 节点上调试">在 iOS 节点上调试</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e6%95%85%e9%9a%9c%e6%a8%a1%e5%bc%8f" aria-label="常见故障模式">常见故障模式</a></li>
+                <li>
+                    <a href="#%e8%bd%ac%e4%b9%89%e7%9a%84%e5%ae%9e%e4%be%8b%e5%90%8d%e7%a7%b0032" aria-label="转义的实例名称（\032）">转义的实例名称（\032）</a></li>
+                <li>
+                    <a href="#%e7%a6%81%e7%94%a8--%e9%85%8d%e7%bd%ae" aria-label="禁用 / 配置">禁用 / 配置</a></li>
+                <li>
+                    <a href="#%e7%9b%b8%e5%85%b3%e6%96%87%e6%a1%a3" aria-label="相关文档">相关文档</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 使用 Bonjour（mDNS / DNS‑SD）作为<strong>仅限局域网的便捷方式</strong>来发现
+活跃的 Gateway 网关（WebSocket 端点）。这是尽力而为的，<strong>不能</strong>替代 SSH 或
+基于 Tailnet 的连接。</p>
+<h2 id="通过-tailscale-的广域-bonjour单播-dnssd">通过 Tailscale 的广域 Bonjour（单播 DNS‑SD）<a hidden class="anchor" aria-hidden="true" href="#通过-tailscale-的广域-bonjour单播-dnssd">#</a></h2>
+<p>如果节点和 Gateway 网关在不同的网络上，多播 mDNS 无法跨越
+边界。你可以通过切换到基于 Tailscale 的<strong>单播 DNS‑SD</strong>
+（&ldquo;广域 Bonjour&rdquo;）来保持相同的设备发现用户体验。</p>
+<p>概要步骤：</p>
+<ol>
+<li>在 Gateway 网关主机上运行 DNS 服务器（可通过 Tailnet 访问）。</li>
+<li>在专用区域下发布 <code>_openclaw-gw._tcp</code> 的 DNS‑SD 记录
+（示例：<code>openclaw.internal.</code>）。</li>
+<li>配置 Tailscale <strong>分割 DNS</strong>，使你选择的域名通过该
+DNS 服务器为客户端（包括 iOS）解析。</li>
+</ol>
+<p>OpenClaw 支持任何发现域名；<code>openclaw.internal.</code> 只是一个示例。
+iOS/Android 节点同时浏览 <code>local.</code> 和你配置的广域域名。</p>
+<h3 id="gateway-网关配置推荐">Gateway 网关配置（推荐）<a hidden class="anchor" aria-hidden="true" href="#gateway-网关配置推荐">#</a></h3>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  gateway: { bind: &#34;tailnet&#34; }, // 仅 tailnet（推荐）
+  discovery: { wideArea: { enabled: true } }, // 启用广域 DNS-SD 发布
+}
+</code></pre><h3 id="一次性-dns-服务器设置gateway-网关主机">一次性 DNS 服务器设置（Gateway 网关主机）<a hidden class="anchor" aria-hidden="true" href="#一次性-dns-服务器设置gateway-网关主机">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw dns setup --apply
+</span></span></code></pre></div><p>这会安装 CoreDNS 并配置它：</p>
+<ul>
+<li>仅在 Gateway 网关的 Tailscale 接口上监听 53 端口</li>
+<li>从 <code>~/.openclaw/dns/&lt;domain&gt;.db</code> 提供你选择的域名服务（示例：<code>openclaw.internal.</code>）</li>
+</ul>
+<p>从 Tailnet 连接的机器上验证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dns-sd -B _openclaw-gw._tcp openclaw.internal.
+</span></span><span class="line"><span class="cl">dig @&lt;TAILNET_IPV4&gt; -p <span class="m">53</span> _openclaw-gw._tcp.openclaw.internal PTR +short
+</span></span></code></pre></div><h3 id="tailscale-dns-设置">Tailscale DNS 设置<a hidden class="anchor" aria-hidden="true" href="#tailscale-dns-设置">#</a></h3>
+<p>在 Tailscale 管理控制台中：</p>
+<ul>
+<li>添加指向 Gateway 网关 Tailnet IP 的名称服务器（UDP/TCP 53）。</li>
+<li>添加分割 DNS，使你的发现域名使用该名称服务器。</li>
+</ul>
+<p>一旦客户端接受 Tailnet DNS，iOS 节点就可以在
+你的发现域名中浏览 <code>_openclaw-gw._tcp</code>，无需多播。</p>
+<h3 id="gateway-网关监听器安全推荐">Gateway 网关监听器安全（推荐）<a hidden class="anchor" aria-hidden="true" href="#gateway-网关监听器安全推荐">#</a></h3>
+<p>Gateway 网关 WS 端口（默认 <code>18789</code>）默认绑定到 loopback。对于局域网/Tailnet
+访问，请明确绑定并保持认证启用。</p>
+<p>对于仅 Tailnet 的设置：</p>
+<ul>
+<li>在 <code>~/.openclaw/openclaw.json</code> 中设置 <code>gateway.bind: &quot;tailnet&quot;</code>。</li>
+<li>重启 Gateway 网关（或重启 macOS 菜单栏应用）。</li>
+</ul>
+<h2 id="什么在广播">什么在广播<a hidden class="anchor" aria-hidden="true" href="#什么在广播">#</a></h2>
+<p>只有 Gateway 网关广播 <code>_openclaw-gw._tcp</code>。</p>
+<h2 id="服务类型">服务类型<a hidden class="anchor" aria-hidden="true" href="#服务类型">#</a></h2>
+<ul>
+<li><code>_openclaw-gw._tcp</code> — Gateway 网关传输信标（被 macOS/iOS/Android 节点使用）。</li>
+</ul>
+<h2 id="txt-键非机密提示">TXT 键（非机密提示）<a hidden class="anchor" aria-hidden="true" href="#txt-键非机密提示">#</a></h2>
+<p>Gateway 网关广播小型非机密提示以方便 UI 流程：</p>
+<ul>
+<li><code>role=gateway</code></li>
+<li><code>displayName=&lt;友好名称&gt;</code></li>
+<li><code>lanHost=&lt;hostname&gt;.local</code></li>
+<li><code>gatewayPort=&lt;port&gt;</code>（Gateway 网关 WS + HTTP）</li>
+<li><code>gatewayTls=1</code>（仅当 TLS 启用时）</li>
+<li><code>gatewayTlsSha256=&lt;sha256&gt;</code>（仅当 TLS 启用且指纹可用时）</li>
+<li><code>canvasPort=&lt;port&gt;</code>（仅当画布主机启用时；默认 <code>18793</code>）</li>
+<li><code>sshPort=&lt;port&gt;</code>（未覆盖时默认为 22）</li>
+<li><code>transport=gateway</code></li>
+<li><code>cliPath=&lt;path&gt;</code>（可选；可运行的 <code>openclaw</code> 入口点的绝对路径）</li>
+<li><code>tailnetDns=&lt;magicdns&gt;</code>（当 Tailnet 可用时的可选提示）</li>
+</ul>
+<h2 id="在-macos-上调试">在 macOS 上调试<a hidden class="anchor" aria-hidden="true" href="#在-macos-上调试">#</a></h2>
+<p>有用的内置工具：</p>
+<ul>
+<li>浏览实例：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dns-sd -B _openclaw-gw._tcp local.
+</span></span></code></pre></div></li>
+<li>解析单个实例（替换 <code>&lt;instance&gt;</code>）：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dns-sd -L <span class="s2">&#34;&lt;instance&gt;&#34;</span> _openclaw-gw._tcp local.
+</span></span></code></pre></div></li>
+</ul>
+<p>如果浏览有效但解析失败，你通常遇到的是局域网策略或
+mDNS 解析器问题。</p>
+<h2 id="在-gateway-网关日志中调试">在 Gateway 网关日志中调试<a hidden class="anchor" aria-hidden="true" href="#在-gateway-网关日志中调试">#</a></h2>
+<p>Gateway 网关会写入滚动日志文件（启动时打印为
+<code>gateway log file: ...</code>）。查找 <code>bonjour:</code> 行，特别是：</p>
+<ul>
+<li><code>bonjour: advertise failed ...</code></li>
+<li><code>bonjour: ... name conflict resolved</code> / <code>hostname conflict resolved</code></li>
+<li><code>bonjour: watchdog detected non-announced service ...</code></li>
+</ul>
+<h2 id="在-ios-节点上调试">在 iOS 节点上调试<a hidden class="anchor" aria-hidden="true" href="#在-ios-节点上调试">#</a></h2>
+<p>iOS 节点使用 <code>NWBrowser</code> 来发现 <code>_openclaw-gw._tcp</code>。</p>
+<p>要捕获日志：</p>
+<ul>
+<li>设置 → Gateway 网关 → 高级 → <strong>Discovery Debug Logs</strong></li>
+<li>设置 → Gateway 网关 → 高级 → <strong>Discovery Logs</strong> → 复现 → <strong>Copy</strong></li>
+</ul>
+<p>日志包括浏览器状态转换和结果集变化。</p>
+<h2 id="常见故障模式">常见故障模式<a hidden class="anchor" aria-hidden="true" href="#常见故障模式">#</a></h2>
+<ul>
+<li><strong>Bonjour 不能跨网络</strong>：使用 Tailnet 或 SSH。</li>
+<li><strong>多播被阻止</strong>：某些 Wi‑Fi 网络禁用 mDNS。</li>
+<li><strong>休眠 / 接口变动</strong>：macOS 可能暂时丢弃 mDNS 结果；重试。</li>
+<li><strong>浏览有效但解析失败</strong>：保持机器名称简单（避免表情符号或
+标点符号），然后重启 Gateway 网关。服务实例名称源自
+主机名，因此过于复杂的名称可能会混淆某些解析器。</li>
+</ul>
+<h2 id="转义的实例名称032">转义的实例名称（<code>\032</code>）<a hidden class="anchor" aria-hidden="true" href="#转义的实例名称032">#</a></h2>
+<p>Bonjour/DNS‑SD 经常将服务实例名称中的字节转义为十进制 <code>\DDD</code>
+序列（例如空格变成 <code>\032</code>）。</p>
+<ul>
+<li>这在协议级别是正常的。</li>
+<li>UI 应该解码以进行显示（iOS 使用 <code>BonjourEscapes.decode</code>）。</li>
+</ul>
+<h2 id="禁用--配置">禁用 / 配置<a hidden class="anchor" aria-hidden="true" href="#禁用--配置">#</a></h2>
+<ul>
+<li><code>OPENCLAW_DISABLE_BONJOUR=1</code> 禁用广播（旧版：<code>OPENCLAW_DISABLE_BONJOUR</code>）。</li>
+<li><code>~/.openclaw/openclaw.json</code> 中的 <code>gateway.bind</code> 控制 Gateway 网关绑定模式。</li>
+<li><code>OPENCLAW_SSH_PORT</code> 覆盖 TXT 中广播的 SSH 端口（旧版：<code>OPENCLAW_SSH_PORT</code>）。</li>
+<li><code>OPENCLAW_TAILNET_DNS</code> 在 TXT 中发布 MagicDNS 提示（旧版：<code>OPENCLAW_TAILNET_DNS</code>）。</li>
+<li><code>OPENCLAW_CLI_PATH</code> 覆盖广播的 CLI 路径（旧版：<code>OPENCLAW_CLI_PATH</code>）。</li>
+</ul>
+<h2 id="相关文档">相关文档<a hidden class="anchor" aria-hidden="true" href="#相关文档">#</a></h2>
+<ul>
+<li>设备发现策略和传输选择：<a href="/gateway/discovery">设备发现</a></li>
+<li>节点配对 + 批准：<a href="/gateway/pairing">Gateway 网关配对</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/channels/bluebubbles/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>BlueBubbles（macOS REST）</span>
+  </a>
+  <a class="next" href="/openclaw/reference/templates/boot/">
+    <span class="title">Next »</span>
+    <br>
+    <span>BOOT.md</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

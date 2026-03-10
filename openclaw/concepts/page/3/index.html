@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Concepts | CLAW博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="Concepts - CLAW博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Concepts">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Concepts">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "/openclaw/"
+    }
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Concepts",
+      "item": "/openclaw/concepts/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/openclaw/">OpenClaw 🦞</a></div>
+  <h1>
+    Concepts
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">模型故障转移
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 分两个阶段处理故障：
+在当前提供商内进行认证配置文件轮换。 模型回退到 agents.defaults.model.fallbacks 中的下一个模型。 本文档解释运行时规则及其背后的数据。
+认证存储（密钥 &#43; OAuth） OpenClaw 对 API 密钥和 OAuth 令牌都使用认证配置文件。
+密钥存储在 ~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json（旧版：~/.openclaw/agent/auth-profiles.json）。 配置 auth.profiles / auth.order 仅用于元数据和路由（不含密钥）。 旧版仅导入 OAuth 文件：~/.openclaw/credentials/oauth.json（首次使用时导入到 auth-profiles.json）。 更多详情：/concepts/oauth
+凭证类型：
+type: &#34;api_key&#34; → { provider, key } type: &#34;oauth&#34; → { provider, access, refresh, expires, email? }（某些提供商还有 projectId/enterpriseUrl） 配置文件 ID OAuth 登录创建不同的配置文件，以便多个账户可以共存。
+默认：当没有电子邮件可用时为 provider:default。 带电子邮件的 OAuth：provider:&lt;email&gt;（例如 google-antigravity:user@gmail.com）。 配置文件存储在 ~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 的 profiles 下。
+轮换顺序 当一个提供商有多个配置文件时，OpenClaw 按以下顺序选择：
+显式配置：auth.order[provider]（如果设置）。 已配置的配置文件：按提供商过滤的 auth.profiles。 已存储的配置文件：auth-profiles.json 中该提供商的条目。 如果没有配置显式顺序，OpenClaw 使用轮询顺序：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 模型故障转移" href="/openclaw/concepts/model-failover/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">流式传输 &#43; 分块
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 有两个独立的&#34;流式传输&#34;层：
+分块流式传输（渠道）： 在助手写入时发出已完成的块。这些是普通的渠道消息（不是令牌增量）。 类令牌流式传输（仅限 Telegram）： 在生成时用部分文本更新草稿气泡；最终消息在结束时发送。 目前没有真正的令牌流式传输到外部渠道消息。Telegram 草稿流式传输是唯一的部分流式传输界面。
+分块流式传输（渠道消息） 分块流式传输在助手输出可用时以粗粒度块发送。
+模型输出 └─ text_delta/events ├─ (blockStreamingBreak=text_end) │ └─ 分块器在缓冲区增长时发出块 └─ (blockStreamingBreak=message_end) └─ 分块器在 message_end 时刷新 └─ 渠道发送（块回复） 图例：
+text_delta/events：模型流事件（对于非流式模型可能稀疏）。 chunker：应用最小/最大边界 &#43; 断点偏好的 EmbeddedBlockChunker。 channel send：实际的出站消息（块回复）。 控制项：
+agents.defaults.blockStreamingDefault：&#34;on&#34;/&#34;off&#34;（默认关闭）。 渠道覆盖：*.blockStreaming（以及每账户变体）可为每个渠道强制设置 &#34;on&#34;/&#34;off&#34;。 agents.defaults.blockStreamingBreak：&#34;text_end&#34; 或 &#34;message_end&#34;。 agents.defaults.blockStreamingChunk：{ minChars, maxChars, breakPreference? }。 agents.defaults.blockStreamingCoalesce：{ minChars?, maxChars?, idleMs? }（发送前合并流式块）。 渠道硬上限：*.textChunkLimit（例如 channels.whatsapp.textChunkLimit）。 渠道分块模式：*.chunkMode（默认 length，newline 在长度分块之前按空行（段落边界）分割）。 Discord 软上限：channels.discord.maxLinesPerMessage（默认 17）分割高度较大的回复以避免 UI 裁剪。 边界语义：
+text_end：分块器发出时立即流式传输块；在每个 text_end 时刷新。 message_end：等到助手消息完成，然后刷新缓冲的输出。 如果缓冲文本超过 maxChars，message_end 仍然使用分块器，因此可能在最后发出多个块。
+分块算法（低/高边界） 块分块由 EmbeddedBlockChunker 实现：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 流式传输 &#43; 分块" href="/openclaw/concepts/streaming/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">消息
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>本页汇总了 OpenClaw 如何处理入站消息、会话、队列、流式传输和推理可见性。
+消息流程（高层概述） 入站消息 -&gt; 路由/绑定 -&gt; 会话密钥 -&gt; 队列（如果有运行中的任务） -&gt; 智能体运行（流式传输 &#43; 工具） -&gt; 出站回复（渠道限制 &#43; 分块） 关键配置项在配置中：
+messages.* 用于前缀、队列和群组行为。 agents.defaults.* 用于分块流式传输和分块默认值。 渠道覆盖（channels.whatsapp.*、channels.telegram.* 等）用于上限和流式传输开关。 完整 schema 参见配置。
+入站去重 渠道可能在重新连接后重复投递同一消息。OpenClaw 保持一个短期缓存，以渠道/账户/对端/会话/消息 ID 为键，因此重复投递不会触发另一次智能体运行。
+入站防抖 来自同一发送者的快速连续消息可以通过 messages.inbound 批量合并为单个智能体轮次。防抖按渠道 &#43; 会话为范围，并使用最近的消息进行回复线程/ID 处理。
+配置（全局默认 &#43; 单渠道覆盖）：
+{ messages: { inbound: { debounceMs: 2000, byChannel: { whatsapp: 5000, slack: 1500, discord: 1500, }, }, }, } 注意事项：
+防抖仅适用于纯文本消息；媒体/附件会立即刷新。 控制命令会绕过防抖，保持独立。 会话和设备 会话由 Gateway 网关拥有，而非客户端。
+直接聊天合并到智能体主会话密钥。 群组/渠道获得各自的会话密钥。 会话存储和记录保存在 Gateway 网关主机上。 多个设备/渠道可以映射到同一会话，但历史记录不会完全同步回每个客户端。建议：对长对话使用一个主设备，以避免上下文分歧。控制 UI 和 TUI 始终显示 Gateway 网关支持的会话记录，因此它们是事实来源。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 消息" href="/openclaw/concepts/messages/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">系统提示词
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 为每次智能体运行构建自定义系统提示词。该提示词由 OpenClaw 拥有，不使用 pi-coding-agent 默认提示词。
+该提示词由 OpenClaw 组装并注入到每次智能体运行中。
+结构 该提示词设计紧凑，使用固定部分：
+Tooling：当前工具列表 &#43; 简短描述。 Safety：简短的防护提醒，避免追求权力的行为或绕过监督。 Skills（如果可用）：告诉模型如何按需加载 Skill 指令。 OpenClaw Self-Update：如何运行 config.apply 和 update.run。 Workspace：工作目录（agents.defaults.workspace）。 Documentation：OpenClaw 文档的本地路径（仓库或 npm 包）以及何时阅读它们。 Workspace Files (injected)：表示下方包含引导文件。 Sandbox（启用时）：表示沙箱隔离运行时、沙箱路径，以及是否可用提权执行。 Current Date &amp; Time：用户本地时间、时区和时间格式。 Reply Tags：支持的提供商的可选回复标签语法。 Heartbeats：心跳提示词和确认行为。 Runtime：主机、操作系统、node、模型、仓库根目录（检测到时）、思考级别（一行）。 Reasoning：当前可见性级别 &#43; /reasoning 切换提示。 系统提示词中的安全防护是建议性的。它们指导模型行为但不强制执行策略。使用工具策略、执行审批、沙箱隔离和渠道允许列表进行硬性执行；运维人员可以按设计禁用这些。
+提示词模式 OpenClaw 可以为子智能体渲染更小的系统提示词。运行时为每次运行设置一个 promptMode（不是面向用户的配置）：
+full（默认）：包含上述所有部分。 minimal：用于子智能体；省略 Skills、Memory Recall、OpenClaw Self-Update、Model Aliases、User Identity、Reply Tags、Messaging、Silent Replies 和 Heartbeats。Tooling、Safety、Workspace、Sandbox、Current Date &amp; Time（已知时）、Runtime 和注入的上下文仍然可用。 none：仅返回基本身份行。 当 promptMode=minimal 时，额外注入的提示词标记为 Subagent Context 而不是 Group Chat Context。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 系统提示词" href="/openclaw/concepts/system-prompt/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">记忆
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 记忆是智能体工作空间中的纯 Markdown 文件。这些文件是唯一的事实来源；模型只&#34;记住&#34;写入磁盘的内容。
+记忆搜索工具由活动的记忆插件提供（默认：memory-core）。使用 plugins.slots.memory = &#34;none&#34; 禁用记忆插件。
+记忆文件（Markdown） 默认工作空间布局使用两个记忆层：
+memory/YYYY-MM-DD.md 每日日志（仅追加）。 在会话开始时读取今天和昨天的内容。 MEMORY.md（可选） 精心整理的长期记忆。 仅在主要的私人会话中加载（绝不在群组上下文中加载）。 这些文件位于工作空间下（agents.defaults.workspace，默认 ~/.openclaw/workspace）。完整布局参见智能体工作空间。
+何时写入记忆 决策、偏好和持久性事实写入 MEMORY.md。 日常笔记和运行上下文写入 memory/YYYY-MM-DD.md。 如果有人说&#34;记住这个&#34;，就写下来（不要只保存在内存中）。 这个领域仍在发展中。提醒模型存储记忆会有帮助；它会知道该怎么做。 如果你想让某些内容持久保存，请要求机器人将其写入记忆。 自动记忆刷新（压缩前触发） 当会话接近自动压缩时，OpenClaw 会触发一个静默的智能体回合，提醒模型在上下文被压缩之前写入持久记忆。默认提示明确说明模型可以回复，但通常 NO_REPLY 是正确的响应，因此用户永远不会看到这个回合。
+这由 agents.defaults.compaction.memoryFlush 控制：
+{ agents: { defaults: { compaction: { reserveTokensFloor: 20000, memoryFlush: { enabled: true, softThresholdTokens: 4000, systemPrompt: &#34;Session nearing compaction. Store durable memories now.&#34;, prompt: &#34;Write any lasting notes to memory/YYYY-MM-DD.md; reply with NO_REPLY if nothing to store.&#34;, }, }, }, }, } 详情：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 记忆" href="/openclaw/concepts/memory/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">输入指示器
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>在运行活跃期间，输入指示器会发送到聊天渠道。使用 agents.defaults.typingMode 控制输入指示器何时开始显示，使用 typingIntervalSeconds 控制刷新频率。
+默认行为 当 agents.defaults.typingMode 未设置时，OpenClaw 保持旧版行为：
+私聊：模型循环开始后立即显示输入指示器。 群聊中被提及：立即显示输入指示器。 群聊中未被提及：仅在消息文本开始流式传输时显示输入指示器。 心跳运行：输入指示器禁用。 模式 将 agents.defaults.typingMode 设置为以下值之一：
+never — 永远不显示输入指示器。 instant — 模型循环开始后立即显示输入指示器，即使运行最终只返回静默回复令牌。 thinking — 在第一个推理增量时开始显示输入指示器（需要运行时设置 reasoningLevel: &#34;stream&#34;）。 message — 在第一个非静默文本增量时开始显示输入指示器（忽略 NO_REPLY 静默令牌）。 触发时机从晚到早的顺序： never → message → thinking → instant
+配置 { agent: { typingMode: &#34;thinking&#34;, typingIntervalSeconds: 6, }, } 可以按会话覆盖模式或刷新频率：
+{ session: { typingMode: &#34;message&#34;, typingIntervalSeconds: 4, }, } 注意事项 message 模式不会为纯静默回复显示输入指示器（例如用于抑制输出的 NO_REPLY 令牌）。 thinking 仅在运行流式传输推理时触发（reasoningLevel: &#34;stream&#34;）。 如果模型未产生推理增量，则不会显示输入指示器。 无论使用何种模式，心跳运行都不会显示输入指示器。 typingIntervalSeconds 控制的是刷新频率，而非开始时间。 默认值为 6 秒。 </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 输入指示器" href="/openclaw/concepts/typing-indicators/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">重试策略
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>目标 按 HTTP 请求重试，而非按多步骤流程重试。 通过仅重试当前步骤来保持顺序。 避免重复执行非幂等操作。 默认值 尝试次数：3 最大延迟上限：30000 毫秒 抖动：0.1（10%） 提供商默认值： Telegram 最小延迟：400 毫秒 Discord 最小延迟：500 毫秒 行为 Discord 仅在速率限制错误（HTTP 429）时重试。 可用时使用 Discord retry_after，否则使用指数退避。 Telegram 在瞬态错误时重试（429、超时、连接/重置/关闭、暂时不可用）。 可用时使用 retry_after，否则使用指数退避。 Markdown 解析错误不会重试；会回退为纯文本。 配置 在 ~/.openclaw/openclaw.json 中按提供商设置重试策略：
+{ channels: { telegram: { retry: { attempts: 3, minDelayMs: 400, maxDelayMs: 30000, jitter: 0.1, }, }, discord: { retry: { attempts: 3, minDelayMs: 500, maxDelayMs: 30000, jitter: 0.1, }, }, }, } 注意事项 重试按请求应用（消息发送、媒体上传、表情回应、投票、贴纸）。 组合流程不会重试已完成的步骤。 </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 重试策略" href="/openclaw/concepts/retry/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="/openclaw/concepts/page/2/">
+      «&nbsp;Prev&nbsp;
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

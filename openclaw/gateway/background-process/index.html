@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>后台 Exec &#43; Process 工具 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="OpenClaw 通过 exec 工具运行 shell 命令，并将长时间运行的任务保存在内存中。process 工具管理这些后台会话。
+exec 工具
+关键参数：
+
+command（必填）
+yieldMs（默认 10000）：在此延迟后自动转为后台运行
+background（布尔值）：立即转为后台运行
+timeout（秒，默认 1800）：在此超时后终止进程
+elevated（布尔值）：如果启用/允许提权模式，则在宿主机上运行
+需要真实 TTY？设置 pty: true。
+workdir、env
+
+行为：
+
+前台运行直接返回输出。
+当转为后台运行（显式或超时）时，工具返回 status: &quot;running&quot; &#43; sessionId 和一小段尾部输出。
+输出保存在内存中，直到会话被轮询或清除。
+如果 process 工具被禁用，exec 将同步运行并忽略 yieldMs/background。
+
+子进程桥接
+当在 exec/process 工具之外生成长时间运行的子进程时（例如 CLI 重新生成或 Gateway 网关辅助程序），请附加子进程桥接辅助程序，以便终止信号被转发，监听器在退出/错误时被分离。这可以避免在 systemd 上产生孤立进程，并保持跨平台的关闭行为一致。
+环境变量覆盖：
+
+PI_BASH_YIELD_MS：默认 yield 时间（毫秒）
+PI_BASH_MAX_OUTPUT_CHARS：内存输出上限（字符）
+OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS：每个流的待处理 stdout/stderr 上限（字符）
+PI_BASH_JOB_TTL_MS：已完成会话的 TTL（毫秒，限制在 1 分钟至 3 小时之间）
+
+配置（推荐）：
+
+tools.exec.backgroundMs（默认 10000）
+tools.exec.timeoutSec（默认 1800）
+tools.exec.cleanupMs（默认 1800000）
+tools.exec.notifyOnExit（默认 true）：当后台 exec 退出时，将系统事件加入队列并请求心跳。
+
+process 工具
+操作：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/background-process/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/background-process/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/background-process/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="后台 Exec &#43; Process 工具">
+  <meta property="og:description" content="OpenClaw 通过 exec 工具运行 shell 命令，并将长时间运行的任务保存在内存中。process 工具管理这些后台会话。
+exec 工具 关键参数：
+command（必填） yieldMs（默认 10000）：在此延迟后自动转为后台运行 background（布尔值）：立即转为后台运行 timeout（秒，默认 1800）：在此超时后终止进程 elevated（布尔值）：如果启用/允许提权模式，则在宿主机上运行 需要真实 TTY？设置 pty: true。 workdir、env 行为：
+前台运行直接返回输出。 当转为后台运行（显式或超时）时，工具返回 status: &#34;running&#34; &#43; sessionId 和一小段尾部输出。 输出保存在内存中，直到会话被轮询或清除。 如果 process 工具被禁用，exec 将同步运行并忽略 yieldMs/background。 子进程桥接 当在 exec/process 工具之外生成长时间运行的子进程时（例如 CLI 重新生成或 Gateway 网关辅助程序），请附加子进程桥接辅助程序，以便终止信号被转发，监听器在退出/错误时被分离。这可以避免在 systemd 上产生孤立进程，并保持跨平台的关闭行为一致。
+环境变量覆盖：
+PI_BASH_YIELD_MS：默认 yield 时间（毫秒） PI_BASH_MAX_OUTPUT_CHARS：内存输出上限（字符） OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS：每个流的待处理 stdout/stderr 上限（字符） PI_BASH_JOB_TTL_MS：已完成会话的 TTL（毫秒，限制在 1 分钟至 3 小时之间） 配置（推荐）：
+tools.exec.backgroundMs（默认 10000） tools.exec.timeoutSec（默认 1800） tools.exec.cleanupMs（默认 1800000） tools.exec.notifyOnExit（默认 true）：当后台 exec 退出时，将系统事件加入队列并请求心跳。 process 工具 操作：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="后台 Exec &#43; Process 工具">
+<meta name="twitter:description" content="OpenClaw 通过 exec 工具运行 shell 命令，并将长时间运行的任务保存在内存中。process 工具管理这些后台会话。
+exec 工具
+关键参数：
+
+command（必填）
+yieldMs（默认 10000）：在此延迟后自动转为后台运行
+background（布尔值）：立即转为后台运行
+timeout（秒，默认 1800）：在此超时后终止进程
+elevated（布尔值）：如果启用/允许提权模式，则在宿主机上运行
+需要真实 TTY？设置 pty: true。
+workdir、env
+
+行为：
+
+前台运行直接返回输出。
+当转为后台运行（显式或超时）时，工具返回 status: &quot;running&quot; &#43; sessionId 和一小段尾部输出。
+输出保存在内存中，直到会话被轮询或清除。
+如果 process 工具被禁用，exec 将同步运行并忽略 yieldMs/background。
+
+子进程桥接
+当在 exec/process 工具之外生成长时间运行的子进程时（例如 CLI 重新生成或 Gateway 网关辅助程序），请附加子进程桥接辅助程序，以便终止信号被转发，监听器在退出/错误时被分离。这可以避免在 systemd 上产生孤立进程，并保持跨平台的关闭行为一致。
+环境变量覆盖：
+
+PI_BASH_YIELD_MS：默认 yield 时间（毫秒）
+PI_BASH_MAX_OUTPUT_CHARS：内存输出上限（字符）
+OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS：每个流的待处理 stdout/stderr 上限（字符）
+PI_BASH_JOB_TTL_MS：已完成会话的 TTL（毫秒，限制在 1 分钟至 3 小时之间）
+
+配置（推荐）：
+
+tools.exec.backgroundMs（默认 10000）
+tools.exec.timeoutSec（默认 1800）
+tools.exec.cleanupMs（默认 1800000）
+tools.exec.notifyOnExit（默认 true）：当后台 exec 退出时，将系统事件加入队列并请求心跳。
+
+process 工具
+操作：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "后台 Exec + Process 工具",
+      "item": "/openclaw/gateway/background-process/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "后台 Exec + Process 工具",
+  "name": "后台 Exec \u002b Process 工具",
+  "description": "OpenClaw 通过 exec 工具运行 shell 命令，并将长时间运行的任务保存在内存中。process 工具管理这些后台会话。\nexec 工具 关键参数：\ncommand（必填） yieldMs（默认 10000）：在此延迟后自动转为后台运行 background（布尔值）：立即转为后台运行 timeout（秒，默认 1800）：在此超时后终止进程 elevated（布尔值）：如果启用/允许提权模式，则在宿主机上运行 需要真实 TTY？设置 pty: true。 workdir、env 行为：\n前台运行直接返回输出。 当转为后台运行（显式或超时）时，工具返回 status: \u0026quot;running\u0026quot; + sessionId 和一小段尾部输出。 输出保存在内存中，直到会话被轮询或清除。 如果 process 工具被禁用，exec 将同步运行并忽略 yieldMs/background。 子进程桥接 当在 exec/process 工具之外生成长时间运行的子进程时（例如 CLI 重新生成或 Gateway 网关辅助程序），请附加子进程桥接辅助程序，以便终止信号被转发，监听器在退出/错误时被分离。这可以避免在 systemd 上产生孤立进程，并保持跨平台的关闭行为一致。\n环境变量覆盖：\nPI_BASH_YIELD_MS：默认 yield 时间（毫秒） PI_BASH_MAX_OUTPUT_CHARS：内存输出上限（字符） OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS：每个流的待处理 stdout/stderr 上限（字符） PI_BASH_JOB_TTL_MS：已完成会话的 TTL（毫秒，限制在 1 分钟至 3 小时之间） 配置（推荐）：\ntools.exec.backgroundMs（默认 10000） tools.exec.timeoutSec（默认 1800） tools.exec.cleanupMs（默认 1800000） tools.exec.notifyOnExit（默认 true）：当后台 exec 退出时，将系统事件加入队列并请求心跳。 process 工具 操作：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "OpenClaw 通过 exec 工具运行 shell 命令，并将长时间运行的任务保存在内存中。process 工具管理这些后台会话。\nexec 工具 关键参数：\ncommand（必填） yieldMs（默认 10000）：在此延迟后自动转为后台运行 background（布尔值）：立即转为后台运行 timeout（秒，默认 1800）：在此超时后终止进程 elevated（布尔值）：如果启用/允许提权模式，则在宿主机上运行 需要真实 TTY？设置 pty: true。 workdir、env 行为：\n前台运行直接返回输出。 当转为后台运行（显式或超时）时，工具返回 status: \"running\" + sessionId 和一小段尾部输出。 输出保存在内存中，直到会话被轮询或清除。 如果 process 工具被禁用，exec 将同步运行并忽略 yieldMs/background。 子进程桥接 当在 exec/process 工具之外生成长时间运行的子进程时（例如 CLI 重新生成或 Gateway 网关辅助程序），请附加子进程桥接辅助程序，以便终止信号被转发，监听器在退出/错误时被分离。这可以避免在 systemd 上产生孤立进程，并保持跨平台的关闭行为一致。\n环境变量覆盖：\nPI_BASH_YIELD_MS：默认 yield 时间（毫秒） PI_BASH_MAX_OUTPUT_CHARS：内存输出上限（字符） OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS：每个流的待处理 stdout/stderr 上限（字符） PI_BASH_JOB_TTL_MS：已完成会话的 TTL（毫秒，限制在 1 分钟至 3 小时之间） 配置（推荐）：\ntools.exec.backgroundMs（默认 10000） tools.exec.timeoutSec（默认 1800） tools.exec.cleanupMs（默认 1800000） tools.exec.notifyOnExit（默认 true）：当后台 exec 退出时，将系统事件加入队列并请求心跳。 process 工具 操作：\nlist：正在运行和已完成的会话 poll：获取会话的新输出（同时报告退出状态） log：读取聚合输出（支持 offset + limit） write：发送 stdin（data，可选 eof） kill：终止后台会话 clear：从内存中移除已完成的会话 remove：如果正在运行则终止，否则清除已完成的会话 注意事项：\n只有后台会话会在内存中列出/保留。 会话在进程重启时会丢失（无磁盘持久化）。 会话日志只有在你运行 process poll/log 且工具结果被记录时才会保存到聊天历史。 process 按智能体隔离；它只能看到该智能体启动的会话。 process list 包含派生的 name（命令动词 + 目标）以便快速浏览。 process log 使用基于行的 offset/limit（省略 offset 以获取最后 N 行）。 示例 运行长时间任务并稍后轮询：\n{ \"tool\": \"exec\", \"command\": \"sleep 5 \u0026\u0026 echo done\", \"yieldMs\": 1000 } { \"tool\": \"process\", \"action\": \"poll\", \"sessionId\": \"\" } 立即在后台启动：\n{ \"tool\": \"exec\", \"command\": \"npm run build\", \"background\": true } 发送 stdin：\n{ \"tool\": \"process\", \"action\": \"write\", \"sessionId\": \"\", \"data\": \"y\\n\" } ",
+  "wordCount" : "154",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/background-process/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      后台 Exec &#43; Process 工具
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#exec-%e5%b7%a5%e5%85%b7" aria-label="exec 工具">exec 工具</a></li>
+                <li>
+                    <a href="#%e5%ad%90%e8%bf%9b%e7%a8%8b%e6%a1%a5%e6%8e%a5" aria-label="子进程桥接">子进程桥接</a></li>
+                <li>
+                    <a href="#process-%e5%b7%a5%e5%85%b7" aria-label="process 工具">process 工具</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b" aria-label="示例">示例</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>OpenClaw 通过 <code>exec</code> 工具运行 shell 命令，并将长时间运行的任务保存在内存中。<code>process</code> 工具管理这些后台会话。</p>
+<h2 id="exec-工具">exec 工具<a hidden class="anchor" aria-hidden="true" href="#exec-工具">#</a></h2>
+<p>关键参数：</p>
+<ul>
+<li><code>command</code>（必填）</li>
+<li><code>yieldMs</code>（默认 10000）：在此延迟后自动转为后台运行</li>
+<li><code>background</code>（布尔值）：立即转为后台运行</li>
+<li><code>timeout</code>（秒，默认 1800）：在此超时后终止进程</li>
+<li><code>elevated</code>（布尔值）：如果启用/允许提权模式，则在宿主机上运行</li>
+<li>需要真实 TTY？设置 <code>pty: true</code>。</li>
+<li><code>workdir</code>、<code>env</code></li>
+</ul>
+<p>行为：</p>
+<ul>
+<li>前台运行直接返回输出。</li>
+<li>当转为后台运行（显式或超时）时，工具返回 <code>status: &quot;running&quot;</code> + <code>sessionId</code> 和一小段尾部输出。</li>
+<li>输出保存在内存中，直到会话被轮询或清除。</li>
+<li>如果 <code>process</code> 工具被禁用，<code>exec</code> 将同步运行并忽略 <code>yieldMs</code>/<code>background</code>。</li>
+</ul>
+<h2 id="子进程桥接">子进程桥接<a hidden class="anchor" aria-hidden="true" href="#子进程桥接">#</a></h2>
+<p>当在 exec/process 工具之外生成长时间运行的子进程时（例如 CLI 重新生成或 Gateway 网关辅助程序），请附加子进程桥接辅助程序，以便终止信号被转发，监听器在退出/错误时被分离。这可以避免在 systemd 上产生孤立进程，并保持跨平台的关闭行为一致。</p>
+<p>环境变量覆盖：</p>
+<ul>
+<li><code>PI_BASH_YIELD_MS</code>：默认 yield 时间（毫秒）</li>
+<li><code>PI_BASH_MAX_OUTPUT_CHARS</code>：内存输出上限（字符）</li>
+<li><code>OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS</code>：每个流的待处理 stdout/stderr 上限（字符）</li>
+<li><code>PI_BASH_JOB_TTL_MS</code>：已完成会话的 TTL（毫秒，限制在 1 分钟至 3 小时之间）</li>
+</ul>
+<p>配置（推荐）：</p>
+<ul>
+<li><code>tools.exec.backgroundMs</code>（默认 10000）</li>
+<li><code>tools.exec.timeoutSec</code>（默认 1800）</li>
+<li><code>tools.exec.cleanupMs</code>（默认 1800000）</li>
+<li><code>tools.exec.notifyOnExit</code>（默认 true）：当后台 exec 退出时，将系统事件加入队列并请求心跳。</li>
+</ul>
+<h2 id="process-工具">process 工具<a hidden class="anchor" aria-hidden="true" href="#process-工具">#</a></h2>
+<p>操作：</p>
+<ul>
+<li><code>list</code>：正在运行和已完成的会话</li>
+<li><code>poll</code>：获取会话的新输出（同时报告退出状态）</li>
+<li><code>log</code>：读取聚合输出（支持 <code>offset</code> + <code>limit</code>）</li>
+<li><code>write</code>：发送 stdin（<code>data</code>，可选 <code>eof</code>）</li>
+<li><code>kill</code>：终止后台会话</li>
+<li><code>clear</code>：从内存中移除已完成的会话</li>
+<li><code>remove</code>：如果正在运行则终止，否则清除已完成的会话</li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>只有后台会话会在内存中列出/保留。</li>
+<li>会话在进程重启时会丢失（无磁盘持久化）。</li>
+<li>会话日志只有在你运行 <code>process poll/log</code> 且工具结果被记录时才会保存到聊天历史。</li>
+<li><code>process</code> 按智能体隔离；它只能看到该智能体启动的会话。</li>
+<li><code>process list</code> 包含派生的 <code>name</code>（命令动词 + 目标）以便快速浏览。</li>
+<li><code>process log</code> 使用基于行的 <code>offset</code>/<code>limit</code>（省略 <code>offset</code> 以获取最后 N 行）。</li>
+</ul>
+<h2 id="示例">示例<a hidden class="anchor" aria-hidden="true" href="#示例">#</a></h2>
+<p>运行长时间任务并稍后轮询：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;tool&#34;</span><span class="p">:</span> <span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="nt">&#34;command&#34;</span><span class="p">:</span> <span class="s2">&#34;sleep 5 &amp;&amp; echo done&#34;</span><span class="p">,</span> <span class="nt">&#34;yieldMs&#34;</span><span class="p">:</span> <span class="mi">1000</span> <span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;tool&#34;</span><span class="p">:</span> <span class="s2">&#34;process&#34;</span><span class="p">,</span> <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="s2">&#34;poll&#34;</span><span class="p">,</span> <span class="nt">&#34;sessionId&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;id&gt;&#34;</span> <span class="p">}</span>
+</span></span></code></pre></div><p>立即在后台启动：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;tool&#34;</span><span class="p">:</span> <span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="nt">&#34;command&#34;</span><span class="p">:</span> <span class="s2">&#34;npm run build&#34;</span><span class="p">,</span> <span class="nt">&#34;background&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+</span></span></code></pre></div><p>发送 stdin：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;tool&#34;</span><span class="p">:</span> <span class="s2">&#34;process&#34;</span><span class="p">,</span> <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="nt">&#34;sessionId&#34;</span><span class="p">:</span> <span class="s2">&#34;&lt;id&gt;&#34;</span><span class="p">,</span> <span class="nt">&#34;data&#34;</span><span class="p">:</span> <span class="s2">&#34;y\n&#34;</span> <span class="p">}</span>
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/reference/releasing/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>发布清单（npm &#43; macOS）</span>
+  </a>
+  <a class="next" href="/openclaw/reference/wizard/">
+    <span class="title">Next »</span>
+    <br>
+    <span>向导参考</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

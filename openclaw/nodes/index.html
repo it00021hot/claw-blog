@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Nodes | CLAW博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="Nodes - CLAW博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/nodes/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/nodes/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/nodes/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Nodes">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nodes">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "/openclaw/"
+    }
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Nodes",
+      "item": "/openclaw/nodes/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/openclaw/">OpenClaw 🦞</a></div>
+  <h1>
+    Nodes
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Talk 模式
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Talk 模式是一个连续的语音对话循环：
+监听语音 将转录文本发送到模型（main 会话，chat.send） 等待响应 通过 ElevenLabs 朗读（流式播放） 行为（macOS） Talk 模式启用时显示常驻悬浮窗。 监听 → 思考 → 朗读阶段转换。 短暂停顿（静音窗口）后，当前转录文本被发送。 回复被写入 WebChat（与打字相同）。 语音中断（默认开启）：如果用户在助手朗读时开始说话，我们会停止播放并记录中断时间戳供下一个提示使用。 回复中的语音指令 助手可以在回复前添加单行 JSON 来控制语音：
+{ &#34;voice&#34;: &#34;&lt;voice-id&gt;&#34;, &#34;once&#34;: true } 规则：
+仅适用于第一个非空行。 未知键会被忽略。 once: true 仅适用于当前回复。 没有 once 时，该语音成为 Talk 模式的新默认值。 JSON 行在 TTS 播放前会被移除。 支持的键：
+voice / voice_id / voiceId model / model_id / modelId speed、rate（WPM）、stability、similarity、style、speakerBoost seed、normalize、lang、output_format、latency_tier once 配置（~/.openclaw/openclaw.json） { talk: { voiceId: &#34;elevenlabs_voice_id&#34;, modelId: &#34;eleven_v3&#34;, outputFormat: &#34;mp3_44100_128&#34;, apiKey: &#34;elevenlabs_api_key&#34;, interruptOnSpeech: true, }, } 默认值：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Talk 模式" href="/openclaw/nodes/talk/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">位置命令（节点）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>简要概述 location.get 是一个节点命令（通过 node.invoke）。 默认关闭。 设置使用选择器：关闭 / 使用时 / 始终。 单独的开关：精确位置。 为什么用选择器（而不只是开关） 操作系统权限是多级的。我们可以在应用内暴露选择器，但操作系统仍然决定实际授权。
+iOS/macOS：用户可以在系统提示/设置中选择使用时或始终。应用可以请求升级，但操作系统可能要求进入设置。 Android：后台位置是单独的权限；在 Android 10&#43; 上通常需要进入设置流程。 精确位置是单独的授权（iOS 14&#43; “精确”，Android “精细” vs “粗略”）。 UI 中的选择器驱动我们请求的模式；实际授权存在于操作系统设置中。
+设置模型 每个节点设备：
+location.enabledMode：off | whileUsing | always location.preciseEnabled：bool UI 行为：
+选择 whileUsing 请求前台权限。 选择 always 首先确保 whileUsing，然后请求后台（或在需要时将用户引导到设置）。 如果操作系统拒绝请求的级别，回退到已授予的最高级别并显示状态。 权限映射（node.permissions） 可选。macOS 节点通过权限映射报告 location；iOS/Android 可能省略它。
+命令：location.get 通过 node.invoke 调用。
+参数（建议）：
+{ &#34;timeoutMs&#34;: 10000, &#34;maxAgeMs&#34;: 15000, &#34;desiredAccuracy&#34;: &#34;coarse|balanced|precise&#34; } 响应负载：
+{ &#34;lat&#34;: 48.20849, &#34;lon&#34;: 16.37208, &#34;accuracyMeters&#34;: 12.5, &#34;altitudeMeters&#34;: 182.0, &#34;speedMps&#34;: 0.0, &#34;headingDeg&#34;: 270.0, &#34;timestamp&#34;: &#34;2026-01-03T12:34:56.000Z&#34;, &#34;isPrecise&#34;: true, &#34;source&#34;: &#34;gps|wifi|cell|unknown&#34; } 错误（稳定代码）：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 位置命令（节点）" href="/openclaw/nodes/location-command/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">图像与媒体支持 — 2025-12-05
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>WhatsApp 渠道通过 Baileys Web 运行。本文档记录了发送、Gateway 网关和智能体回复的当前媒体处理规则。
+目标 通过 openclaw message send --media 发送带可选标题的媒体。 允许来自网页收件箱的自动回复在文本旁边包含媒体。 保持每种类型的限制合理且可预测。 CLI 接口 openclaw message send --media &lt;path-or-url&gt; [--message &lt;caption&gt;] --media 可选；标题可以为空以进行纯媒体发送。 --dry-run 打印解析后的负载；--json 输出 { channel, to, messageId, mediaUrl, caption }。 WhatsApp Web 渠道行为 输入：本地文件路径或 HTTP(S) URL。 流程：加载到 Buffer，检测媒体类型，并构建正确的负载： 图像： 调整大小并重新压缩为 JPEG（最大边 2048px），目标为 agents.defaults.mediaMaxMb（默认 5 MB），上限 6 MB。 音频/语音/视频： 直通最大 16 MB；音频作为语音消息发送（ptt: true）。 文档： 其他任何内容，最大 100 MB，可用时保留文件名。 WhatsApp GIF 风格播放：发送带 gifPlayback: true 的 MP4（CLI：--gif-playback），使移动客户端内联循环播放。 MIME 检测优先使用魔数字节，然后是头信息，最后是文件扩展名。 标题来自 --message 或 reply.text；允许空标题。 日志：非详细模式显示 ↩️/✅；详细模式包含大小和源路径/URL。 自动回复管道 getReplyFromConfig 返回 { text?, mediaUrl?, mediaUrls? }。 当存在媒体时，网页发送器使用与 openclaw message send 相同的管道解析本地路径或 URL。 如果提供多个媒体条目，则按顺序发送。 入站媒体到命令（Pi） 当入站网页消息包含媒体时，OpenClaw 下载到临时文件并暴露模板变量： {{MediaUrl}} 入站媒体的伪 URL。 {{MediaPath}} 运行命令前写入的本地临时路径。 当启用每会话 Docker 沙箱时，入站媒体被复制到沙箱工作区，MediaPath/MediaUrl 被重写为相对路径如 media/inbound/&lt;filename&gt;。 媒体理解（如果通过 tools.media.* 或共享的 tools.media.models 配置）在模板化之前运行，可以将 [Image]、[Audio] 和 [Video] 块插入 Body。 音频设置 {{Transcript}} 并使用转录进行命令解析，因此斜杠命令仍然有效。 视频和图像描述保留任何标题文本用于命令解析。 默认情况下只处理第一个匹配的图像/音频/视频附件；设置 tools.media.&lt;cap&gt;.attachments 以处理多个附件。 限制与错误 出站发送上限（WhatsApp 网页发送）
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 图像与媒体支持 — 2025-12-05" href="/openclaw/nodes/images/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">媒体理解（入站）— 2026-01-17
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 可以在回复流程运行之前摘要入站媒体（图片/音频/视频）。它会自动检测本地工具或提供商密钥是否可用，并且可以禁用或自定义。如果理解关闭，模型仍然会像往常一样接收原始文件/URL。
+目标 可选：将入站媒体预先消化为短文本，以便更快路由 &#43; 更好的命令解析。 保留原始媒体传递给模型（始终）。 支持提供商 API 和 CLI 回退。 允许多个模型并按顺序回退（错误/大小/超时）。 高层行为 收集入站附件（MediaPaths、MediaUrls、MediaTypes）。 对于每个启用的能力（图片/音频/视频），根据策略选择附件（默认：第一个）。 选择第一个符合条件的模型条目（大小 &#43; 能力 &#43; 认证）。 如果模型失败或媒体太大，回退到下一个条目。 成功时： Body 变为 [Image]、[Audio] 或 [Video] 块。 音频设置 {{Transcript}}；命令解析在有标题文本时使用标题文本，否则使用转录。 标题作为 User text: 保留在块内。 如果理解失败或被禁用，回复流程继续使用原始正文 &#43; 附件。
+配置概述 tools.media 支持共享模型加上每能力覆盖：
+tools.media.models：共享模型列表（使用 capabilities 来限定）。 tools.media.image / tools.media.audio / tools.media.video： 默认值（prompt、maxChars、maxBytes、timeoutSeconds、language） 提供商覆盖（baseUrl、headers、providerOptions） 通过 tools.media.audio.providerOptions.deepgram 配置 Deepgram 音频选项 可选的每能力 models 列表（优先于共享模型） attachments 策略（mode、maxAttachments、prefer） scope（可选的按渠道/聊天类型/会话键限定） tools.media.concurrency：最大并发能力运行数（默认 2）。 { tools: { media: { models: [ /* 共享列表 */ ], image: { /* 可选覆盖 */ }, audio: { /* 可选覆盖 */ }, video: { /* 可选覆盖 */ }, }, }, } 模型条目 每个 models[] 条目可以是提供商或 CLI：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 媒体理解（入站）— 2026-01-17" href="/openclaw/nodes/media-understanding/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">相机捕获（智能体）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 支持用于智能体工作流的相机捕获：
+iOS 节点（通过 Gateway 网关配对）：通过 node.invoke 捕获照片（jpg）或短视频片段（mp4，可选音频）。 Android 节点（通过 Gateway 网关配对）：通过 node.invoke 捕获照片（jpg）或短视频片段（mp4，可选音频）。 macOS 应用（通过 Gateway 网关的节点）：通过 node.invoke 捕获照片（jpg）或短视频片段（mp4，可选音频）。 所有相机访问都受用户控制的设置限制。
+iOS 节点 用户设置（默认开启） iOS 设置标签页 → 相机 → 允许相机（camera.enabled） 默认：开启（缺少键时视为启用）。 关闭时：camera.* 命令返回 CAMERA_DISABLED。 命令（通过 Gateway 网关 node.invoke） camera.list
+响应载荷： devices：{ id, name, position, deviceType } 数组 camera.snap
+参数： facing：front|back（默认：front） maxWidth：数字（可选；iOS 节点默认 1600） quality：0..1（可选；默认 0.9） format：当前为 jpg delayMs：数字（可选；默认 0） deviceId：字符串（可选；来自 camera.list） 响应载荷： format: &#34;jpg&#34; base64: &#34;&lt;...&gt;&#34; width、height 载荷保护：照片会重新压缩以保持 base64 载荷小于 5 MB。 camera.clip
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 相机捕获（智能体）" href="/openclaw/nodes/camera/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">节点故障排查
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>该页面是英文文档的中文占位版本，完整内容请先参考英文版：Node Troubleshooting。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 节点故障排查" href="/openclaw/nodes/troubleshooting/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">语音唤醒（全局唤醒词）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 将唤醒词作为单一全局列表，由 Gateway 网关拥有。
+没有每节点的自定义唤醒词。 任何节点/应用 UI 都可以编辑列表；更改由 Gateway 网关持久化并广播给所有人。 每个设备仍保留自己的语音唤醒启用/禁用开关（本地用户体验 &#43; 权限不同）。 存储（Gateway 网关主机） 唤醒词存储在 Gateway 网关机器上：
+~/.openclaw/settings/voicewake.json 结构：
+{ &#34;triggers&#34;: [&#34;openclaw&#34;, &#34;claude&#34;, &#34;computer&#34;], &#34;updatedAtMs&#34;: 1730000000000 } 协议 方法 voicewake.get → { triggers: string[] } voicewake.set，参数 { triggers: string[] } → { triggers: string[] } 注意事项：
+触发词会被规范化（修剪空格、删除空值）。空列表回退到默认值。 为安全起见会强制执行限制（数量/长度上限）。 事件 voicewake.changed 载荷 { triggers: string[] } 接收者：
+所有 WebSocket 客户端（macOS 应用、WebChat 等） 所有已连接的节点（iOS/Android），以及节点连接时作为初始&#34;当前状态&#34;推送。 客户端行为 macOS 应用 使用全局列表来控制 VoiceWakeRuntime 触发器。 在语音唤醒设置中编辑&#34;触发词&#34;会调用 voicewake.set，然后依赖广播保持其他客户端同步。 iOS 节点 使用全局列表进行 VoiceWakeManager 触发检测。 在设置中编辑唤醒词会调用 voicewake.set（通过 Gateway 网关 WS），同时保持本地唤醒词检测的响应性。 Android 节点 在设置中暴露唤醒词编辑器。 通过 Gateway 网关 WS 调用 voicewake.set，使编辑在所有地方同步。 </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 语音唤醒（全局唤醒词）" href="/openclaw/nodes/voicewake/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">音频 / 语音消息 — 2026-01-17
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>已支持的功能 媒体理解（音频）：如果音频理解已启用（或自动检测），OpenClaw 会： 找到第一个音频附件（本地路径或 URL），如有需要则下载。 在发送给每个模型条目之前执行 maxBytes 限制。 按顺序运行第一个符合条件的模型条目（提供商或 CLI）。 如果失败或跳过（大小/超时），则尝试下一个条目。 成功后，将 Body 替换为 [Audio] 块并设置 {{Transcript}}。 命令解析：转录成功时，CommandBody/RawBody 会设置为转录文本，因此斜杠命令仍然有效。 详细日志：在 --verbose 模式下，我们会在转录运行和替换正文时记录日志。 自动检测（默认） 如果你未配置模型且 tools.media.audio.enabled 未设置为 false，OpenClaw 会按以下顺序自动检测，并在找到第一个可用选项时停止：
+本地 CLI（如已安装） sherpa-onnx-offline（需要 SHERPA_ONNX_MODEL_DIR 包含 encoder/decoder/joiner/tokens） whisper-cli（来自 whisper-cpp；使用 WHISPER_CPP_MODEL 或内置的 tiny 模型） whisper（Python CLI；自动下载模型） Gemini CLI（gemini）使用 read_many_files 提供商密钥（OpenAI → Groq → Deepgram → Google） 要禁用自动检测，请设置 tools.media.audio.enabled: false。 要自定义，请设置 tools.media.audio.models。 注意：二进制检测在 macOS/Linux/Windows 上采用尽力而为的方式；请确保 CLI 在 PATH 中（我们会展开 ~），或通过完整命令路径设置显式 CLI 模型。
+配置示例 提供商 &#43; CLI 回退（OpenAI &#43; Whisper CLI） { tools: { media: { audio: { enabled: true, maxBytes: 20971520, models: [ { provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }, { type: &#34;cli&#34;, command: &#34;whisper&#34;, args: [&#34;--model&#34;, &#34;base&#34;, &#34;{{MediaPath}}&#34;], timeoutSeconds: 45, }, ], }, }, }, } 仅提供商 &#43; 作用域控制 { tools: { media: { audio: { enabled: true, scope: { default: &#34;allow&#34;, rules: [{ action: &#34;deny&#34;, match: { chatType: &#34;group&#34; } }], }, models: [{ provider: &#34;openai&#34;, model: &#34;gpt-4o-mini-transcribe&#34; }], }, }, }, } 仅提供商（Deepgram） { tools: { media: { audio: { enabled: true, models: [{ provider: &#34;deepgram&#34;, model: &#34;nova-3&#34; }], }, }, }, } 注意事项与限制 提供商认证遵循标准的模型认证顺序（认证配置文件、环境变量、models.providers.*.apiKey）。 当使用 provider: &#34;deepgram&#34; 时，Deepgram 会读取 DEEPGRAM_API_KEY。 Deepgram 设置详情：Deepgram（音频转录）。 音频提供商可以通过 tools.media.audio 覆盖 baseUrl、headers 和 providerOptions。 默认大小限制为 20MB（tools.media.audio.maxBytes）。超大音频会跳过该模型并尝试下一个条目。 音频的默认 maxChars 未设置（完整转录文本）。设置 tools.media.audio.maxChars 或每个条目的 maxChars 来裁剪输出。 OpenAI 自动检测默认使用 gpt-4o-mini-transcribe；设置 model: &#34;gpt-4o-transcribe&#34; 可获得更高准确度。 使用 tools.media.audio.attachments 处理多条语音消息（mode: &#34;all&#34; &#43; maxAttachments）。 转录文本可在模板中通过 {{Transcript}} 使用。 CLI 标准输出有上限（5MB）；请保持 CLI 输出简洁。 常见陷阱 作用域规则采用首次匹配优先。chatType 会被规范化为 direct、group 或 room。 确保你的 CLI 以退出码 0 退出并输出纯文本；JSON 格式需要通过 jq -r .text 进行转换。 保持合理的超时时间（timeoutSeconds，默认 60 秒），以避免阻塞回复队列。 </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 音频 / 语音消息 — 2026-01-17" href="/openclaw/nodes/audio/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

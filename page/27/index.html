@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw update`</h2>
+    </header>
+    <div class="entry-content">
+      <p>安全更新 OpenClaw 并在 stable/beta/dev 渠道之间切换。
+如果你通过 npm/pnpm 安装（全局安装，无 git 元数据），更新通过 更新 中的包管理器流程进行。
+用法 openclaw update openclaw update status openclaw update wizard openclaw update --channel beta openclaw update --channel dev openclaw update --tag beta openclaw update --no-restart openclaw update --json openclaw --update 选项 --no-restart：成功更新后跳过重启 Gateway 网关服务。 --channel &lt;stable|beta|dev&gt;：设置更新渠道（git &#43; npm；持久化到配置中）。 --tag &lt;dist-tag|version&gt;：仅为本次更新覆盖 npm dist-tag 或版本。 --json：打印机器可读的 UpdateRunResult JSON。 --timeout &lt;seconds&gt;：每步超时时间（默认 1200 秒）。 注意：降级需要确认，因为旧版本可能会破坏配置。
+update status 显示当前更新渠道 &#43; git 标签/分支/SHA（对于源码检出），以及更新可用性。
+openclaw update status openclaw update status --json openclaw update status --timeout 10 选项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw update`" href="/openclaw/cli/update/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw uninstall`</h2>
+    </header>
+    <div class="entry-content">
+      <p>卸载 Gateway 网关服务 &#43; 本地数据（CLI 保留）。
+openclaw uninstall openclaw uninstall --all --yes openclaw uninstall --dry-run </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw uninstall`" href="/openclaw/cli/uninstall/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw tui`</h2>
+    </header>
+    <div class="entry-content">
+      <p>打开连接到 Gateway 网关的终端 UI。
+相关：
+TUI 指南：TUI 示例 openclaw tui openclaw tui --url ws://127.0.0.1:18789 --token &lt;token&gt; openclaw tui --session main --deliver </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw tui`" href="/openclaw/cli/tui/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw system`</h2>
+    </header>
+    <div class="entry-content">
+      <p>Gateway 网关的系统级辅助工具：入队系统事件、控制心跳和查看在线状态。
+常用命令 openclaw system event --text &#34;Check for urgent follow-ups&#34; --mode now openclaw system heartbeat enable openclaw system heartbeat last openclaw system presence system event 在主会话上入队系统事件。下一次心跳会将其作为 System: 行注入到提示中。使用 --mode now 立即触发心跳；next-heartbeat 等待下一个计划的心跳时刻。
+标志：
+--text &lt;text&gt;：必填的系统事件文本。 --mode &lt;mode&gt;：now 或 next-heartbeat（默认）。 --json：机器可读输出。 system heartbeat last|enable|disable 心跳控制：
+last：显示最后一次心跳事件。 enable：重新开启心跳（如果之前被禁用，使用此命令）。 disable：暂停心跳。 标志：
+--json：机器可读输出。 system presence 列出 Gateway 网关已知的当前系统在线状态条目（节点、实例和类似状态行）。
+标志：
+--json：机器可读输出。 注意 需要一个运行中的 Gateway 网关，可通过你当前的配置访问（本地或远程）。 系统事件是临时的，不会在重启后持久化。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw system`" href="/openclaw/cli/system/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw status`</h2>
+    </header>
+    <div class="entry-content">
+      <p>渠道 &#43; 会话的诊断。
+openclaw status openclaw status --all openclaw status --deep openclaw status --usage 注意事项：
+--deep 运行实时探测（WhatsApp Web &#43; Telegram &#43; Discord &#43; Google Chat &#43; Slack &#43; Signal）。 当配置了多个智能体时，输出包含每个智能体的会话存储。 概览包含 Gateway 网关 &#43; 节点主机服务安装/运行时状态（如果可用）。 概览包含更新渠道 &#43; git SHA（用于源代码检出）。 更新信息显示在概览中；如果有可用更新，status 会打印提示运行 openclaw update（参见更新）。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw status`" href="/openclaw/cli/status/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw skills`</h2>
+    </header>
+    <div class="entry-content">
+      <p>检查 Skills（内置 &#43; 工作区 &#43; 托管覆盖）并查看哪些符合条件，哪些缺少要求。
+相关内容：
+Skills 系统：Skills Skills 配置：Skills 配置 ClawHub 安装：ClawHub 命令 openclaw skills list openclaw skills list --eligible openclaw skills info &lt;name&gt; openclaw skills check </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw skills`" href="/openclaw/cli/skills/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw setup`</h2>
+    </header>
+    <div class="entry-content">
+      <p>初始化 ~/.openclaw/openclaw.json 和智能体工作区。
+相关内容：
+快速开始：快速开始 向导：新手引导 示例 openclaw setup openclaw setup --workspace ~/.openclaw/workspace 通过 setup 运行向导：
+openclaw setup --wizard </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw setup`" href="/openclaw/cli/setup/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw sessions`</h2>
+    </header>
+    <div class="entry-content">
+      <p>列出已存储的对话会话。
+openclaw sessions openclaw sessions --active 120 openclaw sessions --json </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw sessions`" href="/openclaw/cli/sessions/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw security`</h2>
+    </header>
+    <div class="entry-content">
+      <p>安全工具（审计 &#43; 可选修复）。
+相关：
+安全指南：安全 审计 openclaw security audit openclaw security audit --deep openclaw security audit --fix 当多个私信发送者共享主会话时，审计会发出警告，并建议对共享收件箱使用 session.dmScope=&#34;per-channel-peer&#34;（或多账户渠道使用 per-account-channel-peer）。 当使用小模型（&lt;=300B）且未启用沙箱隔离但启用了 web/browser 工具时，它也会发出警告。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw security`" href="/openclaw/cli/security/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>`openclaw reset`</h2>
+    </header>
+    <div class="entry-content">
+      <p>重置本地配置/状态（保留 CLI 安装）。
+openclaw reset openclaw reset --dry-run openclaw reset --scope config&#43;creds&#43;sessions --yes --non-interactive </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to `openclaw reset`" href="/openclaw/cli/reset/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/26/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/28/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

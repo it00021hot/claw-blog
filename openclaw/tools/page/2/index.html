@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Tools | CLAW博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="Tools - CLAW博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tools/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tools/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tools/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Tools">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tools">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "/openclaw/"
+    }
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Tools",
+      "item": "/openclaw/tools/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/openclaw/">OpenClaw 🦞</a></div>
+  <h1>
+    Tools
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Web 工具
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 提供两个轻量级 Web 工具：
+web_search — 通过 Brave Search API（默认）或 Perplexity Sonar（直连或通过 OpenRouter）搜索网络。 web_fetch — HTTP 获取 &#43; 可读性提取（HTML → markdown/文本）。 这些不是浏览器自动化。对于 JS 密集型网站或需要登录的情况，请使用浏览器工具。
+工作原理 web_search 调用你配置的提供商并返回结果。 Brave（默认）：返回结构化结果（标题、URL、摘要）。 Perplexity：返回带有实时网络搜索引用的 AI 综合答案。 结果按查询缓存 15 分钟（可配置）。 web_fetch 执行普通 HTTP GET 并提取可读内容（HTML → markdown/文本）。它不执行 JavaScript。 web_fetch 默认启用（除非显式禁用）。 选择搜索提供商 提供商 优点 缺点 API 密钥 Brave（默认） 快速、结构化结果、免费层 传统搜索结果 BRAVE_API_KEY Perplexity AI 综合答案、引用、实时 需要 Perplexity 或 OpenRouter 访问 OPENROUTER_API_KEY 或 PERPLEXITY_API_KEY 参见 Brave Search 设置 和 Perplexity Sonar 了解提供商特定详情。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Web 工具" href="/openclaw/tools/web/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">创建自定义 Skills 🛠
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 被设计为易于扩展。“Skills&#34;是为你的助手添加新功能的主要方式。
+什么是 Skill？ Skill 是一个包含 SKILL.md 文件（为 LLM 提供指令和工具定义）的目录，可选包含一些脚本或资源。
+分步指南：你的第一个 Skill 1. 创建目录 Skills 位于你的工作区中，通常是 ~/.openclaw/workspace/skills/。为你的 Skill 创建一个新文件夹：
+mkdir -p ~/.openclaw/workspace/skills/hello-world 2. 定义 SKILL.md 在该目录中创建一个 SKILL.md 文件。此文件使用 YAML frontmatter 作为元数据，使用 Markdown 作为指令。
+--- name: hello_world description: A simple skill that says hello. --- # Hello World Skill When the user asks for a greeting, use the `echo` tool to say &#34;Hello from your custom skill!&#34;. 3. 添加工具（可选） 你可以在 frontmatter 中定义自定义工具，或指示智能体使用现有的系统工具（如 bash 或 browser）。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 创建自定义 Skills 🛠" href="/openclaw/tools/creating-skills/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">多智能体沙箱与工具配置
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>概述 多智能体设置中的每个智能体现在可以拥有自己的：
+沙箱配置（agents.list[].sandbox 覆盖 agents.defaults.sandbox） 工具限制（tools.allow / tools.deny，以及 agents.list[].tools） 这允许你运行具有不同安全配置文件的多个智能体：
+具有完全访问权限的个人助手 具有受限工具的家庭/工作智能体 在沙箱中运行的面向公众的智能体 setupCommand 属于 sandbox.docker 下（全局或按智能体），在容器创建时运行一次。
+认证是按智能体的：每个智能体从其自己的 agentDir 认证存储读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 凭证不会在智能体之间共享。切勿在智能体之间重用 agentDir。 如果你想共享凭证，请将 auth-profiles.json 复制到其他智能体的 agentDir 中。
+有关沙箱隔离在运行时的行为，请参见沙箱隔离。 有关调试&#34;为什么这被阻止了？&#34;，请参见沙箱 vs 工具策略 vs 提权 和 openclaw sandbox explain。
+配置示例 示例 1：个人 &#43; 受限家庭智能体 { &#34;agents&#34;: { &#34;list&#34;: [ { &#34;id&#34;: &#34;main&#34;, &#34;default&#34;: true, &#34;name&#34;: &#34;Personal Assistant&#34;, &#34;workspace&#34;: &#34;~/.openclaw/workspace&#34;, &#34;sandbox&#34;: { &#34;mode&#34;: &#34;off&#34; } }, { &#34;id&#34;: &#34;family&#34;, &#34;name&#34;: &#34;Family Bot&#34;, &#34;workspace&#34;: &#34;~/.openclaw/workspace-family&#34;, &#34;sandbox&#34;: { &#34;mode&#34;: &#34;all&#34;, &#34;scope&#34;: &#34;agent&#34; }, &#34;tools&#34;: { &#34;allow&#34;: [&#34;read&#34;], &#34;deny&#34;: [&#34;exec&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;, &#34;process&#34;, &#34;browser&#34;] } } ] }, &#34;bindings&#34;: [ { &#34;agentId&#34;: &#34;family&#34;, &#34;match&#34;: { &#34;provider&#34;: &#34;whatsapp&#34;, &#34;accountId&#34;: &#34;*&#34;, &#34;peer&#34;: { &#34;kind&#34;: &#34;group&#34;, &#34;id&#34;: &#34;120363424282127706@g.us&#34; } } } ] } 结果：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 多智能体沙箱与工具配置" href="/openclaw/tools/multi-agent-sandbox-tools/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">子智能体
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>子智能体是从现有智能体运行中生成的后台智能体运行。它们在自己的会话中运行（agent:&lt;agentId&gt;:subagent:&lt;uuid&gt;），完成后将结果通告回请求者的聊天渠道。
+斜杠命令 使用 /subagents 检查或控制当前会话的子智能体运行：
+/subagents list /subagents kill &lt;id|#|all&gt; /subagents log &lt;id|#&gt; [limit] [tools] /subagents info &lt;id|#&gt; /subagents send &lt;id|#&gt; &lt;message&gt; /subagents steer &lt;id|#&gt; &lt;message&gt; /subagents spawn &lt;agentId&gt; &lt;task&gt; [--model &lt;model&gt;] [--thinking &lt;level&gt;] /subagents info 显示运行元数据（状态、时间戳、会话 id、转录路径、清理）。
+启动行为 /subagents spawn 以用户命令方式启动后台子智能体，任务完成后会向请求者聊天频道回发一条最终完成消息。
+该命令非阻塞，先返回 runId。 完成后，子智能体会将汇总/结果消息发布到请求者聊天渠道。 --model 与 --thinking 可仅对本次运行做覆盖设置。 可在完成后通过 info/log 查看详细信息和输出。 主要目标：
+并行化&#34;研究 / 长任务 / 慢工具&#34;工作，而不阻塞主运行。 默认保持子智能体隔离（会话分离 &#43; 可选沙箱隔离）。 保持工具接口难以滥用：子智能体默认不获得会话工具。 避免嵌套扇出：子智能体不能生成子智能体。 成本说明：每个子智能体都有自己的上下文和 token 使用量。对于繁重或重复的任务，为子智能体设置更便宜的模型，而让主智能体使用更高质量的模型。你可以通过 agents.defaults.subagents.model 或每智能体覆盖来配置。
+工具 使用 sessions_spawn：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 子智能体" href="/openclaw/tools/subagents/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">思考级别（/think 指令）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>功能说明 在任何入站消息正文中使用内联指令：/t &lt;level&gt;、/think:&lt;level&gt; 或 /thinking &lt;level&gt;。 级别（别名）：off | minimal | low | medium | high | xhigh（仅 GPT-5.2 &#43; Codex 模型） minimal → “think” low → “think hard” medium → “think harder” high → “ultrathink”（最大预算） xhigh → “ultrathink&#43;&#34;（仅 GPT-5.2 &#43; Codex 模型） highest、max 映射为 high。 提供商说明： Z.AI（zai/*）仅支持二元思考（on/off）。任何非 off 级别均视为 on（映射为 low）。 解析优先顺序 消息上的内联指令（仅适用于该条消息）。 会话覆盖（通过发送仅包含指令的消息设置）。 全局默认值（配置中的 agents.defaults.thinkingDefault）。 回退：具备推理能力的模型为 low；否则为 off。 设置会话默认值 发送一条仅包含指令的消息（允许空白），例如 /think:medium 或 /t high。 该设置在当前会话中持续生效（默认按发送者）；通过 /think:off 或会话空闲重置来清除。 会发送确认回复（Thinking level set to high. / Thinking disabled.）。如果级别无效（例如 /thinking big），命令将被拒绝并给出提示，会话状态保持不变。 不带参数发送 /think（或 /think:）可查看当前思考级别。 按智能体应用 内嵌 Pi：解析后的级别传递给进程内的 Pi 智能体运行时。 详细模式指令（/verbose 或 /v） 级别：on（最小）| full | off（默认）。 仅包含指令的消息切换会话详细模式并回复 Verbose logging enabled. / Verbose logging disabled.；无效级别返回提示且不改变状态。 /verbose off 存储一个显式的会话覆盖；通过会话 UI 选择 inherit 来清除。 内联指令仅影响该条消息；否则应用会话/全局默认值。 不带参数发送 /verbose（或 /verbose:）可查看当前详细模式级别。 启用详细模式后，发出结构化工具结果的智能体（Pi 及其他 JSON 智能体）会将每个工具调用作为独立的元数据消息发回，可用时以 &lt;emoji&gt; &lt;tool-name&gt;: &lt;arg&gt; 为前缀（路径/命令）。这些工具摘要在每个工具启动时立即发送（独立气泡），而非作为流式增量。 当详细模式为 full 时，工具输出也会在完成后转发（独立气泡，截断至安全长度）。如果在运行过程中切换 /verbose on|full|off，后续的工具气泡会遵循新设置。 推理可见性（/reasoning） 级别：on|off|stream。 仅包含指令的消息切换回复中是否显示思考块。 启用时，推理内容作为独立消息发送，以 Reasoning: 为前缀。 stream（仅 Telegram）：在回复生成期间将推理内容流式输出到 Telegram 草稿气泡中，然后发送不包含推理的最终回答。 别名：/reason。 不带参数发送 /reasoning（或 /reasoning:）可查看当前推理级别。 相关内容 提权模式文档位于提权模式。 心跳 心跳探测正文为配置的心跳提示词（默认：Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.）。心跳消息中的内联指令照常生效（但避免从心跳中更改会话默认值）。 心跳投递默认仅包含最终负载。要同时发送单独的 Reasoning: 消息（如果可用），请设置 agents.defaults.heartbeat.includeReasoning: true 或按智能体 agents.list[].heartbeat.includeReasoning: true。 Web 聊天 UI Web 聊天的思考选择器在页面加载时从入站会话存储/配置中读取并反映会话的已存储级别。 选择另一个级别仅应用于下一条消息（thinkingOnce）；发送后，选择器会回到已存储的会话级别。 要更改会话默认值，请发送 /think:&lt;level&gt; 指令（和之前一样）；选择器将在下次刷新后反映该设置。 </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 思考级别（/think 指令）" href="/openclaw/tools/thinking/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">执行审批
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>执行审批是配套应用/节点主机的安全护栏，用于允许沙箱隔离的智能体在真实主机（gateway 或 node）上运行命令。可以将其理解为安全联锁：只有当策略 &#43; 允许列表 &#43;（可选的）用户审批都同意时，命令才会被允许执行。 执行审批是附加于工具策略和提权门控之上的（除非 elevated 设置为 full，这会跳过审批）。 生效策略取 tools.exec.* 和审批默认值中更严格的一方；如果审批字段被省略，则使用 tools.exec 的值。
+如果配套应用 UI 不可用，任何需要提示的请求都将由 ask fallback（默认：deny）决定。
+适用范围 执行审批在执行主机上本地强制执行：
+gateway 主机 → gateway 机器上的 openclaw 进程 node 主机 → 节点运行器（macOS 配套应用或无头节点主机） macOS 分工：
+node 主机服务通过本地 IPC 将 system.run 转发给 macOS 应用。 macOS 应用执行审批并在 UI 上下文中执行命令。 设置和存储 审批信息存储在执行主机上的本地 JSON 文件中：
+~/.openclaw/exec-approvals.json
+示例结构：
+{ &#34;version&#34;: 1, &#34;socket&#34;: { &#34;path&#34;: &#34;~/.openclaw/exec-approvals.sock&#34;, &#34;token&#34;: &#34;base64url-token&#34; }, &#34;defaults&#34;: { &#34;security&#34;: &#34;deny&#34;, &#34;ask&#34;: &#34;on-miss&#34;, &#34;askFallback&#34;: &#34;deny&#34;, &#34;autoAllowSkills&#34;: false }, &#34;agents&#34;: { &#34;main&#34;: { &#34;security&#34;: &#34;allowlist&#34;, &#34;ask&#34;: &#34;on-miss&#34;, &#34;askFallback&#34;: &#34;deny&#34;, &#34;autoAllowSkills&#34;: true, &#34;allowlist&#34;: [ { &#34;id&#34;: &#34;B0C8C0B3-2C2D-4F8A-9A3C-5A4B3C2D1E0F&#34;, &#34;pattern&#34;: &#34;~/Projects/**/bin/rg&#34;, &#34;lastUsedAt&#34;: 1737150000000, &#34;lastUsedCommand&#34;: &#34;rg -n TODO&#34;, &#34;lastResolvedPath&#34;: &#34;/Users/user/Projects/.../bin/rg&#34; } ] } } } 策略选项 Security（exec.security） deny：阻止所有主机执行请求。 allowlist：仅允许在允许列表中的命令。 full：允许所有命令（等同于提权模式）。 Ask（exec.ask） off：从不提示。 on-miss：仅在允许列表未匹配时提示。 always：每次命令都提示。 Ask fallback（askFallback） 如果需要提示但无法访问 UI，fallback 决定：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 执行审批" href="/openclaw/tools/exec-approvals/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">提升模式（/elevated 指令）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>功能说明 /elevated on 在 Gateway 网关主机上运行并保留 exec 审批（与 /elevated ask 相同）。 /elevated full 在 Gateway 网关主机上运行并自动批准 exec（跳过 exec 审批）。 /elevated ask 在 Gateway 网关主机上运行但保留 exec 审批（与 /elevated on 相同）。 on/ask 不会强制 exec.security=full；配置的安全/询问策略仍然适用。 仅在智能体被沙箱隔离时改变行为（否则 exec 已经在主机上运行）。 指令形式：/elevated on|off|ask|full、/elev on|off|ask|full。 仅接受 on|off|ask|full；其他任何内容返回提示且不改变状态。 它控制什么（以及不控制什么） 可用性门控：tools.elevated 是全局基线。agents.list[].tools.elevated 可以进一步限制每个智能体的提升（两者都必须允许）。 每会话状态：/elevated on|off|ask|full 为当前会话键设置提升级别。 内联指令：消息内的 /elevated on|ask|full 仅适用于该消息。 群组：在群聊中，仅当智能体被提及时才遵守提升指令。绕过提及要求的纯命令消息被视为已提及。 主机执行：elevated 强制 exec 到 Gateway 网关主机；full 还设置 security=full。 审批：full 跳过 exec 审批；on/ask 在允许列表/询问规则要求时遵守审批。 非沙箱隔离智能体：对位置无影响；仅影响门控、日志和状态。 工具策略仍然适用：如果 exec 被工具策略拒绝，则无法使用 elevated。 与 /exec 分开：/exec 为授权发送者调整每会话默认值，不需要 elevated。 解析顺序 消息上的内联指令（仅适用于该消息）。 会话覆盖（通过发送仅含指令的消息设置）。 全局默认值（配置中的 agents.defaults.elevatedDefault）。 设置会话默认值 发送一条仅包含指令的消息（允许空白），例如 /elevated full。 发送确认回复（Elevated mode set to full... / Elevated mode disabled.）。 如果 elevated 访问被禁用或发送者不在批准的允许列表中，指令会回复一个可操作的错误且不改变会话状态。 发送不带参数的 /elevated（或 /elevated:）以查看当前的 elevated 级别。 可用性 &#43; 允许列表 功能门控：tools.elevated.enabled（即使代码支持，也可以通过配置将默认值设为关闭）。 发送者允许列表：tools.elevated.allowFrom，带有每提供商允许列表（例如 discord、whatsapp）。 每智能体门控：agents.list[].tools.elevated.enabled（可选；只能进一步限制）。 每智能体允许列表：agents.list[].tools.elevated.allowFrom（可选；设置时，发送者必须同时匹配全局 &#43; 每智能体允许列表）。 Discord 回退：如果省略 tools.elevated.allowFrom.discord，则使用 channels.discord.dm.allowFrom 列表作为回退。设置 tools.elevated.allowFrom.discord（即使是 []）以覆盖。每智能体允许列表不使用回退。 所有门控都必须通过；否则 elevated 被视为不可用。 日志 &#43; 状态 Elevated exec 调用以 info 级别记录。 会话状态包括 elevated 模式（例如 elevated=ask、elevated=full）。 </p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 提升模式（/elevated 指令）" href="/openclaw/tools/elevated/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">插件（扩展）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>快速开始（插件新手？） 插件只是一个小型代码模块，用额外功能（命令、工具和 Gateway 网关 RPC）扩展 OpenClaw。
+大多数时候，当你想要一个尚未内置到核心 OpenClaw 的功能（或你想将可选功能排除在主安装之外）时，你会使用插件。
+快速路径：
+查看已加载的内容： openclaw plugins list 安装官方插件（例如：Voice Call）： openclaw plugins install @openclaw/voice-call 重启 Gateway 网关，然后在 plugins.entries.&lt;id&gt;.config 下配置。 参见 Voice Call 了解具体的插件示例。
+可用插件（官方） 从 2026.1.15 起 Microsoft Teams 仅作为插件提供；如果使用 Teams，请安装 @openclaw/msteams。 Memory (Core) — 捆绑的记忆搜索插件（通过 plugins.slots.memory 默认启用） Memory (LanceDB) — 捆绑的长期记忆插件（自动召回/捕获；设置 plugins.slots.memory = &#34;memory-lancedb&#34;） Voice Call — @openclaw/voice-call Zalo Personal — @openclaw/zalouser Matrix — @openclaw/matrix Nostr — @openclaw/nostr Zalo — @openclaw/zalo Microsoft Teams — @openclaw/msteams Google Antigravity OAuth（提供商认证）— 作为 google-antigravity-auth 捆绑（默认禁用） Gemini CLI OAuth（提供商认证）— 作为 google-gemini-cli-auth 捆绑（默认禁用） Qwen OAuth（提供商认证）— 作为 qwen-portal-auth 捆绑（默认禁用） Copilot Proxy（提供商认证）— 本地 VS Code Copilot Proxy 桥接；与内置 github-copilot 设备登录不同（捆绑，默认禁用） OpenClaw 插件是通过 jiti 在运行时加载的 TypeScript 模块。配置验证不会执行插件代码；它使用插件清单和 JSON Schema。参见 插件清单。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 插件（扩展）" href="/openclaw/tools/plugin/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">斜杠命令
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>命令由 Gateway 网关处理。大多数命令必须作为以 / 开头的独立消息发送。 仅主机的 bash 聊天命令使用 ! &lt;cmd&gt;（/bash &lt;cmd&gt; 是别名）。
+有两个相关系统：
+命令：独立的 /... 消息。 指令：/think、/verbose、/reasoning、/elevated、/exec、/model、/queue。 指令在模型看到消息之前被剥离。 在普通聊天消息中（不是仅指令消息），它们被视为&#34;内联提示&#34;，不会持久化会话设置。 在仅指令消息中（消息只包含指令），它们会持久化到会话并回复确认。 指令仅对授权发送者生效（渠道白名单/配对加上 commands.useAccessGroups）。 未授权发送者的指令被视为纯文本。 还有一些内联快捷方式（仅限白名单/授权发送者）：/help、/commands、/status、/whoami（/id）。 它们立即运行，在模型看到消息之前被剥离，剩余文本继续通过正常流程。
+配置 { commands: { native: &#34;auto&#34;, nativeSkills: &#34;auto&#34;, text: true, bash: false, bashForegroundMs: 2000, config: false, debug: false, restart: false, useAccessGroups: true, }, } commands.text（默认 true）启用解析聊天消息中的 /...。 在没有原生命令的平台上（WhatsApp/WebChat/Signal/iMessage/Google Chat/MS Teams），即使你将此设置为 false，文本命令仍然有效。 commands.native（默认 &#34;auto&#34;）注册原生命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（直到你添加斜杠命令）；在不支持原生命令的提供商上忽略。 设置 channels.discord.commands.native、channels.telegram.commands.native 或 channels.slack.commands.native 以按提供商覆盖（布尔值或 &#34;auto&#34;）。 false 在启动时清除 Discord/Telegram 上之前注册的命令。Slack 命令在 Slack 应用中管理，不会自动删除。 commands.nativeSkills（默认 &#34;auto&#34;）在支持时原生注册 Skill 命令。 Auto：在 Discord/Telegram 上启用；在 Slack 上禁用（Slack 需要为每个 Skill 创建一个斜杠命令）。 设置 channels.discord.commands.nativeSkills、channels.telegram.commands.nativeSkills 或 channels.slack.commands.nativeSkills 以按提供商覆盖（布尔值或 &#34;auto&#34;）。 commands.bash（默认 false）启用 ! &lt;cmd&gt; 来运行主机 shell 命令（/bash &lt;cmd&gt; 是别名；需要 tools.elevated 白名单）。 commands.bashForegroundMs（默认 2000）控制 bash 切换到后台模式之前等待多长时间（0 立即后台运行）。 commands.config（默认 false）启用 /config（读写 openclaw.json）。 commands.debug（默认 false）启用 /debug（仅运行时覆盖）。 commands.useAccessGroups（默认 true）对命令强制执行白名单/策略。 命令列表 文本 &#43; 原生（启用时）：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 斜杠命令" href="/openclaw/tools/slash-commands/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">浏览器（openclaw 托管）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>OpenClaw 可以运行一个由智能体控制的专用 Chrome/Brave/Edge/Chromium 配置文件。 它与你的个人浏览器隔离，通过 Gateway 网关内部的小型本地控制服务进行管理（仅限 loopback）。
+新手视角：
+把它想象成一个独立的、仅供智能体使用的浏览器。 openclaw 配置文件不会触及你的个人浏览器配置文件。 智能体可以在安全的通道中打开标签页、读取页面、点击和输入。 默认的 chrome 配置文件通过扩展中继使用系统默认的 Chromium 浏览器；切换到 openclaw 可使用隔离的托管浏览器。 功能概览 一个名为 openclaw 的独立浏览器配置文件（默认橙色主题）。 确定性标签页控制（列出/打开/聚焦/关闭）。 智能体操作（点击/输入/拖动/选择）、快照、截图、PDF。 可选的多配置文件支持（openclaw、work、remote 等）。 此浏览器不是你的日常浏览器。它是一个安全、隔离的界面，用于智能体自动化和验证。
+快速开始 openclaw browser --browser-profile openclaw status openclaw browser --browser-profile openclaw start openclaw browser --browser-profile openclaw open https://example.com openclaw browser --browser-profile openclaw snapshot 如果出现&#34;Browser disabled&#34;，请在配置中启用它（见下文）并重启 Gateway 网关。
+配置文件：openclaw 与 chrome openclaw：托管的隔离浏览器（无需扩展）。 chrome：到你系统浏览器的扩展中继（需要将 OpenClaw 扩展附加到标签页）。 如果你希望默认使用托管模式，请设置 browser.defaultProfile: &#34;openclaw&#34;。
+配置 浏览器设置位于 ~/.openclaw/openclaw.json。
+{ browser: { enabled: true, // default: true // cdpUrl: &#34;http://127.0.0.1:18792&#34;, // legacy single-profile override remoteCdpTimeoutMs: 1500, // remote CDP HTTP timeout (ms) remoteCdpHandshakeTimeoutMs: 3000, // remote CDP WebSocket handshake timeout (ms) defaultProfile: &#34;chrome&#34;, color: &#34;#FF4500&#34;, headless: false, noSandbox: false, attachOnly: false, executablePath: &#34;/Applications/Brave Browser.app/Contents/MacOS/Brave Browser&#34;, profiles: { openclaw: { cdpPort: 18800, color: &#34;#FF4500&#34; }, work: { cdpPort: 18801, color: &#34;#0066CC&#34; }, remote: { cdpUrl: &#34;http://10.0.0.42:9222&#34;, color: &#34;#00AA00&#34; }, }, }, } 注意事项：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to 浏览器（openclaw 托管）" href="/openclaw/tools/browser/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="/openclaw/tools/">
+      «&nbsp;Prev&nbsp;
+    </a>
+    <a class="next" href="/openclaw/tools/page/3/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

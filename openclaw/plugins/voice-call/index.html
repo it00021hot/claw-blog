@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Voice Call（插件） | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。
+当前提供商：
+
+twilio（Programmable Voice &#43; Media Streams）
+telnyx（Call Control v2）
+plivo（Voice API &#43; XML transfer &#43; GetInput speech）
+mock（开发/无网络）
+
+快速心智模型：
+
+安装插件
+重启 Gateway 网关
+在 plugins.entries.voice-call.config 下配置
+使用 openclaw voicecall ... 或 voice_call 工具
+
+运行位置（本地 vs 远程）
+Voice Call 插件运行在 Gateway 网关进程内部。
+如果你使用远程 Gateway 网关，在运行 Gateway 网关的机器上安装/配置插件，然后重启 Gateway 网关以加载它。
+安装
+选项 A：从 npm 安装（推荐）
+openclaw plugins install @openclaw/voice-call
+之后重启 Gateway 网关。
+选项 B：从本地文件夹安装（开发，不复制）
+openclaw plugins install ./extensions/voice-call
+cd ./extensions/voice-call &amp;&amp; pnpm install
+之后重启 Gateway 网关。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/plugins/voice-call/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/plugins/voice-call/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/plugins/voice-call/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="Voice Call（插件）">
+  <meta property="og:description" content="通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。
+当前提供商：
+twilio（Programmable Voice &#43; Media Streams） telnyx（Call Control v2） plivo（Voice API &#43; XML transfer &#43; GetInput speech） mock（开发/无网络） 快速心智模型：
+安装插件 重启 Gateway 网关 在 plugins.entries.voice-call.config 下配置 使用 openclaw voicecall ... 或 voice_call 工具 运行位置（本地 vs 远程） Voice Call 插件运行在 Gateway 网关进程内部。
+如果你使用远程 Gateway 网关，在运行 Gateway 网关的机器上安装/配置插件，然后重启 Gateway 网关以加载它。
+安装 选项 A：从 npm 安装（推荐） openclaw plugins install @openclaw/voice-call 之后重启 Gateway 网关。
+选项 B：从本地文件夹安装（开发，不复制） openclaw plugins install ./extensions/voice-call cd ./extensions/voice-call &amp;&amp; pnpm install 之后重启 Gateway 网关。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Voice Call（插件）">
+<meta name="twitter:description" content="通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。
+当前提供商：
+
+twilio（Programmable Voice &#43; Media Streams）
+telnyx（Call Control v2）
+plivo（Voice API &#43; XML transfer &#43; GetInput speech）
+mock（开发/无网络）
+
+快速心智模型：
+
+安装插件
+重启 Gateway 网关
+在 plugins.entries.voice-call.config 下配置
+使用 openclaw voicecall ... 或 voice_call 工具
+
+运行位置（本地 vs 远程）
+Voice Call 插件运行在 Gateway 网关进程内部。
+如果你使用远程 Gateway 网关，在运行 Gateway 网关的机器上安装/配置插件，然后重启 Gateway 网关以加载它。
+安装
+选项 A：从 npm 安装（推荐）
+openclaw plugins install @openclaw/voice-call
+之后重启 Gateway 网关。
+选项 B：从本地文件夹安装（开发，不复制）
+openclaw plugins install ./extensions/voice-call
+cd ./extensions/voice-call &amp;&amp; pnpm install
+之后重启 Gateway 网关。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Voice Call（插件）",
+      "item": "/openclaw/plugins/voice-call/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Voice Call（插件）",
+  "name": "Voice Call（插件）",
+  "description": "通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。\n当前提供商：\ntwilio（Programmable Voice + Media Streams） telnyx（Call Control v2） plivo（Voice API + XML transfer + GetInput speech） mock（开发/无网络） 快速心智模型：\n安装插件 重启 Gateway 网关 在 plugins.entries.voice-call.config 下配置 使用 openclaw voicecall ... 或 voice_call 工具 运行位置（本地 vs 远程） Voice Call 插件运行在 Gateway 网关进程内部。\n如果你使用远程 Gateway 网关，在运行 Gateway 网关的机器上安装/配置插件，然后重启 Gateway 网关以加载它。\n安装 选项 A：从 npm 安装（推荐） openclaw plugins install @openclaw/voice-call 之后重启 Gateway 网关。\n选项 B：从本地文件夹安装（开发，不复制） openclaw plugins install ./extensions/voice-call cd ./extensions/voice-call \u0026amp;\u0026amp; pnpm install 之后重启 Gateway 网关。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。\n当前提供商：\ntwilio（Programmable Voice + Media Streams） telnyx（Call Control v2） plivo（Voice API + XML transfer + GetInput speech） mock（开发/无网络） 快速心智模型：\n安装插件 重启 Gateway 网关 在 plugins.entries.voice-call.config 下配置 使用 openclaw voicecall ... 或 voice_call 工具 运行位置（本地 vs 远程） Voice Call 插件运行在 Gateway 网关进程内部。\n如果你使用远程 Gateway 网关，在运行 Gateway 网关的机器上安装/配置插件，然后重启 Gateway 网关以加载它。\n安装 选项 A：从 npm 安装（推荐） openclaw plugins install @openclaw/voice-call 之后重启 Gateway 网关。\n选项 B：从本地文件夹安装（开发，不复制） openclaw plugins install ./extensions/voice-call cd ./extensions/voice-call \u0026\u0026 pnpm install 之后重启 Gateway 网关。\n配置 在 plugins.entries.voice-call.config 下设置配置：\n{ plugins: { entries: { \"voice-call\": { enabled: true, config: { provider: \"twilio\", // 或 \"telnyx\" | \"plivo\" | \"mock\" fromNumber: \"+15550001234\", toNumber: \"+15550005678\", twilio: { accountSid: \"ACxxxxxxxx\", authToken: \"...\", }, plivo: { authId: \"MAxxxxxxxxxxxxxxxxxxxx\", authToken: \"...\", }, // Webhook 服务器 serve: { port: 3334, path: \"/voice/webhook\", }, // 公开暴露（选一个） // publicUrl: \"https://example.ngrok.app/voice/webhook\", // tunnel: { provider: \"ngrok\" }, // tailscale: { mode: \"funnel\", path: \"/voice/webhook\" } outbound: { defaultMode: \"notify\", // notify | conversation }, streaming: { enabled: true, streamPath: \"/voice/stream\", }, }, }, }, }, } 注意事项：\nTwilio/Telnyx 需要可公开访问的 webhook URL。 Plivo 需要可公开访问的 webhook URL。 mock 是本地开发提供商（无网络调用）。 skipSignatureVerification 仅用于本地测试。 如果你使用 ngrok 免费版，将 publicUrl 设置为确切的 ngrok URL；签名验证始终强制执行。 tunnel.allowNgrokFreeTierLoopbackBypass: true 允许带有无效签名的 Twilio webhooks，仅当 tunnel.provider=\"ngrok\" 且 serve.bind 是 loopback（ngrok 本地代理）时。仅用于本地开发。 Ngrok 免费版 URL 可能会更改或添加中间页面行为；如果 publicUrl 漂移，Twilio 签名将失败。对于生产环境，优先使用稳定域名或 Tailscale funnel。 通话的 TTS Voice Call 使用核心 messages.tts 配置（OpenAI 或 ElevenLabs）进行通话中的流式语音。你可以在插件配置下使用相同的结构覆盖它——它会与 messages.tts 深度合并。\n{ tts: { provider: \"elevenlabs\", elevenlabs: { voiceId: \"pMsXgVXv3BLzUgSXRplE\", modelId: \"eleven_multilingual_v2\", }, }, } 注意事项：\n语音通话忽略 Edge TTS（电话音频需要 PCM；Edge 输出不可靠）。 当启用 Twilio 媒体流时使用核心 TTS；否则通话回退到提供商原生语音。 更多示例 仅使用核心 TTS（无覆盖）：\n{ messages: { tts: { provider: \"openai\", openai: { voice: \"alloy\" }, }, }, } 仅为通话覆盖为 ElevenLabs（其他地方保持核心默认）：\n{ plugins: { entries: { \"voice-call\": { config: { tts: { provider: \"elevenlabs\", elevenlabs: { apiKey: \"elevenlabs_key\", voiceId: \"pMsXgVXv3BLzUgSXRplE\", modelId: \"eleven_multilingual_v2\", }, }, }, }, }, }, } 仅为通话覆盖 OpenAI 模型（深度合并示例）：\n{ plugins: { entries: { \"voice-call\": { config: { tts: { openai: { model: \"gpt-4o-mini-tts\", voice: \"marin\", }, }, }, }, }, }, } 入站通话 入站策略默认为 disabled。要启用入站通话，设置：\n{ inboundPolicy: \"allowlist\", allowFrom: [\"+15550001234\"], inboundGreeting: \"Hello! How can I help?\", } 自动响应使用智能体系统。通过以下方式调整：\nresponseModel responseSystemPrompt responseTimeoutMs CLI openclaw voicecall call --to \"+15555550123\" --message \"Hello from OpenClaw\" openclaw voicecall continue --call-id --message \"Any questions?\" openclaw voicecall speak --call-id --message \"One moment\" openclaw voicecall end --call-id openclaw voicecall status --call-id openclaw voicecall tail openclaw voicecall expose --mode funnel 智能体工具 工具名称：voice_call\n操作：\ninitiate_call（message、to?、mode?） continue_call（callId、message） speak_to_user（callId、message） end_call（callId） get_status（callId） 此仓库在 skills/voice-call/SKILL.md 提供了配套的 skill 文档。\nGateway 网关 RPC voicecall.initiate（to?、message、mode?） voicecall.continue（callId、message） voicecall.speak（callId、message） voicecall.end（callId） voicecall.status（callId） ",
+  "wordCount" : "403",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/plugins/voice-call/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Voice Call（插件）
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%bf%90%e8%a1%8c%e4%bd%8d%e7%bd%ae%e6%9c%ac%e5%9c%b0-vs-%e8%bf%9c%e7%a8%8b" aria-label="运行位置（本地 vs 远程）">运行位置（本地 vs 远程）</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e8%a3%85" aria-label="安装">安装</a><ul>
+                        
+                <li>
+                    <a href="#%e9%80%89%e9%a1%b9-a%e4%bb%8e-npm-%e5%ae%89%e8%a3%85%e6%8e%a8%e8%8d%90" aria-label="选项 A：从 npm 安装（推荐）">选项 A：从 npm 安装（推荐）</a></li>
+                <li>
+                    <a href="#%e9%80%89%e9%a1%b9-b%e4%bb%8e%e6%9c%ac%e5%9c%b0%e6%96%87%e4%bb%b6%e5%a4%b9%e5%ae%89%e8%a3%85%e5%bc%80%e5%8f%91%e4%b8%8d%e5%a4%8d%e5%88%b6" aria-label="选项 B：从本地文件夹安装（开发，不复制）">选项 B：从本地文件夹安装（开发，不复制）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae" aria-label="配置">配置</a></li>
+                <li>
+                    <a href="#%e9%80%9a%e8%af%9d%e7%9a%84-tts" aria-label="通话的 TTS">通话的 TTS</a><ul>
+                        
+                <li>
+                    <a href="#%e6%9b%b4%e5%a4%9a%e7%a4%ba%e4%be%8b" aria-label="更多示例">更多示例</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%a5%e7%ab%99%e9%80%9a%e8%af%9d" aria-label="入站通话">入站通话</a></li>
+                <li>
+                    <a href="#cli" aria-label="CLI">CLI</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e5%b7%a5%e5%85%b7" aria-label="智能体工具">智能体工具</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3-rpc" aria-label="Gateway 网关 RPC">Gateway 网关 RPC</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>通过插件为 OpenClaw 提供语音通话。支持出站通知和带有入站策略的多轮对话。</p>
+<p>当前提供商：</p>
+<ul>
+<li><code>twilio</code>（Programmable Voice + Media Streams）</li>
+<li><code>telnyx</code>（Call Control v2）</li>
+<li><code>plivo</code>（Voice API + XML transfer + GetInput speech）</li>
+<li><code>mock</code>（开发/无网络）</li>
+</ul>
+<p>快速心智模型：</p>
+<ul>
+<li>安装插件</li>
+<li>重启 Gateway 网关</li>
+<li>在 <code>plugins.entries.voice-call.config</code> 下配置</li>
+<li>使用 <code>openclaw voicecall ...</code> 或 <code>voice_call</code> 工具</li>
+</ul>
+<h2 id="运行位置本地-vs-远程">运行位置（本地 vs 远程）<a hidden class="anchor" aria-hidden="true" href="#运行位置本地-vs-远程">#</a></h2>
+<p>Voice Call 插件运行在 <strong>Gateway 网关进程内部</strong>。</p>
+<p>如果你使用远程 Gateway 网关，在<strong>运行 Gateway 网关的机器</strong>上安装/配置插件，然后重启 Gateway 网关以加载它。</p>
+<h2 id="安装">安装<a hidden class="anchor" aria-hidden="true" href="#安装">#</a></h2>
+<h3 id="选项-a从-npm-安装推荐">选项 A：从 npm 安装（推荐）<a hidden class="anchor" aria-hidden="true" href="#选项-a从-npm-安装推荐">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install @openclaw/voice-call
+</span></span></code></pre></div><p>之后重启 Gateway 网关。</p>
+<h3 id="选项-b从本地文件夹安装开发不复制">选项 B：从本地文件夹安装（开发，不复制）<a hidden class="anchor" aria-hidden="true" href="#选项-b从本地文件夹安装开发不复制">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw plugins install ./extensions/voice-call
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./extensions/voice-call <span class="o">&amp;&amp;</span> pnpm install
+</span></span></code></pre></div><p>之后重启 Gateway 网关。</p>
+<h2 id="配置">配置<a hidden class="anchor" aria-hidden="true" href="#配置">#</a></h2>
+<p>在 <code>plugins.entries.voice-call.config</code> 下设置配置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  plugins: {
+    entries: {
+      &#34;voice-call&#34;: {
+        enabled: true,
+        config: {
+          provider: &#34;twilio&#34;, // 或 &#34;telnyx&#34; | &#34;plivo&#34; | &#34;mock&#34;
+          fromNumber: &#34;+15550001234&#34;,
+          toNumber: &#34;+15550005678&#34;,
+
+          twilio: {
+            accountSid: &#34;ACxxxxxxxx&#34;,
+            authToken: &#34;...&#34;,
+          },
+
+          plivo: {
+            authId: &#34;MAxxxxxxxxxxxxxxxxxxxx&#34;,
+            authToken: &#34;...&#34;,
+          },
+
+          // Webhook 服务器
+          serve: {
+            port: 3334,
+            path: &#34;/voice/webhook&#34;,
+          },
+
+          // 公开暴露（选一个）
+          // publicUrl: &#34;https://example.ngrok.app/voice/webhook&#34;,
+          // tunnel: { provider: &#34;ngrok&#34; },
+          // tailscale: { mode: &#34;funnel&#34;, path: &#34;/voice/webhook&#34; }
+
+          outbound: {
+            defaultMode: &#34;notify&#34;, // notify | conversation
+          },
+
+          streaming: {
+            enabled: true,
+            streamPath: &#34;/voice/stream&#34;,
+          },
+        },
+      },
+    },
+  },
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>Twilio/Telnyx 需要<strong>可公开访问</strong>的 webhook URL。</li>
+<li>Plivo 需要<strong>可公开访问</strong>的 webhook URL。</li>
+<li><code>mock</code> 是本地开发提供商（无网络调用）。</li>
+<li><code>skipSignatureVerification</code> 仅用于本地测试。</li>
+<li>如果你使用 ngrok 免费版，将 <code>publicUrl</code> 设置为确切的 ngrok URL；签名验证始终强制执行。</li>
+<li><code>tunnel.allowNgrokFreeTierLoopbackBypass: true</code> 允许带有无效签名的 Twilio webhooks，<strong>仅当</strong> <code>tunnel.provider=&quot;ngrok&quot;</code> 且 <code>serve.bind</code> 是 loopback（ngrok 本地代理）时。仅用于本地开发。</li>
+<li>Ngrok 免费版 URL 可能会更改或添加中间页面行为；如果 <code>publicUrl</code> 漂移，Twilio 签名将失败。对于生产环境，优先使用稳定域名或 Tailscale funnel。</li>
+</ul>
+<h2 id="通话的-tts">通话的 TTS<a hidden class="anchor" aria-hidden="true" href="#通话的-tts">#</a></h2>
+<p>Voice Call 使用核心 <code>messages.tts</code> 配置（OpenAI 或 ElevenLabs）进行通话中的流式语音。你可以在插件配置下使用<strong>相同的结构</strong>覆盖它——它会与 <code>messages.tts</code> 深度合并。</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  tts: {
+    provider: &#34;elevenlabs&#34;,
+    elevenlabs: {
+      voiceId: &#34;pMsXgVXv3BLzUgSXRplE&#34;,
+      modelId: &#34;eleven_multilingual_v2&#34;,
+    },
+  },
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li><strong>语音通话忽略 Edge TTS</strong>（电话音频需要 PCM；Edge 输出不可靠）。</li>
+<li>当启用 Twilio 媒体流时使用核心 TTS；否则通话回退到提供商原生语音。</li>
+</ul>
+<h3 id="更多示例">更多示例<a hidden class="anchor" aria-hidden="true" href="#更多示例">#</a></h3>
+<p>仅使用核心 TTS（无覆盖）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  messages: {
+    tts: {
+      provider: &#34;openai&#34;,
+      openai: { voice: &#34;alloy&#34; },
+    },
+  },
+}
+</code></pre><p>仅为通话覆盖为 ElevenLabs（其他地方保持核心默认）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  plugins: {
+    entries: {
+      &#34;voice-call&#34;: {
+        config: {
+          tts: {
+            provider: &#34;elevenlabs&#34;,
+            elevenlabs: {
+              apiKey: &#34;elevenlabs_key&#34;,
+              voiceId: &#34;pMsXgVXv3BLzUgSXRplE&#34;,
+              modelId: &#34;eleven_multilingual_v2&#34;,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+</code></pre><p>仅为通话覆盖 OpenAI 模型（深度合并示例）：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  plugins: {
+    entries: {
+      &#34;voice-call&#34;: {
+        config: {
+          tts: {
+            openai: {
+              model: &#34;gpt-4o-mini-tts&#34;,
+              voice: &#34;marin&#34;,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+</code></pre><h2 id="入站通话">入站通话<a hidden class="anchor" aria-hidden="true" href="#入站通话">#</a></h2>
+<p>入站策略默认为 <code>disabled</code>。要启用入站通话，设置：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  inboundPolicy: &#34;allowlist&#34;,
+  allowFrom: [&#34;+15550001234&#34;],
+  inboundGreeting: &#34;Hello! How can I help?&#34;,
+}
+</code></pre><p>自动响应使用智能体系统。通过以下方式调整：</p>
+<ul>
+<li><code>responseModel</code></li>
+<li><code>responseSystemPrompt</code></li>
+<li><code>responseTimeoutMs</code></li>
+</ul>
+<h2 id="cli">CLI<a hidden class="anchor" aria-hidden="true" href="#cli">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw voicecall call --to <span class="s2">&#34;+15555550123&#34;</span> --message <span class="s2">&#34;Hello from OpenClaw&#34;</span>
+</span></span><span class="line"><span class="cl">openclaw voicecall <span class="k">continue</span> --call-id &lt;id&gt; --message <span class="s2">&#34;Any questions?&#34;</span>
+</span></span><span class="line"><span class="cl">openclaw voicecall speak --call-id &lt;id&gt; --message <span class="s2">&#34;One moment&#34;</span>
+</span></span><span class="line"><span class="cl">openclaw voicecall end --call-id &lt;id&gt;
+</span></span><span class="line"><span class="cl">openclaw voicecall status --call-id &lt;id&gt;
+</span></span><span class="line"><span class="cl">openclaw voicecall tail
+</span></span><span class="line"><span class="cl">openclaw voicecall expose --mode funnel
+</span></span></code></pre></div><h2 id="智能体工具">智能体工具<a hidden class="anchor" aria-hidden="true" href="#智能体工具">#</a></h2>
+<p>工具名称：<code>voice_call</code></p>
+<p>操作：</p>
+<ul>
+<li><code>initiate_call</code>（message、to?、mode?）</li>
+<li><code>continue_call</code>（callId、message）</li>
+<li><code>speak_to_user</code>（callId、message）</li>
+<li><code>end_call</code>（callId）</li>
+<li><code>get_status</code>（callId）</li>
+</ul>
+<p>此仓库在 <code>skills/voice-call/SKILL.md</code> 提供了配套的 skill 文档。</p>
+<h2 id="gateway-网关-rpc">Gateway 网关 RPC<a hidden class="anchor" aria-hidden="true" href="#gateway-网关-rpc">#</a></h2>
+<ul>
+<li><code>voicecall.initiate</code>（<code>to?</code>、<code>message</code>、<code>mode?</code>）</li>
+<li><code>voicecall.continue</code>（<code>callId</code>、<code>message</code>）</li>
+<li><code>voicecall.speak</code>（<code>callId</code>、<code>message</code>）</li>
+<li><code>voicecall.end</code>（<code>callId</code>）</li>
+<li><code>voicecall.status</code>（<code>callId</code>）</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/providers/vercel-ai-gateway/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Vercel AI Gateway</span>
+  </a>
+  <a class="next" href="/openclaw/vps/">
+    <span class="title">Next »</span>
+    <br>
+    <span>VPS 托管</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

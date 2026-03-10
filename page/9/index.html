@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>控制 UI（浏览器）</h2>
+    </header>
+    <div class="entry-content">
+      <p>控制 UI 是一个由 Gateway 网关提供服务的小型 Vite &#43; Lit 单页应用：
+默认：http://&lt;host&gt;:18789/ 可选前缀：设置 gateway.controlUi.basePath（例如 /openclaw） 它直接与同一端口上的 Gateway 网关 WebSocket 通信。
+快速打开（本地） 如果 Gateway 网关在同一台计算机上运行，打开：
+http://127.0.0.1:18789/（或 http://localhost:18789/） 如果页面加载失败，请先启动 Gateway 网关：openclaw gateway。
+认证在 WebSocket 握手期间通过以下方式提供：
+connect.params.auth.token connect.params.auth.password 仪表板设置面板允许你存储 token；密码不会被持久化。 新手引导向导默认生成一个 Gateway 网关 token，所以在首次连接时将其粘贴到这里。 设备配对（首次连接） 当你从新浏览器或设备连接到控制 UI 时，Gateway 网关需要一次性配对批准 — 即使你在同一个 Tailnet 上且 gateway.auth.allowTailscale: true。这是防止未授权访问的安全措施。
+你会看到： “disconnected (1008): pairing required”
+批准设备：
+# 列出待处理的请求 openclaw devices list # 按请求 ID 批准 openclaw devices approve &lt;requestId&gt; 一旦批准，设备会被记住，除非你使用 openclaw devices revoke --device &lt;id&gt; --role &lt;role&gt; 撤销它，否则不需要重新批准。参见 Devices CLI 了解 token 轮换和撤销。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 控制 UI（浏览器）" href="/openclaw/web/control-ui/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>投票</h2>
+    </header>
+    <div class="entry-content">
+      <p>支持的渠道 WhatsApp（Web 渠道） Discord MS Teams（Adaptive Cards） CLI # WhatsApp openclaw message poll --target &#43;15555550123 \ --poll-question &#34;Lunch today?&#34; --poll-option &#34;Yes&#34; --poll-option &#34;No&#34; --poll-option &#34;Maybe&#34; openclaw message poll --target 123456789@g.us \ --poll-question &#34;Meeting time?&#34; --poll-option &#34;10am&#34; --poll-option &#34;2pm&#34; --poll-option &#34;4pm&#34; --poll-multi # Discord openclaw message poll --channel discord --target channel:123456789 \ --poll-question &#34;Snack?&#34; --poll-option &#34;Pizza&#34; --poll-option &#34;Sushi&#34; openclaw message poll --channel discord --target channel:123456789 \ --poll-question &#34;Plan?&#34; --poll-option &#34;A&#34; --poll-option &#34;B&#34; --poll-duration-hours 48 # MS Teams openclaw message poll --channel msteams --target conversation:19:abc@thread.tacv2 \ --poll-question &#34;Lunch?&#34; --poll-option &#34;Pizza&#34; --poll-option &#34;Sushi&#34; 选项：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 投票" href="/openclaw/automation/poll/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>执行审批</h2>
+    </header>
+    <div class="entry-content">
+      <p>执行审批是配套应用/节点主机的安全护栏，用于允许沙箱隔离的智能体在真实主机（gateway 或 node）上运行命令。可以将其理解为安全联锁：只有当策略 &#43; 允许列表 &#43;（可选的）用户审批都同意时，命令才会被允许执行。 执行审批是附加于工具策略和提权门控之上的（除非 elevated 设置为 full，这会跳过审批）。 生效策略取 tools.exec.* 和审批默认值中更严格的一方；如果审批字段被省略，则使用 tools.exec 的值。
+如果配套应用 UI 不可用，任何需要提示的请求都将由 ask fallback（默认：deny）决定。
+适用范围 执行审批在执行主机上本地强制执行：
+gateway 主机 → gateway 机器上的 openclaw 进程 node 主机 → 节点运行器（macOS 配套应用或无头节点主机） macOS 分工：
+node 主机服务通过本地 IPC 将 system.run 转发给 macOS 应用。 macOS 应用执行审批并在 UI 上下文中执行命令。 设置和存储 审批信息存储在执行主机上的本地 JSON 文件中：
+~/.openclaw/exec-approvals.json
+示例结构：
+{ &#34;version&#34;: 1, &#34;socket&#34;: { &#34;path&#34;: &#34;~/.openclaw/exec-approvals.sock&#34;, &#34;token&#34;: &#34;base64url-token&#34; }, &#34;defaults&#34;: { &#34;security&#34;: &#34;deny&#34;, &#34;ask&#34;: &#34;on-miss&#34;, &#34;askFallback&#34;: &#34;deny&#34;, &#34;autoAllowSkills&#34;: false }, &#34;agents&#34;: { &#34;main&#34;: { &#34;security&#34;: &#34;allowlist&#34;, &#34;ask&#34;: &#34;on-miss&#34;, &#34;askFallback&#34;: &#34;deny&#34;, &#34;autoAllowSkills&#34;: true, &#34;allowlist&#34;: [ { &#34;id&#34;: &#34;B0C8C0B3-2C2D-4F8A-9A3C-5A4B3C2D1E0F&#34;, &#34;pattern&#34;: &#34;~/Projects/**/bin/rg&#34;, &#34;lastUsedAt&#34;: 1737150000000, &#34;lastUsedCommand&#34;: &#34;rg -n TODO&#34;, &#34;lastResolvedPath&#34;: &#34;/Users/user/Projects/.../bin/rg&#34; } ] } } } 策略选项 Security（exec.security） deny：阻止所有主机执行请求。 allowlist：仅允许在允许列表中的命令。 full：允许所有命令（等同于提权模式）。 Ask（exec.ask） off：从不提示。 on-miss：仅在允许列表未匹配时提示。 always：每次命令都提示。 Ask fallback（askFallback） 如果需要提示但无法访问 UI，fallback 决定：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 执行审批" href="/openclaw/tools/exec-approvals/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>思考级别（/think 指令）</h2>
+    </header>
+    <div class="entry-content">
+      <p>功能说明 在任何入站消息正文中使用内联指令：/t &lt;level&gt;、/think:&lt;level&gt; 或 /thinking &lt;level&gt;。 级别（别名）：off | minimal | low | medium | high | xhigh（仅 GPT-5.2 &#43; Codex 模型） minimal → “think” low → “think hard” medium → “think harder” high → “ultrathink”（最大预算） xhigh → “ultrathink&#43;&#34;（仅 GPT-5.2 &#43; Codex 模型） highest、max 映射为 high。 提供商说明： Z.AI（zai/*）仅支持二元思考（on/off）。任何非 off 级别均视为 on（映射为 low）。 解析优先顺序 消息上的内联指令（仅适用于该条消息）。 会话覆盖（通过发送仅包含指令的消息设置）。 全局默认值（配置中的 agents.defaults.thinkingDefault）。 回退：具备推理能力的模型为 low；否则为 off。 设置会话默认值 发送一条仅包含指令的消息（允许空白），例如 /think:medium 或 /t high。 该设置在当前会话中持续生效（默认按发送者）；通过 /think:off 或会话空闲重置来清除。 会发送确认回复（Thinking level set to high. / Thinking disabled.）。如果级别无效（例如 /thinking big），命令将被拒绝并给出提示，会话状态保持不变。 不带参数发送 /think（或 /think:）可查看当前思考级别。 按智能体应用 内嵌 Pi：解析后的级别传递给进程内的 Pi 智能体运行时。 详细模式指令（/verbose 或 /v） 级别：on（最小）| full | off（默认）。 仅包含指令的消息切换会话详细模式并回复 Verbose logging enabled. / Verbose logging disabled.；无效级别返回提示且不改变状态。 /verbose off 存储一个显式的会话覆盖；通过会话 UI 选择 inherit 来清除。 内联指令仅影响该条消息；否则应用会话/全局默认值。 不带参数发送 /verbose（或 /verbose:）可查看当前详细模式级别。 启用详细模式后，发出结构化工具结果的智能体（Pi 及其他 JSON 智能体）会将每个工具调用作为独立的元数据消息发回，可用时以 &lt;emoji&gt; &lt;tool-name&gt;: &lt;arg&gt; 为前缀（路径/命令）。这些工具摘要在每个工具启动时立即发送（独立气泡），而非作为流式增量。 当详细模式为 full 时，工具输出也会在完成后转发（独立气泡，截断至安全长度）。如果在运行过程中切换 /verbose on|full|off，后续的工具气泡会遵循新设置。 推理可见性（/reasoning） 级别：on|off|stream。 仅包含指令的消息切换回复中是否显示思考块。 启用时，推理内容作为独立消息发送，以 Reasoning: 为前缀。 stream（仅 Telegram）：在回复生成期间将推理内容流式输出到 Telegram 草稿气泡中，然后发送不包含推理的最终回答。 别名：/reason。 不带参数发送 /reasoning（或 /reasoning:）可查看当前推理级别。 相关内容 提权模式文档位于提权模式。 心跳 心跳探测正文为配置的心跳提示词（默认：Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.）。心跳消息中的内联指令照常生效（但避免从心跳中更改会话默认值）。 心跳投递默认仅包含最终负载。要同时发送单独的 Reasoning: 消息（如果可用），请设置 agents.defaults.heartbeat.includeReasoning: true 或按智能体 agents.list[].heartbeat.includeReasoning: true。 Web 聊天 UI Web 聊天的思考选择器在页面加载时从入站会话存储/配置中读取并反映会话的已存储级别。 选择另一个级别仅应用于下一条消息（thinkingOnce）；发送后，选择器会回到已存储的会话级别。 要更改会话默认值，请发送 /think:&lt;level&gt; 指令（和之前一样）；选择器将在下次刷新后反映该设置。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 思考级别（/think 指令）" href="/openclaw/tools/thinking/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>心跳（Gateway 网关）</h2>
+    </header>
+    <div class="entry-content">
+      <p> 心跳 vs Cron？ 参见 Cron vs 心跳 了解何时使用哪种方案。
+心跳在主会话中运行周期性智能体轮次，使模型能够在不打扰你的情况下提醒需要关注的事项。
+快速开始（新手） 保持心跳启用（默认 30m，Anthropic OAuth/setup-token 为 1h）或设置你自己的频率。 在智能体工作区创建一个简单的 HEARTBEAT.md 检查清单（可选但推荐）。 决定心跳消息发送到哪里（默认 target: &#34;last&#34;）。 可选：启用心跳推理内容发送以提高透明度。 可选：将心跳限制在活动时段（本地时间）。 配置示例：
+{ agents: { defaults: { heartbeat: { every: &#34;30m&#34;, target: &#34;last&#34;, // activeHours: { start: &#34;08:00&#34;, end: &#34;24:00&#34; }, // includeReasoning: true, // 可选：同时发送单独的 `Reasoning:` 消息 }, }, }, } 默认值 间隔：30m（当检测到的认证模式为 Anthropic OAuth/setup-token 时为 1h）。设置 agents.defaults.heartbeat.every 或单智能体 agents.list[].heartbeat.every；使用 0m 禁用。 提示内容（可通过 agents.defaults.heartbeat.prompt 配置）： Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK. 心跳提示原样作为用户消息发送。系统提示包含&#34;Heartbeat&#34;部分，运行在内部被标记。 活动时段（heartbeat.activeHours）按配置的时区检查。在时段外，心跳会被跳过直到下一个时段内的时钟周期。 心跳提示的用途 默认提示故意设计得比较宽泛：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 心跳（Gateway 网关）" href="/openclaw/gateway/heartbeat/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>形式化验证（安全模型）</h2>
+    </header>
+    <div class="entry-content">
+      <p>本页跟踪 OpenClaw 的形式化安全模型（目前是 TLA&#43;/TLC；根据需要会添加更多）。
+注意：一些较旧的链接可能引用了以前的项目名称。
+目标（北极星）： 提供机器检查的论证，证明 OpenClaw 在明确假设下执行其 预期的安全策略（授权、会话隔离、工具门控和 配置错误安全）。
+目前是什么： 一个可执行的、攻击者驱动的安全回归测试套件：
+每个声明都有一个在有限状态空间上运行的模型检查。 许多声明有一个配对的负面模型，为现实的 bug 类别生成反例追踪。 目前还不是什么： 证明&#34;OpenClaw 在所有方面都是安全的&#34;或完整 TypeScript 实现是正确的。
+模型存放位置 模型维护在一个单独的仓库中：vignesh07/openclaw-formal-models。
+重要注意事项 这些是模型，不是完整的 TypeScript 实现。模型和代码之间可能存在偏差。 结果受 TLC 探索的状态空间限制；“绿色&#34;并不意味着在建模的假设和边界之外也是安全的。 一些声明依赖于明确的环境假设（例如，正确的部署、正确的配置输入）。 复现结果 目前，结果通过在本地克隆模型仓库并运行 TLC 来复现（见下文）。未来的迭代可能提供：
+带有公开产物（反例追踪、运行日志）的 CI 运行模型 用于小型、有界检查的托管&#34;运行此模型&#34;工作流 开始使用：
+git clone https://github.com/vignesh07/openclaw-formal-models cd openclaw-formal-models # 需要 Java 11&#43;（TLC 在 JVM 上运行）。 # 仓库内置了固定版本的 `tla2tools.jar`（TLA&#43; 工具）并提供 `bin/tlc` &#43; Make 目标。 make &lt;target&gt; Gateway 网关暴露和开放 Gateway 网关配置错误 声明： 在没有认证的情况下绑定到 loopback 之外可能使远程入侵成为可能 / 增加暴露；令牌/密码可以阻止未认证的攻击者（根据模型假设）。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 形式化验证（安全模型）" href="/openclaw/security/formal-verification/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>开发渠道</h2>
+    </header>
+    <div class="entry-content">
+      <p>最后更新：2026-01-21
+OpenClaw 提供三个更新渠道：
+stable：npm dist-tag latest。 beta：npm dist-tag beta（测试中的构建）。 dev：main 的移动头（git）。npm dist-tag：dev（发布时）。 我们将构建发布到 beta，进行测试，然后将经过验证的构建提升到 latest， 版本号不变——dist-tag 是 npm 安装的数据源。
+切换渠道 Git checkout：
+openclaw update --channel stable openclaw update --channel beta openclaw update --channel dev stable/beta 检出最新匹配的标签（通常是同一个标签）。 dev 切换到 main 并在上游基础上 rebase。 npm/pnpm 全局安装：
+openclaw update --channel stable openclaw update --channel beta openclaw update --channel dev 这会通过相应的 npm dist-tag（latest、beta、dev）进行更新。
+当你使用 --channel 显式切换渠道时，OpenClaw 还会对齐安装方式：
+dev 确保有一个 git checkout（默认 ~/openclaw，可通过 OPENCLAW_GIT_DIR 覆盖）， 更新它，并从该 checkout 安装全局 CLI。 stable/beta 使用匹配的 dist-tag 从 npm 安装。 提示：如果你想同时使用 stable &#43; dev，保留两个克隆并将 Gateway 网关指向 stable 那个。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 开发渠道" href="/openclaw/install/development-channels/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>广播群组</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态： 实验性功能
+版本： 于 2026.1.9 版本新增
+概述 广播群组允许多个智能体同时处理并响应同一条消息。这使你能够在单个 WhatsApp 群组或私信中创建协同工作的专业智能体团队——全部使用同一个手机号码。
+当前范围：仅限 WhatsApp（web 渠道）。
+广播群组在渠道白名单和群组激活规则之后进行评估。在 WhatsApp 群组中，这意味着广播会在 OpenClaw 正常回复时发生（例如：被提及时，具体取决于你的群组设置）。
+使用场景 1. 专业智能体团队 部署多个具有原子化、专注职责的智能体：
+Group: &#34;Development Team&#34; Agents: - CodeReviewer (reviews code snippets) - DocumentationBot (generates docs) - SecurityAuditor (checks for vulnerabilities) - TestGenerator (suggests test cases) 每个智能体处理相同的消息并提供其专业视角。
+2. 多语言支持 Group: &#34;International Support&#34; Agents: - Agent_EN (responds in English) - Agent_DE (responds in German) - Agent_ES (responds in Spanish) 3. 质量保证工作流 Group: &#34;Customer Support&#34; Agents: - SupportAgent (provides answer) - QAAgent (reviews quality, only responds if issues found) 4. 任务自动化 Group: &#34;Project Management&#34; Agents: - TaskTracker (updates task database) - TimeLogger (logs time spent) - ReportGenerator (creates summaries) 配置 基本设置 添加一个顶层 broadcast 部分（与 bindings 同级）。键为 WhatsApp peer id：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 广播群组" href="/openclaw/channels/broadcast-groups/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>常见问题</h2>
+    </header>
+    <div class="entry-content">
+      <p>快速解答及针对实际部署场景（本地开发、VPS、多智能体、OAuth/API 密钥、模型故障转移）的深入故障排除。运行时诊断请参阅故障排除。完整配置参考请参阅配置。
+目录 快速开始与首次运行设置 我卡住了，最快的排障方法是什么？ 安装和设置 OpenClaw 的推荐方式是什么？ 新手引导后如何打开仪表板？ 如何在本地和远程环境中验证仪表板（令牌）？ 我需要什么运行时？ 能在 Raspberry Pi 上运行吗？ Raspberry Pi 安装有什么建议？ 卡在 “wake up my friend” / 新手引导无法启动，怎么办？ 能否将我的设置迁移到新机器（Mac mini）而不重新进行新手引导？ 在哪里查看最新版本的更新内容？ 无法访问 docs.openclaw.ai（SSL 错误），怎么办？ stable 和 beta 有什么区别？ 如何安装 beta 版本，beta 和 dev 有什么区别？ 如何试用最新代码？ 安装和新手引导通常需要多长时间？ 安装程序卡住了？如何获取更多反馈？ Windows 安装提示找不到 git 或无法识别 openclaw 文档没有解答我的问题——如何获得更好的答案？ 如何在 Linux 上安装 OpenClaw？ 如何在 VPS 上安装 OpenClaw？ 云/VPS 安装指南在哪里？ 可以让 OpenClaw 自行更新吗？ 新手引导向导具体做了什么？ 运行 OpenClaw 需要 Claude 或 OpenAI 订阅吗？ 能否使用 Claude Max 订阅而不需要 API 密钥？ Anthropic “setup-token” 认证如何工作？ 在哪里获取 Anthropic setup-token？ 是否支持 Claude 订阅认证（Claude Code OAuth）？ 为什么我看到 HTTP 429: rate_limit_error（来自 Anthropic）？ 支持 AWS Bedrock 吗？ Codex 认证如何工作？ 是否支持 OpenAI 订阅认证（Codex OAuth）？ 如何设置 Gemini CLI OAuth？ 本地模型适合日常聊天吗？ 如何将托管模型流量限制在特定区域？ 我必须购买 Mac Mini 才能安装吗？ iMessage 支持需要 Mac mini 吗？ 如果我买了 Mac mini 运行 OpenClaw，能连接到我的 MacBook Pro 吗？ 可以使用 Bun 吗？ Telegram：allowFrom 填什么？ 多人能否使用同一个 WhatsApp 号码配合不同的 OpenClaw 实例？ 能否同时运行一个“快速聊天”智能体和一个“用 Opus 编程”的智能体？ Homebrew 在 Linux 上可用吗？ 可编辑（git）安装和 npm 安装有什么区别？ 之后可以在 npm 和 git 安装之间切换吗？ 应该在笔记本电脑还是 VPS 上运行 Gateway 网关？ 在专用机器上运行 OpenClaw 有多重要？ VPS 的最低要求和推荐操作系统是什么？ 可以在虚拟机中运行 OpenClaw 吗？有什么要求？ 什么是 OpenClaw？ 用一段话描述 OpenClaw？ 价值主张是什么？ 刚设置好，应该先做什么？ OpenClaw 日常最常用的五个场景是什么？ OpenClaw 能否帮助 SaaS 进行获客、外联、广告和博客？ 相比 Claude Code，在 Web 开发方面有什么优势？ Skills 与自动化 如何自定义 Skills 而不弄脏仓库？ 可以从自定义文件夹加载 Skills 吗？ 如何为不同任务使用不同模型？ 机器人在执行繁重工作时卡住了，如何卸载任务？ 定时任务或提醒没有触发，应该检查什么？ 如何在 Linux 上安装 Skills？ OpenClaw 能否按计划或在后台持续运行任务？ 能否从 Linux 运行仅限 Apple/macOS 的 Skills？ 有 Notion 或 HeyGen 集成吗？ 如何安装用于浏览器接管的 Chrome 扩展？ 沙箱与记忆 有专门的沙箱文档吗？ 如何将主机文件夹绑定到沙箱中？ 记忆是如何工作的？ 记忆总是遗忘，如何让它持久保存？ 记忆是否永久保留？有什么限制？ 语义记忆搜索需要 OpenAI API 密钥吗？ 磁盘上的文件位置 OpenClaw 使用的所有数据都保存在本地吗？ OpenClaw 将数据存储在哪里？ AGENTS.md / SOUL.md / USER.md / MEMORY.md 应该放在哪里？ 推荐的备份策略是什么？ 如何完全卸载 OpenClaw？ 智能体可以在工作区外工作吗？ 我处于远程模式——会话存储在哪里？ 配置基础 配置文件是什么格式？在哪里？ 我设置了 gateway.bind: &#34;lan&#34;（或 &#34;tailnet&#34;），现在什么都监听不了 / UI 显示未授权 为什么现在在 localhost 也需要令牌？ 更改配置后需要重启吗？ 如何启用网络搜索（和网页抓取）？ config.apply 清空了我的配置，如何恢复和避免？ 如何运行一个中心 Gateway 网关配合跨设备的专用工作节点？ OpenClaw 浏览器可以无头运行吗？ 如何使用 Brave 进行浏览器控制？ 远程 Gateway 网关与节点 命令如何在 Telegram、Gateway 网关和节点之间传播？ 如果 Gateway 网关托管在远程，我的智能体如何访问我的电脑？ Tailscale 已连接但收不到回复，怎么办？ 两个 OpenClaw 实例（本地 &#43; VPS）可以互相通信吗？ 多个智能体需要独立的 VPS 吗？ 在个人笔记本电脑上使用节点而不是从 VPS SSH 有什么好处？ 节点会运行 Gateway 网关服务吗？ 有 API / RPC 方式来应用配置吗？ 首次安装的最小“合理”配置是什么？ 如何在 VPS 上设置 Tailscale 并从 Mac 连接？ 如何将 Mac 节点连接到远程 Gateway 网关（Tailscale Serve）？ 应该在第二台笔记本上安装还是只添加一个节点？ 环境变量和 .env 加载 OpenClaw 如何加载环境变量？ “我通过服务启动了 Gateway 网关，但环境变量消失了。”怎么办？ 我设置了 COPILOT_GITHUB_TOKEN，但 models status 显示&#34;Shell env: off&#34;，为什么？ 会话与多聊天 如何开始一个新对话？ 如果我从不发送 /new，会话会自动重置吗？ 能否创建一个 OpenClaw 实例团队——一个 CEO 和多个智能体？ 为什么上下文在任务中途被截断了？如何防止？ 如何完全重置 OpenClaw 但保留安装？ 我遇到了&#34;context too large&#34;错误——如何重置或压缩？ 为什么我看到&#34;LLM request rejected: messages.N.content.X.tool_use.input: Field required&#34;？ 为什么每 30 分钟收到一次心跳消息？ 需要在 WhatsApp 群组中添加“机器人账号”吗？ 如何获取 WhatsApp 群组的 JID？ 为什么 OpenClaw 不在群组中回复？ 群组/线程与私聊共享上下文吗？ 可以创建多少个工作区和智能体？ 可以同时运行多个机器人或聊天（Slack）吗？应该如何设置？ 模型：默认值、选择、别名、切换 什么是“默认模型”？ 推荐什么模型？ 如何在不清空配置的情况下切换模型？ 可以使用自托管模型（llama.cpp、vLLM、Ollama）吗？ OpenClaw、Flawd 和 Krill 使用什么模型？ 如何在运行中切换模型（无需重启）？ 能否日常任务用 GPT 5.2，编程用 Codex 5.2？ 为什么我看到&#34;Model … is not allowed&#34;然后没有回复？ 为什么我看到&#34;Unknown model: minimax/MiniMax-M2.1&#34;？ 能否将 MiniMax 设为默认，复杂任务用 OpenAI？ opus / sonnet / gpt 是内置快捷方式吗？ 如何定义/覆盖模型快捷方式（别名）？ 如何添加其他提供商（如 OpenRouter 或 Z.AI）的模型？ 模型故障转移与&#34;All models failed&#34; 故障转移是如何工作的？ 这个错误是什么意思？ No credentials found for profile &#34;anthropic:default&#34; 的修复清单 为什么还尝试了 Google Gemini 并且失败了？ 认证配置文件：概念和管理方式 什么是认证配置文件？ 典型的配置文件 ID 有哪些？ 可以控制首先尝试哪个认证配置文件吗？ OAuth 与 API 密钥：有什么区别？ Gateway 网关：端口、“已在运行”和远程模式 Gateway 网关使用什么端口？ 为什么 openclaw gateway status 显示 Runtime: running 但 RPC probe: failed？ 为什么 openclaw gateway status 显示 Config (cli) 和 Config (service) 不同？ “another gateway instance is already listening&#34;是什么意思？ 如何以远程模式运行 OpenClaw（客户端连接到其他位置的 Gateway 网关）？ 控制 UI 显示&#34;unauthorized”（或持续重连），怎么办？ 我设置了 gateway.bind: &#34;tailnet&#34; 但无法绑定 / 什么都没监听 可以在同一主机上运行多个 Gateway 网关吗？ “invalid handshake” / code 1008 是什么意思？ 日志与调试 日志在哪里？ 如何启动/停止/重启 Gateway 网关服务？ 我在 Windows 上关闭了终端——如何重启 OpenClaw？ Gateway 网关已启动但回复始终不到达，应该检查什么？ “Disconnected from gateway: no reason”——怎么办？ Telegram setMyCommands 因网络错误失败，应该检查什么？ TUI 没有输出，应该检查什么？ 如何完全停止然后启动 Gateway 网关？ 通俗解释：openclaw gateway restart 与 openclaw gateway 出现故障时获取更多详情的最快方法是什么？ 媒体与附件 我的 Skills 生成了图片/PDF，但什么都没发送 安全与访问控制 将 OpenClaw 暴露给入站私信安全吗？ 提示注入只对公开机器人有影响吗？ 我的机器人应该有自己的邮箱、GitHub 账户或电话号码吗？ 我能让它自主管理我的短信吗？这安全吗？ 个人助理任务可以使用更便宜的模型吗？ 我在 Telegram 中运行了 /start 但没收到配对码 WhatsApp：会给我的联系人发消息吗？配对如何工作？ 聊天命令、中止任务和“停不下来” 如何阻止内部系统消息显示在聊天中？ 如何停止/取消正在运行的任务？ 如何从 Telegram 发送 Discord 消息？（“Cross-context messaging denied”） 为什么感觉机器人“忽略”了快速连发的消息？ 出问题后的最初六十秒 快速状态（首先检查）
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>25 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 常见问题" href="/openclaw/help/faq/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>工具调用（HTTP）</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 的 Gateway 网关暴露了一个简单的 HTTP 端点用于直接调用单个工具。它始终启用，但受 Gateway 网关认证和工具策略限制。
+POST /tools/invoke 与 Gateway 网关相同的端口（WS &#43; HTTP 多路复用）：http://&lt;gateway-host&gt;:&lt;port&gt;/tools/invoke 默认最大负载大小为 2 MB。
+认证 使用 Gateway 网关认证配置。发送 bearer 令牌：
+Authorization: Bearer &lt;token&gt; 说明：
+当 gateway.auth.mode=&#34;token&#34; 时，使用 gateway.auth.token（或 OPENCLAW_GATEWAY_TOKEN）。 当 gateway.auth.mode=&#34;password&#34; 时，使用 gateway.auth.password（或 OPENCLAW_GATEWAY_PASSWORD）。 请求体 { &#34;tool&#34;: &#34;sessions_list&#34;, &#34;action&#34;: &#34;json&#34;, &#34;args&#34;: {}, &#34;sessionKey&#34;: &#34;main&#34;, &#34;dryRun&#34;: false } 字段：
+tool（string，必需）：要调用的工具名称。 action（string，可选）：如果工具 schema 支持 action 且 args 负载省略了它，则映射到 args。 args（object，可选）：工具特定的参数。 sessionKey（string，可选）：目标会话键。如果省略或为 &#34;main&#34;，Gateway 网关使用配置的主会话键（遵循 session.mainKey 和默认智能体，或在全局范围中使用 global）。 dryRun（boolean，可选）：保留供将来使用；当前忽略。 策略 &#43; 路由行为 工具可用性通过 Gateway 网关智能体使用的相同策略链过滤：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to 工具调用（HTTP）" href="/openclaw/gateway/tools-invoke-http-api/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/8/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/10/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

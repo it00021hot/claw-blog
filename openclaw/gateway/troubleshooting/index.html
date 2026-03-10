@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>故障排除 🔧 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="当 OpenClaw 出现异常时，以下是解决方法。
+如果你只想快速分类问题，请先查看常见问题的最初的六十秒。本页深入介绍运行时故障和诊断。
+特定提供商的快捷方式：/channels/troubleshooting
+状态与诊断
+快速分类命令（按顺序）：
+
+  
+      
+          命令
+          它告诉你什么
+          何时使用
+      
+  
+  
+      
+          openclaw status
+          本地摘要：操作系统 &#43; 更新、Gateway 网关可达性/模式、服务、智能体/会话、提供商配置状态
+          首次检查，快速概览
+      
+      
+          openclaw status --all
+          完整本地诊断（只读、可粘贴、相对安全）包括日志尾部
+          当你需要分享调试报告时
+      
+      
+          openclaw status --deep
+          运行 Gateway 网关健康检查（包括提供商探测；需要可达的 Gateway 网关）
+          当&quot;已配置&quot;不意味着&quot;正常工作&quot;时
+      
+      
+          openclaw gateway probe
+          Gateway 网关发现 &#43; 可达性（本地 &#43; 远程目标）
+          当你怀疑正在探测错误的 Gateway 网关时
+      
+      
+          openclaw channels status --probe
+          向运行中的 Gateway 网关查询渠道状态（并可选探测）
+          当 Gateway 网关可达但渠道异常时
+      
+      
+          openclaw gateway status
+          监管程序状态（launchd/systemd/schtasks）、运行时 PID/退出、最后的 Gateway 网关错误
+          当服务&quot;看起来已加载&quot;但没有运行时
+      
+      
+          openclaw logs --follow
+          实时日志（运行时问题的最佳信号）
+          当你需要实际的故障原因时
+      
+  
+
+分享输出： 优先使用 openclaw status --all（它会隐藏令牌）。如果你粘贴 openclaw status，考虑先设置 OPENCLAW_SHOW_SECRETS=0（令牌预览）。">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/gateway/troubleshooting/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/gateway/troubleshooting/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/gateway/troubleshooting/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="故障排除 🔧">
+  <meta property="og:description" content="当 OpenClaw 出现异常时，以下是解决方法。
+如果你只想快速分类问题，请先查看常见问题的最初的六十秒。本页深入介绍运行时故障和诊断。
+特定提供商的快捷方式：/channels/troubleshooting
+状态与诊断 快速分类命令（按顺序）：
+命令 它告诉你什么 何时使用 openclaw status 本地摘要：操作系统 &#43; 更新、Gateway 网关可达性/模式、服务、智能体/会话、提供商配置状态 首次检查，快速概览 openclaw status --all 完整本地诊断（只读、可粘贴、相对安全）包括日志尾部 当你需要分享调试报告时 openclaw status --deep 运行 Gateway 网关健康检查（包括提供商探测；需要可达的 Gateway 网关） 当&#34;已配置&#34;不意味着&#34;正常工作&#34;时 openclaw gateway probe Gateway 网关发现 &#43; 可达性（本地 &#43; 远程目标） 当你怀疑正在探测错误的 Gateway 网关时 openclaw channels status --probe 向运行中的 Gateway 网关查询渠道状态（并可选探测） 当 Gateway 网关可达但渠道异常时 openclaw gateway status 监管程序状态（launchd/systemd/schtasks）、运行时 PID/退出、最后的 Gateway 网关错误 当服务&#34;看起来已加载&#34;但没有运行时 openclaw logs --follow 实时日志（运行时问题的最佳信号） 当你需要实际的故障原因时 分享输出： 优先使用 openclaw status --all（它会隐藏令牌）。如果你粘贴 openclaw status，考虑先设置 OPENCLAW_SHOW_SECRETS=0（令牌预览）。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="故障排除 🔧">
+<meta name="twitter:description" content="当 OpenClaw 出现异常时，以下是解决方法。
+如果你只想快速分类问题，请先查看常见问题的最初的六十秒。本页深入介绍运行时故障和诊断。
+特定提供商的快捷方式：/channels/troubleshooting
+状态与诊断
+快速分类命令（按顺序）：
+
+  
+      
+          命令
+          它告诉你什么
+          何时使用
+      
+  
+  
+      
+          openclaw status
+          本地摘要：操作系统 &#43; 更新、Gateway 网关可达性/模式、服务、智能体/会话、提供商配置状态
+          首次检查，快速概览
+      
+      
+          openclaw status --all
+          完整本地诊断（只读、可粘贴、相对安全）包括日志尾部
+          当你需要分享调试报告时
+      
+      
+          openclaw status --deep
+          运行 Gateway 网关健康检查（包括提供商探测；需要可达的 Gateway 网关）
+          当&quot;已配置&quot;不意味着&quot;正常工作&quot;时
+      
+      
+          openclaw gateway probe
+          Gateway 网关发现 &#43; 可达性（本地 &#43; 远程目标）
+          当你怀疑正在探测错误的 Gateway 网关时
+      
+      
+          openclaw channels status --probe
+          向运行中的 Gateway 网关查询渠道状态（并可选探测）
+          当 Gateway 网关可达但渠道异常时
+      
+      
+          openclaw gateway status
+          监管程序状态（launchd/systemd/schtasks）、运行时 PID/退出、最后的 Gateway 网关错误
+          当服务&quot;看起来已加载&quot;但没有运行时
+      
+      
+          openclaw logs --follow
+          实时日志（运行时问题的最佳信号）
+          当你需要实际的故障原因时
+      
+  
+
+分享输出： 优先使用 openclaw status --all（它会隐藏令牌）。如果你粘贴 openclaw status，考虑先设置 OPENCLAW_SHOW_SECRETS=0（令牌预览）。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "故障排除 🔧",
+      "item": "/openclaw/gateway/troubleshooting/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "故障排除 🔧",
+  "name": "故障排除 🔧",
+  "description": "当 OpenClaw 出现异常时，以下是解决方法。\n如果你只想快速分类问题，请先查看常见问题的最初的六十秒。本页深入介绍运行时故障和诊断。\n特定提供商的快捷方式：/channels/troubleshooting\n状态与诊断 快速分类命令（按顺序）：\n命令 它告诉你什么 何时使用 openclaw status 本地摘要：操作系统 + 更新、Gateway 网关可达性/模式、服务、智能体/会话、提供商配置状态 首次检查，快速概览 openclaw status --all 完整本地诊断（只读、可粘贴、相对安全）包括日志尾部 当你需要分享调试报告时 openclaw status --deep 运行 Gateway 网关健康检查（包括提供商探测；需要可达的 Gateway 网关） 当\u0026quot;已配置\u0026quot;不意味着\u0026quot;正常工作\u0026quot;时 openclaw gateway probe Gateway 网关发现 + 可达性（本地 + 远程目标） 当你怀疑正在探测错误的 Gateway 网关时 openclaw channels status --probe 向运行中的 Gateway 网关查询渠道状态（并可选探测） 当 Gateway 网关可达但渠道异常时 openclaw gateway status 监管程序状态（launchd/systemd/schtasks）、运行时 PID/退出、最后的 Gateway 网关错误 当服务\u0026quot;看起来已加载\u0026quot;但没有运行时 openclaw logs --follow 实时日志（运行时问题的最佳信号） 当你需要实际的故障原因时 分享输出： 优先使用 openclaw status --all（它会隐藏令牌）。如果你粘贴 openclaw status，考虑先设置 OPENCLAW_SHOW_SECRETS=0（令牌预览）。\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "当 OpenClaw 出现异常时，以下是解决方法。\n如果你只想快速分类问题，请先查看常见问题的最初的六十秒。本页深入介绍运行时故障和诊断。\n特定提供商的快捷方式：/channels/troubleshooting\n状态与诊断 快速分类命令（按顺序）：\n命令 它告诉你什么 何时使用 openclaw status 本地摘要：操作系统 + 更新、Gateway 网关可达性/模式、服务、智能体/会话、提供商配置状态 首次检查，快速概览 openclaw status --all 完整本地诊断（只读、可粘贴、相对安全）包括日志尾部 当你需要分享调试报告时 openclaw status --deep 运行 Gateway 网关健康检查（包括提供商探测；需要可达的 Gateway 网关） 当\"已配置\"不意味着\"正常工作\"时 openclaw gateway probe Gateway 网关发现 + 可达性（本地 + 远程目标） 当你怀疑正在探测错误的 Gateway 网关时 openclaw channels status --probe 向运行中的 Gateway 网关查询渠道状态（并可选探测） 当 Gateway 网关可达但渠道异常时 openclaw gateway status 监管程序状态（launchd/systemd/schtasks）、运行时 PID/退出、最后的 Gateway 网关错误 当服务\"看起来已加载\"但没有运行时 openclaw logs --follow 实时日志（运行时问题的最佳信号） 当你需要实际的故障原因时 分享输出： 优先使用 openclaw status --all（它会隐藏令牌）。如果你粘贴 openclaw status，考虑先设置 OPENCLAW_SHOW_SECRETS=0（令牌预览）。\n另请参阅：健康检查 和 日志。\n常见问题 No API key found for provider “anthropic” 这意味着智能体的认证存储为空或缺少 Anthropic 凭证。 认证是每个智能体独立的，所以新智能体不会继承主智能体的密钥。\n修复选项：\n重新运行新手引导并为该智能体选择 Anthropic。 或在 Gateway 网关主机上粘贴 setup-token： openclaw models auth setup-token --provider anthropic 或将 auth-profiles.json 从主智能体目录复制到新智能体目录。 验证：\nopenclaw models status OAuth token refresh failed（Anthropic Claude 订阅） 这意味着存储的 Anthropic OAuth 令牌已过期且刷新失败。 如果你使用 Claude 订阅（无 API 密钥），最可靠的修复方法是 切换到 Claude Code setup-token 并在 Gateway 网关主机上粘贴。\n推荐（setup-token）：\n# 在 Gateway 网关主机上运行（粘贴 setup-token） openclaw models auth setup-token --provider anthropic openclaw models status 如果你在其他地方生成了令牌：\nopenclaw models auth paste-token --provider anthropic openclaw models status 更多详情：Anthropic 和 OAuth。\nControl UI 在 HTTP 上失败（“device identity required” / “connect failed”） 如果你通过纯 HTTP 打开仪表板（例如 http://:18789/ 或 http://:18789/），浏览器运行在非安全上下文中， 会阻止 WebCrypto，因此无法生成设备身份。\n修复：\n优先通过 Tailscale Serve 使用 HTTPS。 或在 Gateway 网关主机上本地打开：http://127.0.0.1:18789/。 如果必须使用 HTTP，启用 gateway.controlUi.allowInsecureAuth: true 并 使用 Gateway 网关令牌（仅令牌；无设备身份/配对）。参见 Control UI。 CI Secrets Scan Failed 这意味着 detect-secrets 发现了尚未在基线中的新候选项。 按照 密钥扫描 操作。\n服务已安装但没有运行 如果 Gateway 网关服务已安装但进程立即退出，服务 可能显示\"已加载\"但实际没有运行。\n检查：\nopenclaw gateway status openclaw doctor Doctor/service 将显示运行时状态（PID/最后退出）和日志提示。\n日志：\n优先：openclaw logs --follow 文件日志（始终）：/tmp/openclaw/openclaw-YYYY-MM-DD.log（或你配置的 logging.file） macOS LaunchAgent（如果已安装）：$OPENCLAW_STATE_DIR/logs/gateway.log 和 gateway.err.log Linux systemd（如果已安装）：journalctl --user -u openclaw-gateway[-].service -n 200 --no-pager Windows：schtasks /Query /TN \"OpenClaw Gateway ()\" /V /FO LIST 启用更多日志：\n提高文件日志详细程度（持久化 JSONL）： { \"logging\": { \"level\": \"debug\" } } 提高控制台详细程度（仅 TTY 输出）： { \"logging\": { \"consoleLevel\": \"debug\", \"consoleStyle\": \"pretty\" } } 快速提示：--verbose 仅影响控制台输出。文件日志仍由 logging.level 控制。 参见 /logging 了解格式、配置和访问的完整概述。\n“Gateway start blocked: set gateway.mode=local” 这意味着配置存在但 gateway.mode 未设置（或不是 local），所以 Gateway 网关拒绝启动。\n修复（推荐）：\n运行向导并将 Gateway 网关运行模式设置为 Local： openclaw configure 或直接设置： openclaw config set gateway.mode local 如果你打算运行远程 Gateway 网关：\n设置远程 URL 并保持 gateway.mode=remote： openclaw config set gateway.mode remote openclaw config set gateway.remote.url \"wss://gateway.example.com\" 仅临时/开发使用： 传递 --allow-unconfigured 以在没有 gateway.mode=local 的情况下启动 Gateway 网关。\n还没有配置文件？ 运行 openclaw setup 创建初始配置，然后重新运行 Gateway 网关。\n服务环境（PATH + 运行时） Gateway 网关服务使用最小 PATH 运行以避免 shell/管理器的干扰：\nmacOS：/opt/homebrew/bin、/usr/local/bin、/usr/bin、/bin Linux：/usr/local/bin、/usr/bin、/bin 这有意排除版本管理器（nvm/fnm/volta/asdf）和包 管理器（pnpm/npm），因为服务不加载你的 shell 初始化。运行时 变量如 DISPLAY 应该放在 ~/.openclaw/.env 中（由 Gateway 网关早期加载）。 在 host=gateway 上的 Exec 运行会将你的登录 shell PATH 合并到 exec 环境中， 所以缺少的工具通常意味着你的 shell 初始化没有导出它们（或设置 tools.exec.pathPrepend）。参见 /tools/exec。\nWhatsApp + Telegram 渠道需要 Node；不支持 Bun。如果你的 服务是用 Bun 或版本管理的 Node 路径安装的，运行 openclaw doctor 迁移到系统 Node 安装。\n沙箱中 Skill 缺少 API 密钥 症状： Skill 在主机上工作但在沙箱中因缺少 API 密钥而失败。\n原因： 沙箱 exec 在 Docker 内运行，不继承主机 process.env。\n修复：\n设置 agents.defaults.sandbox.docker.env（或每个智能体的 agents.list[].sandbox.docker.env） 或将密钥烘焙到你的自定义沙箱镜像中 然后运行 openclaw sandbox recreate --agent （或 --all） 服务运行但端口未监听 如果服务报告正在运行但 Gateway 网关端口上没有监听， Gateway 网关可能拒绝绑定。\n这里\"正在运行\"的含义\nRuntime: running 意味着你的监管程序（launchd/systemd/schtasks）认为进程存活。 RPC probe 意味着 CLI 实际上能够连接到 Gateway 网关 WebSocket 并调用 status。 始终信任 Probe target: + Config (service): 作为\"我们实际尝试了什么？“的信息行。 检查：\ngateway.mode 必须为 local 才能运行 openclaw gateway 和服务。 如果你设置了 gateway.mode=remote，CLI 默认使用远程 URL。服务可能仍在本地运行，但你的 CLI 可能在探测错误的位置。使用 openclaw gateway status 查看服务解析的端口 + 探测目标（或传递 --url）。 openclaw gateway status 和 openclaw doctor 在服务看起来正在运行但端口关闭时会显示日志中的最后 Gateway 网关错误。 非本地回环绑定（lan/tailnet/custom，或本地回环不可用时的 auto）需要认证： gateway.auth.token（或 OPENCLAW_GATEWAY_TOKEN）。 gateway.remote.token 仅用于远程 CLI 调用；它不启用本地认证。 gateway.token 被忽略；使用 gateway.auth.token。 如果 openclaw gateway status 显示配置不匹配\nConfig (cli): ... 和 Config (service): ... 通常应该匹配。 如果不匹配，你几乎肯定是在编辑一个配置而服务运行的是另一个。 修复：从你希望服务使用的相同 --profile / OPENCLAW_STATE_DIR 重新运行 openclaw gateway install --force。 如果 openclaw gateway status 报告服务配置问题\n监管程序配置（launchd/systemd/schtasks）缺少当前默认值。 修复：运行 openclaw doctor 更新它（或 openclaw gateway install --force 完全重写）。 如果 Last gateway error: 提到\"refusing to bind … without auth”\n你将 gateway.bind 设置为非本地回环模式（lan/tailnet/custom，或本地回环不可用时的 auto）但没有配置认证。 修复：设置 gateway.auth.mode + gateway.auth.token（或导出 OPENCLAW_GATEWAY_TOKEN）并重启服务。 如果 openclaw gateway status 显示 bind=tailnet 但未找到 tailnet 接口\nGateway 网关尝试绑定到 Tailscale IP（100.64.0.0/10）但在主机上未检测到。 修复：在该机器上启动 Tailscale（或将 gateway.bind 改为 loopback/lan）。 如果 Probe note: 说探测使用本地回环\n对于 bind=lan 这是预期的：Gateway 网关监听 0.0.0.0（所有接口），本地回环仍应本地连接。 对于远程客户端，使用真实的 LAN IP（不是 0.0.0.0）加端口，并确保配置了认证。 地址已被使用（端口 18789） 这意味着某些东西已经在 Gateway 网关端口上监听。\n检查：\nopenclaw gateway status 它将显示监听器和可能的原因（Gateway 网关已在运行、SSH 隧道）。 如果需要，停止服务或选择不同的端口。\n检测到额外的工作区文件夹 如果你从旧版本升级，你的磁盘上可能仍有 ~/openclaw。 多个工作区目录可能导致令人困惑的认证或状态漂移，因为 只有一个工作区是活动的。\n修复： 保留单个活动工作区并归档/删除其余的。参见 智能体工作区。\n主聊天在沙箱工作区中运行 症状：pwd 或文件工具显示 ~/.openclaw/sandboxes/... 即使你 期望的是主机工作区。\n原因： agents.defaults.sandbox.mode: \"non-main\" 基于 session.mainKey（默认 \"main\"）判断。 群组/渠道会话使用它们自己的键，所以它们被视为非主会话并 获得沙箱工作区。\n修复选项：\n如果你想为智能体使用主机工作区：设置 agents.list[].sandbox.mode: \"off\"。 如果你想在沙箱内访问主机工作区：为该智能体设置 workspaceAccess: \"rw\"。 “Agent was aborted” 智能体在响应中途被中断。\n原因：\n用户发送了 stop、abort、esc、wait 或 exit 超时超限 进程崩溃 修复： 只需发送另一条消息。会话将继续。\n“Agent failed before reply: Unknown model: anthropic/claude-haiku-3-5” OpenClaw 有意拒绝较旧/不安全的模型（尤其是那些更容易受到提示词注入攻击的模型）。如果你看到此错误，该模型名称已不再支持。\n修复：\n为提供商选择最新模型并更新你的配置或模型别名。 如果你不确定哪些模型可用，运行 openclaw models list 或 openclaw models scan 并选择一个支持的模型。 检查 Gateway 网关日志以获取详细的失败原因。 另请参阅：模型 CLI 和 模型提供商。\n消息未触发 检查 1： 发送者是否在白名单中？\nopenclaw status 在输出中查找 AllowFrom: ...。\n检查 2： 对于群聊，是否需要提及？\n# 消息必须匹配 mentionPatterns 或显式提及；默认值在渠道 groups/guilds 中。 # 多智能体：`agents.list[].groupChat.mentionPatterns` 覆盖全局模式。 grep -n \"agents\\\\|groupChat\\\\|mentionPatterns\\\\|channels\\\\.whatsapp\\\\.groups\\\\|channels\\\\.telegram\\\\.groups\\\\|channels\\\\.imessage\\\\.groups\\\\|channels\\\\.discord\\\\.guilds\" \\ \"${OPENCLAW_CONFIG_PATH:-$HOME/.openclaw/openclaw.json}\" 检查 3： 检查日志\nopenclaw logs --follow # 或者如果你想快速过滤： tail -f \"$(ls -t /tmp/openclaw/openclaw-*.log | head -1)\" | grep \"blocked\\\\|skip\\\\|unauthorized\" 配对码未到达 如果 dmPolicy 是 pairing，未知发送者应该收到一个代码，他们的消息在批准前会被忽略。\n检查 1： 是否已有待处理的请求在等待？\nopenclaw pairing list 待处理的私信配对请求默认每个渠道上限为 3 个。如果列表已满，新请求将不会生成代码，直到一个被批准或过期。\n检查 2： 请求是否已创建但未发送回复？\nopenclaw logs --follow | grep \"pairing request\" 检查 3： 确认该渠道的 dmPolicy 不是 open/allowlist。\n图片 + 提及不工作 已知问题：当你发送只有提及的图片（没有其他文字）时，WhatsApp 有时不包含提及元数据。\n变通方法： 在提及时添加一些文字：\n❌ @openclaw + 图片 ✅ @openclaw check this + 图片 会话未恢复 检查 1： 会话文件是否存在？\nls -la ~/.openclaw/agents//sessions/ 检查 2： 重置窗口是否太短？\n{ \"session\": { \"reset\": { \"mode\": \"daily\", \"atHour\": 4, \"idleMinutes\": 10080 // 7 天 } } } 检查 3： 是否有人发送了 /new、/reset 或重置触发器？\n智能体超时 默认超时是 30 分钟。对于长任务：\n{ \"reply\": { \"timeoutSeconds\": 3600 // 1 小时 } } 或使用 process 工具在后台运行长命令。\nWhatsApp 断开连接 # 检查本地状态（凭证、会话、排队事件） openclaw status # 探测运行中的 Gateway 网关 + 渠道（WA 连接 + Telegram + Discord API） openclaw status --deep # 查看最近的连接事件 openclaw logs --limit 200 | grep \"connection\\\\|disconnect\\\\|logout\" 修复： 通常在 Gateway 网关运行后会自动重连。如果卡住，重启 Gateway 网关进程（无论你如何监管它），或使用详细输出手动运行：\nopenclaw gateway --verbose 如果你已登出/取消关联：\nopenclaw channels logout trash \"${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/credentials\" # 如果 logout 无法完全清除所有内容 openclaw channels login --verbose # 重新扫描二维码 媒体发送失败 检查 1： 文件路径是否有效？\nls -la /path/to/your/image.jpg 检查 2： 是否太大？\n图片：最大 6MB 音频/视频：最大 16MB 文档：最大 100MB 检查 3： 检查媒体日志\ngrep \"media\\\\|fetch\\\\|download\" \"$(ls -t /tmp/openclaw/openclaw-*.log | head -1)\" | tail -20 高内存使用 OpenClaw 在内存中保留对话历史。\n修复： 定期重启或设置会话限制：\n{ \"session\": { \"historyLimit\": 100 // 保留的最大消息数 } } 常见故障排除 “Gateway won’t start — configuration invalid” 当配置包含未知键、格式错误的值或无效类型时，OpenClaw 现在拒绝启动。 这是为了安全而故意设计的。\n用 Doctor 修复：\nopenclaw doctor openclaw doctor --fix 注意事项：\nopenclaw doctor 报告每个无效条目。 openclaw doctor --fix 应用迁移/修复并重写配置。 诊断命令如 openclaw logs、openclaw health、openclaw status、openclaw gateway status 和 openclaw gateway probe 即使配置无效也能运行。 “All models failed” — 我应该首先检查什么？ 凭证存在于正在尝试的提供商（认证配置文件 + 环境变量）。 模型路由：确认 agents.defaults.model.primary 和回退是你可以访问的模型。 /tmp/openclaw/… 中的 Gateway 网关日志以获取确切的提供商错误。 模型状态：使用 /model status（聊天）或 openclaw models status（CLI）。 我在我的个人 WhatsApp 号码上运行 — 为什么自聊天很奇怪？ 启用自聊天模式并将你自己的号码加入白名单：\n{ channels: { whatsapp: { selfChatMode: true, dmPolicy: \"allowlist\", allowFrom: [\"+15555550123\"], }, }, } 参见 WhatsApp 设置。\nWhatsApp 将我登出。如何重新认证？ 再次运行登录命令并扫描二维码：\nopenclaw channels login main 上的构建错误 — 标准修复路径是什么？ git pull origin main \u0026\u0026 pnpm install openclaw doctor 检查 GitHub issues 或 Discord 临时变通方法：检出较旧的提交 npm install 失败（allow-build-scripts / 缺少 tar 或 yargs）。现在怎么办？ 如果你从源代码运行，使用仓库的包管理器：pnpm（首选）。 仓库声明了 packageManager: \"pnpm@…\"。\n典型恢复：\ngit status # 确保你在仓库根目录 pnpm install pnpm build openclaw doctor openclaw gateway restart 原因：pnpm 是此仓库配置的包管理器。\n如何在 git 安装和 npm 安装之间切换？ 使用网站安装程序并通过标志选择安装方法。它 原地升级并重写 Gateway 网关服务以指向新安装。\n切换到 git 安装：\ncurl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method git --no-onboard 切换到 npm 全局：\ncurl -fsSL https://openclaw.ai/install.sh | bash 注意事项：\ngit 流程仅在仓库干净时才 rebase。先提交或 stash 更改。 切换后，运行： openclaw doctor openclaw gateway restart Telegram 分块流式传输没有在工具调用之间分割文本。为什么？ 分块流式传输只发送已完成的文本块。你看到单条消息的常见原因：\nagents.defaults.blockStreamingDefault 仍然是 \"off\"。 channels.telegram.blockStreaming 设置为 false。 channels.telegram.streamMode 是 partial 或 block 且草稿流式传输处于活动状态 （私聊 + 话题）。在这种情况下，草稿流式传输会禁用分块流式传输。 你的 minChars / coalesce 设置太高，所以块被合并了。 模型发出一个大的文本块（没有中间回复刷新点）。 修复清单：\n将分块流式传输设置放在 agents.defaults 下，而不是根目录。 如果你想要真正的多消息分块回复，设置 channels.telegram.streamMode: \"off\"。 调试时使用较小的 chunk/coalesce 阈值。 参见 流式传输。\n即使设置了 requireMention: false，Discord 也不在我的服务器中回复。为什么？ requireMention 只控制渠道通过白名单之后的提及门控。 默认情况下 channels.discord.groupPolicy 是 allowlist，所以必须显式启用 guild。 如果你设置了 channels.discord.guilds..channels，只允许列出的频道；省略它以允许 guild 中的所有频道。\n修复清单：\n设置 channels.discord.groupPolicy: \"open\" 或添加 guild 白名单条目（并可选添加频道白名单）。 在 channels.discord.guilds..channels 中使用数字频道 ID。 将 requireMention: false 放在 channels.discord.guilds 下面（全局或每个频道）。 顶级 channels.discord.requireMention 不是支持的键。 确保机器人有 Message Content Intent 和频道权限。 运行 openclaw channels status --probe 获取审计提示。 文档：Discord、渠道故障排除。\nCloud Code Assist API 错误：invalid tool schema（400）。现在怎么办？ 这几乎总是工具模式兼容性问题。Cloud Code Assist 端点接受 JSON Schema 的严格子集。OpenClaw 在当前 main 中清理/规范化工具 模式，但修复尚未包含在最后一个版本中（截至 2026 年 1 月 13 日）。\n修复清单：\n更新 OpenClaw： 如果你可以从源代码运行，拉取 main 并重启 Gateway 网关。 否则，等待包含模式清理器的下一个版本。 避免不支持的关键字如 anyOf/oneOf/allOf、patternProperties、 additionalProperties、minLength、maxLength、format 等。 如果你定义自定义工具，保持顶级模式为 type: \"object\" 并使用 properties 和简单枚举。 参见 工具 和 TypeBox 模式。\nmacOS 特定问题 授予权限（语音/麦克风）时应用崩溃 如果在你点击隐私提示的\"允许\"时应用消失或显示\"Abort trap 6\"：\n修复 1：重置 TCC 缓存\ntccutil reset All bot.molt.mac.debug 修复 2：强制使用新的 Bundle ID 如果重置不起作用，在 scripts/package-mac-app.sh 中更改 BUNDLE_ID（例如，添加 .test 后缀）并重新构建。这会强制 macOS 将其视为新应用。\nGateway 网关卡在\"Starting…\" 应用连接到端口 18789 上的本地 Gateway 网关。如果一直卡住：\n修复 1：停止监管程序（首选） 如果 Gateway 网关由 launchd 监管，杀死 PID 只会重新生成它。先停止监管程序：\nopenclaw gateway status openclaw gateway stop # 或：launchctl bootout gui/$UID/bot.molt.gateway（用 bot.molt. 替换；旧版 com.openclaw.* 仍然有效） 修复 2：端口被占用（查找监听器）\nlsof -nP -iTCP:18789 -sTCP:LISTEN 如果是未被监管的进程，先尝试优雅停止，然后升级：\nkill -TERM sleep 1 kill -9 # 最后手段 修复 3：检查 CLI 安装 确保全局 openclaw CLI 已安装且与应用版本匹配：\nopenclaw --version npm install -g openclaw@ 调试模式 获取详细日志：\n# 在配置中打开跟踪日志： # ${OPENCLAW_CONFIG_PATH:-$HOME/.openclaw/openclaw.json} -\u003e { logging: { level: \"trace\" } } # # 然后运行详细命令将调试输出镜像到标准输出： openclaw gateway --verbose openclaw channels login --verbose 日志位置 日志 位置 Gateway 网关文件日志（结构化） /tmp/openclaw/openclaw-YYYY-MM-DD.log（或 logging.file） Gateway 网关服务日志（监管程序） macOS：$OPENCLAW_STATE_DIR/logs/gateway.log + gateway.err.log（默认：~/.openclaw/logs/...；配置文件使用 ~/.openclaw-/logs/...）\nLinux：journalctl --user -u openclaw-gateway[-].service -n 200 --no-pager\nWindows：schtasks /Query /TN \"OpenClaw Gateway ()\" /V /FO LIST 会话文件 $OPENCLAW_STATE_DIR/agents//sessions/ 媒体缓存 $OPENCLAW_STATE_DIR/media/ 凭证 $OPENCLAW_STATE_DIR/credentials/ 健康检查 # 监管程序 + 探测目标 + 配置路径 openclaw gateway status # 包括系统级扫描（旧版/额外服务、端口监听器） openclaw gateway status --deep # Gateway 网关是否可达？ openclaw health --json # 如果失败，使用连接详情重新运行： openclaw health --verbose # 默认端口上是否有东西在监听？ lsof -nP -iTCP:18789 -sTCP:LISTEN # 最近活动（RPC 日志尾部） openclaw logs --follow # 如果 RPC 宕机的备用方案 tail -20 /tmp/openclaw/openclaw-*.log 重置所有内容 核选项：\nopenclaw gateway stop # 如果你安装了服务并想要干净安装： # openclaw gateway uninstall trash \"${OPENCLAW_STATE_DIR:-$HOME/.openclaw}\" openclaw channels login # 重新配对 WhatsApp openclaw gateway restart # 或：openclaw gateway ⚠️ 这会丢失所有会话并需要重新配对 WhatsApp。\n获取帮助 首先检查日志：/tmp/openclaw/（默认：openclaw-YYYY-MM-DD.log，或你配置的 logging.file） 在 GitHub 上搜索现有问题 提交新问题时包含： OpenClaw 版本 相关日志片段 重现步骤 你的配置（隐藏密钥！） “你试过关掉再开吗？” — 每个 IT 人员都这么说\n🦞🔧\n浏览器无法启动（Linux） 如果你看到 \"Failed to start Chrome CDP on port 18800\"：\n最可能的原因： Ubuntu 上的 Snap 打包的 Chromium。\n快速修复： 改为安装 Google Chrome：\nwget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb sudo dpkg -i google-chrome-stable_current_amd64.deb 然后在配置中设置：\n{ \"browser\": { \"executablePath\": \"/usr/bin/google-chrome-stable\" } } 完整指南： 参见 browser-linux-troubleshooting\n",
+  "wordCount" : "1474",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/gateway/troubleshooting/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      故障排除 🔧
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%8a%b6%e6%80%81%e4%b8%8e%e8%af%8a%e6%96%ad" aria-label="状态与诊断">状态与诊断</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98" aria-label="常见问题">常见问题</a><ul>
+                        
+                <li>
+                    <a href="#no-api-key-found-for-provider-anthropic" aria-label="No API key found for provider &ldquo;anthropic&rdquo;">No API key found for provider &ldquo;anthropic&rdquo;</a></li>
+                <li>
+                    <a href="#oauth-token-refresh-failedanthropic-claude-%e8%ae%a2%e9%98%85" aria-label="OAuth token refresh failed（Anthropic Claude 订阅）">OAuth token refresh failed（Anthropic Claude 订阅）</a></li>
+                <li>
+                    <a href="#control-ui-%e5%9c%a8-http-%e4%b8%8a%e5%a4%b1%e8%b4%a5device-identity-required--connect-failed" aria-label="Control UI 在 HTTP 上失败（&ldquo;device identity required&rdquo; / &ldquo;connect failed&rdquo;）">Control UI 在 HTTP 上失败（&ldquo;device identity required&rdquo; / &ldquo;connect failed&rdquo;）</a></li>
+                <li>
+                    <a href="#ci-secrets-scan-failed" aria-label="CI Secrets Scan Failed">CI Secrets Scan Failed</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e5%b7%b2%e5%ae%89%e8%a3%85%e4%bd%86%e6%b2%a1%e6%9c%89%e8%bf%90%e8%a1%8c" aria-label="服务已安装但没有运行">服务已安装但没有运行</a></li>
+                <li>
+                    <a href="#gateway-start-blocked-set-gatewaymodelocal" aria-label="&ldquo;Gateway start blocked: set gateway.mode=local&rdquo;">&ldquo;Gateway start blocked: set gateway.mode=local&rdquo;</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e7%8e%af%e5%a2%83path--%e8%bf%90%e8%a1%8c%e6%97%b6" aria-label="服务环境（PATH &#43; 运行时）">服务环境（PATH + 运行时）</a></li>
+                <li>
+                    <a href="#%e6%b2%99%e7%ae%b1%e4%b8%ad-skill-%e7%bc%ba%e5%b0%91-api-%e5%af%86%e9%92%a5" aria-label="沙箱中 Skill 缺少 API 密钥">沙箱中 Skill 缺少 API 密钥</a></li>
+                <li>
+                    <a href="#%e6%9c%8d%e5%8a%a1%e8%bf%90%e8%a1%8c%e4%bd%86%e7%ab%af%e5%8f%a3%e6%9c%aa%e7%9b%91%e5%90%ac" aria-label="服务运行但端口未监听">服务运行但端口未监听</a></li>
+                <li>
+                    <a href="#%e5%9c%b0%e5%9d%80%e5%b7%b2%e8%a2%ab%e4%bd%bf%e7%94%a8%e7%ab%af%e5%8f%a3-18789" aria-label="地址已被使用（端口 18789）">地址已被使用（端口 18789）</a></li>
+                <li>
+                    <a href="#%e6%a3%80%e6%b5%8b%e5%88%b0%e9%a2%9d%e5%a4%96%e7%9a%84%e5%b7%a5%e4%bd%9c%e5%8c%ba%e6%96%87%e4%bb%b6%e5%a4%b9" aria-label="检测到额外的工作区文件夹">检测到额外的工作区文件夹</a></li>
+                <li>
+                    <a href="#%e4%b8%bb%e8%81%8a%e5%a4%a9%e5%9c%a8%e6%b2%99%e7%ae%b1%e5%b7%a5%e4%bd%9c%e5%8c%ba%e4%b8%ad%e8%bf%90%e8%a1%8c" aria-label="主聊天在沙箱工作区中运行">主聊天在沙箱工作区中运行</a></li>
+                <li>
+                    <a href="#agent-was-aborted" aria-label="&ldquo;Agent was aborted&rdquo;">&ldquo;Agent was aborted&rdquo;</a></li>
+                <li>
+                    <a href="#agent-failed-before-reply-unknown-model-anthropicclaude-haiku-3-5" aria-label="&ldquo;Agent failed before reply: Unknown model: anthropic/claude-haiku-3-5&rdquo;">&ldquo;Agent failed before reply: Unknown model: anthropic/claude-haiku-3-5&rdquo;</a></li>
+                <li>
+                    <a href="#%e6%b6%88%e6%81%af%e6%9c%aa%e8%a7%a6%e5%8f%91" aria-label="消息未触发">消息未触发</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e5%af%b9%e7%a0%81%e6%9c%aa%e5%88%b0%e8%be%be" aria-label="配对码未到达">配对码未到达</a></li>
+                <li>
+                    <a href="#%e5%9b%be%e7%89%87--%e6%8f%90%e5%8f%8a%e4%b8%8d%e5%b7%a5%e4%bd%9c" aria-label="图片 &#43; 提及不工作">图片 + 提及不工作</a></li>
+                <li>
+                    <a href="#%e4%bc%9a%e8%af%9d%e6%9c%aa%e6%81%a2%e5%a4%8d" aria-label="会话未恢复">会话未恢复</a></li>
+                <li>
+                    <a href="#%e6%99%ba%e8%83%bd%e4%bd%93%e8%b6%85%e6%97%b6" aria-label="智能体超时">智能体超时</a></li>
+                <li>
+                    <a href="#whatsapp-%e6%96%ad%e5%bc%80%e8%bf%9e%e6%8e%a5" aria-label="WhatsApp 断开连接">WhatsApp 断开连接</a></li>
+                <li>
+                    <a href="#%e5%aa%92%e4%bd%93%e5%8f%91%e9%80%81%e5%a4%b1%e8%b4%a5" aria-label="媒体发送失败">媒体发送失败</a></li>
+                <li>
+                    <a href="#%e9%ab%98%e5%86%85%e5%ad%98%e4%bd%bf%e7%94%a8" aria-label="高内存使用">高内存使用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="常见故障排除">常见故障排除</a><ul>
+                        
+                <li>
+                    <a href="#gateway-wont-start--configuration-invalid" aria-label="&ldquo;Gateway won&rsquo;t start — configuration invalid&rdquo;">&ldquo;Gateway won&rsquo;t start — configuration invalid&rdquo;</a></li>
+                <li>
+                    <a href="#all-models-failed--%e6%88%91%e5%ba%94%e8%af%a5%e9%a6%96%e5%85%88%e6%a3%80%e6%9f%a5%e4%bb%80%e4%b9%88" aria-label="&ldquo;All models failed&rdquo; — 我应该首先检查什么？">&ldquo;All models failed&rdquo; — 我应该首先检查什么？</a></li>
+                <li>
+                    <a href="#%e6%88%91%e5%9c%a8%e6%88%91%e7%9a%84%e4%b8%aa%e4%ba%ba-whatsapp-%e5%8f%b7%e7%a0%81%e4%b8%8a%e8%bf%90%e8%a1%8c--%e4%b8%ba%e4%bb%80%e4%b9%88%e8%87%aa%e8%81%8a%e5%a4%a9%e5%be%88%e5%a5%87%e6%80%aa" aria-label="我在我的个人 WhatsApp 号码上运行 — 为什么自聊天很奇怪？">我在我的个人 WhatsApp 号码上运行 — 为什么自聊天很奇怪？</a></li>
+                <li>
+                    <a href="#whatsapp-%e5%b0%86%e6%88%91%e7%99%bb%e5%87%ba%e5%a6%82%e4%bd%95%e9%87%8d%e6%96%b0%e8%ae%a4%e8%af%81" aria-label="WhatsApp 将我登出。如何重新认证？">WhatsApp 将我登出。如何重新认证？</a></li>
+                <li>
+                    <a href="#main-%e4%b8%8a%e7%9a%84%e6%9e%84%e5%bb%ba%e9%94%99%e8%af%af--%e6%a0%87%e5%87%86%e4%bf%ae%e5%a4%8d%e8%b7%af%e5%be%84%e6%98%af%e4%bb%80%e4%b9%88" aria-label="main 上的构建错误 — 标准修复路径是什么？">main 上的构建错误 — 标准修复路径是什么？</a></li>
+                <li>
+                    <a href="#npm-install-%e5%a4%b1%e8%b4%a5allow-build-scripts--%e7%bc%ba%e5%b0%91-tar-%e6%88%96-yargs%e7%8e%b0%e5%9c%a8%e6%80%8e%e4%b9%88%e5%8a%9e" aria-label="npm install 失败（allow-build-scripts / 缺少 tar 或 yargs）。现在怎么办？">npm install 失败（allow-build-scripts / 缺少 tar 或 yargs）。现在怎么办？</a></li>
+                <li>
+                    <a href="#%e5%a6%82%e4%bd%95%e5%9c%a8-git-%e5%ae%89%e8%a3%85%e5%92%8c-npm-%e5%ae%89%e8%a3%85%e4%b9%8b%e9%97%b4%e5%88%87%e6%8d%a2" aria-label="如何在 git 安装和 npm 安装之间切换？">如何在 git 安装和 npm 安装之间切换？</a></li>
+                <li>
+                    <a href="#telegram-%e5%88%86%e5%9d%97%e6%b5%81%e5%bc%8f%e4%bc%a0%e8%be%93%e6%b2%a1%e6%9c%89%e5%9c%a8%e5%b7%a5%e5%85%b7%e8%b0%83%e7%94%a8%e4%b9%8b%e9%97%b4%e5%88%86%e5%89%b2%e6%96%87%e6%9c%ac%e4%b8%ba%e4%bb%80%e4%b9%88" aria-label="Telegram 分块流式传输没有在工具调用之间分割文本。为什么？">Telegram 分块流式传输没有在工具调用之间分割文本。为什么？</a></li>
+                <li>
+                    <a href="#%e5%8d%b3%e4%bd%bf%e8%ae%be%e7%bd%ae%e4%ba%86-requiremention-falsediscord-%e4%b9%9f%e4%b8%8d%e5%9c%a8%e6%88%91%e7%9a%84%e6%9c%8d%e5%8a%a1%e5%99%a8%e4%b8%ad%e5%9b%9e%e5%a4%8d%e4%b8%ba%e4%bb%80%e4%b9%88" aria-label="即使设置了 requireMention: false，Discord 也不在我的服务器中回复。为什么？">即使设置了 requireMention: false，Discord 也不在我的服务器中回复。为什么？</a></li>
+                <li>
+                    <a href="#cloud-code-assist-api-%e9%94%99%e8%af%afinvalid-tool-schema400%e7%8e%b0%e5%9c%a8%e6%80%8e%e4%b9%88%e5%8a%9e" aria-label="Cloud Code Assist API 错误：invalid tool schema（400）。现在怎么办？">Cloud Code Assist API 错误：invalid tool schema（400）。现在怎么办？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#macos-%e7%89%b9%e5%ae%9a%e9%97%ae%e9%a2%98" aria-label="macOS 特定问题">macOS 特定问题</a><ul>
+                        
+                <li>
+                    <a href="#%e6%8e%88%e4%ba%88%e6%9d%83%e9%99%90%e8%af%ad%e9%9f%b3%e9%ba%a6%e5%85%8b%e9%a3%8e%e6%97%b6%e5%ba%94%e7%94%a8%e5%b4%a9%e6%ba%83" aria-label="授予权限（语音/麦克风）时应用崩溃">授予权限（语音/麦克风）时应用崩溃</a></li>
+                <li>
+                    <a href="#gateway-%e7%bd%91%e5%85%b3%e5%8d%a1%e5%9c%a8starting" aria-label="Gateway 网关卡在&quot;Starting&hellip;&quot;">Gateway 网关卡在&quot;Starting&hellip;&quot;</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%b0%83%e8%af%95%e6%a8%a1%e5%bc%8f" aria-label="调试模式">调试模式</a></li>
+                <li>
+                    <a href="#%e6%97%a5%e5%bf%97%e4%bd%8d%e7%bd%ae" aria-label="日志位置">日志位置</a></li>
+                <li>
+                    <a href="#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5" aria-label="健康检查">健康检查</a></li>
+                <li>
+                    <a href="#%e9%87%8d%e7%bd%ae%e6%89%80%e6%9c%89%e5%86%85%e5%ae%b9" aria-label="重置所有内容">重置所有内容</a></li>
+                <li>
+                    <a href="#%e8%8e%b7%e5%8f%96%e5%b8%ae%e5%8a%a9" aria-label="获取帮助">获取帮助</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b5%8f%e8%a7%88%e5%99%a8%e6%97%a0%e6%b3%95%e5%90%af%e5%8a%a8linux" aria-label="浏览器无法启动（Linux）">浏览器无法启动（Linux）</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>当 OpenClaw 出现异常时，以下是解决方法。</p>
+<p>如果你只想快速分类问题，请先查看常见问题的<a href="/help/faq#first-60-seconds-if-somethings-broken">最初的六十秒</a>。本页深入介绍运行时故障和诊断。</p>
+<p>特定提供商的快捷方式：<a href="/channels/troubleshooting">/channels/troubleshooting</a></p>
+<h2 id="状态与诊断">状态与诊断<a hidden class="anchor" aria-hidden="true" href="#状态与诊断">#</a></h2>
+<p>快速分类命令（按顺序）：</p>
+<table>
+  <thead>
+      <tr>
+          <th>命令</th>
+          <th>它告诉你什么</th>
+          <th>何时使用</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>openclaw status</code></td>
+          <td>本地摘要：操作系统 + 更新、Gateway 网关可达性/模式、服务、智能体/会话、提供商配置状态</td>
+          <td>首次检查，快速概览</td>
+      </tr>
+      <tr>
+          <td><code>openclaw status --all</code></td>
+          <td>完整本地诊断（只读、可粘贴、相对安全）包括日志尾部</td>
+          <td>当你需要分享调试报告时</td>
+      </tr>
+      <tr>
+          <td><code>openclaw status --deep</code></td>
+          <td>运行 Gateway 网关健康检查（包括提供商探测；需要可达的 Gateway 网关）</td>
+          <td>当&quot;已配置&quot;不意味着&quot;正常工作&quot;时</td>
+      </tr>
+      <tr>
+          <td><code>openclaw gateway probe</code></td>
+          <td>Gateway 网关发现 + 可达性（本地 + 远程目标）</td>
+          <td>当你怀疑正在探测错误的 Gateway 网关时</td>
+      </tr>
+      <tr>
+          <td><code>openclaw channels status --probe</code></td>
+          <td>向运行中的 Gateway 网关查询渠道状态（并可选探测）</td>
+          <td>当 Gateway 网关可达但渠道异常时</td>
+      </tr>
+      <tr>
+          <td><code>openclaw gateway status</code></td>
+          <td>监管程序状态（launchd/systemd/schtasks）、运行时 PID/退出、最后的 Gateway 网关错误</td>
+          <td>当服务&quot;看起来已加载&quot;但没有运行时</td>
+      </tr>
+      <tr>
+          <td><code>openclaw logs --follow</code></td>
+          <td>实时日志（运行时问题的最佳信号）</td>
+          <td>当你需要实际的故障原因时</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>分享输出：</strong> 优先使用 <code>openclaw status --all</code>（它会隐藏令牌）。如果你粘贴 <code>openclaw status</code>，考虑先设置 <code>OPENCLAW_SHOW_SECRETS=0</code>（令牌预览）。</p>
+<p>另请参阅：<a href="/gateway/health">健康检查</a> 和 <a href="/logging">日志</a>。</p>
+<h2 id="常见问题">常见问题<a hidden class="anchor" aria-hidden="true" href="#常见问题">#</a></h2>
+<h3 id="no-api-key-found-for-provider-anthropic">No API key found for provider &ldquo;anthropic&rdquo;<a hidden class="anchor" aria-hidden="true" href="#no-api-key-found-for-provider-anthropic">#</a></h3>
+<p>这意味着<strong>智能体的认证存储为空</strong>或缺少 Anthropic 凭证。
+认证是<strong>每个智能体独立的</strong>，所以新智能体不会继承主智能体的密钥。</p>
+<p>修复选项：</p>
+<ul>
+<li>重新运行新手引导并为该智能体选择 <strong>Anthropic</strong>。</li>
+<li>或在 <strong>Gateway 网关主机</strong>上粘贴 setup-token：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw models auth setup-token --provider anthropic
+</span></span></code></pre></div></li>
+<li>或将 <code>auth-profiles.json</code> 从主智能体目录复制到新智能体目录。</li>
+</ul>
+<p>验证：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw models status
+</span></span></code></pre></div><h3 id="oauth-token-refresh-failedanthropic-claude-订阅">OAuth token refresh failed（Anthropic Claude 订阅）<a hidden class="anchor" aria-hidden="true" href="#oauth-token-refresh-failedanthropic-claude-订阅">#</a></h3>
+<p>这意味着存储的 Anthropic OAuth 令牌已过期且刷新失败。
+如果你使用 Claude 订阅（无 API 密钥），最可靠的修复方法是
+切换到 <strong>Claude Code setup-token</strong> 并在 <strong>Gateway 网关主机</strong>上粘贴。</p>
+<p><strong>推荐（setup-token）：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在 Gateway 网关主机上运行（粘贴 setup-token）</span>
+</span></span><span class="line"><span class="cl">openclaw models auth setup-token --provider anthropic
+</span></span><span class="line"><span class="cl">openclaw models status
+</span></span></code></pre></div><p>如果你在其他地方生成了令牌：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw models auth paste-token --provider anthropic
+</span></span><span class="line"><span class="cl">openclaw models status
+</span></span></code></pre></div><p>更多详情：<a href="/providers/anthropic">Anthropic</a> 和 <a href="/concepts/oauth">OAuth</a>。</p>
+<h3 id="control-ui-在-http-上失败device-identity-required--connect-failed">Control UI 在 HTTP 上失败（&ldquo;device identity required&rdquo; / &ldquo;connect failed&rdquo;）<a hidden class="anchor" aria-hidden="true" href="#control-ui-在-http-上失败device-identity-required--connect-failed">#</a></h3>
+<p>如果你通过纯 HTTP 打开仪表板（例如 <code>http://&lt;lan-ip&gt;:18789/</code> 或
+<code>http://&lt;tailscale-ip&gt;:18789/</code>），浏览器运行在<strong>非安全上下文</strong>中，
+会阻止 WebCrypto，因此无法生成设备身份。</p>
+<p><strong>修复：</strong></p>
+<ul>
+<li>优先通过 <a href="/gateway/tailscale">Tailscale Serve</a> 使用 HTTPS。</li>
+<li>或在 Gateway 网关主机上本地打开：<code>http://127.0.0.1:18789/</code>。</li>
+<li>如果必须使用 HTTP，启用 <code>gateway.controlUi.allowInsecureAuth: true</code> 并
+使用 Gateway 网关令牌（仅令牌；无设备身份/配对）。参见
+<a href="/web/control-ui#insecure-http">Control UI</a>。</li>
+</ul>
+<h3 id="ci-secrets-scan-failed">CI Secrets Scan Failed<a hidden class="anchor" aria-hidden="true" href="#ci-secrets-scan-failed">#</a></h3>
+<p>这意味着 <code>detect-secrets</code> 发现了尚未在基线中的新候选项。
+按照 <a href="/gateway/security#secret-scanning-detect-secrets">密钥扫描</a> 操作。</p>
+<h3 id="服务已安装但没有运行">服务已安装但没有运行<a hidden class="anchor" aria-hidden="true" href="#服务已安装但没有运行">#</a></h3>
+<p>如果 Gateway 网关服务已安装但进程立即退出，服务
+可能显示&quot;已加载&quot;但实际没有运行。</p>
+<p><strong>检查：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway status
+</span></span><span class="line"><span class="cl">openclaw doctor
+</span></span></code></pre></div><p>Doctor/service 将显示运行时状态（PID/最后退出）和日志提示。</p>
+<p><strong>日志：</strong></p>
+<ul>
+<li>优先：<code>openclaw logs --follow</code></li>
+<li>文件日志（始终）：<code>/tmp/openclaw/openclaw-YYYY-MM-DD.log</code>（或你配置的 <code>logging.file</code>）</li>
+<li>macOS LaunchAgent（如果已安装）：<code>$OPENCLAW_STATE_DIR/logs/gateway.log</code> 和 <code>gateway.err.log</code></li>
+<li>Linux systemd（如果已安装）：<code>journalctl --user -u openclaw-gateway[-&lt;profile&gt;].service -n 200 --no-pager</code></li>
+<li>Windows：<code>schtasks /Query /TN &quot;OpenClaw Gateway (&lt;profile&gt;)&quot; /V /FO LIST</code></li>
+</ul>
+<p><strong>启用更多日志：</strong></p>
+<ul>
+<li>提高文件日志详细程度（持久化 JSONL）：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;logging&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;level&#34;</span><span class="p">:</span> <span class="s2">&#34;debug&#34;</span> <span class="p">}</span> <span class="p">}</span>
+</span></span></code></pre></div></li>
+<li>提高控制台详细程度（仅 TTY 输出）：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;logging&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;consoleLevel&#34;</span><span class="p">:</span> <span class="s2">&#34;debug&#34;</span><span class="p">,</span> <span class="nt">&#34;consoleStyle&#34;</span><span class="p">:</span> <span class="s2">&#34;pretty&#34;</span> <span class="p">}</span> <span class="p">}</span>
+</span></span></code></pre></div></li>
+<li>快速提示：<code>--verbose</code> 仅影响<strong>控制台</strong>输出。文件日志仍由 <code>logging.level</code> 控制。</li>
+</ul>
+<p>参见 <a href="/logging">/logging</a> 了解格式、配置和访问的完整概述。</p>
+<h3 id="gateway-start-blocked-set-gatewaymodelocal">&ldquo;Gateway start blocked: set gateway.mode=local&rdquo;<a hidden class="anchor" aria-hidden="true" href="#gateway-start-blocked-set-gatewaymodelocal">#</a></h3>
+<p>这意味着配置存在但 <code>gateway.mode</code> 未设置（或不是 <code>local</code>），所以
+Gateway 网关拒绝启动。</p>
+<p><strong>修复（推荐）：</strong></p>
+<ul>
+<li>运行向导并将 Gateway 网关运行模式设置为 <strong>Local</strong>：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw configure
+</span></span></code></pre></div></li>
+<li>或直接设置：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.mode <span class="nb">local</span>
+</span></span></code></pre></div></li>
+</ul>
+<p><strong>如果你打算运行远程 Gateway 网关：</strong></p>
+<ul>
+<li>设置远程 URL 并保持 <code>gateway.mode=remote</code>：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.mode remote
+</span></span><span class="line"><span class="cl">openclaw config <span class="nb">set</span> gateway.remote.url <span class="s2">&#34;wss://gateway.example.com&#34;</span>
+</span></span></code></pre></div></li>
+</ul>
+<p><strong>仅临时/开发使用：</strong> 传递 <code>--allow-unconfigured</code> 以在没有
+<code>gateway.mode=local</code> 的情况下启动 Gateway 网关。</p>
+<p><strong>还没有配置文件？</strong> 运行 <code>openclaw setup</code> 创建初始配置，然后重新运行
+Gateway 网关。</p>
+<h3 id="服务环境path--运行时">服务环境（PATH + 运行时）<a hidden class="anchor" aria-hidden="true" href="#服务环境path--运行时">#</a></h3>
+<p>Gateway 网关服务使用<strong>最小 PATH</strong> 运行以避免 shell/管理器的干扰：</p>
+<ul>
+<li>macOS：<code>/opt/homebrew/bin</code>、<code>/usr/local/bin</code>、<code>/usr/bin</code>、<code>/bin</code></li>
+<li>Linux：<code>/usr/local/bin</code>、<code>/usr/bin</code>、<code>/bin</code></li>
+</ul>
+<p>这有意排除版本管理器（nvm/fnm/volta/asdf）和包
+管理器（pnpm/npm），因为服务不加载你的 shell 初始化。运行时
+变量如 <code>DISPLAY</code> 应该放在 <code>~/.openclaw/.env</code> 中（由 Gateway 网关早期加载）。
+在 <code>host=gateway</code> 上的 Exec 运行会将你的登录 shell <code>PATH</code> 合并到 exec 环境中，
+所以缺少的工具通常意味着你的 shell 初始化没有导出它们（或设置
+<code>tools.exec.pathPrepend</code>）。参见 <a href="/tools/exec">/tools/exec</a>。</p>
+<p>WhatsApp + Telegram 渠道需要 <strong>Node</strong>；不支持 Bun。如果你的
+服务是用 Bun 或版本管理的 Node 路径安装的，运行 <code>openclaw doctor</code>
+迁移到系统 Node 安装。</p>
+<h3 id="沙箱中-skill-缺少-api-密钥">沙箱中 Skill 缺少 API 密钥<a hidden class="anchor" aria-hidden="true" href="#沙箱中-skill-缺少-api-密钥">#</a></h3>
+<p><strong>症状：</strong> Skill 在主机上工作但在沙箱中因缺少 API 密钥而失败。</p>
+<p><strong>原因：</strong> 沙箱 exec 在 Docker 内运行，<strong>不</strong>继承主机 <code>process.env</code>。</p>
+<p><strong>修复：</strong></p>
+<ul>
+<li>设置 <code>agents.defaults.sandbox.docker.env</code>（或每个智能体的 <code>agents.list[].sandbox.docker.env</code>）</li>
+<li>或将密钥烘焙到你的自定义沙箱镜像中</li>
+<li>然后运行 <code>openclaw sandbox recreate --agent &lt;id&gt;</code>（或 <code>--all</code>）</li>
+</ul>
+<h3 id="服务运行但端口未监听">服务运行但端口未监听<a hidden class="anchor" aria-hidden="true" href="#服务运行但端口未监听">#</a></h3>
+<p>如果服务报告<strong>正在运行</strong>但 Gateway 网关端口上没有监听，
+Gateway 网关可能拒绝绑定。</p>
+<p><strong>这里&quot;正在运行&quot;的含义</strong></p>
+<ul>
+<li><code>Runtime: running</code> 意味着你的监管程序（launchd/systemd/schtasks）认为进程存活。</li>
+<li><code>RPC probe</code> 意味着 CLI 实际上能够连接到 Gateway 网关 WebSocket 并调用 <code>status</code>。</li>
+<li>始终信任 <code>Probe target:</code> + <code>Config (service):</code> 作为&quot;我们实际尝试了什么？&ldquo;的信息行。</li>
+</ul>
+<p><strong>检查：</strong></p>
+<ul>
+<li><code>gateway.mode</code> 必须为 <code>local</code> 才能运行 <code>openclaw gateway</code> 和服务。</li>
+<li>如果你设置了 <code>gateway.mode=remote</code>，<strong>CLI 默认</strong>使用远程 URL。服务可能仍在本地运行，但你的 CLI 可能在探测错误的位置。使用 <code>openclaw gateway status</code> 查看服务解析的端口 + 探测目标（或传递 <code>--url</code>）。</li>
+<li><code>openclaw gateway status</code> 和 <code>openclaw doctor</code> 在服务看起来正在运行但端口关闭时会显示日志中的<strong>最后 Gateway 网关错误</strong>。</li>
+<li>非本地回环绑定（<code>lan</code>/<code>tailnet</code>/<code>custom</code>，或本地回环不可用时的 <code>auto</code>）需要认证：
+<code>gateway.auth.token</code>（或 <code>OPENCLAW_GATEWAY_TOKEN</code>）。</li>
+<li><code>gateway.remote.token</code> 仅用于远程 CLI 调用；它<strong>不</strong>启用本地认证。</li>
+<li><code>gateway.token</code> 被忽略；使用 <code>gateway.auth.token</code>。</li>
+</ul>
+<p><strong>如果 <code>openclaw gateway status</code> 显示配置不匹配</strong></p>
+<ul>
+<li><code>Config (cli): ...</code> 和 <code>Config (service): ...</code> 通常应该匹配。</li>
+<li>如果不匹配，你几乎肯定是在编辑一个配置而服务运行的是另一个。</li>
+<li>修复：从你希望服务使用的相同 <code>--profile</code> / <code>OPENCLAW_STATE_DIR</code> 重新运行 <code>openclaw gateway install --force</code>。</li>
+</ul>
+<p><strong>如果 <code>openclaw gateway status</code> 报告服务配置问题</strong></p>
+<ul>
+<li>监管程序配置（launchd/systemd/schtasks）缺少当前默认值。</li>
+<li>修复：运行 <code>openclaw doctor</code> 更新它（或 <code>openclaw gateway install --force</code> 完全重写）。</li>
+</ul>
+<p><strong>如果 <code>Last gateway error:</code> 提到&quot;refusing to bind … without auth&rdquo;</strong></p>
+<ul>
+<li>你将 <code>gateway.bind</code> 设置为非本地回环模式（<code>lan</code>/<code>tailnet</code>/<code>custom</code>，或本地回环不可用时的 <code>auto</code>）但没有配置认证。</li>
+<li>修复：设置 <code>gateway.auth.mode</code> + <code>gateway.auth.token</code>（或导出 <code>OPENCLAW_GATEWAY_TOKEN</code>）并重启服务。</li>
+</ul>
+<p><strong>如果 <code>openclaw gateway status</code> 显示 <code>bind=tailnet</code> 但未找到 tailnet 接口</strong></p>
+<ul>
+<li>Gateway 网关尝试绑定到 Tailscale IP（100.64.0.0/10）但在主机上未检测到。</li>
+<li>修复：在该机器上启动 Tailscale（或将 <code>gateway.bind</code> 改为 <code>loopback</code>/<code>lan</code>）。</li>
+</ul>
+<p><strong>如果 <code>Probe note:</code> 说探测使用本地回环</strong></p>
+<ul>
+<li>对于 <code>bind=lan</code> 这是预期的：Gateway 网关监听 <code>0.0.0.0</code>（所有接口），本地回环仍应本地连接。</li>
+<li>对于远程客户端，使用真实的 LAN IP（不是 <code>0.0.0.0</code>）加端口，并确保配置了认证。</li>
+</ul>
+<h3 id="地址已被使用端口-18789">地址已被使用（端口 18789）<a hidden class="anchor" aria-hidden="true" href="#地址已被使用端口-18789">#</a></h3>
+<p>这意味着某些东西已经在 Gateway 网关端口上监听。</p>
+<p><strong>检查：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway status
+</span></span></code></pre></div><p>它将显示监听器和可能的原因（Gateway 网关已在运行、SSH 隧道）。
+如果需要，停止服务或选择不同的端口。</p>
+<h3 id="检测到额外的工作区文件夹">检测到额外的工作区文件夹<a hidden class="anchor" aria-hidden="true" href="#检测到额外的工作区文件夹">#</a></h3>
+<p>如果你从旧版本升级，你的磁盘上可能仍有 <code>~/openclaw</code>。
+多个工作区目录可能导致令人困惑的认证或状态漂移，因为
+只有一个工作区是活动的。</p>
+<p><strong>修复：</strong> 保留单个活动工作区并归档/删除其余的。参见
+<a href="/concepts/agent-workspace#extra-workspace-folders">智能体工作区</a>。</p>
+<h3 id="主聊天在沙箱工作区中运行">主聊天在沙箱工作区中运行<a hidden class="anchor" aria-hidden="true" href="#主聊天在沙箱工作区中运行">#</a></h3>
+<p>症状：<code>pwd</code> 或文件工具显示 <code>~/.openclaw/sandboxes/...</code> 即使你
+期望的是主机工作区。</p>
+<p><strong>原因：</strong> <code>agents.defaults.sandbox.mode: &quot;non-main&quot;</code> 基于 <code>session.mainKey</code>（默认 <code>&quot;main&quot;</code>）判断。
+群组/渠道会话使用它们自己的键，所以它们被视为非主会话并
+获得沙箱工作区。</p>
+<p><strong>修复选项：</strong></p>
+<ul>
+<li>如果你想为智能体使用主机工作区：设置 <code>agents.list[].sandbox.mode: &quot;off&quot;</code>。</li>
+<li>如果你想在沙箱内访问主机工作区：为该智能体设置 <code>workspaceAccess: &quot;rw&quot;</code>。</li>
+</ul>
+<h3 id="agent-was-aborted">&ldquo;Agent was aborted&rdquo;<a hidden class="anchor" aria-hidden="true" href="#agent-was-aborted">#</a></h3>
+<p>智能体在响应中途被中断。</p>
+<p><strong>原因：</strong></p>
+<ul>
+<li>用户发送了 <code>stop</code>、<code>abort</code>、<code>esc</code>、<code>wait</code> 或 <code>exit</code></li>
+<li>超时超限</li>
+<li>进程崩溃</li>
+</ul>
+<p><strong>修复：</strong> 只需发送另一条消息。会话将继续。</p>
+<h3 id="agent-failed-before-reply-unknown-model-anthropicclaude-haiku-3-5">&ldquo;Agent failed before reply: Unknown model: anthropic/claude-haiku-3-5&rdquo;<a hidden class="anchor" aria-hidden="true" href="#agent-failed-before-reply-unknown-model-anthropicclaude-haiku-3-5">#</a></h3>
+<p>OpenClaw 有意拒绝<strong>较旧/不安全的模型</strong>（尤其是那些更容易受到提示词注入攻击的模型）。如果你看到此错误，该模型名称已不再支持。</p>
+<p><strong>修复：</strong></p>
+<ul>
+<li>为提供商选择<strong>最新</strong>模型并更新你的配置或模型别名。</li>
+<li>如果你不确定哪些模型可用，运行 <code>openclaw models list</code> 或
+<code>openclaw models scan</code> 并选择一个支持的模型。</li>
+<li>检查 Gateway 网关日志以获取详细的失败原因。</li>
+</ul>
+<p>另请参阅：<a href="/cli/models">模型 CLI</a> 和 <a href="/concepts/model-providers">模型提供商</a>。</p>
+<h3 id="消息未触发">消息未触发<a hidden class="anchor" aria-hidden="true" href="#消息未触发">#</a></h3>
+<p><strong>检查 1：</strong> 发送者是否在白名单中？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw status
+</span></span></code></pre></div><p>在输出中查找 <code>AllowFrom: ...</code>。</p>
+<p><strong>检查 2：</strong> 对于群聊，是否需要提及？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 消息必须匹配 mentionPatterns 或显式提及；默认值在渠道 groups/guilds 中。</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 多智能体：`agents.list[].groupChat.mentionPatterns` 覆盖全局模式。</span>
+</span></span><span class="line"><span class="cl">grep -n <span class="s2">&#34;agents\\|groupChat\\|mentionPatterns\\|channels\\.whatsapp\\.groups\\|channels\\.telegram\\.groups\\|channels\\.imessage\\.groups\\|channels\\.discord\\.guilds&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">  <span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENCLAW_CONFIG_PATH</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.openclaw/openclaw.json</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span></code></pre></div><p><strong>检查 3：</strong> 检查日志</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw logs --follow
+</span></span><span class="line"><span class="cl"><span class="c1"># 或者如果你想快速过滤：</span>
+</span></span><span class="line"><span class="cl">tail -f <span class="s2">&#34;</span><span class="k">$(</span>ls -t /tmp/openclaw/openclaw-*.log <span class="p">|</span> head -1<span class="k">)</span><span class="s2">&#34;</span> <span class="p">|</span> grep <span class="s2">&#34;blocked\\|skip\\|unauthorized&#34;</span>
+</span></span></code></pre></div><h3 id="配对码未到达">配对码未到达<a hidden class="anchor" aria-hidden="true" href="#配对码未到达">#</a></h3>
+<p>如果 <code>dmPolicy</code> 是 <code>pairing</code>，未知发送者应该收到一个代码，他们的消息在批准前会被忽略。</p>
+<p><strong>检查 1：</strong> 是否已有待处理的请求在等待？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw pairing list &lt;channel&gt;
+</span></span></code></pre></div><p>待处理的私信配对请求默认每个渠道上限为 <strong>3 个</strong>。如果列表已满，新请求将不会生成代码，直到一个被批准或过期。</p>
+<p><strong>检查 2：</strong> 请求是否已创建但未发送回复？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw logs --follow <span class="p">|</span> grep <span class="s2">&#34;pairing request&#34;</span>
+</span></span></code></pre></div><p><strong>检查 3：</strong> 确认该渠道的 <code>dmPolicy</code> 不是 <code>open</code>/<code>allowlist</code>。</p>
+<h3 id="图片--提及不工作">图片 + 提及不工作<a hidden class="anchor" aria-hidden="true" href="#图片--提及不工作">#</a></h3>
+<p>已知问题：当你发送只有提及的图片（没有其他文字）时，WhatsApp 有时不包含提及元数据。</p>
+<p><strong>变通方法：</strong> 在提及时添加一些文字：</p>
+<ul>
+<li>❌ <code>@openclaw</code> + 图片</li>
+<li>✅ <code>@openclaw check this</code> + 图片</li>
+</ul>
+<h3 id="会话未恢复">会话未恢复<a hidden class="anchor" aria-hidden="true" href="#会话未恢复">#</a></h3>
+<p><strong>检查 1：</strong> 会话文件是否存在？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ls -la ~/.openclaw/agents/&lt;agentId&gt;/sessions/
+</span></span></code></pre></div><p><strong>检查 2：</strong> 重置窗口是否太短？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;session&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;reset&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;daily&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;atHour&#34;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;idleMinutes&#34;</span><span class="p">:</span> <span class="mi">10080</span> <span class="c1">// 7 天
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>检查 3：</strong> 是否有人发送了 <code>/new</code>、<code>/reset</code> 或重置触发器？</p>
+<h3 id="智能体超时">智能体超时<a hidden class="anchor" aria-hidden="true" href="#智能体超时">#</a></h3>
+<p>默认超时是 30 分钟。对于长任务：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;reply&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;timeoutSeconds&#34;</span><span class="p">:</span> <span class="mi">3600</span> <span class="c1">// 1 小时
+</span></span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>或使用 <code>process</code> 工具在后台运行长命令。</p>
+<h3 id="whatsapp-断开连接">WhatsApp 断开连接<a hidden class="anchor" aria-hidden="true" href="#whatsapp-断开连接">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查本地状态（凭证、会话、排队事件）</span>
+</span></span><span class="line"><span class="cl">openclaw status
+</span></span><span class="line"><span class="cl"><span class="c1"># 探测运行中的 Gateway 网关 + 渠道（WA 连接 + Telegram + Discord API）</span>
+</span></span><span class="line"><span class="cl">openclaw status --deep
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看最近的连接事件</span>
+</span></span><span class="line"><span class="cl">openclaw logs --limit <span class="m">200</span> <span class="p">|</span> grep <span class="s2">&#34;connection\\|disconnect\\|logout&#34;</span>
+</span></span></code></pre></div><p><strong>修复：</strong> 通常在 Gateway 网关运行后会自动重连。如果卡住，重启 Gateway 网关进程（无论你如何监管它），或使用详细输出手动运行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway --verbose
+</span></span></code></pre></div><p>如果你已登出/取消关联：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw channels <span class="nb">logout</span>
+</span></span><span class="line"><span class="cl">trash <span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENCLAW_STATE_DIR</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.openclaw</span><span class="si">}</span><span class="s2">/credentials&#34;</span> <span class="c1"># 如果 logout 无法完全清除所有内容</span>
+</span></span><span class="line"><span class="cl">openclaw channels login --verbose       <span class="c1"># 重新扫描二维码</span>
+</span></span></code></pre></div><h3 id="媒体发送失败">媒体发送失败<a hidden class="anchor" aria-hidden="true" href="#媒体发送失败">#</a></h3>
+<p><strong>检查 1：</strong> 文件路径是否有效？</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ls -la /path/to/your/image.jpg
+</span></span></code></pre></div><p><strong>检查 2：</strong> 是否太大？</p>
+<ul>
+<li>图片：最大 6MB</li>
+<li>音频/视频：最大 16MB</li>
+<li>文档：最大 100MB</li>
+</ul>
+<p><strong>检查 3：</strong> 检查媒体日志</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep <span class="s2">&#34;media\\|fetch\\|download&#34;</span> <span class="s2">&#34;</span><span class="k">$(</span>ls -t /tmp/openclaw/openclaw-*.log <span class="p">|</span> head -1<span class="k">)</span><span class="s2">&#34;</span> <span class="p">|</span> tail -20
+</span></span></code></pre></div><h3 id="高内存使用">高内存使用<a hidden class="anchor" aria-hidden="true" href="#高内存使用">#</a></h3>
+<p>OpenClaw 在内存中保留对话历史。</p>
+<p><strong>修复：</strong> 定期重启或设置会话限制：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;session&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;historyLimit&#34;</span><span class="p">:</span> <span class="mi">100</span> <span class="c1">// 保留的最大消息数
+</span></span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="常见故障排除">常见故障排除<a hidden class="anchor" aria-hidden="true" href="#常见故障排除">#</a></h2>
+<h3 id="gateway-wont-start--configuration-invalid">&ldquo;Gateway won&rsquo;t start — configuration invalid&rdquo;<a hidden class="anchor" aria-hidden="true" href="#gateway-wont-start--configuration-invalid">#</a></h3>
+<p>当配置包含未知键、格式错误的值或无效类型时，OpenClaw 现在拒绝启动。
+这是为了安全而故意设计的。</p>
+<p>用 Doctor 修复：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw doctor
+</span></span><span class="line"><span class="cl">openclaw doctor --fix
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li><code>openclaw doctor</code> 报告每个无效条目。</li>
+<li><code>openclaw doctor --fix</code> 应用迁移/修复并重写配置。</li>
+<li>诊断命令如 <code>openclaw logs</code>、<code>openclaw health</code>、<code>openclaw status</code>、<code>openclaw gateway status</code> 和 <code>openclaw gateway probe</code> 即使配置无效也能运行。</li>
+</ul>
+<h3 id="all-models-failed--我应该首先检查什么">&ldquo;All models failed&rdquo; — 我应该首先检查什么？<a hidden class="anchor" aria-hidden="true" href="#all-models-failed--我应该首先检查什么">#</a></h3>
+<ul>
+<li><strong>凭证</strong>存在于正在尝试的提供商（认证配置文件 + 环境变量）。</li>
+<li><strong>模型路由</strong>：确认 <code>agents.defaults.model.primary</code> 和回退是你可以访问的模型。</li>
+<li><code>/tmp/openclaw/…</code> 中的 <strong>Gateway 网关日志</strong>以获取确切的提供商错误。</li>
+<li><strong>模型状态</strong>：使用 <code>/model status</code>（聊天）或 <code>openclaw models status</code>（CLI）。</li>
+</ul>
+<h3 id="我在我的个人-whatsapp-号码上运行--为什么自聊天很奇怪">我在我的个人 WhatsApp 号码上运行 — 为什么自聊天很奇怪？<a hidden class="anchor" aria-hidden="true" href="#我在我的个人-whatsapp-号码上运行--为什么自聊天很奇怪">#</a></h3>
+<p>启用自聊天模式并将你自己的号码加入白名单：</p>
+<pre tabindex="0"><code class="language-json5" data-lang="json5">{
+  channels: {
+    whatsapp: {
+      selfChatMode: true,
+      dmPolicy: &#34;allowlist&#34;,
+      allowFrom: [&#34;+15555550123&#34;],
+    },
+  },
+}
+</code></pre><p>参见 <a href="/channels/whatsapp">WhatsApp 设置</a>。</p>
+<h3 id="whatsapp-将我登出如何重新认证">WhatsApp 将我登出。如何重新认证？<a hidden class="anchor" aria-hidden="true" href="#whatsapp-将我登出如何重新认证">#</a></h3>
+<p>再次运行登录命令并扫描二维码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw channels login
+</span></span></code></pre></div><h3 id="main-上的构建错误--标准修复路径是什么"><code>main</code> 上的构建错误 — 标准修复路径是什么？<a hidden class="anchor" aria-hidden="true" href="#main-上的构建错误--标准修复路径是什么">#</a></h3>
+<ol>
+<li><code>git pull origin main &amp;&amp; pnpm install</code></li>
+<li><code>openclaw doctor</code></li>
+<li>检查 GitHub issues 或 Discord</li>
+<li>临时变通方法：检出较旧的提交</li>
+</ol>
+<h3 id="npm-install-失败allow-build-scripts--缺少-tar-或-yargs现在怎么办">npm install 失败（allow-build-scripts / 缺少 tar 或 yargs）。现在怎么办？<a hidden class="anchor" aria-hidden="true" href="#npm-install-失败allow-build-scripts--缺少-tar-或-yargs现在怎么办">#</a></h3>
+<p>如果你从源代码运行，使用仓库的包管理器：<strong>pnpm</strong>（首选）。
+仓库声明了 <code>packageManager: &quot;pnpm@…&quot;</code>。</p>
+<p>典型恢复：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git status   <span class="c1"># 确保你在仓库根目录</span>
+</span></span><span class="line"><span class="cl">pnpm install
+</span></span><span class="line"><span class="cl">pnpm build
+</span></span><span class="line"><span class="cl">openclaw doctor
+</span></span><span class="line"><span class="cl">openclaw gateway restart
+</span></span></code></pre></div><p>原因：pnpm 是此仓库配置的包管理器。</p>
+<h3 id="如何在-git-安装和-npm-安装之间切换">如何在 git 安装和 npm 安装之间切换？<a hidden class="anchor" aria-hidden="true" href="#如何在-git-安装和-npm-安装之间切换">#</a></h3>
+<p>使用<strong>网站安装程序</strong>并通过标志选择安装方法。它
+原地升级并重写 Gateway 网关服务以指向新安装。</p>
+<p>切换<strong>到 git 安装</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://openclaw.ai/install.sh <span class="p">|</span> bash -s -- --install-method git --no-onboard
+</span></span></code></pre></div><p>切换<strong>到 npm 全局</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://openclaw.ai/install.sh <span class="p">|</span> bash
+</span></span></code></pre></div><p>注意事项：</p>
+<ul>
+<li>git 流程仅在仓库干净时才 rebase。先提交或 stash 更改。</li>
+<li>切换后，运行：
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw doctor
+</span></span><span class="line"><span class="cl">openclaw gateway restart
+</span></span></code></pre></div></li>
+</ul>
+<h3 id="telegram-分块流式传输没有在工具调用之间分割文本为什么">Telegram 分块流式传输没有在工具调用之间分割文本。为什么？<a hidden class="anchor" aria-hidden="true" href="#telegram-分块流式传输没有在工具调用之间分割文本为什么">#</a></h3>
+<p>分块流式传输只发送<strong>已完成的文本块</strong>。你看到单条消息的常见原因：</p>
+<ul>
+<li><code>agents.defaults.blockStreamingDefault</code> 仍然是 <code>&quot;off&quot;</code>。</li>
+<li><code>channels.telegram.blockStreaming</code> 设置为 <code>false</code>。</li>
+<li><code>channels.telegram.streamMode</code> 是 <code>partial</code> 或 <code>block</code> <strong>且草稿流式传输处于活动状态</strong>
+（私聊 + 话题）。在这种情况下，草稿流式传输会禁用分块流式传输。</li>
+<li>你的 <code>minChars</code> / coalesce 设置太高，所以块被合并了。</li>
+<li>模型发出一个大的文本块（没有中间回复刷新点）。</li>
+</ul>
+<p>修复清单：</p>
+<ol>
+<li>将分块流式传输设置放在 <code>agents.defaults</code> 下，而不是根目录。</li>
+<li>如果你想要真正的多消息分块回复，设置 <code>channels.telegram.streamMode: &quot;off&quot;</code>。</li>
+<li>调试时使用较小的 chunk/coalesce 阈值。</li>
+</ol>
+<p>参见 <a href="/concepts/streaming">流式传输</a>。</p>
+<h3 id="即使设置了-requiremention-falsediscord-也不在我的服务器中回复为什么">即使设置了 <code>requireMention: false</code>，Discord 也不在我的服务器中回复。为什么？<a hidden class="anchor" aria-hidden="true" href="#即使设置了-requiremention-falsediscord-也不在我的服务器中回复为什么">#</a></h3>
+<p><code>requireMention</code> 只控制渠道通过白名单<strong>之后</strong>的提及门控。
+默认情况下 <code>channels.discord.groupPolicy</code> 是 <strong>allowlist</strong>，所以必须显式启用 guild。
+如果你设置了 <code>channels.discord.guilds.&lt;guildId&gt;.channels</code>，只允许列出的频道；省略它以允许 guild 中的所有频道。</p>
+<p>修复清单：</p>
+<ol>
+<li>设置 <code>channels.discord.groupPolicy: &quot;open&quot;</code> <strong>或</strong>添加 guild 白名单条目（并可选添加频道白名单）。</li>
+<li>在 <code>channels.discord.guilds.&lt;guildId&gt;.channels</code> 中使用<strong>数字频道 ID</strong>。</li>
+<li>将 <code>requireMention: false</code> 放在 <code>channels.discord.guilds</code> <strong>下面</strong>（全局或每个频道）。
+顶级 <code>channels.discord.requireMention</code> 不是支持的键。</li>
+<li>确保机器人有 <strong>Message Content Intent</strong> 和频道权限。</li>
+<li>运行 <code>openclaw channels status --probe</code> 获取审计提示。</li>
+</ol>
+<p>文档：<a href="/channels/discord">Discord</a>、<a href="/channels/troubleshooting">渠道故障排除</a>。</p>
+<h3 id="cloud-code-assist-api-错误invalid-tool-schema400现在怎么办">Cloud Code Assist API 错误：invalid tool schema（400）。现在怎么办？<a hidden class="anchor" aria-hidden="true" href="#cloud-code-assist-api-错误invalid-tool-schema400现在怎么办">#</a></h3>
+<p>这几乎总是<strong>工具模式兼容性</strong>问题。Cloud Code Assist
+端点接受 JSON Schema 的严格子集。OpenClaw 在当前 <code>main</code> 中清理/规范化工具
+模式，但修复尚未包含在最后一个版本中（截至
+2026 年 1 月 13 日）。</p>
+<p>修复清单：</p>
+<ol>
+<li><strong>更新 OpenClaw</strong>：
+<ul>
+<li>如果你可以从源代码运行，拉取 <code>main</code> 并重启 Gateway 网关。</li>
+<li>否则，等待包含模式清理器的下一个版本。</li>
+</ul>
+</li>
+<li>避免不支持的关键字如 <code>anyOf/oneOf/allOf</code>、<code>patternProperties</code>、
+<code>additionalProperties</code>、<code>minLength</code>、<code>maxLength</code>、<code>format</code> 等。</li>
+<li>如果你定义自定义工具，保持顶级模式为 <code>type: &quot;object&quot;</code> 并使用
+<code>properties</code> 和简单枚举。</li>
+</ol>
+<p>参见 <a href="/tools">工具</a> 和 <a href="/concepts/typebox">TypeBox 模式</a>。</p>
+<h2 id="macos-特定问题">macOS 特定问题<a hidden class="anchor" aria-hidden="true" href="#macos-特定问题">#</a></h2>
+<h3 id="授予权限语音麦克风时应用崩溃">授予权限（语音/麦克风）时应用崩溃<a hidden class="anchor" aria-hidden="true" href="#授予权限语音麦克风时应用崩溃">#</a></h3>
+<p>如果在你点击隐私提示的&quot;允许&quot;时应用消失或显示&quot;Abort trap 6&quot;：</p>
+<p><strong>修复 1：重置 TCC 缓存</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tccutil reset All bot.molt.mac.debug
+</span></span></code></pre></div><p><strong>修复 2：强制使用新的 Bundle ID</strong>
+如果重置不起作用，在 <a href="https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh"><code>scripts/package-mac-app.sh</code></a> 中更改 <code>BUNDLE_ID</code>（例如，添加 <code>.test</code> 后缀）并重新构建。这会强制 macOS 将其视为新应用。</p>
+<h3 id="gateway-网关卡在starting">Gateway 网关卡在&quot;Starting&hellip;&quot;<a hidden class="anchor" aria-hidden="true" href="#gateway-网关卡在starting">#</a></h3>
+<p>应用连接到端口 <code>18789</code> 上的本地 Gateway 网关。如果一直卡住：</p>
+<p><strong>修复 1：停止监管程序（首选）</strong>
+如果 Gateway 网关由 launchd 监管，杀死 PID 只会重新生成它。先停止监管程序：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway status
+</span></span><span class="line"><span class="cl">openclaw gateway stop
+</span></span><span class="line"><span class="cl"><span class="c1"># 或：launchctl bootout gui/$UID/bot.molt.gateway（用 bot.molt.&lt;profile&gt; 替换；旧版 com.openclaw.* 仍然有效）</span>
+</span></span></code></pre></div><p><strong>修复 2：端口被占用（查找监听器）</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">lsof -nP -iTCP:18789 -sTCP:LISTEN
+</span></span></code></pre></div><p>如果是未被监管的进程，先尝试优雅停止，然后升级：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">kill</span> -TERM &lt;PID&gt;
+</span></span><span class="line"><span class="cl">sleep <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">kill</span> -9 &lt;PID&gt; <span class="c1"># 最后手段</span>
+</span></span></code></pre></div><p><strong>修复 3：检查 CLI 安装</strong>
+确保全局 <code>openclaw</code> CLI 已安装且与应用版本匹配：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw --version
+</span></span><span class="line"><span class="cl">npm install -g openclaw@&lt;version&gt;
+</span></span></code></pre></div><h2 id="调试模式">调试模式<a hidden class="anchor" aria-hidden="true" href="#调试模式">#</a></h2>
+<p>获取详细日志：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在配置中打开跟踪日志：</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   ${OPENCLAW_CONFIG_PATH:-$HOME/.openclaw/openclaw.json} -&gt; { logging: { level: &#34;trace&#34; } }</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 然后运行详细命令将调试输出镜像到标准输出：</span>
+</span></span><span class="line"><span class="cl">openclaw gateway --verbose
+</span></span><span class="line"><span class="cl">openclaw channels login --verbose
+</span></span></code></pre></div><h2 id="日志位置">日志位置<a hidden class="anchor" aria-hidden="true" href="#日志位置">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>日志</th>
+          <th>位置</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Gateway 网关文件日志（结构化）</td>
+          <td><code>/tmp/openclaw/openclaw-YYYY-MM-DD.log</code>（或 <code>logging.file</code>）</td>
+      </tr>
+      <tr>
+          <td>Gateway 网关服务日志（监管程序）</td>
+          <td>macOS：<code>$OPENCLAW_STATE_DIR/logs/gateway.log</code> + <code>gateway.err.log</code>（默认：<code>~/.openclaw/logs/...</code>；配置文件使用 <code>~/.openclaw-&lt;profile&gt;/logs/...</code>）<br />Linux：<code>journalctl --user -u openclaw-gateway[-&lt;profile&gt;].service -n 200 --no-pager</code><br />Windows：<code>schtasks /Query /TN &quot;OpenClaw Gateway (&lt;profile&gt;)&quot; /V /FO LIST</code></td>
+      </tr>
+      <tr>
+          <td>会话文件</td>
+          <td><code>$OPENCLAW_STATE_DIR/agents/&lt;agentId&gt;/sessions/</code></td>
+      </tr>
+      <tr>
+          <td>媒体缓存</td>
+          <td><code>$OPENCLAW_STATE_DIR/media/</code></td>
+      </tr>
+      <tr>
+          <td>凭证</td>
+          <td><code>$OPENCLAW_STATE_DIR/credentials/</code></td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="健康检查">健康检查<a hidden class="anchor" aria-hidden="true" href="#健康检查">#</a></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 监管程序 + 探测目标 + 配置路径</span>
+</span></span><span class="line"><span class="cl">openclaw gateway status
+</span></span><span class="line"><span class="cl"><span class="c1"># 包括系统级扫描（旧版/额外服务、端口监听器）</span>
+</span></span><span class="line"><span class="cl">openclaw gateway status --deep
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Gateway 网关是否可达？</span>
+</span></span><span class="line"><span class="cl">openclaw health --json
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果失败，使用连接详情重新运行：</span>
+</span></span><span class="line"><span class="cl">openclaw health --verbose
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 默认端口上是否有东西在监听？</span>
+</span></span><span class="line"><span class="cl">lsof -nP -iTCP:18789 -sTCP:LISTEN
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 最近活动（RPC 日志尾部）</span>
+</span></span><span class="line"><span class="cl">openclaw logs --follow
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果 RPC 宕机的备用方案</span>
+</span></span><span class="line"><span class="cl">tail -20 /tmp/openclaw/openclaw-*.log
+</span></span></code></pre></div><h2 id="重置所有内容">重置所有内容<a hidden class="anchor" aria-hidden="true" href="#重置所有内容">#</a></h2>
+<p>核选项：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openclaw gateway stop
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果你安装了服务并想要干净安装：</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># openclaw gateway uninstall</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">trash <span class="s2">&#34;</span><span class="si">${</span><span class="nv">OPENCLAW_STATE_DIR</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.openclaw</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">openclaw channels login         <span class="c1"># 重新配对 WhatsApp</span>
+</span></span><span class="line"><span class="cl">openclaw gateway restart           <span class="c1"># 或：openclaw gateway</span>
+</span></span></code></pre></div><p>⚠️ 这会丢失所有会话并需要重新配对 WhatsApp。</p>
+<h2 id="获取帮助">获取帮助<a hidden class="anchor" aria-hidden="true" href="#获取帮助">#</a></h2>
+<ol>
+<li>首先检查日志：<code>/tmp/openclaw/</code>（默认：<code>openclaw-YYYY-MM-DD.log</code>，或你配置的 <code>logging.file</code>）</li>
+<li>在 GitHub 上搜索现有问题</li>
+<li>提交新问题时包含：
+<ul>
+<li>OpenClaw 版本</li>
+<li>相关日志片段</li>
+<li>重现步骤</li>
+<li>你的配置（隐藏密钥！）</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><em>&ldquo;你试过关掉再开吗？&rdquo;</em> — 每个 IT 人员都这么说</p>
+<p>🦞🔧</p>
+<h3 id="浏览器无法启动linux">浏览器无法启动（Linux）<a hidden class="anchor" aria-hidden="true" href="#浏览器无法启动linux">#</a></h3>
+<p>如果你看到 <code>&quot;Failed to start Chrome CDP on port 18800&quot;</code>：</p>
+<p><strong>最可能的原因：</strong> Ubuntu 上的 Snap 打包的 Chromium。</p>
+<p><strong>快速修复：</strong> 改为安装 Google Chrome：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+</span></span><span class="line"><span class="cl">sudo dpkg -i google-chrome-stable_current_amd64.deb
+</span></span></code></pre></div><p>然后在配置中设置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;browser&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;executablePath&#34;</span><span class="p">:</span> <span class="s2">&#34;/usr/bin/google-chrome-stable&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>完整指南：</strong> 参见 <a href="/tools/browser-linux-troubleshooting">browser-linux-troubleshooting</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/help/troubleshooting/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>故障排除</span>
+  </a>
+  <a class="next" href="/openclaw/tts/">
+    <span class="title">Next »</span>
+    <br>
+    <span>文本转语音（TTS）</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

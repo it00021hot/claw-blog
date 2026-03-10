@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>多智能体沙箱与工具配置 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="概述
+多智能体设置中的每个智能体现在可以拥有自己的：
+
+沙箱配置（agents.list[].sandbox 覆盖 agents.defaults.sandbox）
+工具限制（tools.allow / tools.deny，以及 agents.list[].tools）
+
+这允许你运行具有不同安全配置文件的多个智能体：
+
+具有完全访问权限的个人助手
+具有受限工具的家庭/工作智能体
+在沙箱中运行的面向公众的智能体
+
+setupCommand 属于 sandbox.docker 下（全局或按智能体），在容器创建时运行一次。
+认证是按智能体的：每个智能体从其自己的 agentDir 认证存储读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json
+凭证不会在智能体之间共享。切勿在智能体之间重用 agentDir。
+如果你想共享凭证，请将 auth-profiles.json 复制到其他智能体的 agentDir 中。
+有关沙箱隔离在运行时的行为，请参见沙箱隔离。
+有关调试&quot;为什么这被阻止了？&quot;，请参见沙箱 vs 工具策略 vs 提权 和 openclaw sandbox explain。
+
+配置示例
+示例 1：个人 &#43; 受限家庭智能体
+{
+  &#34;agents&#34;: {
+    &#34;list&#34;: [
+      {
+        &#34;id&#34;: &#34;main&#34;,
+        &#34;default&#34;: true,
+        &#34;name&#34;: &#34;Personal Assistant&#34;,
+        &#34;workspace&#34;: &#34;~/.openclaw/workspace&#34;,
+        &#34;sandbox&#34;: { &#34;mode&#34;: &#34;off&#34; }
+      },
+      {
+        &#34;id&#34;: &#34;family&#34;,
+        &#34;name&#34;: &#34;Family Bot&#34;,
+        &#34;workspace&#34;: &#34;~/.openclaw/workspace-family&#34;,
+        &#34;sandbox&#34;: {
+          &#34;mode&#34;: &#34;all&#34;,
+          &#34;scope&#34;: &#34;agent&#34;
+        },
+        &#34;tools&#34;: {
+          &#34;allow&#34;: [&#34;read&#34;],
+          &#34;deny&#34;: [&#34;exec&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;, &#34;process&#34;, &#34;browser&#34;]
+        }
+      }
+    ]
+  },
+  &#34;bindings&#34;: [
+    {
+      &#34;agentId&#34;: &#34;family&#34;,
+      &#34;match&#34;: {
+        &#34;provider&#34;: &#34;whatsapp&#34;,
+        &#34;accountId&#34;: &#34;*&#34;,
+        &#34;peer&#34;: {
+          &#34;kind&#34;: &#34;group&#34;,
+          &#34;id&#34;: &#34;120363424282127706@g.us&#34;
+        }
+      }
+    }
+  ]
+}
+结果：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/tools/multi-agent-sandbox-tools/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/tools/multi-agent-sandbox-tools/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/tools/multi-agent-sandbox-tools/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="多智能体沙箱与工具配置">
+  <meta property="og:description" content="概述 多智能体设置中的每个智能体现在可以拥有自己的：
+沙箱配置（agents.list[].sandbox 覆盖 agents.defaults.sandbox） 工具限制（tools.allow / tools.deny，以及 agents.list[].tools） 这允许你运行具有不同安全配置文件的多个智能体：
+具有完全访问权限的个人助手 具有受限工具的家庭/工作智能体 在沙箱中运行的面向公众的智能体 setupCommand 属于 sandbox.docker 下（全局或按智能体），在容器创建时运行一次。
+认证是按智能体的：每个智能体从其自己的 agentDir 认证存储读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json 凭证不会在智能体之间共享。切勿在智能体之间重用 agentDir。 如果你想共享凭证，请将 auth-profiles.json 复制到其他智能体的 agentDir 中。
+有关沙箱隔离在运行时的行为，请参见沙箱隔离。 有关调试&#34;为什么这被阻止了？&#34;，请参见沙箱 vs 工具策略 vs 提权 和 openclaw sandbox explain。
+配置示例 示例 1：个人 &#43; 受限家庭智能体 { &#34;agents&#34;: { &#34;list&#34;: [ { &#34;id&#34;: &#34;main&#34;, &#34;default&#34;: true, &#34;name&#34;: &#34;Personal Assistant&#34;, &#34;workspace&#34;: &#34;~/.openclaw/workspace&#34;, &#34;sandbox&#34;: { &#34;mode&#34;: &#34;off&#34; } }, { &#34;id&#34;: &#34;family&#34;, &#34;name&#34;: &#34;Family Bot&#34;, &#34;workspace&#34;: &#34;~/.openclaw/workspace-family&#34;, &#34;sandbox&#34;: { &#34;mode&#34;: &#34;all&#34;, &#34;scope&#34;: &#34;agent&#34; }, &#34;tools&#34;: { &#34;allow&#34;: [&#34;read&#34;], &#34;deny&#34;: [&#34;exec&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;, &#34;process&#34;, &#34;browser&#34;] } } ] }, &#34;bindings&#34;: [ { &#34;agentId&#34;: &#34;family&#34;, &#34;match&#34;: { &#34;provider&#34;: &#34;whatsapp&#34;, &#34;accountId&#34;: &#34;*&#34;, &#34;peer&#34;: { &#34;kind&#34;: &#34;group&#34;, &#34;id&#34;: &#34;120363424282127706@g.us&#34; } } } ] } 结果：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多智能体沙箱与工具配置">
+<meta name="twitter:description" content="概述
+多智能体设置中的每个智能体现在可以拥有自己的：
+
+沙箱配置（agents.list[].sandbox 覆盖 agents.defaults.sandbox）
+工具限制（tools.allow / tools.deny，以及 agents.list[].tools）
+
+这允许你运行具有不同安全配置文件的多个智能体：
+
+具有完全访问权限的个人助手
+具有受限工具的家庭/工作智能体
+在沙箱中运行的面向公众的智能体
+
+setupCommand 属于 sandbox.docker 下（全局或按智能体），在容器创建时运行一次。
+认证是按智能体的：每个智能体从其自己的 agentDir 认证存储读取：
+~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json
+凭证不会在智能体之间共享。切勿在智能体之间重用 agentDir。
+如果你想共享凭证，请将 auth-profiles.json 复制到其他智能体的 agentDir 中。
+有关沙箱隔离在运行时的行为，请参见沙箱隔离。
+有关调试&quot;为什么这被阻止了？&quot;，请参见沙箱 vs 工具策略 vs 提权 和 openclaw sandbox explain。
+
+配置示例
+示例 1：个人 &#43; 受限家庭智能体
+{
+  &#34;agents&#34;: {
+    &#34;list&#34;: [
+      {
+        &#34;id&#34;: &#34;main&#34;,
+        &#34;default&#34;: true,
+        &#34;name&#34;: &#34;Personal Assistant&#34;,
+        &#34;workspace&#34;: &#34;~/.openclaw/workspace&#34;,
+        &#34;sandbox&#34;: { &#34;mode&#34;: &#34;off&#34; }
+      },
+      {
+        &#34;id&#34;: &#34;family&#34;,
+        &#34;name&#34;: &#34;Family Bot&#34;,
+        &#34;workspace&#34;: &#34;~/.openclaw/workspace-family&#34;,
+        &#34;sandbox&#34;: {
+          &#34;mode&#34;: &#34;all&#34;,
+          &#34;scope&#34;: &#34;agent&#34;
+        },
+        &#34;tools&#34;: {
+          &#34;allow&#34;: [&#34;read&#34;],
+          &#34;deny&#34;: [&#34;exec&#34;, &#34;write&#34;, &#34;edit&#34;, &#34;apply_patch&#34;, &#34;process&#34;, &#34;browser&#34;]
+        }
+      }
+    ]
+  },
+  &#34;bindings&#34;: [
+    {
+      &#34;agentId&#34;: &#34;family&#34;,
+      &#34;match&#34;: {
+        &#34;provider&#34;: &#34;whatsapp&#34;,
+        &#34;accountId&#34;: &#34;*&#34;,
+        &#34;peer&#34;: {
+          &#34;kind&#34;: &#34;group&#34;,
+          &#34;id&#34;: &#34;120363424282127706@g.us&#34;
+        }
+      }
+    }
+  ]
+}
+结果：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "多智能体沙箱与工具配置",
+      "item": "/openclaw/tools/multi-agent-sandbox-tools/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "多智能体沙箱与工具配置",
+  "name": "多智能体沙箱与工具配置",
+  "description": "概述 多智能体设置中的每个智能体现在可以拥有自己的：\n沙箱配置（agents.list[].sandbox 覆盖 agents.defaults.sandbox） 工具限制（tools.allow / tools.deny，以及 agents.list[].tools） 这允许你运行具有不同安全配置文件的多个智能体：\n具有完全访问权限的个人助手 具有受限工具的家庭/工作智能体 在沙箱中运行的面向公众的智能体 setupCommand 属于 sandbox.docker 下（全局或按智能体），在容器创建时运行一次。\n认证是按智能体的：每个智能体从其自己的 agentDir 认证存储读取：\n~/.openclaw/agents/\u0026lt;agentId\u0026gt;/agent/auth-profiles.json 凭证不会在智能体之间共享。切勿在智能体之间重用 agentDir。 如果你想共享凭证，请将 auth-profiles.json 复制到其他智能体的 agentDir 中。\n有关沙箱隔离在运行时的行为，请参见沙箱隔离。 有关调试\u0026quot;为什么这被阻止了？\u0026quot;，请参见沙箱 vs 工具策略 vs 提权 和 openclaw sandbox explain。\n配置示例 示例 1：个人 + 受限家庭智能体 { \u0026#34;agents\u0026#34;: { \u0026#34;list\u0026#34;: [ { \u0026#34;id\u0026#34;: \u0026#34;main\u0026#34;, \u0026#34;default\u0026#34;: true, \u0026#34;name\u0026#34;: \u0026#34;Personal Assistant\u0026#34;, \u0026#34;workspace\u0026#34;: \u0026#34;~/.openclaw/workspace\u0026#34;, \u0026#34;sandbox\u0026#34;: { \u0026#34;mode\u0026#34;: \u0026#34;off\u0026#34; } }, { \u0026#34;id\u0026#34;: \u0026#34;family\u0026#34;, \u0026#34;name\u0026#34;: \u0026#34;Family Bot\u0026#34;, \u0026#34;workspace\u0026#34;: \u0026#34;~/.openclaw/workspace-family\u0026#34;, \u0026#34;sandbox\u0026#34;: { \u0026#34;mode\u0026#34;: \u0026#34;all\u0026#34;, \u0026#34;scope\u0026#34;: \u0026#34;agent\u0026#34; }, \u0026#34;tools\u0026#34;: { \u0026#34;allow\u0026#34;: [\u0026#34;read\u0026#34;], \u0026#34;deny\u0026#34;: [\u0026#34;exec\u0026#34;, \u0026#34;write\u0026#34;, \u0026#34;edit\u0026#34;, \u0026#34;apply_patch\u0026#34;, \u0026#34;process\u0026#34;, \u0026#34;browser\u0026#34;] } } ] }, \u0026#34;bindings\u0026#34;: [ { \u0026#34;agentId\u0026#34;: \u0026#34;family\u0026#34;, \u0026#34;match\u0026#34;: { \u0026#34;provider\u0026#34;: \u0026#34;whatsapp\u0026#34;, \u0026#34;accountId\u0026#34;: \u0026#34;*\u0026#34;, \u0026#34;peer\u0026#34;: { \u0026#34;kind\u0026#34;: \u0026#34;group\u0026#34;, \u0026#34;id\u0026#34;: \u0026#34;120363424282127706@g.us\u0026#34; } } } ] } 结果：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "概述 多智能体设置中的每个智能体现在可以拥有自己的：\n沙箱配置（agents.list[].sandbox 覆盖 agents.defaults.sandbox） 工具限制（tools.allow / tools.deny，以及 agents.list[].tools） 这允许你运行具有不同安全配置文件的多个智能体：\n具有完全访问权限的个人助手 具有受限工具的家庭/工作智能体 在沙箱中运行的面向公众的智能体 setupCommand 属于 sandbox.docker 下（全局或按智能体），在容器创建时运行一次。\n认证是按智能体的：每个智能体从其自己的 agentDir 认证存储读取：\n~/.openclaw/agents//agent/auth-profiles.json 凭证不会在智能体之间共享。切勿在智能体之间重用 agentDir。 如果你想共享凭证，请将 auth-profiles.json 复制到其他智能体的 agentDir 中。\n有关沙箱隔离在运行时的行为，请参见沙箱隔离。 有关调试\"为什么这被阻止了？\"，请参见沙箱 vs 工具策略 vs 提权 和 openclaw sandbox explain。\n配置示例 示例 1：个人 + 受限家庭智能体 { \"agents\": { \"list\": [ { \"id\": \"main\", \"default\": true, \"name\": \"Personal Assistant\", \"workspace\": \"~/.openclaw/workspace\", \"sandbox\": { \"mode\": \"off\" } }, { \"id\": \"family\", \"name\": \"Family Bot\", \"workspace\": \"~/.openclaw/workspace-family\", \"sandbox\": { \"mode\": \"all\", \"scope\": \"agent\" }, \"tools\": { \"allow\": [\"read\"], \"deny\": [\"exec\", \"write\", \"edit\", \"apply_patch\", \"process\", \"browser\"] } } ] }, \"bindings\": [ { \"agentId\": \"family\", \"match\": { \"provider\": \"whatsapp\", \"accountId\": \"*\", \"peer\": { \"kind\": \"group\", \"id\": \"120363424282127706@g.us\" } } } ] } 结果：\nmain 智能体：在主机上运行，完全工具访问 family 智能体：在 Docker 中运行（每个智能体一个容器），仅有 read 工具 示例 2：具有共享沙箱的工作智能体 { \"agents\": { \"list\": [ { \"id\": \"personal\", \"workspace\": \"~/.openclaw/workspace-personal\", \"sandbox\": { \"mode\": \"off\" } }, { \"id\": \"work\", \"workspace\": \"~/.openclaw/workspace-work\", \"sandbox\": { \"mode\": \"all\", \"scope\": \"shared\", \"workspaceRoot\": \"/tmp/work-sandboxes\" }, \"tools\": { \"allow\": [\"read\", \"write\", \"apply_patch\", \"exec\"], \"deny\": [\"browser\", \"gateway\", \"discord\"] } } ] } } 示例 2b：全局编码配置文件 + 仅消息智能体 { \"tools\": { \"profile\": \"coding\" }, \"agents\": { \"list\": [ { \"id\": \"support\", \"tools\": { \"profile\": \"messaging\", \"allow\": [\"slack\"] } } ] } } 结果：\n默认智能体获得编码工具 support 智能体仅用于消息（+ Slack 工具） 示例 3：每个智能体不同的沙箱模式 { \"agents\": { \"defaults\": { \"sandbox\": { \"mode\": \"non-main\", // 全局默认 \"scope\": \"session\" } }, \"list\": [ { \"id\": \"main\", \"workspace\": \"~/.openclaw/workspace\", \"sandbox\": { \"mode\": \"off\" // 覆盖：main 永不沙箱隔离 } }, { \"id\": \"public\", \"workspace\": \"~/.openclaw/workspace-public\", \"sandbox\": { \"mode\": \"all\", // 覆盖：public 始终沙箱隔离 \"scope\": \"agent\" }, \"tools\": { \"allow\": [\"read\"], \"deny\": [\"exec\", \"write\", \"edit\", \"apply_patch\"] } } ] } } 配置优先级 当全局（agents.defaults.*）和智能体特定（agents.list[].*）配置同时存在时：\n沙箱配置 智能体特定设置覆盖全局：\nagents.list[].sandbox.mode \u003e agents.defaults.sandbox.mode agents.list[].sandbox.scope \u003e agents.defaults.sandbox.scope agents.list[].sandbox.workspaceRoot \u003e agents.defaults.sandbox.workspaceRoot agents.list[].sandbox.workspaceAccess \u003e agents.defaults.sandbox.workspaceAccess agents.list[].sandbox.docker.* \u003e agents.defaults.sandbox.docker.* agents.list[].sandbox.browser.* \u003e agents.defaults.sandbox.browser.* agents.list[].sandbox.prune.* \u003e agents.defaults.sandbox.prune.* 注意事项：\nagents.list[].sandbox.{docker,browser,prune}.* 为该智能体覆盖 agents.defaults.sandbox.{docker,browser,prune}.*（当沙箱 scope 解析为 \"shared\" 时忽略）。 工具限制 过滤顺序是：\n工具配置文件（tools.profile 或 agents.list[].tools.profile） 提供商工具配置文件（tools.byProvider[provider].profile 或 agents.list[].tools.byProvider[provider].profile） 全局工具策略（tools.allow / tools.deny） 提供商工具策略（tools.byProvider[provider].allow/deny） 智能体特定工具策略（agents.list[].tools.allow/deny） 智能体提供商策略（agents.list[].tools.byProvider[provider].allow/deny） 沙箱工具策略（tools.sandbox.tools 或 agents.list[].tools.sandbox.tools） 子智能体工具策略（tools.subagents.tools，如适用） 每个级别可以进一步限制工具，但不能恢复之前级别拒绝的工具。 如果设置了 agents.list[].tools.sandbox.tools，它将替换该智能体的 tools.sandbox.tools。 如果设置了 agents.list[].tools.profile，它将覆盖该智能体的 tools.profile。 提供商工具键接受 provider（例如 google-antigravity）或 provider/model（例如 openai/gpt-5.2）。\n工具组（简写） 工具策略（全局、智能体、沙箱）支持 group:* 条目，可扩展为多个具体工具：\ngroup:runtime：exec、bash、process group:fs：read、write、edit、apply_patch group:sessions：sessions_list、sessions_history、sessions_send、sessions_spawn、session_status group:memory：memory_search、memory_get group:ui：browser、canvas group:automation：cron、gateway group:messaging：message group:nodes：nodes group:openclaw：所有内置 OpenClaw 工具（不包括提供商插件） 提权模式 tools.elevated 是全局基线（基于发送者的允许列表）。agents.list[].tools.elevated 可以为特定智能体进一步限制提权（两者都必须允许）。\n缓解模式：\n为不受信任的智能体拒绝 exec（agents.list[].tools.deny: [\"exec\"]） 避免将发送者加入允许列表后路由到受限智能体 如果你只想要沙箱隔离执行，全局禁用提权（tools.elevated.enabled: false） 为敏感配置文件按智能体禁用提权（agents.list[].tools.elevated.enabled: false） 从单智能体迁移 之前（单智能体）：\n{ \"agents\": { \"defaults\": { \"workspace\": \"~/.openclaw/workspace\", \"sandbox\": { \"mode\": \"non-main\" } } }, \"tools\": { \"sandbox\": { \"tools\": { \"allow\": [\"read\", \"write\", \"apply_patch\", \"exec\"], \"deny\": [] } } } } 之后（具有不同配置文件的多智能体）：\n{ \"agents\": { \"list\": [ { \"id\": \"main\", \"default\": true, \"workspace\": \"~/.openclaw/workspace\", \"sandbox\": { \"mode\": \"off\" } } ] } } 旧版 agent.* 配置由 openclaw doctor 迁移；今后请优先使用 agents.defaults + agents.list。\n工具限制示例 只读智能体 { \"tools\": { \"allow\": [\"read\"], \"deny\": [\"exec\", \"write\", \"edit\", \"apply_patch\", \"process\"] } } 安全执行智能体（无文件修改） { \"tools\": { \"allow\": [\"read\", \"exec\", \"process\"], \"deny\": [\"write\", \"edit\", \"apply_patch\", \"browser\", \"gateway\"] } } 仅通信智能体 { \"tools\": { \"allow\": [\"sessions_list\", \"sessions_send\", \"sessions_history\", \"session_status\"], \"deny\": [\"exec\", \"write\", \"edit\", \"apply_patch\", \"read\", \"browser\"] } } 常见陷阱：“non-main” agents.defaults.sandbox.mode: \"non-main\" 基于 session.mainKey（默认 \"main\"）， 而不是智能体 id。群组/渠道会话始终获得自己的键，因此它们 被视为非 main 并将被沙箱隔离。如果你希望智能体永不 沙箱隔离，请设置 agents.list[].sandbox.mode: \"off\"。\n测试 配置多智能体沙箱和工具后：\n检查智能体解析：\nopenclaw agents list --bindings 验证沙箱容器：\ndocker ps --filter \"name=openclaw-sbx-\" 测试工具限制：\n发送需要受限工具的消息 验证智能体无法使用被拒绝的工具 监控日志：\ntail -f \"${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log\" | grep -E \"routing|sandbox|tools\" 故障排除 尽管设置了 mode: \"all\" 但智能体未被沙箱隔离 检查是否有全局 agents.defaults.sandbox.mode 覆盖它 智能体特定配置优先，因此设置 agents.list[].sandbox.mode: \"all\" 尽管有拒绝列表但工具仍然可用 检查工具过滤顺序：全局 → 智能体 → 沙箱 → 子智能体 每个级别只能进一步限制，不能恢复 通过日志验证：[tools] filtering tools for agent:${agentId} 容器未按智能体隔离 在智能体特定沙箱配置中设置 scope: \"agent\" 默认是 \"session\"，每个会话创建一个容器 另请参阅 多智能体路由 沙箱配置 会话管理 ",
+  "wordCount" : "545",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/tools/multi-agent-sandbox-tools/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      多智能体沙箱与工具配置
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%a6%82%e8%bf%b0" aria-label="概述">概述</a></li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e7%a4%ba%e4%be%8b" aria-label="配置示例">配置示例</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b-1%e4%b8%aa%e4%ba%ba--%e5%8f%97%e9%99%90%e5%ae%b6%e5%ba%ad%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="示例 1：个人 &#43; 受限家庭智能体">示例 1：个人 + 受限家庭智能体</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b-2%e5%85%b7%e6%9c%89%e5%85%b1%e4%ba%ab%e6%b2%99%e7%ae%b1%e7%9a%84%e5%b7%a5%e4%bd%9c%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="示例 2：具有共享沙箱的工作智能体">示例 2：具有共享沙箱的工作智能体</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b-2b%e5%85%a8%e5%b1%80%e7%bc%96%e7%a0%81%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6--%e4%bb%85%e6%b6%88%e6%81%af%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="示例 2b：全局编码配置文件 &#43; 仅消息智能体">示例 2b：全局编码配置文件 + 仅消息智能体</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b-3%e6%af%8f%e4%b8%aa%e6%99%ba%e8%83%bd%e4%bd%93%e4%b8%8d%e5%90%8c%e7%9a%84%e6%b2%99%e7%ae%b1%e6%a8%a1%e5%bc%8f" aria-label="示例 3：每个智能体不同的沙箱模式">示例 3：每个智能体不同的沙箱模式</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e9%85%8d%e7%bd%ae%e4%bc%98%e5%85%88%e7%ba%a7" aria-label="配置优先级">配置优先级</a><ul>
+                        
+                <li>
+                    <a href="#%e6%b2%99%e7%ae%b1%e9%85%8d%e7%bd%ae" aria-label="沙箱配置">沙箱配置</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e9%99%90%e5%88%b6" aria-label="工具限制">工具限制</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e7%bb%84%e7%ae%80%e5%86%99" aria-label="工具组（简写）">工具组（简写）</a></li>
+                <li>
+                    <a href="#%e6%8f%90%e6%9d%83%e6%a8%a1%e5%bc%8f" aria-label="提权模式">提权模式</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%bb%8e%e5%8d%95%e6%99%ba%e8%83%bd%e4%bd%93%e8%bf%81%e7%a7%bb" aria-label="从单智能体迁移">从单智能体迁移</a></li>
+                <li>
+                    <a href="#%e5%b7%a5%e5%85%b7%e9%99%90%e5%88%b6%e7%a4%ba%e4%be%8b" aria-label="工具限制示例">工具限制示例</a><ul>
+                        
+                <li>
+                    <a href="#%e5%8f%aa%e8%af%bb%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="只读智能体">只读智能体</a></li>
+                <li>
+                    <a href="#%e5%ae%89%e5%85%a8%e6%89%a7%e8%a1%8c%e6%99%ba%e8%83%bd%e4%bd%93%e6%97%a0%e6%96%87%e4%bb%b6%e4%bf%ae%e6%94%b9" aria-label="安全执行智能体（无文件修改）">安全执行智能体（无文件修改）</a></li>
+                <li>
+                    <a href="#%e4%bb%85%e9%80%9a%e4%bf%a1%e6%99%ba%e8%83%bd%e4%bd%93" aria-label="仅通信智能体">仅通信智能体</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e9%99%b7%e9%98%b1non-main" aria-label="常见陷阱：&ldquo;non-main&rdquo;">常见陷阱：&ldquo;non-main&rdquo;</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95" aria-label="测试">测试</a></li>
+                <li>
+                    <a href="#%e6%95%85%e9%9a%9c%e6%8e%92%e9%99%a4" aria-label="故障排除">故障排除</a><ul>
+                        
+                <li>
+                    <a href="#%e5%b0%bd%e7%ae%a1%e8%ae%be%e7%bd%ae%e4%ba%86-mode-all-%e4%bd%86%e6%99%ba%e8%83%bd%e4%bd%93%e6%9c%aa%e8%a2%ab%e6%b2%99%e7%ae%b1%e9%9a%94%e7%a6%bb" aria-label="尽管设置了 mode: &quot;all&quot; 但智能体未被沙箱隔离">尽管设置了 mode: &quot;all&quot; 但智能体未被沙箱隔离</a></li>
+                <li>
+                    <a href="#%e5%b0%bd%e7%ae%a1%e6%9c%89%e6%8b%92%e7%bb%9d%e5%88%97%e8%a1%a8%e4%bd%86%e5%b7%a5%e5%85%b7%e4%bb%8d%e7%84%b6%e5%8f%af%e7%94%a8" aria-label="尽管有拒绝列表但工具仍然可用">尽管有拒绝列表但工具仍然可用</a></li>
+                <li>
+                    <a href="#%e5%ae%b9%e5%99%a8%e6%9c%aa%e6%8c%89%e6%99%ba%e8%83%bd%e4%bd%93%e9%9a%94%e7%a6%bb" aria-label="容器未按智能体隔离">容器未按智能体隔离</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%a6%e8%af%b7%e5%8f%82%e9%98%85" aria-label="另请参阅">另请参阅</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="概述">概述<a hidden class="anchor" aria-hidden="true" href="#概述">#</a></h2>
+<p>多智能体设置中的每个智能体现在可以拥有自己的：</p>
+<ul>
+<li><strong>沙箱配置</strong>（<code>agents.list[].sandbox</code> 覆盖 <code>agents.defaults.sandbox</code>）</li>
+<li><strong>工具限制</strong>（<code>tools.allow</code> / <code>tools.deny</code>，以及 <code>agents.list[].tools</code>）</li>
+</ul>
+<p>这允许你运行具有不同安全配置文件的多个智能体：</p>
+<ul>
+<li>具有完全访问权限的个人助手</li>
+<li>具有受限工具的家庭/工作智能体</li>
+<li>在沙箱中运行的面向公众的智能体</li>
+</ul>
+<p><code>setupCommand</code> 属于 <code>sandbox.docker</code> 下（全局或按智能体），在容器创建时运行一次。</p>
+<p>认证是按智能体的：每个智能体从其自己的 <code>agentDir</code> 认证存储读取：</p>
+<pre tabindex="0"><code>~/.openclaw/agents/&lt;agentId&gt;/agent/auth-profiles.json
+</code></pre><p>凭证<strong>不会</strong>在智能体之间共享。切勿在智能体之间重用 <code>agentDir</code>。
+如果你想共享凭证，请将 <code>auth-profiles.json</code> 复制到其他智能体的 <code>agentDir</code> 中。</p>
+<p>有关沙箱隔离在运行时的行为，请参见<a href="/gateway/sandboxing">沙箱隔离</a>。
+有关调试&quot;为什么这被阻止了？&quot;，请参见<a href="/gateway/sandbox-vs-tool-policy-vs-elevated">沙箱 vs 工具策略 vs 提权</a> 和 <code>openclaw sandbox explain</code>。</p>
+<hr>
+<h2 id="配置示例">配置示例<a hidden class="anchor" aria-hidden="true" href="#配置示例">#</a></h2>
+<h3 id="示例-1个人--受限家庭智能体">示例 1：个人 + 受限家庭智能体<a hidden class="anchor" aria-hidden="true" href="#示例-1个人--受限家庭智能体">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;agents&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;list&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;main&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Personal Assistant&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;off&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;family&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Family Bot&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace-family&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;all&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;scope&#34;</span><span class="p">:</span> <span class="s2">&#34;agent&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;read&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;deny&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;edit&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">,</span> <span class="s2">&#34;process&#34;</span><span class="p">,</span> <span class="s2">&#34;browser&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;bindings&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;agentId&#34;</span><span class="p">:</span> <span class="s2">&#34;family&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;whatsapp&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;accountId&#34;</span><span class="p">:</span> <span class="s2">&#34;*&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;peer&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;kind&#34;</span><span class="p">:</span> <span class="s2">&#34;group&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;120363424282127706@g.us&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>结果：</strong></p>
+<ul>
+<li><code>main</code> 智能体：在主机上运行，完全工具访问</li>
+<li><code>family</code> 智能体：在 Docker 中运行（每个智能体一个容器），仅有 <code>read</code> 工具</li>
+</ul>
+<hr>
+<h3 id="示例-2具有共享沙箱的工作智能体">示例 2：具有共享沙箱的工作智能体<a hidden class="anchor" aria-hidden="true" href="#示例-2具有共享沙箱的工作智能体">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;agents&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;list&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;personal&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace-personal&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;off&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace-work&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;all&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;scope&#34;</span><span class="p">:</span> <span class="s2">&#34;shared&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;workspaceRoot&#34;</span><span class="p">:</span> <span class="s2">&#34;/tmp/work-sandboxes&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;read&#34;</span><span class="p">,</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">,</span> <span class="s2">&#34;exec&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;deny&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;browser&#34;</span><span class="p">,</span> <span class="s2">&#34;gateway&#34;</span><span class="p">,</span> <span class="s2">&#34;discord&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><hr>
+<h3 id="示例-2b全局编码配置文件--仅消息智能体">示例 2b：全局编码配置文件 + 仅消息智能体<a hidden class="anchor" aria-hidden="true" href="#示例-2b全局编码配置文件--仅消息智能体">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;profile&#34;</span><span class="p">:</span> <span class="s2">&#34;coding&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;agents&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;list&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;support&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;profile&#34;</span><span class="p">:</span> <span class="s2">&#34;messaging&#34;</span><span class="p">,</span> <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;slack&#34;</span><span class="p">]</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>结果：</strong></p>
+<ul>
+<li>默认智能体获得编码工具</li>
+<li><code>support</code> 智能体仅用于消息（+ Slack 工具）</li>
+</ul>
+<hr>
+<h3 id="示例-3每个智能体不同的沙箱模式">示例 3：每个智能体不同的沙箱模式<a hidden class="anchor" aria-hidden="true" href="#示例-3每个智能体不同的沙箱模式">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;agents&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;defaults&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;non-main&#34;</span><span class="p">,</span> <span class="c1">// 全局默认
+</span></span></span><span class="line"><span class="cl">        <span class="nt">&#34;scope&#34;</span><span class="p">:</span> <span class="s2">&#34;session&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;list&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;main&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;off&#34;</span> <span class="c1">// 覆盖：main 永不沙箱隔离
+</span></span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;public&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace-public&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;all&#34;</span><span class="p">,</span> <span class="c1">// 覆盖：public 始终沙箱隔离
+</span></span></span><span class="line"><span class="cl">          <span class="nt">&#34;scope&#34;</span><span class="p">:</span> <span class="s2">&#34;agent&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;read&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;deny&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;edit&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><hr>
+<h2 id="配置优先级">配置优先级<a hidden class="anchor" aria-hidden="true" href="#配置优先级">#</a></h2>
+<p>当全局（<code>agents.defaults.*</code>）和智能体特定（<code>agents.list[].*</code>）配置同时存在时：</p>
+<h3 id="沙箱配置">沙箱配置<a hidden class="anchor" aria-hidden="true" href="#沙箱配置">#</a></h3>
+<p>智能体特定设置覆盖全局：</p>
+<pre tabindex="0"><code>agents.list[].sandbox.mode &gt; agents.defaults.sandbox.mode
+agents.list[].sandbox.scope &gt; agents.defaults.sandbox.scope
+agents.list[].sandbox.workspaceRoot &gt; agents.defaults.sandbox.workspaceRoot
+agents.list[].sandbox.workspaceAccess &gt; agents.defaults.sandbox.workspaceAccess
+agents.list[].sandbox.docker.* &gt; agents.defaults.sandbox.docker.*
+agents.list[].sandbox.browser.* &gt; agents.defaults.sandbox.browser.*
+agents.list[].sandbox.prune.* &gt; agents.defaults.sandbox.prune.*
+</code></pre><p><strong>注意事项：</strong></p>
+<ul>
+<li><code>agents.list[].sandbox.{docker,browser,prune}.*</code> 为该智能体覆盖 <code>agents.defaults.sandbox.{docker,browser,prune}.*</code>（当沙箱 scope 解析为 <code>&quot;shared&quot;</code> 时忽略）。</li>
+</ul>
+<h3 id="工具限制">工具限制<a hidden class="anchor" aria-hidden="true" href="#工具限制">#</a></h3>
+<p>过滤顺序是：</p>
+<ol>
+<li><strong>工具配置文件</strong>（<code>tools.profile</code> 或 <code>agents.list[].tools.profile</code>）</li>
+<li><strong>提供商工具配置文件</strong>（<code>tools.byProvider[provider].profile</code> 或 <code>agents.list[].tools.byProvider[provider].profile</code>）</li>
+<li><strong>全局工具策略</strong>（<code>tools.allow</code> / <code>tools.deny</code>）</li>
+<li><strong>提供商工具策略</strong>（<code>tools.byProvider[provider].allow/deny</code>）</li>
+<li><strong>智能体特定工具策略</strong>（<code>agents.list[].tools.allow/deny</code>）</li>
+<li><strong>智能体提供商策略</strong>（<code>agents.list[].tools.byProvider[provider].allow/deny</code>）</li>
+<li><strong>沙箱工具策略</strong>（<code>tools.sandbox.tools</code> 或 <code>agents.list[].tools.sandbox.tools</code>）</li>
+<li><strong>子智能体工具策略</strong>（<code>tools.subagents.tools</code>，如适用）</li>
+</ol>
+<p>每个级别可以进一步限制工具，但不能恢复之前级别拒绝的工具。
+如果设置了 <code>agents.list[].tools.sandbox.tools</code>，它将替换该智能体的 <code>tools.sandbox.tools</code>。
+如果设置了 <code>agents.list[].tools.profile</code>，它将覆盖该智能体的 <code>tools.profile</code>。
+提供商工具键接受 <code>provider</code>（例如 <code>google-antigravity</code>）或 <code>provider/model</code>（例如 <code>openai/gpt-5.2</code>）。</p>
+<h3 id="工具组简写">工具组（简写）<a hidden class="anchor" aria-hidden="true" href="#工具组简写">#</a></h3>
+<p>工具策略（全局、智能体、沙箱）支持 <code>group:*</code> 条目，可扩展为多个具体工具：</p>
+<ul>
+<li><code>group:runtime</code>：<code>exec</code>、<code>bash</code>、<code>process</code></li>
+<li><code>group:fs</code>：<code>read</code>、<code>write</code>、<code>edit</code>、<code>apply_patch</code></li>
+<li><code>group:sessions</code>：<code>sessions_list</code>、<code>sessions_history</code>、<code>sessions_send</code>、<code>sessions_spawn</code>、<code>session_status</code></li>
+<li><code>group:memory</code>：<code>memory_search</code>、<code>memory_get</code></li>
+<li><code>group:ui</code>：<code>browser</code>、<code>canvas</code></li>
+<li><code>group:automation</code>：<code>cron</code>、<code>gateway</code></li>
+<li><code>group:messaging</code>：<code>message</code></li>
+<li><code>group:nodes</code>：<code>nodes</code></li>
+<li><code>group:openclaw</code>：所有内置 OpenClaw 工具（不包括提供商插件）</li>
+</ul>
+<h3 id="提权模式">提权模式<a hidden class="anchor" aria-hidden="true" href="#提权模式">#</a></h3>
+<p><code>tools.elevated</code> 是全局基线（基于发送者的允许列表）。<code>agents.list[].tools.elevated</code> 可以为特定智能体进一步限制提权（两者都必须允许）。</p>
+<p>缓解模式：</p>
+<ul>
+<li>为不受信任的智能体拒绝 <code>exec</code>（<code>agents.list[].tools.deny: [&quot;exec&quot;]</code>）</li>
+<li>避免将发送者加入允许列表后路由到受限智能体</li>
+<li>如果你只想要沙箱隔离执行，全局禁用提权（<code>tools.elevated.enabled: false</code>）</li>
+<li>为敏感配置文件按智能体禁用提权（<code>agents.list[].tools.elevated.enabled: false</code>）</li>
+</ul>
+<hr>
+<h2 id="从单智能体迁移">从单智能体迁移<a hidden class="anchor" aria-hidden="true" href="#从单智能体迁移">#</a></h2>
+<p><strong>之前（单智能体）：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;agents&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;defaults&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;non-main&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;read&#34;</span><span class="p">,</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">,</span> <span class="s2">&#34;exec&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;deny&#34;</span><span class="p">:</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>之后（具有不同配置文件的多智能体）：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;agents&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;list&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;main&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;workspace&#34;</span><span class="p">:</span> <span class="s2">&#34;~/.openclaw/workspace&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sandbox&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;off&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>旧版 <code>agent.*</code> 配置由 <code>openclaw doctor</code> 迁移；今后请优先使用 <code>agents.defaults</code> + <code>agents.list</code>。</p>
+<hr>
+<h2 id="工具限制示例">工具限制示例<a hidden class="anchor" aria-hidden="true" href="#工具限制示例">#</a></h2>
+<h3 id="只读智能体">只读智能体<a hidden class="anchor" aria-hidden="true" href="#只读智能体">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;read&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;deny&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;edit&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">,</span> <span class="s2">&#34;process&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="安全执行智能体无文件修改">安全执行智能体（无文件修改）<a hidden class="anchor" aria-hidden="true" href="#安全执行智能体无文件修改">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;read&#34;</span><span class="p">,</span> <span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;process&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;deny&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;edit&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">,</span> <span class="s2">&#34;browser&#34;</span><span class="p">,</span> <span class="s2">&#34;gateway&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="仅通信智能体">仅通信智能体<a hidden class="anchor" aria-hidden="true" href="#仅通信智能体">#</a></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;tools&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;allow&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;sessions_list&#34;</span><span class="p">,</span> <span class="s2">&#34;sessions_send&#34;</span><span class="p">,</span> <span class="s2">&#34;sessions_history&#34;</span><span class="p">,</span> <span class="s2">&#34;session_status&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;deny&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;write&#34;</span><span class="p">,</span> <span class="s2">&#34;edit&#34;</span><span class="p">,</span> <span class="s2">&#34;apply_patch&#34;</span><span class="p">,</span> <span class="s2">&#34;read&#34;</span><span class="p">,</span> <span class="s2">&#34;browser&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><hr>
+<h2 id="常见陷阱non-main">常见陷阱：&ldquo;non-main&rdquo;<a hidden class="anchor" aria-hidden="true" href="#常见陷阱non-main">#</a></h2>
+<p><code>agents.defaults.sandbox.mode: &quot;non-main&quot;</code> 基于 <code>session.mainKey</code>（默认 <code>&quot;main&quot;</code>），
+而不是智能体 id。群组/渠道会话始终获得自己的键，因此它们
+被视为非 main 并将被沙箱隔离。如果你希望智能体永不
+沙箱隔离，请设置 <code>agents.list[].sandbox.mode: &quot;off&quot;</code>。</p>
+<hr>
+<h2 id="测试">测试<a hidden class="anchor" aria-hidden="true" href="#测试">#</a></h2>
+<p>配置多智能体沙箱和工具后：</p>
+<ol>
+<li>
+<p><strong>检查智能体解析：</strong></p>
+<pre tabindex="0"><code class="language-exec" data-lang="exec">openclaw agents list --bindings
+</code></pre></li>
+<li>
+<p><strong>验证沙箱容器：</strong></p>
+<pre tabindex="0"><code class="language-exec" data-lang="exec">docker ps --filter &#34;name=openclaw-sbx-&#34;
+</code></pre></li>
+<li>
+<p><strong>测试工具限制：</strong></p>
+<ul>
+<li>发送需要受限工具的消息</li>
+<li>验证智能体无法使用被拒绝的工具</li>
+</ul>
+</li>
+<li>
+<p><strong>监控日志：</strong></p>
+<pre tabindex="0"><code class="language-exec" data-lang="exec">tail -f &#34;${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log&#34; | grep -E &#34;routing|sandbox|tools&#34;
+</code></pre></li>
+</ol>
+<hr>
+<h2 id="故障排除">故障排除<a hidden class="anchor" aria-hidden="true" href="#故障排除">#</a></h2>
+<h3 id="尽管设置了-mode-all-但智能体未被沙箱隔离">尽管设置了 <code>mode: &quot;all&quot;</code> 但智能体未被沙箱隔离<a hidden class="anchor" aria-hidden="true" href="#尽管设置了-mode-all-但智能体未被沙箱隔离">#</a></h3>
+<ul>
+<li>检查是否有全局 <code>agents.defaults.sandbox.mode</code> 覆盖它</li>
+<li>智能体特定配置优先，因此设置 <code>agents.list[].sandbox.mode: &quot;all&quot;</code></li>
+</ul>
+<h3 id="尽管有拒绝列表但工具仍然可用">尽管有拒绝列表但工具仍然可用<a hidden class="anchor" aria-hidden="true" href="#尽管有拒绝列表但工具仍然可用">#</a></h3>
+<ul>
+<li>检查工具过滤顺序：全局 → 智能体 → 沙箱 → 子智能体</li>
+<li>每个级别只能进一步限制，不能恢复</li>
+<li>通过日志验证：<code>[tools] filtering tools for agent:${agentId}</code></li>
+</ul>
+<h3 id="容器未按智能体隔离">容器未按智能体隔离<a hidden class="anchor" aria-hidden="true" href="#容器未按智能体隔离">#</a></h3>
+<ul>
+<li>在智能体特定沙箱配置中设置 <code>scope: &quot;agent&quot;</code></li>
+<li>默认是 <code>&quot;session&quot;</code>，每个会话创建一个容器</li>
+</ul>
+<hr>
+<h2 id="另请参阅">另请参阅<a hidden class="anchor" aria-hidden="true" href="#另请参阅">#</a></h2>
+<ul>
+<li><a href="/concepts/multi-agent">多智能体路由</a></li>
+<li><a href="/gateway/configuration#agentsdefaults-sandbox">沙箱配置</a></li>
+<li><a href="/concepts/session">会话管理</a></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/gateway/multiple-gateways/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>多 Gateway 网关（同一主机）</span>
+  </a>
+  <a class="next" href="/openclaw/concepts/multi-agent/">
+    <span class="title">Next »</span>
+    <br>
+    <span>多智能体路由</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

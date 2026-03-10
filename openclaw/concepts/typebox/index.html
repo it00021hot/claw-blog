@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>TypeBox 作为协议的事实来源 | CLAW博客</title>
+<meta name="keywords" content="OpenClaw, 官方文档, 技术文档">
+<meta name="description" content="最后更新：2026-01-10
+TypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 Gateway 网关 WebSocket 协议（握手、请求/响应、服务器事件）。这些模式驱动运行时验证、JSON Schema 导出和 macOS 应用的 Swift 代码生成。一个事实来源；其他一切都是生成的。
+如果你想了解更高层次的协议上下文，请从 Gateway 网关架构开始。
+心智模型（30 秒）
+每个 Gateway 网关 WS 消息都是以下三种帧之一：
+
+Request：{ type: &quot;req&quot;, id, method, params }
+Response：{ type: &quot;res&quot;, id, ok, payload | error }
+Event：{ type: &quot;event&quot;, event, payload, seq?, stateVersion? }
+
+第一个帧必须是 connect 请求。之后，客户端可以调用方法（例如 health、send、chat.send）并订阅事件（例如 presence、tick、agent）。
+连接流程（最小）：
+Client                    Gateway
+  |---- req:connect --------&gt;|
+  |&lt;---- res:hello-ok --------|
+  |&lt;---- event:tick ----------|
+  |---- req:health ----------&gt;|
+  |&lt;---- res:health ----------|
+常用方法 &#43; 事件：">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/openclaw/concepts/typebox/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/openclaw/concepts/typebox/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/openclaw/concepts/typebox/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="TypeBox 作为协议的事实来源">
+  <meta property="og:description" content="最后更新：2026-01-10
+TypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 Gateway 网关 WebSocket 协议（握手、请求/响应、服务器事件）。这些模式驱动运行时验证、JSON Schema 导出和 macOS 应用的 Swift 代码生成。一个事实来源；其他一切都是生成的。
+如果你想了解更高层次的协议上下文，请从 Gateway 网关架构开始。
+心智模型（30 秒） 每个 Gateway 网关 WS 消息都是以下三种帧之一：
+Request：{ type: &#34;req&#34;, id, method, params } Response：{ type: &#34;res&#34;, id, ok, payload | error } Event：{ type: &#34;event&#34;, event, payload, seq?, stateVersion? } 第一个帧必须是 connect 请求。之后，客户端可以调用方法（例如 health、send、chat.send）并订阅事件（例如 presence、tick、agent）。
+连接流程（最小）：
+Client Gateway |---- req:connect --------&gt;| |&lt;---- res:hello-ok --------| |&lt;---- event:tick ----------| |---- req:health ----------&gt;| |&lt;---- res:health ----------| 常用方法 &#43; 事件：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="openclaw">
+    <meta property="article:published_time" content="2026-03-10T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-10T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TypeBox 作为协议的事实来源">
+<meta name="twitter:description" content="最后更新：2026-01-10
+TypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 Gateway 网关 WebSocket 协议（握手、请求/响应、服务器事件）。这些模式驱动运行时验证、JSON Schema 导出和 macOS 应用的 Swift 代码生成。一个事实来源；其他一切都是生成的。
+如果你想了解更高层次的协议上下文，请从 Gateway 网关架构开始。
+心智模型（30 秒）
+每个 Gateway 网关 WS 消息都是以下三种帧之一：
+
+Request：{ type: &quot;req&quot;, id, method, params }
+Response：{ type: &quot;res&quot;, id, ok, payload | error }
+Event：{ type: &quot;event&quot;, event, payload, seq?, stateVersion? }
+
+第一个帧必须是 connect 请求。之后，客户端可以调用方法（例如 health、send、chat.send）并订阅事件（例如 presence、tick、agent）。
+连接流程（最小）：
+Client                    Gateway
+  |---- req:connect --------&gt;|
+  |&lt;---- res:hello-ok --------|
+  |&lt;---- event:tick ----------|
+  |---- req:health ----------&gt;|
+  |&lt;---- res:health ----------|
+常用方法 &#43; 事件：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "TypeBox 作为协议的事实来源",
+      "item": "/openclaw/concepts/typebox/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "TypeBox 作为协议的事实来源",
+  "name": "TypeBox 作为协议的事实来源",
+  "description": "最后更新：2026-01-10\nTypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 Gateway 网关 WebSocket 协议（握手、请求/响应、服务器事件）。这些模式驱动运行时验证、JSON Schema 导出和 macOS 应用的 Swift 代码生成。一个事实来源；其他一切都是生成的。\n如果你想了解更高层次的协议上下文，请从 Gateway 网关架构开始。\n心智模型（30 秒） 每个 Gateway 网关 WS 消息都是以下三种帧之一：\nRequest：{ type: \u0026quot;req\u0026quot;, id, method, params } Response：{ type: \u0026quot;res\u0026quot;, id, ok, payload | error } Event：{ type: \u0026quot;event\u0026quot;, event, payload, seq?, stateVersion? } 第一个帧必须是 connect 请求。之后，客户端可以调用方法（例如 health、send、chat.send）并订阅事件（例如 presence、tick、agent）。\n连接流程（最小）：\nClient Gateway |---- req:connect --------\u0026gt;| |\u0026lt;---- res:hello-ok --------| |\u0026lt;---- event:tick ----------| |---- req:health ----------\u0026gt;| |\u0026lt;---- res:health ----------| 常用方法 + 事件：\n",
+  "keywords": [
+    "OpenClaw", "官方文档", "技术文档"
+  ],
+  "articleBody": "最后更新：2026-01-10\nTypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 Gateway 网关 WebSocket 协议（握手、请求/响应、服务器事件）。这些模式驱动运行时验证、JSON Schema 导出和 macOS 应用的 Swift 代码生成。一个事实来源；其他一切都是生成的。\n如果你想了解更高层次的协议上下文，请从 Gateway 网关架构开始。\n心智模型（30 秒） 每个 Gateway 网关 WS 消息都是以下三种帧之一：\nRequest：{ type: \"req\", id, method, params } Response：{ type: \"res\", id, ok, payload | error } Event：{ type: \"event\", event, payload, seq?, stateVersion? } 第一个帧必须是 connect 请求。之后，客户端可以调用方法（例如 health、send、chat.send）并订阅事件（例如 presence、tick、agent）。\n连接流程（最小）：\nClient Gateway |---- req:connect --------\u003e| |\u003c---- res:hello-ok --------| |\u003c---- event:tick ----------| |---- req:health ----------\u003e| |\u003c---- res:health ----------| 常用方法 + 事件：\n类别 示例 说明 核心 connect、health、status connect 必须是第一个 消息 send、poll、agent、agent.wait 有副作用的需要 idempotencyKey 聊天 chat.history、chat.send、chat.abort、chat.inject WebChat 使用这些 会话 sessions.list、sessions.patch、sessions.delete 会话管理 节点 node.list、node.invoke、node.pair.* Gateway 网关 WS + 节点操作 事件 tick、presence、agent、chat、health、shutdown 服务器推送 权威列表在 src/gateway/server.ts（METHODS、EVENTS）中。\n模式所在位置 源码：src/gateway/protocol/schema.ts 运行时验证器（AJV）：src/gateway/protocol/index.ts 服务器握手 + 方法分发：src/gateway/server.ts 节点客户端：src/gateway/client.ts 生成的 JSON Schema：dist/protocol.schema.json 生成的 Swift 模型：apps/macos/Sources/OpenClawProtocol/GatewayModels.swift 当前流程 pnpm protocol:gen 将 JSON Schema（draft‑07）写入 dist/protocol.schema.json pnpm protocol:gen:swift 生成 Swift Gateway 网关模型 pnpm protocol:check 运行两个生成器并验证输出已提交 模式在运行时的使用方式 服务器端：每个入站帧都用 AJV 验证。握手仅接受参数匹配 ConnectParams 的 connect 请求。 客户端：JS 客户端在使用之前验证事件和响应帧。 方法表面：Gateway 网关在 hello-ok 中公布支持的 methods 和 events。 示例帧 Connect（第一条消息）：\n{ \"type\": \"req\", \"id\": \"c1\", \"method\": \"connect\", \"params\": { \"minProtocol\": 2, \"maxProtocol\": 2, \"client\": { \"id\": \"openclaw-macos\", \"displayName\": \"macos\", \"version\": \"1.0.0\", \"platform\": \"macos 15.1\", \"mode\": \"ui\", \"instanceId\": \"A1B2\" } } } Hello-ok 响应：\n{ \"type\": \"res\", \"id\": \"c1\", \"ok\": true, \"payload\": { \"type\": \"hello-ok\", \"protocol\": 2, \"server\": { \"version\": \"dev\", \"connId\": \"ws-1\" }, \"features\": { \"methods\": [\"health\"], \"events\": [\"tick\"] }, \"snapshot\": { \"presence\": [], \"health\": {}, \"stateVersion\": { \"presence\": 0, \"health\": 0 }, \"uptimeMs\": 0 }, \"policy\": { \"maxPayload\": 1048576, \"maxBufferedBytes\": 1048576, \"tickIntervalMs\": 30000 } } } 请求 + 响应：\n{ \"type\": \"req\", \"id\": \"r1\", \"method\": \"health\" } { \"type\": \"res\", \"id\": \"r1\", \"ok\": true, \"payload\": { \"ok\": true } } 事件：\n{ \"type\": \"event\", \"event\": \"tick\", \"payload\": { \"ts\": 1730000000 }, \"seq\": 12 } 最小客户端（Node.js） 最小可用流程：connect + health。\nimport { WebSocket } from \"ws\"; const ws = new WebSocket(\"ws://127.0.0.1:18789\"); ws.on(\"open\", () =\u003e { ws.send( JSON.stringify({ type: \"req\", id: \"c1\", method: \"connect\", params: { minProtocol: 3, maxProtocol: 3, client: { id: \"cli\", displayName: \"example\", version: \"dev\", platform: \"node\", mode: \"cli\", }, }, }), ); }); ws.on(\"message\", (data) =\u003e { const msg = JSON.parse(String(data)); if (msg.type === \"res\" \u0026\u0026 msg.id === \"c1\" \u0026\u0026 msg.ok) { ws.send(JSON.stringify({ type: \"req\", id: \"h1\", method: \"health\" })); } if (msg.type === \"res\" \u0026\u0026 msg.id === \"h1\") { console.log(\"health:\", msg.payload); ws.close(); } }); 实践示例：端到端添加方法 示例：添加一个新的 system.echo 请求，返回 { ok: true, text }。\n模式（事实来源） 添加到 src/gateway/protocol/schema.ts：\nexport const SystemEchoParamsSchema = Type.Object( { text: NonEmptyString }, { additionalProperties: false }, ); export const SystemEchoResultSchema = Type.Object( { ok: Type.Boolean(), text: NonEmptyString }, { additionalProperties: false }, ); 将两者添加到 ProtocolSchemas 并导出类型：\nSystemEchoParams: SystemEchoParamsSchema, SystemEchoResult: SystemEchoResultSchema, export type SystemEchoParams = Static\u003ctypeof SystemEchoParamsSchema\u003e; export type SystemEchoResult = Static\u003ctypeof SystemEchoResultSchema\u003e; 验证 在 src/gateway/protocol/index.ts 中，导出一个 AJV 验证器：\nexport const validateSystemEchoParams = ajv.compile\u003cSystemEchoParams\u003e(SystemEchoParamsSchema); 服务器行为 在 src/gateway/server-methods/system.ts 中添加处理程序：\nexport const systemHandlers: GatewayRequestHandlers = { \"system.echo\": ({ params, respond }) =\u003e { const text = String(params.text ?? \"\"); respond(true, { ok: true, text }); }, }; 在 src/gateway/server-methods.ts 中注册（已合并 systemHandlers），然后将 \"system.echo\" 添加到 src/gateway/server.ts 中的 METHODS。\n重新生成 pnpm protocol:check 测试 + 文档 在 src/gateway/server.*.test.ts 中添加服务器测试，并在文档中记录该方法。\nSwift 代码生成行为 Swift 生成器输出：\n带有 req、res、event 和 unknown 情况的 GatewayFrame 枚举 强类型的 payload 结构体/枚举 ErrorCode 值和 GATEWAY_PROTOCOL_VERSION 未知的帧类型保留为原始 payload 以实现向前兼容。\n版本控制 + 兼容性 PROTOCOL_VERSION 在 src/gateway/protocol/schema.ts 中。 客户端发送 minProtocol + maxProtocol；服务器拒绝不匹配的。 Swift 模型保留未知帧类型以避免破坏旧客户端。 模式模式和约定 大多数对象使用 additionalProperties: false 以实现严格的 payload。 NonEmptyString 是 ID 和方法/事件名称的默认值。 顶层 GatewayFrame 在 type 上使用鉴别器。 有副作用的方法通常需要在 params 中包含 idempotencyKey（示例：send、poll、agent、chat.send）。 实时 schema JSON 生成的 JSON Schema 在仓库的 dist/protocol.schema.json 中。发布的原始文件通常可在以下位置获取：\nhttps://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json 当你更改模式时 更新 TypeBox 模式。 运行 pnpm protocol:check。 提交重新生成的 schema + Swift 模型。 ",
+  "wordCount" : "565",
+  "inLanguage": "en",
+  "datePublished": "2026-03-10T00:00:00Z",
+  "dateModified": "2026-03-10T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": {"email":"liu15077731547@gmail.com","name":"it00021hot"}
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/openclaw/concepts/typebox/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "CLAW博客",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <h1 class="post-title entry-hint-parent">
+      TypeBox 作为协议的事实来源
+    </h1>
+    <div class="post-meta"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%bf%83%e6%99%ba%e6%a8%a1%e5%9e%8b30-%e7%a7%92" aria-label="心智模型（30 秒）">心智模型（30 秒）</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%bc%8f%e6%89%80%e5%9c%a8%e4%bd%8d%e7%bd%ae" aria-label="模式所在位置">模式所在位置</a></li>
+                <li>
+                    <a href="#%e5%bd%93%e5%89%8d%e6%b5%81%e7%a8%8b" aria-label="当前流程">当前流程</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%bc%8f%e5%9c%a8%e8%bf%90%e8%a1%8c%e6%97%b6%e7%9a%84%e4%bd%bf%e7%94%a8%e6%96%b9%e5%bc%8f" aria-label="模式在运行时的使用方式">模式在运行时的使用方式</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b%e5%b8%a7" aria-label="示例帧">示例帧</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e5%b0%8f%e5%ae%a2%e6%88%b7%e7%ab%afnodejs" aria-label="最小客户端（Node.js）">最小客户端（Node.js）</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e8%b7%b5%e7%a4%ba%e4%be%8b%e7%ab%af%e5%88%b0%e7%ab%af%e6%b7%bb%e5%8a%a0%e6%96%b9%e6%b3%95" aria-label="实践示例：端到端添加方法">实践示例：端到端添加方法</a></li>
+                <li>
+                    <a href="#swift-%e4%bb%a3%e7%a0%81%e7%94%9f%e6%88%90%e8%a1%8c%e4%b8%ba" aria-label="Swift 代码生成行为">Swift 代码生成行为</a></li>
+                <li>
+                    <a href="#%e7%89%88%e6%9c%ac%e6%8e%a7%e5%88%b6--%e5%85%bc%e5%ae%b9%e6%80%a7" aria-label="版本控制 &#43; 兼容性">版本控制 + 兼容性</a></li>
+                <li>
+                    <a href="#%e6%a8%a1%e5%bc%8f%e6%a8%a1%e5%bc%8f%e5%92%8c%e7%ba%a6%e5%ae%9a" aria-label="模式模式和约定">模式模式和约定</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e6%97%b6-schema-json" aria-label="实时 schema JSON">实时 schema JSON</a></li>
+                <li>
+                    <a href="#%e5%bd%93%e4%bd%a0%e6%9b%b4%e6%94%b9%e6%a8%a1%e5%bc%8f%e6%97%b6" aria-label="当你更改模式时">当你更改模式时</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>最后更新：2026-01-10</p>
+<p>TypeBox 是一个 TypeScript 优先的模式库。我们用它来定义 <strong>Gateway 网关 WebSocket 协议</strong>（握手、请求/响应、服务器事件）。这些模式驱动<strong>运行时验证</strong>、<strong>JSON Schema 导出</strong>和 macOS 应用的 <strong>Swift 代码生成</strong>。一个事实来源；其他一切都是生成的。</p>
+<p>如果你想了解更高层次的协议上下文，请从 <a href="/concepts/architecture">Gateway 网关架构</a>开始。</p>
+<h2 id="心智模型30-秒">心智模型（30 秒）<a hidden class="anchor" aria-hidden="true" href="#心智模型30-秒">#</a></h2>
+<p>每个 Gateway 网关 WS 消息都是以下三种帧之一：</p>
+<ul>
+<li><strong>Request</strong>：<code>{ type: &quot;req&quot;, id, method, params }</code></li>
+<li><strong>Response</strong>：<code>{ type: &quot;res&quot;, id, ok, payload | error }</code></li>
+<li><strong>Event</strong>：<code>{ type: &quot;event&quot;, event, payload, seq?, stateVersion? }</code></li>
+</ul>
+<p>第一个帧<strong>必须</strong>是 <code>connect</code> 请求。之后，客户端可以调用方法（例如 <code>health</code>、<code>send</code>、<code>chat.send</code>）并订阅事件（例如 <code>presence</code>、<code>tick</code>、<code>agent</code>）。</p>
+<p>连接流程（最小）：</p>
+<pre tabindex="0"><code>Client                    Gateway
+  |---- req:connect --------&gt;|
+  |&lt;---- res:hello-ok --------|
+  |&lt;---- event:tick ----------|
+  |---- req:health ----------&gt;|
+  |&lt;---- res:health ----------|
+</code></pre><p>常用方法 + 事件：</p>
+<table>
+  <thead>
+      <tr>
+          <th>类别</th>
+          <th>示例</th>
+          <th>说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>核心</td>
+          <td><code>connect</code>、<code>health</code>、<code>status</code></td>
+          <td><code>connect</code> 必须是第一个</td>
+      </tr>
+      <tr>
+          <td>消息</td>
+          <td><code>send</code>、<code>poll</code>、<code>agent</code>、<code>agent.wait</code></td>
+          <td>有副作用的需要 <code>idempotencyKey</code></td>
+      </tr>
+      <tr>
+          <td>聊天</td>
+          <td><code>chat.history</code>、<code>chat.send</code>、<code>chat.abort</code>、<code>chat.inject</code></td>
+          <td>WebChat 使用这些</td>
+      </tr>
+      <tr>
+          <td>会话</td>
+          <td><code>sessions.list</code>、<code>sessions.patch</code>、<code>sessions.delete</code></td>
+          <td>会话管理</td>
+      </tr>
+      <tr>
+          <td>节点</td>
+          <td><code>node.list</code>、<code>node.invoke</code>、<code>node.pair.*</code></td>
+          <td>Gateway 网关 WS + 节点操作</td>
+      </tr>
+      <tr>
+          <td>事件</td>
+          <td><code>tick</code>、<code>presence</code>、<code>agent</code>、<code>chat</code>、<code>health</code>、<code>shutdown</code></td>
+          <td>服务器推送</td>
+      </tr>
+  </tbody>
+</table>
+<p>权威列表在 <code>src/gateway/server.ts</code>（<code>METHODS</code>、<code>EVENTS</code>）中。</p>
+<h2 id="模式所在位置">模式所在位置<a hidden class="anchor" aria-hidden="true" href="#模式所在位置">#</a></h2>
+<ul>
+<li>源码：<code>src/gateway/protocol/schema.ts</code></li>
+<li>运行时验证器（AJV）：<code>src/gateway/protocol/index.ts</code></li>
+<li>服务器握手 + 方法分发：<code>src/gateway/server.ts</code></li>
+<li>节点客户端：<code>src/gateway/client.ts</code></li>
+<li>生成的 JSON Schema：<code>dist/protocol.schema.json</code></li>
+<li>生成的 Swift 模型：<code>apps/macos/Sources/OpenClawProtocol/GatewayModels.swift</code></li>
+</ul>
+<h2 id="当前流程">当前流程<a hidden class="anchor" aria-hidden="true" href="#当前流程">#</a></h2>
+<ul>
+<li><code>pnpm protocol:gen</code>
+<ul>
+<li>将 JSON Schema（draft‑07）写入 <code>dist/protocol.schema.json</code></li>
+</ul>
+</li>
+<li><code>pnpm protocol:gen:swift</code>
+<ul>
+<li>生成 Swift Gateway 网关模型</li>
+</ul>
+</li>
+<li><code>pnpm protocol:check</code>
+<ul>
+<li>运行两个生成器并验证输出已提交</li>
+</ul>
+</li>
+</ul>
+<h2 id="模式在运行时的使用方式">模式在运行时的使用方式<a hidden class="anchor" aria-hidden="true" href="#模式在运行时的使用方式">#</a></h2>
+<ul>
+<li><strong>服务器端</strong>：每个入站帧都用 AJV 验证。握手仅接受参数匹配 <code>ConnectParams</code> 的 <code>connect</code> 请求。</li>
+<li><strong>客户端</strong>：JS 客户端在使用之前验证事件和响应帧。</li>
+<li><strong>方法表面</strong>：Gateway 网关在 <code>hello-ok</code> 中公布支持的 <code>methods</code> 和 <code>events</code>。</li>
+</ul>
+<h2 id="示例帧">示例帧<a hidden class="anchor" aria-hidden="true" href="#示例帧">#</a></h2>
+<p>Connect（第一条消息）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;req&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;c1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;method&#34;</span><span class="p">:</span> <span class="s2">&#34;connect&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;params&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;minProtocol&#34;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;maxProtocol&#34;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;client&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;openclaw-macos&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;displayName&#34;</span><span class="p">:</span> <span class="s2">&#34;macos&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;platform&#34;</span><span class="p">:</span> <span class="s2">&#34;macos 15.1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;mode&#34;</span><span class="p">:</span> <span class="s2">&#34;ui&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;instanceId&#34;</span><span class="p">:</span> <span class="s2">&#34;A1B2&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Hello-ok 响应：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;res&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;c1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;ok&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;payload&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;hello-ok&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;server&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;dev&#34;</span><span class="p">,</span> <span class="nt">&#34;connId&#34;</span><span class="p">:</span> <span class="s2">&#34;ws-1&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;features&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;methods&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;health&#34;</span><span class="p">],</span> <span class="nt">&#34;events&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;tick&#34;</span><span class="p">]</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;snapshot&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;presence&#34;</span><span class="p">:</span> <span class="p">[],</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;health&#34;</span><span class="p">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;stateVersion&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;presence&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&#34;health&#34;</span><span class="p">:</span> <span class="mi">0</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;uptimeMs&#34;</span><span class="p">:</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;policy&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;maxPayload&#34;</span><span class="p">:</span> <span class="mi">1048576</span><span class="p">,</span> <span class="nt">&#34;maxBufferedBytes&#34;</span><span class="p">:</span> <span class="mi">1048576</span><span class="p">,</span> <span class="nt">&#34;tickIntervalMs&#34;</span><span class="p">:</span> <span class="mi">30000</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>请求 + 响应：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;req&#34;</span><span class="p">,</span> <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;r1&#34;</span><span class="p">,</span> <span class="nt">&#34;method&#34;</span><span class="p">:</span> <span class="s2">&#34;health&#34;</span> <span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;res&#34;</span><span class="p">,</span> <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;r1&#34;</span><span class="p">,</span> <span class="nt">&#34;ok&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nt">&#34;payload&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;ok&#34;</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">}</span>
+</span></span></code></pre></div><p>事件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span> <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;event&#34;</span><span class="p">,</span> <span class="nt">&#34;event&#34;</span><span class="p">:</span> <span class="s2">&#34;tick&#34;</span><span class="p">,</span> <span class="nt">&#34;payload&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;ts&#34;</span><span class="p">:</span> <span class="mi">1730000000</span> <span class="p">},</span> <span class="nt">&#34;seq&#34;</span><span class="p">:</span> <span class="mi">12</span> <span class="p">}</span>
+</span></span></code></pre></div><h2 id="最小客户端nodejs">最小客户端（Node.js）<a hidden class="anchor" aria-hidden="true" href="#最小客户端nodejs">#</a></h2>
+<p>最小可用流程：connect + health。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">WebSocket</span> <span class="p">}</span> <span class="kr">from</span> <span class="s2">&#34;ws&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">ws</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="s2">&#34;ws://127.0.0.1:18789&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">ws</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&#34;open&#34;</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">ws</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">type</span><span class="o">:</span> <span class="s2">&#34;req&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;c1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;connect&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">minProtocol</span>: <span class="kt">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">maxProtocol</span>: <span class="kt">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">client</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;cli&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">displayName</span><span class="o">:</span> <span class="s2">&#34;example&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">version</span><span class="o">:</span> <span class="s2">&#34;dev&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">platform</span><span class="o">:</span> <span class="s2">&#34;node&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nx">mode</span><span class="o">:</span> <span class="s2">&#34;cli&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">ws</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&#34;message&#34;</span><span class="p">,</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nb">String</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="kr">type</span> <span class="o">===</span> <span class="s2">&#34;res&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="s2">&#34;c1&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ws</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="kr">type</span><span class="o">:</span> <span class="s2">&#34;req&#34;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span> <span class="s2">&#34;h1&#34;</span><span class="p">,</span> <span class="nx">method</span><span class="o">:</span> <span class="s2">&#34;health&#34;</span> <span class="p">}));</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="kr">type</span> <span class="o">===</span> <span class="s2">&#34;res&#34;</span> <span class="o">&amp;&amp;</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="s2">&#34;h1&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;health:&#34;</span><span class="p">,</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">payload</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ws</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><h2 id="实践示例端到端添加方法">实践示例：端到端添加方法<a hidden class="anchor" aria-hidden="true" href="#实践示例端到端添加方法">#</a></h2>
+<p>示例：添加一个新的 <code>system.echo</code> 请求，返回 <code>{ ok: true, text }</code>。</p>
+<ol>
+<li><strong>模式（事实来源）</strong></li>
+</ol>
+<p>添加到 <code>src/gateway/protocol/schema.ts</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">SystemEchoParamsSchema</span> <span class="o">=</span> <span class="nx">Type</span><span class="p">.</span><span class="nb">Object</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">text</span>: <span class="kt">NonEmptyString</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">additionalProperties</span>: <span class="kt">false</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">SystemEchoResultSchema</span> <span class="o">=</span> <span class="nx">Type</span><span class="p">.</span><span class="nb">Object</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">ok</span>: <span class="kt">Type.Boolean</span><span class="p">(),</span> <span class="nx">text</span>: <span class="kt">NonEmptyString</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">additionalProperties</span>: <span class="kt">false</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span></code></pre></div><p>将两者添加到 <code>ProtocolSchemas</code> 并导出类型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl">  <span class="nx">SystemEchoParams</span>: <span class="kt">SystemEchoParamsSchema</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">SystemEchoResult</span>: <span class="kt">SystemEchoResultSchema</span><span class="p">,</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">SystemEchoParams</span> <span class="o">=</span> <span class="nx">Static</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">SystemEchoParamsSchema</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">type</span> <span class="nx">SystemEchoResult</span> <span class="o">=</span> <span class="nx">Static</span><span class="p">&lt;</span><span class="nt">typeof</span> <span class="na">SystemEchoResultSchema</span><span class="p">&gt;;</span>
+</span></span></code></pre></div><ol start="2">
+<li><strong>验证</strong></li>
+</ol>
+<p>在 <code>src/gateway/protocol/index.ts</code> 中，导出一个 AJV 验证器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">validateSystemEchoParams</span> <span class="o">=</span> <span class="nx">ajv</span><span class="p">.</span><span class="nx">compile</span><span class="p">&lt;</span><span class="nt">SystemEchoParams</span><span class="p">&gt;(</span><span class="nx">SystemEchoParamsSchema</span><span class="p">);</span>
+</span></span></code></pre></div><ol start="3">
+<li><strong>服务器行为</strong></li>
+</ol>
+<p>在 <code>src/gateway/server-methods/system.ts</code> 中添加处理程序：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-ts" data-lang="ts"><span class="line"><span class="cl"><span class="kr">export</span> <span class="kr">const</span> <span class="nx">systemHandlers</span>: <span class="kt">GatewayRequestHandlers</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;system.echo&#34;</span><span class="o">:</span> <span class="p">({</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">respond</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">text</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">text</span> <span class="o">??</span> <span class="s2">&#34;&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">respond</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="p">{</span> <span class="nx">ok</span>: <span class="kt">true</span><span class="p">,</span> <span class="nx">text</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p>在 <code>src/gateway/server-methods.ts</code> 中注册（已合并 <code>systemHandlers</code>），然后将 <code>&quot;system.echo&quot;</code> 添加到 <code>src/gateway/server.ts</code> 中的 <code>METHODS</code>。</p>
+<ol start="4">
+<li><strong>重新生成</strong></li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm protocol:check
+</span></span></code></pre></div><ol start="5">
+<li><strong>测试 + 文档</strong></li>
+</ol>
+<p>在 <code>src/gateway/server.*.test.ts</code> 中添加服务器测试，并在文档中记录该方法。</p>
+<h2 id="swift-代码生成行为">Swift 代码生成行为<a hidden class="anchor" aria-hidden="true" href="#swift-代码生成行为">#</a></h2>
+<p>Swift 生成器输出：</p>
+<ul>
+<li>带有 <code>req</code>、<code>res</code>、<code>event</code> 和 <code>unknown</code> 情况的 <code>GatewayFrame</code> 枚举</li>
+<li>强类型的 payload 结构体/枚举</li>
+<li><code>ErrorCode</code> 值和 <code>GATEWAY_PROTOCOL_VERSION</code></li>
+</ul>
+<p>未知的帧类型保留为原始 payload 以实现向前兼容。</p>
+<h2 id="版本控制--兼容性">版本控制 + 兼容性<a hidden class="anchor" aria-hidden="true" href="#版本控制--兼容性">#</a></h2>
+<ul>
+<li><code>PROTOCOL_VERSION</code> 在 <code>src/gateway/protocol/schema.ts</code> 中。</li>
+<li>客户端发送 <code>minProtocol</code> + <code>maxProtocol</code>；服务器拒绝不匹配的。</li>
+<li>Swift 模型保留未知帧类型以避免破坏旧客户端。</li>
+</ul>
+<h2 id="模式模式和约定">模式模式和约定<a hidden class="anchor" aria-hidden="true" href="#模式模式和约定">#</a></h2>
+<ul>
+<li>大多数对象使用 <code>additionalProperties: false</code> 以实现严格的 payload。</li>
+<li><code>NonEmptyString</code> 是 ID 和方法/事件名称的默认值。</li>
+<li>顶层 <code>GatewayFrame</code> 在 <code>type</code> 上使用<strong>鉴别器</strong>。</li>
+<li>有副作用的方法通常需要在 params 中包含 <code>idempotencyKey</code>（示例：<code>send</code>、<code>poll</code>、<code>agent</code>、<code>chat.send</code>）。</li>
+</ul>
+<h2 id="实时-schema-json">实时 schema JSON<a hidden class="anchor" aria-hidden="true" href="#实时-schema-json">#</a></h2>
+<p>生成的 JSON Schema 在仓库的 <code>dist/protocol.schema.json</code> 中。发布的原始文件通常可在以下位置获取：</p>
+<ul>
+<li><a href="https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json">https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json</a></li>
+</ul>
+<h2 id="当你更改模式时">当你更改模式时<a hidden class="anchor" aria-hidden="true" href="#当你更改模式时">#</a></h2>
+<ol>
+<li>更新 TypeBox 模式。</li>
+<li>运行 <code>pnpm protocol:check</code>。</li>
+<li>提交重新生成的 schema + Swift 模型。</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="/openclaw/channels/twitch/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Twitch（插件）</span>
+  </a>
+  <a class="next" href="/openclaw/reference/templates/user/">
+    <span class="title">Next »</span>
+    <br>
+    <span>USER.md - 关于你的用户</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

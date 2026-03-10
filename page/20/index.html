@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.157.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>CLAW博客</title>
+<meta name="keywords" content="技术博客, Hugo, PaperMod, 短篇小说">
+<meta name="description" content="一个简洁、高性能的个人技术博客">
+<meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
+<link rel="canonical" href="/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488"
+     crossorigin="anonymous"></script>
+
+<style>
+ 
+ins.adsbygoogle {
+    display: block;
+    margin: 1rem auto;
+}
+</style>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
+<meta property="og:url" content="/">
+  <meta property="og:site_name" content="CLAW博客">
+  <meta property="og:title" content="CLAW博客">
+  <meta property="og:description" content="一个简洁、高性能的个人技术博客">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CLAW博客">
+<meta name="twitter:description" content="一个简洁、高性能的个人技术博客">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "CLAW博客",
+  "url": "/",
+  "description": "一个简洁、高性能的个人技术博客",
+  "logo": "/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="/" title="首页">
+                    <span class="active">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="/openclaw/" title="OpenClaw">
+                    <span>OpenClaw</span>
+                </a>
+            </li>
+            <li>
+                <a href="/skills/" title="Skills">
+                    <span>Skills</span>
+                </a>
+            </li>
+            <li>
+                <a href="/tech/" title="随笔小记">
+                    <span>随笔小记</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"><main class="post-list">
+  
+  
+  
+  
+  
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Nix 安装</h2>
+    </header>
+    <div class="entry-content">
+      <p>使用 Nix 运行 OpenClaw 的推荐方式是通过 nix-openclaw — 一个开箱即用的 Home Manager 模块。
+快速开始 将此粘贴给你的 AI 智能体（Claude、Cursor 等）：
+I want to set up nix-openclaw on my Mac. Repository: github:openclaw/nix-openclaw What I need you to do: 1. Check if Determinate Nix is installed (if not, install it) 2. Create a local flake at ~/code/openclaw-local using templates/agent-first/flake.nix 3. Help me create a Telegram bot (@BotFather) and get my chat ID (@userinfobot) 4. Set up secrets (bot token, Anthropic key) - plain files at ~/.secrets/ is fine 5. Fill in the template placeholders and run home-manager switch 6. Verify: launchd running, bot responds to messages Reference the nix-openclaw README for module options. 📦 完整指南：github.com/openclaw/nix-openclaw
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Nix 安装" href="/openclaw/install/nix/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Nextcloud Talk（插件）</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态：通过插件支持（webhook 机器人）。支持私信、房间、表情回应和 Markdown 消息。
+需要插件 Nextcloud Talk 以插件形式提供，不包含在核心安装包中。
+通过 CLI 安装（npm 仓库）：
+openclaw plugins install @openclaw/nextcloud-talk 本地检出安装（从 git 仓库运行时）：
+openclaw plugins install ./extensions/nextcloud-talk 如果你在配置/新手引导过程中选择了 Nextcloud Talk，并且检测到 git 检出， OpenClaw 将自动提供本地安装路径。
+详情：插件
+快速设置（新手） 安装 Nextcloud Talk 插件。 在你的 Nextcloud 服务器上创建机器人： ./occ talk:bot:install &#34;OpenClaw&#34; &#34;&lt;shared-secret&gt;&#34; &#34;&lt;webhook-url&gt;&#34; --feature reaction 在目标房间设置中启用机器人。 配置 OpenClaw： 配置项：channels.nextcloud-talk.baseUrl &#43; channels.nextcloud-talk.botSecret 或环境变量：NEXTCLOUD_TALK_BOT_SECRET（仅默认账户） 重启 Gateway 网关（或完成新手引导）。 最小配置：
+{ channels: { &#34;nextcloud-talk&#34;: { enabled: true, baseUrl: &#34;https://cloud.example.com&#34;, botSecret: &#34;shared-secret&#34;, dmPolicy: &#34;pairing&#34;, }, }, } 注意事项 机器人无法主动发起私信。用户必须先向机器人发送消息。 Webhook URL 必须可被 Gateway 网关访问；如果在代理后面，请设置 webhookPublicUrl。 机器人 API 不支持媒体上传；媒体以 URL 形式发送。 Webhook 载荷无法区分私信和房间；设置 apiUser &#43; apiPassword 以启用房间类型查询（否则私信将被视为房间）。 访问控制（私信） 默认：channels.nextcloud-talk.dmPolicy = &#34;pairing&#34;。未知发送者将收到配对码。 批准方式： openclaw pairing list nextcloud-talk openclaw pairing approve nextcloud-talk &lt;CODE&gt; 公开私信：channels.nextcloud-talk.dmPolicy=&#34;open&#34; 加上 channels.nextcloud-talk.allowFrom=[&#34;*&#34;]。 房间（群组） 默认：channels.nextcloud-talk.groupPolicy = &#34;allowlist&#34;（需要提及触发）。 使用 channels.nextcloud-talk.rooms 设置房间白名单： { channels: { &#34;nextcloud-talk&#34;: { rooms: { &#34;room-token&#34;: { requireMention: true }, }, }, }, } 如需禁止所有房间，保持白名单为空或设置 channels.nextcloud-talk.groupPolicy=&#34;disabled&#34;。 功能支持 功能 状态 私信 支持 房间 支持 话题 不支持 媒体 仅 URL 表情回应 支持 原生命令 不支持 配置参考（Nextcloud Talk） 完整配置：配置
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Nextcloud Talk（插件）" href="/openclaw/channels/nextcloud-talk/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Moonshot AI (Kimi)</h2>
+    </header>
+    <div class="entry-content">
+      <p>Moonshot 提供兼容 OpenAI 端点的 Kimi API。配置提供商并将默认模型设置为 moonshot/kimi-k2.5，或使用 Kimi Coding 的 kimi-coding/k2p5。
+当前 Kimi K2 模型 ID： {/_ moonshot-kimi-k2-ids:start _/}
+kimi-k2.5 kimi-k2-0905-preview kimi-k2-turbo-preview kimi-k2-thinking kimi-k2-thinking-turbo {/_ moonshot-kimi-k2-ids:end _/} openclaw onboard --auth-choice moonshot-api-key Kimi Coding：
+openclaw onboard --auth-choice kimi-code-api-key 注意：Moonshot 和 Kimi Coding 是独立的提供商。密钥不可互换，端点不同，模型引用也不同（Moonshot 使用 moonshot/...，Kimi Coding 使用 kimi-coding/...）。
+配置片段（Moonshot API） { env: { MOONSHOT_API_KEY: &#34;sk-...&#34; }, agents: { defaults: { model: { primary: &#34;moonshot/kimi-k2.5&#34; }, models: { // moonshot-kimi-k2-aliases:start &#34;moonshot/kimi-k2.5&#34;: { alias: &#34;Kimi K2.5&#34; }, &#34;moonshot/kimi-k2-0905-preview&#34;: { alias: &#34;Kimi K2&#34; }, &#34;moonshot/kimi-k2-turbo-preview&#34;: { alias: &#34;Kimi K2 Turbo&#34; }, &#34;moonshot/kimi-k2-thinking&#34;: { alias: &#34;Kimi K2 Thinking&#34; }, &#34;moonshot/kimi-k2-thinking-turbo&#34;: { alias: &#34;Kimi K2 Thinking Turbo&#34; }, // moonshot-kimi-k2-aliases:end }, }, }, models: { mode: &#34;merge&#34;, providers: { moonshot: { baseUrl: &#34;https://api.moonshot.ai/v1&#34;, apiKey: &#34;${MOONSHOT_API_KEY}&#34;, api: &#34;openai-completions&#34;, models: [ // moonshot-kimi-k2-models:start { id: &#34;kimi-k2.5&#34;, name: &#34;Kimi K2.5&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 256000, maxTokens: 8192, }, { id: &#34;kimi-k2-0905-preview&#34;, name: &#34;Kimi K2 0905 Preview&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 256000, maxTokens: 8192, }, { id: &#34;kimi-k2-turbo-preview&#34;, name: &#34;Kimi K2 Turbo&#34;, reasoning: false, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 256000, maxTokens: 8192, }, { id: &#34;kimi-k2-thinking&#34;, name: &#34;Kimi K2 Thinking&#34;, reasoning: true, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 256000, maxTokens: 8192, }, { id: &#34;kimi-k2-thinking-turbo&#34;, name: &#34;Kimi K2 Thinking Turbo&#34;, reasoning: true, input: [&#34;text&#34;], cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: 256000, maxTokens: 8192, }, // moonshot-kimi-k2-models:end ], }, }, }, } Kimi Coding { env: { KIMI_API_KEY: &#34;sk-...&#34; }, agents: { defaults: { model: { primary: &#34;kimi-coding/k2p5&#34; }, models: { &#34;kimi-coding/k2p5&#34;: { alias: &#34;Kimi K2.5&#34; }, }, }, }, } 注意事项 Moonshot 模型引用使用 moonshot/&lt;modelId&gt;。Kimi Coding 模型引用使用 kimi-coding/&lt;modelId&gt;。 如有需要，可在 models.providers 中覆盖定价和上下文元数据。 如果 Moonshot 发布了某个模型的不同上下文限制，请相应调整 contextWindow。 如需使用中国端点，请使用 https://api.moonshot.cn/v1。 </p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Moonshot AI (Kimi)" href="/openclaw/providers/moonshot/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>MiniMax</h2>
+    </header>
+    <div class="entry-content">
+      <p>MiniMax 是一家构建 M2/M2.1 模型系列的 AI 公司。当前面向编程的版本是 MiniMax M2.1（2025 年 12 月 23 日），专为现实世界的复杂任务而构建。
+来源：MiniMax M2.1 发布说明
+模型概述（M2.1） MiniMax 强调 M2.1 的以下改进：
+更强的多语言编程能力（Rust、Java、Go、C&#43;&#43;、Kotlin、Objective-C、TS/JS）。 更好的 Web/应用开发和美观输出质量（包括原生移动端）。 改进的复合指令处理，适用于办公风格的工作流程，基于交错思考和集成约束执行。 更简洁的响应，更低的 token 使用量和更快的迭代循环。 更强的工具/智能体框架兼容性和上下文管理（Claude Code、Droid/Factory AI、Cline、Kilo Code、Roo Code、BlackBox）。 更高质量的对话和技术写作输出。 MiniMax M2.1 vs MiniMax M2.1 Lightning 速度： Lightning 是 MiniMax 定价文档中的&#34;快速&#34;变体。 成本： 定价显示相同的输入成本，但 Lightning 的输出成本更高。 编程计划路由： Lightning 后端在 MiniMax 编程计划中不能直接使用。MiniMax 自动将大多数请求路由到 Lightning，但在流量高峰期会回退到常规 M2.1 后端。 选择设置方式 MiniMax OAuth（编程计划）— 推荐 适用于： 通过 OAuth 快速设置 MiniMax 编程计划，无需 API 密钥。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to MiniMax" href="/openclaw/providers/minimax/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Microsoft Teams（插件）</h2>
+    </header>
+    <div class="entry-content">
+      <p> “进入此地者，放弃一切希望。”
+更新时间：2026-01-21
+状态：支持文本 &#43; 私信附件；频道/群组文件发送需要 sharePointSiteId &#43; Graph 权限（参见在群聊中发送文件）。投票通过 Adaptive Cards 发送。
+需要插件 Microsoft Teams 作为插件提供，不包含在核心安装中。
+破坏性变更（2026.1.15）： MS Teams 已从核心移出。如果你使用它，必须安装插件。
+原因说明：保持核心安装更轻量，并让 MS Teams 依赖项可以独立更新。
+通过 CLI 安装（npm 注册表）：
+openclaw plugins install @openclaw/msteams 本地检出（从 git 仓库运行时）：
+openclaw plugins install ./extensions/msteams 如果你在配置/新手引导过程中选择 Teams 并检测到 git 检出， OpenClaw 将自动提供本地安装路径。
+详情：插件
+快速设置（初学者） 安装 Microsoft Teams 插件。 创建一个 Azure Bot（App ID &#43; 客户端密钥 &#43; 租户 ID）。 使用这些凭证配置 OpenClaw。 通过公共 URL 或隧道暴露 /api/messages（默认端口 3978）。 安装 Teams 应用包并启动 Gateway 网关。 最小配置：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Microsoft Teams（插件）" href="/openclaw/channels/msteams/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Mattermost（插件）</h2>
+    </header>
+    <div class="entry-content">
+      <p>状态：通过插件支持（bot token &#43; WebSocket 事件）。支持频道、群组和私信。 Mattermost 是一个可自托管的团队消息平台；有关产品详情和下载，请访问官方网站 mattermost.com。
+需要插件 Mattermost 以插件形式提供，不包含在核心安装中。
+通过 CLI 安装（npm 注册表）：
+openclaw plugins install @openclaw/mattermost 本地检出（从 git 仓库运行时）：
+openclaw plugins install ./extensions/mattermost 如果你在配置/新手引导期间选择 Mattermost 并检测到 git 检出，OpenClaw 会自动提供本地安装路径。
+详情：插件
+快速设置 安装 Mattermost 插件。 创建 Mattermost bot 账户并复制 bot token。 复制 Mattermost 基础 URL（例如 https://chat.example.com）。 配置 OpenClaw 并启动 Gateway 网关。 最小配置：
+{ channels: { mattermost: { enabled: true, botToken: &#34;mm-token&#34;, baseUrl: &#34;https://chat.example.com&#34;, dmPolicy: &#34;pairing&#34;, }, }, } 环境变量（默认账户） 如果你偏好使用环境变量，请在 Gateway 网关主机上设置：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Mattermost（插件）" href="/openclaw/channels/mattermost/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Matrix（插件）</h2>
+    </header>
+    <div class="entry-content">
+      <p>Matrix 是一个开放的去中心化消息协议。OpenClaw 以 Matrix 用户身份连接到任意主服务器，因此你需要为机器人创建一个 Matrix 账户。登录后，你可以直接私信机器人或邀请它加入房间（Matrix&#34;群组&#34;）。Beeper 也是一个有效的客户端选项，但它需要启用 E2EE。
+状态：通过插件（@vector-im/matrix-bot-sdk）支持。支持私信、房间、话题、媒体、表情回应、投票（发送 &#43; poll-start 作为文本）、位置和 E2EE（需要加密支持）。
+需要插件 Matrix 作为插件提供，不包含在核心安装中。
+通过 CLI 安装（npm 仓库）：
+openclaw plugins install @openclaw/matrix 本地检出（从 git 仓库运行时）：
+openclaw plugins install ./extensions/matrix 如果你在配置/新手引导期间选择 Matrix 并检测到 git 检出，OpenClaw 将自动提供本地安装路径。
+详情：插件
+设置 安装 Matrix 插件：
+从 npm：openclaw plugins install @openclaw/matrix 从本地检出：openclaw plugins install ./extensions/matrix 在主服务器上创建 Matrix 账户：
+在 https://matrix.org/ecosystem/hosting/ 浏览托管选项 或自行托管。 获取机器人账户的访问令牌：
+在你的主服务器上使用 curl 调用 Matrix 登录 API： curl --request POST \ --url https://matrix.example.org/_matrix/client/v3/login \ --header &#39;Content-Type: application/json&#39; \ --data &#39;{ &#34;type&#34;: &#34;m.login.password&#34;, &#34;identifier&#34;: { &#34;type&#34;: &#34;m.id.user&#34;, &#34;user&#34;: &#34;your-user-name&#34; }, &#34;password&#34;: &#34;your-password&#34; }&#39; 将 matrix.example.org 替换为你的主服务器 URL。 或设置 channels.matrix.userId &#43; channels.matrix.password：OpenClaw 会调用相同的登录端点，将访问令牌存储在 ~/.openclaw/credentials/matrix/credentials.json，并在下次启动时重用。 配置凭证：
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Matrix（插件）" href="/openclaw/channels/matrix/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>Markdown 格式化</h2>
+    </header>
+    <div class="entry-content">
+      <p>OpenClaw 通过将出站 Markdown 转换为共享的中间表示（IR），然后再渲染为特定渠道的输出来进行格式化。IR 保留源文本不变，同时携带样式/链接跨度信息，使分块和渲染在各渠道间保持一致。
+目标 **一致性：**一次解析，多个渲染器。 **安全分块：**在渲染前拆分文本，确保行内格式不会跨块断裂。 **渠道适配：**将同一 IR 映射到 Slack mrkdwn、Telegram HTML 和 Signal 样式范围，无需重新解析 Markdown。 管道 解析 Markdown -&gt; IR IR 是纯文本加上样式跨度（粗体/斜体/删除线/代码/剧透）和链接跨度。 偏移量使用 UTF-16 代码单元，以便 Signal 样式范围与其 API 对齐。 仅当渠道启用了表格转换时才会解析表格。 分块 IR（格式优先） 分块在渲染前对 IR 文本进行操作。 行内格式不会跨块拆分；跨度按块进行切片。 按渠道渲染 Slack： mrkdwn 标记（粗体/斜体/删除线/代码），链接格式为 &lt;url|label&gt;。 Telegram： HTML 标签（&lt;b&gt;、&lt;i&gt;、&lt;s&gt;、&lt;code&gt;、&lt;pre&gt;&lt;code&gt;、&lt;a href&gt;）。 Signal： 纯文本 &#43; text-style 范围；当标签与 URL 不同时，链接变为 label (url)。 IR 示例 输入 Markdown：
+Hello **world** — see [docs](https://docs.openclaw.ai). IR（示意）：
+{ &#34;text&#34;: &#34;Hello world — see docs.&#34;, &#34;styles&#34;: [{ &#34;start&#34;: 6, &#34;end&#34;: 11, &#34;style&#34;: &#34;bold&#34; }], &#34;links&#34;: [{ &#34;start&#34;: 19, &#34;end&#34;: 23, &#34;href&#34;: &#34;https://docs.openclaw.ai&#34; }] } 使用场景 Slack、Telegram 和 Signal 的出站适配器从 IR 进行渲染。 其他渠道（WhatsApp、iMessage、Microsoft Teams、Discord）仍使用纯文本或各自的格式化规则，启用时会在分块前应用 Markdown 表格转换。 表格处理 Markdown 表格在各聊天客户端中的支持并不一致。使用 markdown.tables 按渠道（和按账户）控制转换方式。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to Markdown 格式化" href="/openclaw/concepts/markdown-formatting/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>macOS 权限（TCC）</h2>
+    </header>
+    <div class="entry-content">
+      <p>macOS 权限授予是脆弱的。TCC 将权限授予与应用的代码签名、Bundle 标识符和磁盘路径关联。如果其中任何一项发生变化，macOS 会将该应用视为新应用，可能会丢弃或隐藏权限提示。
+稳定权限的要求 相同路径：从固定位置运行应用（对于 OpenClaw，为 dist/OpenClaw.app）。 相同 Bundle 标识符：更改 Bundle ID 会创建新的权限身份。 已签名的应用：未签名或临时签名的构建不会持久化权限。 一致的签名：使用真实的 Apple Development 或 Developer ID 证书，以确保签名在多次构建之间保持稳定。 临时签名每次构建都会生成新的身份。macOS 会忘记之前的授权，提示可能完全消失，直到清除过期条目为止。
+权限提示消失时的恢复清单 退出应用。 在系统设置 -&gt; 隐私与安全性中移除该应用条目。 从相同路径重新启动应用并重新授予权限。 如果提示仍未出现，使用 tccutil 重置 TCC 条目后重试。 某些权限仅在完全重启 macOS 后才会重新出现。 重置示例（根据需要替换 Bundle ID）：
+sudo tccutil reset Accessibility bot.molt.mac sudo tccutil reset ScreenCapture bot.molt.mac sudo tccutil reset AppleEvents 如果你正在测试权限，请始终使用真实证书签名。临时签名的构建仅适用于不需要权限的快速本地运行。
+</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to macOS 权限（TCC）" href="/openclaw/platforms/mac/permissions/"></a>
+  </article>
+  <article class="post-entry">
+    <header class="entry-header">
+      <h2>macOS 开发者设置</h2>
+    </header>
+    <div class="entry-content">
+      <p>本指南涵盖从源代码构建和运行 OpenClaw macOS 应用程序的必要步骤。
+前置条件 在构建应用之前，确保你已安装以下内容：
+Xcode 26.2&#43;：Swift 开发所需。 Node.js 22&#43; &amp; pnpm：Gateway 网关、CLI 和打包脚本所需。 1. 安装依赖 安装项目范围的依赖：
+pnpm install 2. 构建和打包应用 要构建 macOS 应用并将其打包到 dist/OpenClaw.app，运行：
+./scripts/package-mac-app.sh 如果你没有 Apple Developer ID 证书，脚本将自动使用 ad-hoc 签名（-）。
+有关开发运行模式、签名标志和 Team ID 故障排除，请参阅 macOS 应用 README： https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md
+注意：Ad-hoc 签名的应用可能会触发安全提示。如果应用立即崩溃并显示&#34;Abort trap 6&#34;，请参阅故障排除部分。
+3. 安装 CLI macOS 应用期望全局安装 openclaw CLI 来管理后台任务。
+安装方法（推荐）：
+打开 OpenClaw 应用。 转到 General 设置标签页。 点击 “Install CLI”。 或者，手动安装：
+npm install -g openclaw@&lt;version&gt; 故障排除 构建失败：工具链或 SDK 不匹配 macOS 应用构建期望最新的 macOS SDK 和 Swift 6.2 工具链。
+...</p>
+    </div>
+    <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+    <a class="entry-link" aria-label="post link to macOS 开发者设置" href="/openclaw/platforms/mac/dev-setup/"></a>
+  </article>
+  <footer class="page-footer">
+    <nav class="pagination">
+      <a class="prev" href="/page/19/">
+        «&nbsp;Prev
+      </a>
+      <a class="next" href="/page/21/">
+        Next&nbsp;»
+      </a>
+    </nav>
+  </footer>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>© 2024-2026 CLAW博客 · 粤ICP备2023073211号</span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
