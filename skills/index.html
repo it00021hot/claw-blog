@@ -172,6 +172,66 @@ ins.adsbygoogle {
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Github Skill - GitHub 操作工具
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>功能介绍 基于 gh CLI 封装的 OpenClaw Skill，支持所有 GitHub 操作：
+Issues 管理（创建、评论、分配、标签） PR 管理（查看、合并、审查、CI 状态查询） CI/CD 运行日志查看 高级 API 调用 安装方式 npx clawhub@latest install github 使用场景 项目维护：自动处理 issue 和 PR CI 监控：实时查询构建状态 代码审查：批量处理 PR 评论 仓库管理：批量创建/迁移仓库 使用教程 前置依赖 使用前需要先安装 GitHub CLI：
+# MacOS brew install gh # Ubuntu/Debian sudo apt install gh # 验证安装 gh --version 安装后需要登录授权：
+gh auth login 常用示例 PR 相关操作 查看 PR CI 状态： gh pr checks 55 --repo owner/repo 列出最近 10 次工作流运行记录： gh run list --repo owner/repo --limit 10 查看运行详情和失败步骤： gh run view &lt;run-id&gt; --repo owner/repo 只查看失败步骤的日志： gh run view &lt;run-id&gt; --repo owner/repo --log-failed 高级 API 查询 获取指定 PR 的详细信息： gh api repos/owner/repo/pulls/55 --jq &#39;.title, .state, .user.login&#39; 列出所有 Issue 并格式化输出： gh issue list --repo owner/repo --json number,title --jq &#39;.[] | &#34;\(.number): \(.title)&#34;&#39; 评分 ⭐ 286 · 下载量 85.8k 作者：@steipete
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 14:20:00 +0800 +0800'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Github Skill - GitHub 操作工具" href="/skills/github-skill/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Self-Improving Agent Skill - 自进化代理
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>功能介绍 自动捕获操作错误、用户纠正和使用反馈，实现代理能力的持续进化：
+错误自动学习，避免重复踩坑 用户偏好自动记录，适配使用习惯 操作日志自动总结，提炼最佳实践 支持 WAL 协议和自主 Cron 调度 安装方式 方式1：安装到当前工作区（默认） npx clawhub@latest install self-improving-agent 安装路径：`~/.openclaw/workspace/skills/self-improving-agent
+方式2：全局安装（所有工作区可用 npx clawhub@latest install self-improving-agent --global 安装路径：`~/.openclaw/skills/self-improving-agent
+使用场景 日常操作自动化优化 错误处理流程自动迭代 用户交互体验持续提升 代理能力自主进化 使用教程 前置准备 安装完成后，先创建学习日志目录： mkdir -p ~/.openclaw/workspace/.learnings 在目录下创建三个日志文件： # 学习记录 touch ~/.openclaw/workspace/.learnings/LEARNINGS.md # 错误记录 touch ~/.openclaw/workspace/.learnings/ERRORS.md # 功能需求记录 touch ~/.openclaw/workspace/.learnings/FEATURE_REQUESTS.md 核心工作流程 场景 操作 命令/操作失败 记录到 .learnings/ERRORS.md 用户纠正了你的错误 记录到 .learnings/LEARNINGS.md，分类为 correction 用户提出新功能需求 记录到 .learnings/FEATURE_REQUESTS.md 外部 API/工具调用失败 记录到 .learnings/ERRORS.md，附带集成详情 发现知识过时 记录到 .learnings/LEARNINGS.md，分类为 knowledge_gap 找到更好的实现方案 记录到 .learnings/LEARNINGS.md，分类为 best_practice 日志格式示例 学习记录 (LEARNINGS.md) ## [LRN-20260310-001] correction **Logged**: 2026-03-10T14:30:00&#43;08:00 **Priority**: medium **Status**: pending **Area**: workflow ### Summary 用户纠正了安装命令的拼写错误，正确命令是 `npx clawhub` 不是 `npx clawdhub`。 ### Details 之前的文档里误写了 clawhub 的命令为 clawdhub，导致用户安装失败。正确的命令前缀是 clawhub。 ### Suggested Action 修改所有文档里的错误拼写，后续使用时注意命令正确性。 ### Metadata - Source: user_feedback - Related Files: content/skills/*.md - Tags: cli, documentation 错误记录 (ERRORS.md) ## [ERR-20260310-001] github_cli **Logged**: 2026-03-10T14:35:00&#43;08:00 **Priority**: high **Status**: pending **Area**: tools ### Summary 调用 gh pr checks 命令失败，提示未授权。 ### Error gh: authentication failed
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 14:20:00 +0800 +0800'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Self-Improving Agent Skill - 自进化代理" href="/skills/self-improving-agent-skill/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Summarize Skill - 多格式内容摘要工具
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>功能介绍 支持多格式内容的自动摘要生成：
+网页内容摘要 PDF/Word 文档摘要 图片 OCR &#43; 摘要 音频/视频转写 &#43; 摘要 YouTube 视频自动总结 安装方式 npx clawhub@latest install summarize 使用场景 技术文档快速阅读 会议记录自动总结 长视频/音频内容提炼 文献综述自动生成 使用教程 前置准备 首先安装 summarize CLI： # MacOS (推荐) brew install steipete/tap/summarize # 跨平台 npm 安装 npm install -g @steipete/summarize 配置 LLM API Key（选择其中一个即可）： # Google Gemini (默认模型，免费额度高) export GEMINI_API_KEY=&#34;你的Gemini API Key&#34; # OpenAI export OPENAI_API_KEY=&#34;你的OpenAI API Key&#34; # Anthropic Claude export ANTHROPIC_API_KEY=&#34;你的Claude API Key&#34; # 永久生效（添加到 ~/.zshrc） echo &#39;export GEMINI_API_KEY=&#34;你的API Key&#34;&#39; &gt;&gt; ~/.zshrc source ~/.zshrc 基础使用 网页摘要 # 默认使用 Gemini 模型，中等长度摘要 summarize &#34;https://docs.openclaw.ai/guide/skills&#34; 本地文件摘要（PDF/Word/图片/音频） # 生成 PDF 文档摘要 summarize &#34;/path/to/技术方案.pdf&#34; # 生成图片 OCR &#43; 摘要 summarize &#34;/path/to/架构图.png&#34; # 生成音频转写 &#43; 摘要 summarize &#34;/path/to/会议录音.mp3&#34; YouTube 视频摘要 # 自动获取字幕并生成摘要 summarize &#34;https://youtu.be/dQw4w9WgXcQ&#34; --youtube auto 高级参数 指定摘要长度 # 短摘要（适合快速预览） summarize &#34;https://example.com/article&#34; --length short # 长摘要（适合深度阅读） summarize &#34;https://example.com/long-article&#34; --length long # 自定义长度（最多 10000 字符） summarize &#34;https://example.com/report&#34; --length 5000 指定模型 # 使用 GPT-4o summarize &#34;/path/to/论文.pdf&#34; --model openai/gpt-4o # 使用 Claude 3 Opus summarize &#34;/path/to/法律文档.pdf&#34; --model anthropic/claude-3-opus 特殊功能 # 只提取网页正文，不生成摘要 summarize &#34;https://example.com&#34; --extract-only # 输出 JSON 格式（便于程序处理） summarize &#34;https://example.com&#34; --json # 开启 Firecrawl fallback（解决反爬网站无法提取的问题） summarize &#34;https://blocked-site.com/article&#34; --firecrawl auto 配置文件（可选） 创建 ~/.summarize/config.json 配置默认参数：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 14:20:00 +0800 +0800'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Summarize Skill - 多格式内容摘要工具" href="/skills/summarize-skill/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Tavily Web Search Skill - AI 优化搜索引擎
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>功能介绍 专为 AI 代理优化的网页搜索工具，返回高度相关、简洁的搜索结果：
+实时网页信息抓取 结果自动去重、摘要提取 支持多语言搜索 适配 Agent 上下文格式 安装方式 npx clawhub@latest install tavily-search 使用场景 开发问题解决方案搜索 最新技术文档检索 开源项目信息查询 实时资讯获取 使用教程 前置准备 首先去 Tavily 官网 注册账号，获取 API Key 将 API Key 添加到环境变量： # 临时生效 export TAVILY_API_KEY=&#34;你的API Key&#34; # 永久生效（添加到 ~/.zshrc 或 ~/.bashrc） echo &#39;export TAVILY_API_KEY=&#34;你的API Key&#34;&#39; &gt;&gt; ~/.zshrc source ~/.zshrc 基础使用 普通搜索 # 默认返回 5 条结果 node ~/.openclaw/skills/tavily-search/scripts/search.mjs &#34;OpenClaw 多代理使用教程&#34; 指定结果数量 # 返回 10 条结果 node ~/.openclaw/skills/tavily-search/scripts/search.mjs &#34;Rust 异步编程最佳实践&#34; -n 10 深度搜索（更全面，速度稍慢） node ~/.openclaw/skills/tavily-search/scripts/search.mjs &#34;2026 年 AI 创业趋势&#34; --deep 新闻搜索（实时资讯） # 搜索最近 7 天的新闻 node ~/.openclaw/skills/tavily-search/scripts/search.mjs &#34;OpenClaw 最新版本发布&#34; --topic news --days 7 网页内容提取 直接提取指定 URL 的正文内容：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-10 14:20:00 +0800 +0800'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
+  <a class="entry-link" aria-label="post link to Tavily Web Search Skill - AI 优化搜索引擎" href="/skills/tavily-search-skill/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">OpenClaw Skills 是什么？怎么用？
     </h2>
   </header>
