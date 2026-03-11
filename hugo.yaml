@@ -1,4 +1,4 @@
-baseURL: "/"
+baseURL: "https://gen-code.top/"
 languageCode: "zh-cn"
 title: "CLAW博客"
 theme: ["PaperMod"]
