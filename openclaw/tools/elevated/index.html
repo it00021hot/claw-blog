@@ -57,16 +57,16 @@ Elevated exec 调用以 info 级别记录。
 会话状态包括 elevated 模式（例如 elevated=ask、elevated=full）。
 ">
 <meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
-<link rel="canonical" href="/openclaw/tools/elevated/">
+<link rel="canonical" href="https://gen-code.top/openclaw/tools/elevated/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<link rel="icon" href="https://gen-code.top/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://gen-code.top/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://gen-code.top/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://gen-code.top/apple-touch-icon.png">
+<link rel="mask-icon" href="https://gen-code.top/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="/openclaw/tools/elevated/">
+<link rel="alternate" hreflang="en" href="https://gen-code.top/openclaw/tools/elevated/">
 <noscript>
     <style>
         #theme-toggle,
@@ -130,7 +130,7 @@ ins.adsbygoogle {
 </style>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
-<meta property="og:url" content="/openclaw/tools/elevated/">
+<meta property="og:url" content="https://gen-code.top/openclaw/tools/elevated/">
   <meta property="og:site_name" content="CLAW博客">
   <meta property="og:title" content="提升模式（/elevated 指令）">
   <meta property="og:description" content="功能说明 /elevated on 在 Gateway 网关主机上运行并保留 exec 审批（与 /elevated ask 相同）。 /elevated full 在 Gateway 网关主机上运行并自动批准 exec（跳过 exec 审批）。 /elevated ask 在 Gateway 网关主机上运行但保留 exec 审批（与 /elevated on 相同）。 on/ask 不会强制 exec.security=full；配置的安全/询问策略仍然适用。 仅在智能体被沙箱隔离时改变行为（否则 exec 已经在主机上运行）。 指令形式：/elevated on|off|ask|full、/elev on|off|ask|full。 仅接受 on|off|ask|full；其他任何内容返回提示且不改变状态。 它控制什么（以及不控制什么） 可用性门控：tools.elevated 是全局基线。agents.list[].tools.elevated 可以进一步限制每个智能体的提升（两者都必须允许）。 每会话状态：/elevated on|off|ask|full 为当前会话键设置提升级别。 内联指令：消息内的 /elevated on|ask|full 仅适用于该消息。 群组：在群聊中，仅当智能体被提及时才遵守提升指令。绕过提及要求的纯命令消息被视为已提及。 主机执行：elevated 强制 exec 到 Gateway 网关主机；full 还设置 security=full。 审批：full 跳过 exec 审批；on/ask 在允许列表/询问规则要求时遵守审批。 非沙箱隔离智能体：对位置无影响；仅影响门控、日志和状态。 工具策略仍然适用：如果 exec 被工具策略拒绝，则无法使用 elevated。 与 /exec 分开：/exec 为授权发送者调整每会话默认值，不需要 elevated。 解析顺序 消息上的内联指令（仅适用于该消息）。 会话覆盖（通过发送仅含指令的消息设置）。 全局默认值（配置中的 agents.defaults.elevatedDefault）。 设置会话默认值 发送一条仅包含指令的消息（允许空白），例如 /elevated full。 发送确认回复（Elevated mode set to full... / Elevated mode disabled.）。 如果 elevated 访问被禁用或发送者不在批准的允许列表中，指令会回复一个可操作的错误且不改变会话状态。 发送不带参数的 /elevated（或 /elevated:）以查看当前的 elevated 级别。 可用性 &#43; 允许列表 功能门控：tools.elevated.enabled（即使代码支持，也可以通过配置将默认值设为关闭）。 发送者允许列表：tools.elevated.allowFrom，带有每提供商允许列表（例如 discord、whatsapp）。 每智能体门控：agents.list[].tools.elevated.enabled（可选；只能进一步限制）。 每智能体允许列表：agents.list[].tools.elevated.allowFrom（可选；设置时，发送者必须同时匹配全局 &#43; 每智能体允许列表）。 Discord 回退：如果省略 tools.elevated.allowFrom.discord，则使用 channels.discord.dm.allowFrom 列表作为回退。设置 tools.elevated.allowFrom.discord（即使是 []）以覆盖。每智能体允许列表不使用回退。 所有门控都必须通过；否则 elevated 被视为不可用。 日志 &#43; 状态 Elevated exec 调用以 info 级别记录。 会话状态包括 elevated 模式（例如 elevated=ask、elevated=full）。 ">
@@ -200,8 +200,20 @@ Elevated exec 调用以 info 级别记录。
     {
       "@type": "ListItem",
       "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "https://gen-code.top/openclaw/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Tools",
+      "item": "https://gen-code.top/openclaw/tools/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
       "name": "提升模式（/elevated 指令）",
-      "item": "/openclaw/tools/elevated/"
+      "item": "https://gen-code.top/openclaw/tools/elevated/"
     }
   ]
 }
@@ -227,14 +239,14 @@ Elevated exec 调用以 info 级别记录。
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "/openclaw/tools/elevated/"
+    "@id": "https://gen-code.top/openclaw/tools/elevated/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "CLAW博客",
     "logo": {
       "@type": "ImageObject",
-      "url": "/favicon.ico"
+      "url": "https://gen-code.top/favicon.ico"
     }
   }
 }
@@ -244,7 +256,7 @@ Elevated exec 调用以 info 级别记录。
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <a href="https://gen-code.top/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -270,22 +282,22 @@ Elevated exec 调用以 info 级别记录。
         </div>
         <ul id="menu">
             <li>
-                <a href="/" title="首页">
+                <a href="https://gen-code.top/" title="首页">
                     <span>首页</span>
                 </a>
             </li>
             <li>
-                <a href="/openclaw/" title="OpenClaw">
+                <a href="https://gen-code.top/openclaw/" title="OpenClaw">
                     <span>OpenClaw</span>
                 </a>
             </li>
             <li>
-                <a href="/skills/" title="Skills">
+                <a href="https://gen-code.top/skills/" title="Skills">
                     <span>Skills</span>
                 </a>
             </li>
             <li>
-                <a href="/tech/" title="随笔小记">
+                <a href="https://gen-code.top/tech/" title="随笔小记">
                     <span>随笔小记</span>
                 </a>
             </li>
@@ -296,7 +308,7 @@ Elevated exec 调用以 info 级别记录。
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <div class="breadcrumbs"><a href="https://gen-code.top/">Home</a>&nbsp;»&nbsp;<a href="https://gen-code.top/openclaw/">OpenClaw 🦞</a>&nbsp;»&nbsp;<a href="https://gen-code.top/openclaw/tools/">Tools</a></div>
     <h1 class="post-title entry-hint-parent">
       提升模式（/elevated 指令）
     </h1>
@@ -385,12 +397,12 @@ Elevated exec 调用以 info 级别记录。
     <ul class="post-tags">
     </ul>
 <nav class="paginav">
-  <a class="prev" href="/openclaw/web/control-ui/">
+  <a class="prev" href="https://gen-code.top/openclaw/web/control-ui/">
     <span class="title">« Prev</span>
     <br>
     <span>控制 UI（浏览器）</span>
   </a>
-  <a class="next" href="/openclaw/refactor/plugin-sdk/">
+  <a class="next" href="https://gen-code.top/openclaw/refactor/plugin-sdk/">
     <span class="title">Next »</span>
     <br>
     <span>插件 SDK &#43; 运行时重构计划</span>

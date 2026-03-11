@@ -96,16 +96,16 @@ main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持
 所有会话空闲后健康行重新出现。
 ">
 <meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
-<link rel="canonical" href="/openclaw/platforms/mac/menu-bar/">
+<link rel="canonical" href="https://gen-code.top/openclaw/platforms/mac/menu-bar/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<link rel="icon" href="https://gen-code.top/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://gen-code.top/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://gen-code.top/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://gen-code.top/apple-touch-icon.png">
+<link rel="mask-icon" href="https://gen-code.top/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="/openclaw/platforms/mac/menu-bar/">
+<link rel="alternate" hreflang="en" href="https://gen-code.top/openclaw/platforms/mac/menu-bar/">
 <noscript>
     <style>
         #theme-toggle,
@@ -169,7 +169,7 @@ ins.adsbygoogle {
 </style>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
-<meta property="og:url" content="/openclaw/platforms/mac/menu-bar/">
+<meta property="og:url" content="https://gen-code.top/openclaw/platforms/mac/menu-bar/">
   <meta property="og:site_name" content="CLAW博客">
   <meta property="og:title" content="菜单栏状态逻辑">
   <meta property="og:description" content="显示内容 我们在菜单栏图标和菜单的第一行状态行中展示当前智能体的工作状态。 工作活跃时隐藏健康状态；当所有会话空闲时恢复显示。 菜单中的&#34;节点&#34;区块仅列出设备（通过 node.list 配对的节点），不包括客户端/在线状态条目。 当提供商用量快照可用时，“用量&#34;部分会显示在上下文下方。 状态模型 会话：事件携带 runId（每次运行）以及载荷中的 sessionKey。“main” 会话的键为 main；如果不存在，则回退到最近更新的会话。 优先级：main 始终优先。如果 main 处于活跃状态，立即显示其状态。如果 main 空闲，则显示最近活跃的非 main 会话。活动进行中不会来回切换；仅在当前会话进入空闲或 main 变为活跃时才切换。 活动类型： job：高层命令执行（state: started|streaming|done|error）。 tool：phase: start|result，包含 toolName 和 meta/args。 IconState 枚举（Swift） idle workingMain(ActivityKind) workingOther(ActivityKind) overridden(ActivityKind)（调试覆盖） ActivityKind → 图标符号 exec → 💻 read → 📄 write → ✍️ edit → 📝 attach → 📎 默认 → 🛠️ 视觉映射 idle：正常小动物图标。 workingMain：带图标符号的徽章，完整色调，腿部&#34;工作&#34;动画。 workingOther：带图标符号的徽章，柔和色调，无快跑动画。 overridden：无论活动状态如何，使用所选的图标符号/色调。 状态行文本（菜单） 工作活跃时：&lt;会话角色&gt; · &lt;活动标签&gt; 示例：Main · exec: pnpm test、Other · read: apps/macos/Sources/OpenClaw/AppState.swift。 空闲时：回退显示健康摘要。 事件接收 来源：控制渠道 agent 事件（ControlChannel.handleAgentEvent）。 解析字段： stream: &#34;job&#34;，包含 data.state 用于启动/停止。 stream: &#34;tool&#34;，包含 data.phase、name，可选 meta/args。 标签： exec：args.command 的第一行。 read/write：缩短的路径。 edit：路径加上从 meta/diff 计数推断的变更类型。 回退：工具名称。 调试覆盖 设置 ▸ 调试 ▸ “图标覆盖” 选择器： 系统（自动）（默认） 工作中：main（按工具类型） 工作中：other（按工具类型） 空闲 通过 @AppStorage(&#34;iconOverride&#34;) 存储；映射到 IconState.overridden。 测试清单 触发 main 会话任务：验证图标立即切换且状态行显示 main 标签。 main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持稳定直到完成。 在 other 活跃时启动 main：图标立即切换到 main。 快速连续工具调用：确保徽章不会闪烁（工具结果的 TTL 宽限期）。 所有会话空闲后健康行重新出现。 ">
@@ -278,8 +278,20 @@ main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持
     {
       "@type": "ListItem",
       "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "https://gen-code.top/openclaw/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Platforms",
+      "item": "https://gen-code.top/openclaw/platforms/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
       "name": "菜单栏状态逻辑",
-      "item": "/openclaw/platforms/mac/menu-bar/"
+      "item": "https://gen-code.top/openclaw/platforms/mac/menu-bar/"
     }
   ]
 }
@@ -305,14 +317,14 @@ main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "/openclaw/platforms/mac/menu-bar/"
+    "@id": "https://gen-code.top/openclaw/platforms/mac/menu-bar/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "CLAW博客",
     "logo": {
       "@type": "ImageObject",
-      "url": "/favicon.ico"
+      "url": "https://gen-code.top/favicon.ico"
     }
   }
 }
@@ -322,7 +334,7 @@ main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <a href="https://gen-code.top/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -348,22 +360,22 @@ main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持
         </div>
         <ul id="menu">
             <li>
-                <a href="/" title="首页">
+                <a href="https://gen-code.top/" title="首页">
                     <span>首页</span>
                 </a>
             </li>
             <li>
-                <a href="/openclaw/" title="OpenClaw">
+                <a href="https://gen-code.top/openclaw/" title="OpenClaw">
                     <span>OpenClaw</span>
                 </a>
             </li>
             <li>
-                <a href="/skills/" title="Skills">
+                <a href="https://gen-code.top/skills/" title="Skills">
                     <span>Skills</span>
                 </a>
             </li>
             <li>
-                <a href="/tech/" title="随笔小记">
+                <a href="https://gen-code.top/tech/" title="随笔小记">
                     <span>随笔小记</span>
                 </a>
             </li>
@@ -374,7 +386,7 @@ main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <div class="breadcrumbs"><a href="https://gen-code.top/">Home</a>&nbsp;»&nbsp;<a href="https://gen-code.top/openclaw/">OpenClaw 🦞</a>&nbsp;»&nbsp;<a href="https://gen-code.top/openclaw/platforms/">Platforms</a></div>
     <h1 class="post-title entry-hint-parent">
       菜单栏状态逻辑
     </h1>
@@ -510,12 +522,12 @@ main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持
     <ul class="post-tags">
     </ul>
 <nav class="paginav">
-  <a class="prev" href="/openclaw/platforms/mac/icon/">
+  <a class="prev" href="https://gen-code.top/openclaw/platforms/mac/icon/">
     <span class="title">« Prev</span>
     <br>
     <span>菜单栏图标状态</span>
   </a>
-  <a class="next" href="/openclaw/tools/reactions/">
+  <a class="next" href="https://gen-code.top/openclaw/tools/reactions/">
     <span class="title">Next »</span>
     <br>
     <span>表情回应工具</span>

@@ -9,16 +9,16 @@
 <meta name="keywords" content="">
 <meta name="description" content="Platforms - CLAW博客">
 <meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
-<link rel="canonical" href="/openclaw/platforms/">
+<link rel="canonical" href="https://gen-code.top/openclaw/platforms/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<link rel="icon" href="https://gen-code.top/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://gen-code.top/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://gen-code.top/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://gen-code.top/apple-touch-icon.png">
+<link rel="mask-icon" href="https://gen-code.top/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="/openclaw/platforms/">
+<link rel="alternate" hreflang="en" href="https://gen-code.top/openclaw/platforms/">
 <noscript>
     <style>
         #theme-toggle,
@@ -82,7 +82,7 @@ ins.adsbygoogle {
 </style>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
-<meta property="og:url" content="/openclaw/platforms/">
+<meta property="og:url" content="https://gen-code.top/openclaw/platforms/">
   <meta property="og:site_name" content="CLAW博客">
   <meta property="og:title" content="Platforms">
   <meta property="og:description" content="一个简洁、高性能的个人技术博客">
@@ -102,13 +102,13 @@ ins.adsbygoogle {
       "@type": "ListItem",
       "position":  1 ,
       "name": "OpenClaw 🦞",
-      "item": "/openclaw/"
-    }
+      "item": "https://gen-code.top/openclaw/"
+    }, 
     {
       "@type": "ListItem",
-      "position":  1 ,
+      "position":  2 ,
       "name": "Platforms",
-      "item": "/openclaw/platforms/"
+      "item": "https://gen-code.top/openclaw/platforms/"
     }
   ]
 }
@@ -118,7 +118,7 @@ ins.adsbygoogle {
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <a href="https://gen-code.top/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -144,22 +144,22 @@ ins.adsbygoogle {
         </div>
         <ul id="menu">
             <li>
-                <a href="/" title="首页">
+                <a href="https://gen-code.top/" title="首页">
                     <span>首页</span>
                 </a>
             </li>
             <li>
-                <a href="/openclaw/" title="OpenClaw">
+                <a href="https://gen-code.top/openclaw/" title="OpenClaw">
                     <span>OpenClaw</span>
                 </a>
             </li>
             <li>
-                <a href="/skills/" title="Skills">
+                <a href="https://gen-code.top/skills/" title="Skills">
                     <span>Skills</span>
                 </a>
             </li>
             <li>
-                <a href="/tech/" title="随笔小记">
+                <a href="https://gen-code.top/tech/" title="随笔小记">
                     <span>随笔小记</span>
                 </a>
             </li>
@@ -167,7 +167,7 @@ ins.adsbygoogle {
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="/">Home</a>&nbsp;»&nbsp;<a href="/openclaw/">OpenClaw 🦞</a></div>
+<header class="page-header"><div class="breadcrumbs"><a href="https://gen-code.top/">Home</a>&nbsp;»&nbsp;<a href="https://gen-code.top/openclaw/">OpenClaw 🦞</a></div>
   <h1>
     Platforms
   </h1>
@@ -185,7 +185,7 @@ ins.adsbygoogle {
 为 OpenClaw 启用（bot.molt） 先将 plist 写入临时文件，然后以 root 身份原子性地安装： cat &lt;&lt;&#39;EOF&#39; &gt;/tmp/bot.molt.plist &lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt; &lt;!DOCTYPE plist PUBLIC &#34;-//Apple//DTD PLIST 1.0//EN&#34; &#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;&gt; &lt;plist version=&#34;1.0&#34;&gt; &lt;dict&gt; &lt;key&gt;DEFAULT-OPTIONS&lt;/key&gt; &lt;dict&gt; &lt;key&gt;Enable-Private-Data&lt;/key&gt; &lt;true/&gt; &lt;/dict&gt; &lt;/dict&gt; &lt;/plist&gt; EOF sudo install -m 644 -o root -g wheel /tmp/bot.molt.plist /Library/Preferences/Logging/Subsystems/bot.molt.plist 无需重启；logd 会很快检测到该文件，但只有新的日志行才会包含隐私负载。 使用现有的辅助脚本查看更丰富的输出，例如 ./scripts/clawlog.sh --category WebChat --last 5m。 调试后禁用 移除覆盖配置：sudo rm /Library/Preferences/Logging/Subsystems/bot.molt.plist。 可选择运行 sudo log config --reload 强制 logd 立即丢弃覆盖配置。 请注意此数据可能包含电话号码和消息正文；仅在确实需要额外详细信息时才保留该 plist 文件。 </p>
   </div>
   <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
-  <a class="entry-link" aria-label="post link to 日志（macOS）" href="/openclaw/platforms/mac/logging/"></a>
+  <a class="entry-link" aria-label="post link to 日志（macOS）" href="https://gen-code.top/openclaw/platforms/mac/logging/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -201,7 +201,7 @@ ins.adsbygoogle {
 耳朵/工作状态没有外部 CLI/代理切换；保持仅由应用自身信号控制，以避免意外的状态抖动。 保持 TTL 较短（&lt;10 秒），以便在任务挂起时图标能快速恢复到基准状态。 </p>
   </div>
   <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
-  <a class="entry-link" aria-label="post link to 菜单栏图标状态" href="/openclaw/platforms/mac/icon/"></a>
+  <a class="entry-link" aria-label="post link to 菜单栏图标状态" href="https://gen-code.top/openclaw/platforms/mac/icon/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -213,7 +213,7 @@ ins.adsbygoogle {
     <p>显示内容 我们在菜单栏图标和菜单的第一行状态行中展示当前智能体的工作状态。 工作活跃时隐藏健康状态；当所有会话空闲时恢复显示。 菜单中的&#34;节点&#34;区块仅列出设备（通过 node.list 配对的节点），不包括客户端/在线状态条目。 当提供商用量快照可用时，“用量&#34;部分会显示在上下文下方。 状态模型 会话：事件携带 runId（每次运行）以及载荷中的 sessionKey。“main” 会话的键为 main；如果不存在，则回退到最近更新的会话。 优先级：main 始终优先。如果 main 处于活跃状态，立即显示其状态。如果 main 空闲，则显示最近活跃的非 main 会话。活动进行中不会来回切换；仅在当前会话进入空闲或 main 变为活跃时才切换。 活动类型： job：高层命令执行（state: started|streaming|done|error）。 tool：phase: start|result，包含 toolName 和 meta/args。 IconState 枚举（Swift） idle workingMain(ActivityKind) workingOther(ActivityKind) overridden(ActivityKind)（调试覆盖） ActivityKind → 图标符号 exec → 💻 read → 📄 write → ✍️ edit → 📝 attach → 📎 默认 → 🛠️ 视觉映射 idle：正常小动物图标。 workingMain：带图标符号的徽章，完整色调，腿部&#34;工作&#34;动画。 workingOther：带图标符号的徽章，柔和色调，无快跑动画。 overridden：无论活动状态如何，使用所选的图标符号/色调。 状态行文本（菜单） 工作活跃时：&lt;会话角色&gt; · &lt;活动标签&gt; 示例：Main · exec: pnpm test、Other · read: apps/macos/Sources/OpenClaw/AppState.swift。 空闲时：回退显示健康摘要。 事件接收 来源：控制渠道 agent 事件（ControlChannel.handleAgentEvent）。 解析字段： stream: &#34;job&#34;，包含 data.state 用于启动/停止。 stream: &#34;tool&#34;，包含 data.phase、name，可选 meta/args。 标签： exec：args.command 的第一行。 read/write：缩短的路径。 edit：路径加上从 meta/diff 计数推断的变更类型。 回退：工具名称。 调试覆盖 设置 ▸ 调试 ▸ “图标覆盖” 选择器： 系统（自动）（默认） 工作中：main（按工具类型） 工作中：other（按工具类型） 空闲 通过 @AppStorage(&#34;iconOverride&#34;) 存储；映射到 IconState.overridden。 测试清单 触发 main 会话任务：验证图标立即切换且状态行显示 main 标签。 main 空闲时触发非 main 会话任务：图标/状态显示非 main；保持稳定直到完成。 在 other 活跃时启动 main：图标立即切换到 main。 快速连续工具调用：确保徽章不会闪烁（工具结果的 TTL 宽限期）。 所有会话空闲后健康行重新出现。 </p>
   </div>
   <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
-  <a class="entry-link" aria-label="post link to 菜单栏状态逻辑" href="/openclaw/platforms/mac/menu-bar/"></a>
+  <a class="entry-link" aria-label="post link to 菜单栏状态逻辑" href="https://gen-code.top/openclaw/platforms/mac/menu-bar/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -227,7 +227,7 @@ ins.adsbygoogle {
 唤醒运行时重启不再被悬浮窗可见性阻止。 悬浮窗关闭完成时通过 VoiceSessionCoordinator 触发 VoiceWakeRuntime.refresh(...)，因此手动点击 X 关闭总是会恢复监听。 按键通话细节 热键检测使用全局 .flagsChanged 监视器检测右 Option 键（keyCode 61 &#43; .option）。我们只观察事件（不拦截）。 捕获管道位于 VoicePushToTalk 中：立即启动语音识别，将部分结果流式传输到悬浮窗，并在松开时调用 VoiceWakeForwarder。 按键通话开始时，我们暂停唤醒词运行时以避免音频采集冲突；松开后自动重启。 权限：需要麦克风 &#43; 语音识别权限；查看事件需要辅助功能/输入监控批准。 外接键盘：某些键盘可能无法按预期暴露右 Option 键——如果用户报告未响应，提供备用快捷键。 面向用户的设置 语音唤醒开关：启用唤醒词运行时。 按住 Cmd&#43;Fn 说话：启用按键通话监视器。在 macOS &lt; 26 上禁用。 语言和麦克风选择器、实时电平指示器、触发词表、测试器（仅本地；不转发）。 麦克风选择器在设备断开时保留上次选择，显示断开提示，并临时回退到系统默认设备直到设备恢复。 声音：触发检测和发送时的提示音；默认为 macOS&#34;Glass&#34;系统声音。你可以为每个事件选择任何 NSSound 可加载的文件（例如 MP3/WAV/AIFF）或选择无声音。 转发行为 启用语音唤醒时，转录文本被转发到活动的 Gateway 网关/智能体（与 Mac 应用其他部分使用相同的本地/远程模式）。 回复被投递到上次使用的主提供商（WhatsApp/Telegram/Discord/WebChat）。如果投递失败，错误会被记录，运行记录仍可通过 WebChat/会话日志查看。 转发负载 VoiceWakeForwarder.prefixedTranscript(_:) 在发送前添加机器提示前缀。唤醒词和按键通话路径共享此方法。 快速验证 开启按键通话，按住 Cmd&#43;Fn，说话，松开：悬浮窗应显示部分结果然后发送。 按住时，菜单栏耳朵图标应保持放大状态（使用 triggerVoiceEars(ttl:nil)）；松开后恢复。 </p>
   </div>
   <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
-  <a class="entry-link" aria-label="post link to 语音唤醒与按键通话" href="/openclaw/platforms/mac/voicewake/"></a>
+  <a class="entry-link" aria-label="post link to 语音唤醒与按键通话" href="https://gen-code.top/openclaw/platforms/mac/voicewake/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -242,7 +242,7 @@ sudo log stream --predicate &#39;subsystem == &#34;bot.molt&#34; AND category CO
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>1 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
-  <a class="entry-link" aria-label="post link to 语音浮层生命周期（macOS）" href="/openclaw/platforms/mac/voice-overlay/"></a>
+  <a class="entry-link" aria-label="post link to 语音浮层生命周期（macOS）" href="https://gen-code.top/openclaw/platforms/mac/voice-overlay/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -257,11 +257,11 @@ SSH 隧道（默认）：使用 ssh -N -L ... 将 Gateway 网关端口转发到 
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2026-03-10 00:00:00 +0000 UTC'>March 10, 2026</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>map[email:liu15077731547@gmail.com name:it00021hot]</span></footer>
-  <a class="entry-link" aria-label="post link to 远程 OpenClaw（macOS ⇄ 远程主机）" href="/openclaw/platforms/mac/remote/"></a>
+  <a class="entry-link" aria-label="post link to 远程 OpenClaw（macOS ⇄ 远程主机）" href="https://gen-code.top/openclaw/platforms/mac/remote/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
-    <a class="prev" href="/openclaw/platforms/page/2/">
+    <a class="prev" href="https://gen-code.top/openclaw/platforms/page/2/">
       «&nbsp;Prev&nbsp;
     </a>
   </nav>

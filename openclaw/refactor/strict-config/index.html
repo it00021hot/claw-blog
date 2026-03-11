@@ -70,16 +70,16 @@ openclaw doctor --fix：
 命令门控（当配置无效时）
 允许的命令（仅诊断）：">
 <meta name="author" content="map[email:liu15077731547@gmail.com name:it00021hot]">
-<link rel="canonical" href="/openclaw/refactor/strict-config/">
+<link rel="canonical" href="https://gen-code.top/openclaw/refactor/strict-config/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.da3211e5ef867bf2b75fd5a6515cfed7195c011e8ab735694e203810a827097b.css" integrity="sha256-2jIR5e&#43;Ge/K3X9WmUVz&#43;1xlcAR6KtzVpTiA4EKgnCXs=" rel="preload stylesheet" as="style">
-<link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="mask-icon" href="/safari-pinned-tab.svg">
+<link rel="icon" href="https://gen-code.top/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://gen-code.top/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://gen-code.top/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://gen-code.top/apple-touch-icon.png">
+<link rel="mask-icon" href="https://gen-code.top/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="/openclaw/refactor/strict-config/">
+<link rel="alternate" hreflang="en" href="https://gen-code.top/openclaw/refactor/strict-config/">
 <noscript>
     <style>
         #theme-toggle,
@@ -143,7 +143,7 @@ ins.adsbygoogle {
 </style>
 
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8708502478021488" crossorigin="anonymous"></script>
-<meta property="og:url" content="/openclaw/refactor/strict-config/">
+<meta property="og:url" content="https://gen-code.top/openclaw/refactor/strict-config/">
   <meta property="og:site_name" content="CLAW博客">
   <meta property="og:title" content="严格配置验证（仅通过 doctor 进行迁移）">
   <meta property="og:description" content="目标 在所有地方拒绝未知配置键（根级 &#43; 嵌套）。 拒绝没有 schema 的插件配置；不加载该插件。 移除加载时的旧版自动迁移；迁移仅通过 doctor 运行。 启动时自动运行 doctor（dry-run）；如果无效，阻止非诊断命令。 非目标 加载时的向后兼容性（旧版键不会自动迁移）。 静默丢弃无法识别的键。 严格验证规则 配置必须在每个层级精确匹配 schema。 未知键是验证错误（根级或嵌套都不允许透传）。 plugins.entries.&lt;id&gt;.config 必须由插件的 schema 验证。 如果插件缺少 schema，拒绝插件加载并显示清晰的错误。 未知的 channels.&lt;id&gt; 键是错误，除非插件清单声明了该渠道 id。 所有插件都需要插件清单（openclaw.plugin.json）。 插件 schema 强制执行 每个插件为其配置提供严格的 JSON Schema（内联在清单中）。 插件加载流程： 解析插件清单 &#43; schema（openclaw.plugin.json）。 根据 schema 验证配置。 如果缺少 schema 或配置无效：阻止插件加载，记录错误。 错误消息包括： 插件 id 原因（缺少 schema / 配置无效） 验证失败的路径 禁用的插件保留其配置，但 Doctor &#43; 日志会显示警告。 Doctor 流程 每次加载配置时都会运行 Doctor（默认 dry-run）。 如果配置无效： 打印摘要 &#43; 可操作的错误。 指示：openclaw doctor --fix。 openclaw doctor --fix： 应用迁移。 移除未知键。 写入更新后的配置。 命令门控（当配置无效时） 允许的命令（仅诊断）：">
@@ -226,8 +226,20 @@ openclaw doctor --fix：
     {
       "@type": "ListItem",
       "position":  1 ,
+      "name": "OpenClaw 🦞",
+      "item": "https://gen-code.top/openclaw/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Refactor",
+      "item": "https://gen-code.top/openclaw/refactor/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
       "name": "严格配置验证（仅通过 doctor 进行迁移）",
-      "item": "/openclaw/refactor/strict-config/"
+      "item": "https://gen-code.top/openclaw/refactor/strict-config/"
     }
   ]
 }
@@ -253,14 +265,14 @@ openclaw doctor --fix：
   },
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "/openclaw/refactor/strict-config/"
+    "@id": "https://gen-code.top/openclaw/refactor/strict-config/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "CLAW博客",
     "logo": {
       "@type": "ImageObject",
-      "url": "/favicon.ico"
+      "url": "https://gen-code.top/favicon.ico"
     }
   }
 }
@@ -270,7 +282,7 @@ openclaw doctor --fix：
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
+            <a href="https://gen-code.top/" accesskey="h" title="CLAW博客 (Alt + H)">CLAW博客</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -296,22 +308,22 @@ openclaw doctor --fix：
         </div>
         <ul id="menu">
             <li>
-                <a href="/" title="首页">
+                <a href="https://gen-code.top/" title="首页">
                     <span>首页</span>
                 </a>
             </li>
             <li>
-                <a href="/openclaw/" title="OpenClaw">
+                <a href="https://gen-code.top/openclaw/" title="OpenClaw">
                     <span>OpenClaw</span>
                 </a>
             </li>
             <li>
-                <a href="/skills/" title="Skills">
+                <a href="https://gen-code.top/skills/" title="Skills">
                     <span>Skills</span>
                 </a>
             </li>
             <li>
-                <a href="/tech/" title="随笔小记">
+                <a href="https://gen-code.top/tech/" title="随笔小记">
                     <span>随笔小记</span>
                 </a>
             </li>
@@ -322,7 +334,7 @@ openclaw doctor --fix：
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="/">Home</a></div>
+    <div class="breadcrumbs"><a href="https://gen-code.top/">Home</a>&nbsp;»&nbsp;<a href="https://gen-code.top/openclaw/">OpenClaw 🦞</a>&nbsp;»&nbsp;<a href="https://gen-code.top/openclaw/refactor/">Refactor</a></div>
     <h1 class="post-title entry-hint-parent">
       严格配置验证（仅通过 doctor 进行迁移）
     </h1>
@@ -467,12 +479,12 @@ openclaw doctor --fix：
     <ul class="post-tags">
     </ul>
 <nav class="paginav">
-  <a class="prev" href="/openclaw/concepts/compaction/">
+  <a class="prev" href="https://gen-code.top/openclaw/concepts/compaction/">
     <span class="title">« Prev</span>
     <br>
     <span>上下文窗口与压缩</span>
   </a>
-  <a class="next" href="/openclaw/web/dashboard/">
+  <a class="next" href="https://gen-code.top/openclaw/web/dashboard/">
     <span class="title">Next »</span>
     <br>
     <span>仪表板（控制 UI）</span>
